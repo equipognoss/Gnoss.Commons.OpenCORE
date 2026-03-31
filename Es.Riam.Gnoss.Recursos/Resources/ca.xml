@@ -3530,6 +3530,8 @@
 		<Resource tag="ADMINISTRARSUSCRIPCIONES">gestionar-subscripcions</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONCOMUNIDAD">gestionar-suscripcio-comunitat</Resource>
 		<Resource tag="ADMINISTRARSUSCRIPCIONIDENTIDAD">gestionar-suscripcio-perfil</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">gestionar-traductor</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">gestionar-traductor-ecosistema</Resource>
 		<Resource tag="AGREGARTWITTER">afegir-twitter</Resource>
 		<Resource tag="ARTICULO">article</Resource>
 		<Resource tag="BLOG">blog</Resource>
@@ -3905,6 +3907,7 @@
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">notificacions-personalitzades</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">administrar-assistents</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Llistat Notificacions</Resource>
@@ -3922,10 +3925,31 @@
 		<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nom de l’idioma que es desitja afegir: Exemple: Finès</Resource>
 		<Resource tag="FECHAULTIMOACCESO">Últim accés</Resource>
 		<Resource tag="FECHAALTA">Data d'alta</Resource>
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Configuració del servei de traducció de recursos de la comunitat.</Resource>
 		<Resource tag="BUSCARCATEGORIAS">Cercar categories</Resource>
 		<Resource tag="NUEVACATEGORIA">Nova categoria</Resource>
 		<Resource tag="NUEVACATEGORIAPRINCIPAL">Nova categoria principal</Resource>
 		<Resource tag="OTROSIDIOMAS">Altres idiomes</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Introdueix la URL del servei de traducció</Resource>
+		<Resource tag="INFOURLTRADUCTOR">URL completa del servei de traducció</Resource>
+		<Resource tag="TOKENTRADUCTOR">Token d'autorització</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Introdueix un token</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Token necessari per autoritzar les peticions realitzades al servei de traducció</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Introdueix un prompt addicional</Resource>
+		<Resource tag="INFOPROMPT">Informació addicional per generar un context en el servei de traducció</Resource>
+		<Resource tag="TRADUCTORACTIVO">Activat</Resource>
+		<Resource tag="TESTTRADUCTOR">Provar el traductor</Resource>
+		<Resource tag="TRADUCIRTEXTO">Traduir text</Resource>
+		<Resource tag="NIVELTRADUCTOR">Model de traducció</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Nivell del model que utilitzarà el servei de traducció</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Introdueix un text a traduir</Resource>
+		<Resource tag="PROBARTRADUCTOR">Text a traduir</Resource>
+		<Resource tag="IDIOMADESTINO">Idioma al qual es vol traduir el text</Resource>
+		<Resource tag="IDIOMAORIGINAL">Idioma original del text introduït</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Resultat de la traducció</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Error, la URL del servei de traducció i el token no poden estar buits</Resource>
 		<Resource tag="INTRODUCEELTITULODELACATEGORIA">Introdueix el títol de la categoria</Resource>
 		<Resource tag="INTRODUCEELNUEVONOMBREDELACATEGORIA">Introdueix el nou nom de la categoria</Resource>
 		<Resource tag="IMAGEN">Imatge</Resource>
@@ -4017,6 +4041,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Desplegaments</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Pujar canvis</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Fluxos de treball</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Configurar traductor</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Administrar assistents</Resource>
 	</page>	
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4057,6 +4083,7 @@
   <!-- Traducciones para DevTools -->
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="ROLES">Rols</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">El component CMS es troba en un estat privat, per la qual cosa els seus perfils i/o grups s’han de configurar des de la pàgina d’administració de fluxos</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona les persones i/o grups que poden veure el component</Resource>
 	<Resource tag="COLOR">Color</Resource>
@@ -4065,6 +4092,7 @@
 	<Resource tag="ERRORCARGARFORMULARIO">Ha sorgit un problema en carregar el formulari</Resource>
 	<Resource tag="TIPOS">Tipus</Resource>
 	<Resource tag="INSERTADOSEARCH">S'ha inserit la propietat.</Resource>
+	<Resource tag="INFOCONFIGURARTRADUCTOR">Configuració del servei de traducció de recursos de la comunitat.</Resource>
 	<Resource tag="ALERTAUSUARIO">Advertència!</Resource>
 	<Resource tag="PROPIEDADNOEXISTE">La propietat introduïda: @1@ no existeix.</Resource>
 	<Resource tag="APLICACIONESESPECIFICAS">Aplicacions específiques (BETA)</Resource>
@@ -4859,6 +4887,8 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Voleu eliminar el rol seleccionat?</Resource>
+    <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Aquest rol està assignat a un o més assistents.{br} Si l'elimineu, deixaran de tenir aquest rol i podria canviar el seu comportament.{br}Esteu segur que voleu continuar?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
     <Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5901,6 +5931,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurar SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Gestionar rols i permisos de l'ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Gestionar membres</Resource>
+		<Resource tag="GESTIONARASISTENTES">Gestionar assistents</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Crear recursos de tipus adjunt</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Editar recursos de tipus adjunt</Resource>
@@ -6218,5 +6249,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">No teniu permisos per iniciar una millora</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">No es pot eliminar el flux perquè encara queden continguts de tipus @1@ que no estan en l'estat final.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">No es pot eliminar el flux perquè encara queden recursos amb una millora activa.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Nou assistent</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Voleu eliminar aquest assistent?</Resource>
+		<Resource tag="ASISTENTE">Assistent</Resource>
+		<Resource tag="HOSTASISTENTE">Host assistent</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Assistent ID</Resource>
+		<Resource tag="ICONO">Icona</Resource>
+		<Resource tag="NUEVOICONO">Selecciona una icona per adjuntar</Resource>
+		<Resource tag="ERRORSUBIRICONO">S'ha produït un error en pujar la icona, torneu-ho a intentar més tard.</Resource>
+		<Resource tag="SELECCIONARROL">-- Selecciona un rol --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Imatges en format .JPG, .JPEG, .PNG o .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Feu clic o arrossegueu una imatge aquí</Resource>
+		<Resource tag="ERRORPESOICONO">La icona no pot pesar més de 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">Arxiu buit</Resource>
+		<Resource tag="TESTEARASISTENTE">Provar la configuració</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">L'assistent que s'està intentant editar no existeix</Resource>
+		<Resource tag="ERRORHOST">S'ha produït un error amb la connexió de l'assistent, comprova que l'host del servei és correcte</Resource>
 	</page>
 </Resources>

@@ -1643,7 +1643,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
                 else if (((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.InternalServerError) && respuesta.Contains("SR171: Transaction timed out"))
                 {
-                    mLoggingService.GuardarLog($"\n\nMessage: {respuesta}\n\nQuery: {pQuery}\n\nUrl: {url}",mlogger, $"{LoggingService.RUTA_DIRECTORIO_ERROR}\\virtuosoTransactionTimedOut_{DateTime.Now.ToString("yyyy-MM-dd")}.txt");
+                    mLoggingService.GuardarLog($"\n\nMessage: {respuesta}\n\nQuery: {pQuery}\n\nUrl: {url}",mlogger);
                     throw new ExcepcionConectionFailVirtuoso("SR171: Transaction timed out");
                 }
                 else if (webException.Status.Equals(WebExceptionStatus.ConnectFailure))
@@ -1748,7 +1748,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
                 else if (((HttpWebResponse)webException.Response).StatusCode.Equals(HttpStatusCode.InternalServerError) && respuesta.Contains("SR171: Transaction timed out"))
                 {
-                    mLoggingService.GuardarLog($"\n\nMessage: {respuesta}\n\nQuery: {pQuery}\n\nUrl: {url}", mlogger, $"{LoggingService.RUTA_DIRECTORIO_ERROR}\\virtuosoTransactionTimedOut_{DateTime.Now.ToString("yyyy-MM-dd")}.txt");
+                    mLoggingService.GuardarLogError($"\n\nMessage: {respuesta}\n\nQuery: {pQuery}\n\nUrl: {url}", mlogger);
                     throw new ExcepcionConectionFailVirtuoso("SR171: Transaction timed out");
                 }
                 else if (webException.Status.Equals(WebExceptionStatus.ConnectFailure))

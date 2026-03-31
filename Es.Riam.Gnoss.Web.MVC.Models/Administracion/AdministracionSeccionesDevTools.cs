@@ -42,6 +42,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Comunidad_Roles,
             Comunidad_Permisos,
             Comunidad_Flujos,
+            Comunidad_Asistentes,
 
             // Subsecciones de la sección Estructura
             Estructura_Home,
@@ -54,6 +55,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             // Subsecciones de la sección Configuración
             Configuracion_Home,
             Configuracion_TraduccionesComunidad,
+            Configuracion_Traductor,
             Configuracion_Trazas,            
             Configuracion_Cache,
             Configuracion_OAuth,

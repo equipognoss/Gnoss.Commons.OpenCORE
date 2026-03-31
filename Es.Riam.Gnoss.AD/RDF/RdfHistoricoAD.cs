@@ -274,7 +274,7 @@ namespace Es.Riam.Gnoss.AD.RDF
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"No se ha encontrado la tabla RdfHistorico_{mCaracteresDoc}");
+                mLoggingService.GuardarLogError(ex, $"No se ha encontrado la tabla RdfHistorico_{mCaracteresDoc}",mlogger);
             }
 
             return rdfHistoricoDS;

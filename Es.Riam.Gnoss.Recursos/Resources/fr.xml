@@ -3562,6 +3562,8 @@
 		<Resource tag="ADMINISTRARCOOKIESCOM">gerer-cookies</Resource>
 		<Resource tag="CONFIGURAFTP">configurer-ftp</Resource>
 		<Resource tag="ADMINISTRARTRADUCCIONES">gerer-traductions</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">gerer-traducteur</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">gerer-traducteur-ecosysteme</Resource>
 		<Resource tag="ADMINISTRARDATOSEXTRA">gerer-donnees-supplementaires</Resource>
 		<Resource tag="ADMINISTRARTRAZAS">gerer-pistes</Resource>
 		<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">gerer-telecharger-configuration</Resource>
@@ -3925,6 +3927,7 @@
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">notifications-personnalisees</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">gérer-flux-travail</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">gerer-les-assistants</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Liste des notifications</Resource>
@@ -4032,6 +4035,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Déploiements</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Téléverser des Changements</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Flux de travail</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Configurer traducteur</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Gérer les assistants</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4071,6 +4076,7 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="ROLES">Rôles</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">Le composant CMS est dans un état privé, donc ses profils et/ou groupes doivent être configurés depuis la page d’administration des flux</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Sélectionnez les personnes et/ou les groupes pouvant voir le composant</Resource>
 	<Resource tag="COLOR">Couleur</Resource>
@@ -4078,6 +4084,27 @@
 	<Resource tag="CANCELAR">Annuler</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Un problème est survenu lors du chargement du formulaire</Resource>
 	<Resource tag="TIPOS">Types</Resource>
+	<Resource tag="INFOCONFIGURARTRADUCTOR">Configuration du service de traduction des ressources de la communauté.</Resource>
+	<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+	<Resource tag="INTRODUCEURLTRADUCTOR">Entrez l'URL du service de traduction</Resource>
+	<Resource tag="INFOURLTRADUCTOR">URL complète du service de traduction</Resource>
+	<Resource tag="TOKENTRADUCTOR">Token d'autorisation</Resource>
+	<Resource tag="INTRODUCETOKENTRADUCTOR">Entrez un token</Resource>
+	<Resource tag="INFOTOKENTRADUCTOR">Token nécessaire pour autoriser les requêtes effectuées au service de traduction</Resource>
+	<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+	<Resource tag="INTRODUCEPROMPTTRADUCTOR">Entrez un prompt supplémentaire</Resource>
+	<Resource tag="INFOPROMPT">Informations supplémentaires pour générer un contexte dans le service de traduction</Resource>
+	<Resource tag="TRADUCTORACTIVO">Activé</Resource>
+	<Resource tag="TESTTRADUCTOR">Tester le traducteur</Resource>
+	<Resource tag="TRADUCIRTEXTO">Traduire le texte</Resource>
+	<Resource tag="ERRORGUARDARTRADUCTOR">Erreur, l'URL du service de traduction et le token ne peuvent pas être vides</Resource>
+	<Resource tag="NIVELTRADUCTOR">Modèle de traduction</Resource>
+	<Resource tag="INFONIVELTRADUCTOR">Niveau du modèle que le service de traduction utilisera</Resource>
+	<Resource tag="INTRODUCETESTTRADUCTOR">Entrez un texte à traduire</Resource>
+	<Resource tag="PROBARTRADUCTOR">Texte à traduire</Resource>
+	<Resource tag="IDIOMADESTINO">Langue cible</Resource>
+	<Resource tag="IDIOMAORIGINAL">Langue originale du texte saisi</Resource>
+	<Resource tag="TEXTOTRADUCIDO">Résultat de la traduction</Resource>
 	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Liste des langues personnalisées sur la plateforme.</Resource>
 	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Ajouter une langue</Resource>
 	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clé de la langue</Resource>
@@ -4879,6 +4906,8 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Voulez-vous supprimer le rôle sélectionné ?</Resource>
+    <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Ce rôle est attribué à un ou plusieurs assistants.{br} Si vous le supprimez, ils n'auront plus ce rôle et leur comportement pourrait changer.{br}Êtes-vous sûr de vouloir continuer ?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
     <Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5921,6 +5950,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurer SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Gérer les rôles et permissions de l'écosystème</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Gérer les membres</Resource>
+		<Resource tag="GESTIONARASISTENTES">Gérer les assistants</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Créer des ressources de type pièce jointe</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Modifier des ressources de type pièce jointe</Resource>
@@ -6239,5 +6269,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Vous n'avez pas les autorisations pour démarrer une amélioration</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">Le flux ne peut pas être supprimé car il reste encore des contenus de type @1@ qui ne sont pas dans l'état final.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">Le flux ne peut pas être supprimé car il reste encore des ressources avec une amélioration active.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Nouvel assistant</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Voulez-vous supprimer cet assistant?</Resource>
+		<Resource tag="ASISTENTE">Assistant</Resource>
+		<Resource tag="HOSTASISTENTE">Hôte assistant</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">ID assistant</Resource>
+		<Resource tag="ICONO">Icône</Resource>
+		<Resource tag="NUEVOICONO">Sélectionnez une icône à joindre</Resource>
+		<Resource tag="ERRORSUBIRICONO">Une erreur s'est produite lors du téléchargement de l'icône, veuillez réessayer plus tard.</Resource>
+		<Resource tag="SELECCIONARROL">-- Sélectionner un rôle --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Images au format .JPG, .JPEG, .PNG ou .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Cliquez ou faites glisser une image ici</Resource>
+		<Resource tag="ERRORPESOICONO">L'icône ne peut pas dépasser 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">Fichier vide</Resource>
+		<Resource tag="TESTEARASISTENTE">Tester la configuration</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">L'assistant que vous essayez de modifier n'existe pas</Resource>
+		<Resource tag="ERRORHOST">Une erreur s'est produite lors de la connexion de l'assistant, veuillez vérifier que l'hôte du service est correct</Resource>
 	</page>
 </Resources>

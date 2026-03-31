@@ -1,23 +1,14 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
-using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.Trazas;
 using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
-using Es.Riam.Gnoss.Logica.ParametroAplicacion;
-using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
-using Es.Riam.Gnoss.UtilServiciosWeb;
-using Es.Riam.Interfaces.InterfacesOpen;
-using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -26,7 +17,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -166,7 +156,7 @@ namespace Es.Riam.Gnoss.Servicios
         private IHostingEnvironment mEnv;
         private static object BLOQUEO_COMPROBACION_TRAZA = new object();
         private static DateTime HORA_COMPROBACION_TRAZA;
-        private ILogger mlogger;
+        protected ILogger mLogger;
         private ILoggerFactory mLoggerFactory;
         protected IServiceScopeFactory ScopedFactory { get; }
 
@@ -181,7 +171,7 @@ namespace Es.Riam.Gnoss.Servicios
         {
             ScopedFactory = scopedFactory;
             mConfigService = configService;
-            mlogger = logger;
+            mLogger = logger;
             mLoggerFactory = loggerFactory;
             //string directorioLog = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "logs" + Path.DirectorySeparatorChar + mPlataforma;
             string directorioLog = ObtenerRutaLog();
@@ -270,24 +260,14 @@ namespace Es.Riam.Gnoss.Servicios
                 VirtuosoAD virtuosoAD = scope.ServiceProvider.GetRequiredService<VirtuosoAD>();
                 IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication = scope.ServiceProvider.GetRequiredService<IServicesUtilVirtuosoAndReplication>();
                 LoggingService.TrazaHabilitada = mConfigService.TrazaHabilitada();
-                loggingService.GuardarLog($"Trazas habilitadas: {LoggingService.TrazaHabilitada}", mlogger);
+                loggingService.GuardarLog($"Trazas habilitadas: {LoggingService.TrazaHabilitada}", mLogger);
                 try
                 {
                     RegistrarInicio(loggingService);
 
-
-                    loggingService.PLATAFORMA = mPlataforma;
-
                     ThreadID = Thread.CurrentThread.ManagedThreadId;
 
                     GestorParametroAplicacion tempGestorParametros = new GestorParametroAplicacion();
-
-
-                    ConfiguracionBBDD configLogStash = entityContext.ConfiguracionBBDD.FirstOrDefault(configuracionBBDD => configuracionBBDD.TipoConexion.Equals((short)TipoConexion.Logstash));
-                    if (configLogStash != null)
-                    {
-                        LoggingService.InicializarLogstash(configLogStash.Conexion);
-                    }
 
                     tempGestorParametros.ListaConfiguracionBBDD = entityContext.ConfiguracionBBDD.ToList();
                     tempGestorParametros.ListaConfiguracionServicios = entityContext.ConfiguracionServicios.ToList();
@@ -312,7 +292,7 @@ namespace Es.Riam.Gnoss.Servicios
                 }
                 catch (Exception ex)
                 {
-                    loggingService.GuardarLogError(ex, $"Conexion: {mFicheroConfiguracionBDOriginal}",mlogger);
+                    loggingService.GuardarLogError(ex, $"Conexion: {mFicheroConfiguracionBDOriginal}", mLogger);
                     throw;
                 }
             }
@@ -408,7 +388,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// </summary>
         public virtual void RegistrarInicio(LoggingService loggingService)
         {
-            GuardarLog($"{LogStatus.Inicio.ToString().ToUpper()} => {this.ToString().Replace("Es.Riam.Gnoss.Win.", "")}", loggingService);
+            loggingService.GuardarLog($"{LogStatus.Inicio.ToString().ToUpper()} => {this.ToString().Replace("Es.Riam.Gnoss.Win.", "")}", mLogger);
         }
 
         /// <summary>
@@ -416,7 +396,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// </summary>
         public void RegistrarParada(LoggingService loggingService)
         {
-            GuardarLog(LogStatus.Parada.ToString().ToUpper(), loggingService);
+            loggingService.GuardarLog(LogStatus.Parada.ToString().ToUpper(), mLogger);
         }
 
         /// <summary>
@@ -450,7 +430,7 @@ namespace Es.Riam.Gnoss.Servicios
         protected void EnviarCorreoErrorYGuardarLog(string pMensajeError, string pVersion, string pClaveCorreoDestinatario, EntityContext entityContext, LoggingService loggingService)
         {
             EnviarCorreo(pMensajeError, pVersion, pClaveCorreoDestinatario, entityContext);
-            GuardarLog(pMensajeError, loggingService);
+            loggingService.GuardarLog(pMensajeError, mLogger);
         }
 
         /// <summary>
@@ -493,84 +473,6 @@ namespace Es.Riam.Gnoss.Servicios
         }
 
         /// <summary>
-        /// Escribe fisicamente las entradas en el log
-        /// </summary>
-        /// <param name="pInfoEntry"></param>
-        /// <param name="pParametroExtra"></param>
-        public void GuardarLog(Exception pExcepcion, LoggingService loggingService)
-        {
-            GuardarLog(pExcepcion, "", loggingService);
-        }
-
-        /// <summary>
-        /// Escribe fisicamente las entradas en el log
-        /// </summary>
-        /// <param name="pInfoEntry"></param>
-        /// <param name="pParametroExtra"></param>
-        public void GuardarLog(Exception pExcepcion, string pParametroExtra, LoggingService loggingService)
-        {
-            GuardarLog(loggingService.DevolverCadenaError(pExcepcion, "1.0.0.0"), pParametroExtra, loggingService, pExcepcion);
-        }
-
-        /// <summary>
-        /// Escribe fisicamente las entradas en el log
-        /// </summary>
-        /// <param name="infoEntry"></param>
-        public void GuardarLog(string pInfoEntry, LoggingService loggingService)
-        {
-            GuardarLog(pInfoEntry, "", loggingService);
-        }
-
-        /// <summary>
-        /// Escribe fisicamente las entradas en el log indicado
-        /// </summary>
-        /// <param name="pInfoEntry"></param>
-        /// <param name="pParametroExtra"></param>
-        public void GuardarLog(string pInfoEntry, string pParametroExtra, LoggingService loggingService, Exception pExcepcion = null)
-        {
-            if (!string.IsNullOrEmpty(pInfoEntry))
-            {
-                try
-                {
-                    string nombreFichero = Path.Combine(LoggingService.RUTA_DIRECTORIO_ERROR, $"log{(pParametroExtra.Length > 0 ? "_" + pParametroExtra : "")}_{DateTime.Now.ToString("yyyy-MM-dd")}.log");
-
-                    FileInfo fichero = new FileInfo(nombreFichero);
-
-                    FileStream logFile = null;
-
-                    if (File.Exists(nombreFichero))
-                    {
-                        if (fichero.Length > 1000000000)
-                        {
-                            fichero.Delete();
-                        }
-                        logFile = new FileStream(nombreFichero, FileMode.Append, FileAccess.Write);
-                    }
-                    else
-                    {
-                        logFile = new FileStream(nombreFichero, FileMode.Create, FileAccess.Write);
-                    }
-
-                    TextWriter logWriter = new StreamWriter(logFile, Encoding.UTF8);
-
-                    // Log entry
-                    CultureInfo culture = new CultureInfo(CultureInfo.CurrentCulture.ToString());
-                    string logEntry = DateTime.Now.ToString(@"yyyy-MM-dd HH:mm:ss", culture) + " " + pInfoEntry;
-
-                    logWriter.WriteLine(logEntry);
-                    logWriter.Close();
-                    logFile.Close();
-
-                    loggingService.EnviarLogLogstash(pExcepcion, pInfoEntry);
-                }
-                catch (Exception ex)
-                {
-                    loggingService.GuardarLogError(ex, mlogger);
-                }
-            }
-        }
-
-        /// <summary>
         /// Escribe los triples generados en un fichero ANSII
         /// </summary>
         /// <param name="pInfoEntry"></param>
@@ -601,7 +503,7 @@ namespace Es.Riam.Gnoss.Servicios
                 }
                 catch (Exception ex)
                 {
-                    loggingService.GuardarLogError(ex, mlogger);
+                    loggingService.GuardarLogError(ex, mLogger);
                 }
                 finally
                 {
@@ -701,11 +603,11 @@ namespace Es.Riam.Gnoss.Servicios
             try
             {
                 string error = loggingService.DevolverCadenaError(pExcepcion, VersionEnsamblado());
-                GuardarLog(error, "", loggingService, pExcepcion);
+                loggingService.GuardarLogError(pExcepcion, error, mLogger);
             }
             catch (Exception ex)
             {
-                loggingService.GuardarLogError(ex, mlogger);
+                loggingService.GuardarLogError(ex, mLogger);
             }
         }
 

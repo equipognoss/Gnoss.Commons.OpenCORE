@@ -36,7 +36,7 @@ namespace Es.Riam.Gnoss.AD.Flujos
         public static IQueryable<JoinFlujoObjetoConocimientoProyectoDocumento> JoinFlujoObjetoConocimientoProyectoDocumento(this IQueryable<FlujoObjetoConocimientoProyecto> pQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
-            return pQuery.Join(entityContext.Documento, flujoObjetoConocimientoProyecto => flujoObjetoConocimientoProyecto.Ontologia, documento => documento.Titulo, (flujoObjetoConocimientoProyecto, documento) => new JoinFlujoObjetoConocimientoProyectoDocumento
+            return pQuery.Join(entityContext.Documento, flujoObjetoConocimientoProyecto => flujoObjetoConocimientoProyecto.Ontologia + ".owl", documento => documento.Enlace, (flujoObjetoConocimientoProyecto, documento) => new JoinFlujoObjetoConocimientoProyectoDocumento
             {
                 FlujoObjetoConocimientoProyecto = flujoObjetoConocimientoProyecto,
                 Documento = documento
@@ -193,40 +193,20 @@ namespace Es.Riam.Gnoss.AD.Flujos
 
         public Dictionary<TiposContenidos, bool> ObtenerTiposContenidosEnProyecto(Guid pProyectoID)
         {
-            var resultadoConsulta = mEntityContext.Flujo.Where(f => f.ProyectoID.Equals(pProyectoID)).GroupBy(_ => 1).Select(
-               g => new
-               {
-                   Nota = g.Any(x => x.Nota),
-                   Adjunto = g.Any(x => x.Adjunto),
-                   Link = g.Any(x => x.Link),
-                   Encuesta = g.Any(x => x.Encuesta),
-                   Debate = g.Any(x => x.Debate),
-                   PaginaCMS = g.Any(x => x.PaginaCMS),
-                   ComponenteCMS = g.Any(x => x.ComponenteCMS),
-                   Video = g.Any(x => x.Video),
-                   RecursoSemantico = g.Any(x => x.RecursoSemantico),
+            List<Flujo> flujos = mEntityContext.Flujo.Where(x => x.ProyectoID.Equals(pProyectoID)).ToList();
 
-               }
-            ).FirstOrDefault();
-
-            Dictionary<TiposContenidos, bool> diccionarioTiposPorProyecto = new Dictionary<TiposContenidos, bool> { };
-            if (resultadoConsulta != null)
+            return new Dictionary<TiposContenidos, bool>
             {
-                diccionarioTiposPorProyecto = new Dictionary<TiposContenidos, bool>
-        {
-            { TiposContenidos.Nota, resultadoConsulta.Nota },
-            { TiposContenidos.Adjunto, resultadoConsulta.Adjunto },
-            { TiposContenidos.Link, resultadoConsulta.Link },
-            { TiposContenidos.Encuesta, resultadoConsulta.Encuesta },
-            { TiposContenidos.Debate, resultadoConsulta.Debate },
-            { TiposContenidos.PaginaCMS, resultadoConsulta.PaginaCMS },
-            { TiposContenidos.ComponenteCMS, resultadoConsulta.ComponenteCMS },
-            { TiposContenidos.Video, resultadoConsulta.Video },
-            { TiposContenidos.RecursoSemantico, resultadoConsulta.RecursoSemantico }
-        };
-            }
-
-            return diccionarioTiposPorProyecto;
+                { TiposContenidos.Nota, flujos.Any(x => x.Nota) },
+                { TiposContenidos.Adjunto, flujos.Any(x => x.Adjunto) },
+                { TiposContenidos.Link, flujos.Any(x => x.Link) },
+                { TiposContenidos.Encuesta, flujos.Any(x => x.Encuesta) },
+                { TiposContenidos.Debate, flujos.Any(x => x.Debate) },
+                { TiposContenidos.PaginaCMS, flujos.Any(x => x.PaginaCMS) },
+                { TiposContenidos.ComponenteCMS, flujos.Any(x => x.ComponenteCMS) },
+                { TiposContenidos.Video, flujos.Any(x => x.Video) },
+                { TiposContenidos.RecursoSemantico, flujos.Any(x => x.RecursoSemantico) }
+            };
         }
 
         public Dictionary<TiposContenidos, bool> ObtenerTiposContenidosPorFlujo(Flujo pFlujo)

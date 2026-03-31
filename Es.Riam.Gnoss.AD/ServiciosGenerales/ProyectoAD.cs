@@ -1,4 +1,4 @@
-using Es.Riam.AbstractsOpen;
+﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
@@ -32,6 +32,7 @@ using System.Data.Common;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
 
 
 namespace Es.Riam.Gnoss.AD.ServiciosGenerales
@@ -7005,7 +7006,12 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         public List<Rol> ObtenerRolesDeProyecto(Guid pProyectoID)
         {
-            return mEntityContext.Rol.Where(x => x.ProyectoID.Equals(pProyectoID) || x.ProyectoID.Equals(MetaProyecto) || x.Tipo.Equals(AmbitoRol.Ecosistema)).OrderBy(r => r.Nombre).ToList();
+            return mEntityContext.Rol.Where(x => x.ProyectoID.Equals(pProyectoID) || x.ProyectoID.Equals(MetaProyecto) || x.Tipo.Equals((short)AmbitoRol.Ecosistema)).OrderBy(r => r.Nombre).ToList();
+        }
+
+        public Dictionary<Guid, string> ObtenerNombreRolesDeProyecto(List<Guid> pRolesId)
+        {
+            return mEntityContext.Rol.Where(x => pRolesId.Contains(x.RolID)).ToDictionary(x => x.RolID, x => x.Nombre);
         }
 
         public List<RolEcosistema> ObtenerRolesAdministracionEcosistema()
@@ -7117,7 +7123,54 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 			return listaRoles;
 		}
 
+        public TraductorProyecto ObtenerTraductorDeProyecto(Guid pProyectoID)
+        {
+            TraductorProyecto traductorProyecto = mEntityContext.TraductorProyecto.FirstOrDefault(x => x.ProyectoID.Equals(pProyectoID));
+            if (traductorProyecto == null)
+            {
+                traductorProyecto = mEntityContext.TraductorProyecto.FirstOrDefault(x => x.ProyectoID.Equals(MetaProyecto));
+            }
+            return traductorProyecto;
+        }
 
+        public void GuardarTraductorProyecto(Guid pProyectoID, string pToken, string pEndpoint, string pPrompt, bool pActivo, string pModelo)
+        {            
+            TraductorProyecto filaTraductorProyecto = ObtenerTraductorDeProyecto(pProyectoID);
+            if (filaTraductorProyecto != null)
+            {
+                filaTraductorProyecto.Token = pToken;
+                filaTraductorProyecto.Endpoint = pEndpoint;
+                filaTraductorProyecto.Prompt = pPrompt;
+                filaTraductorProyecto.Activo = pActivo;
+                filaTraductorProyecto.Nivel = pModelo;
+            }
+            else
+            {
+                TraductorProyecto traductorProyecto = new TraductorProyecto
+                {
+                    OrganizacionID = MetaOrganizacion,
+                    ProyectoID = pProyectoID,
+                    Token = pToken,
+                    Endpoint = pEndpoint,
+                    Prompt = pPrompt,
+                    Activo = pActivo,
+                    Nivel = pModelo
+                };
+                mEntityContext.TraductorProyecto.Add(traductorProyecto);
+            }
+
+            mEntityContext.SaveChanges();
+        }
+
+        public void EliminarTraductorProyecto(Guid pProyectoID)
+        {
+            TraductorProyecto traductorProyecto = ObtenerTraductorDeProyecto(pProyectoID);
+            if (traductorProyecto != null)
+            {
+                mEntityContext.EliminarElemento(traductorProyecto);
+                mEntityContext.SaveChanges();
+            }            
+        }
 
 		#endregion
 

@@ -2114,7 +2114,7 @@ namespace Es.Riam.Gnoss.Servicios
 
                 if (pEstaVersionando && pDocumentoOriginalID.HasValue)
                 {
-                    facetadoAD.BorrarRecurso(pGrafo.ToString(), pDocumentoOriginalID.Value, (int)PrioridadBase.Alta, "", false);
+                    facetadoAD.BorrarRecurso(pGrafo.ToString(), pDocumentoOriginalID.Value, (int)PrioridadBase.Alta, "", false, true);
                     eliminado = true;
                 }
 
@@ -2136,7 +2136,7 @@ namespace Es.Riam.Gnoss.Servicios
 
                         if (pEstaVersionando && !eliminado && pDocumentoOriginalID.HasValue)
                         {
-                            facetadoAD.BorrarRecurso(pGrafo.ToString(), pDocumentoOriginalID.Value, (int)PrioridadBase.Alta);
+                            facetadoAD.BorrarRecurso(pGrafo.ToString(), pDocumentoOriginalID.Value, (int)PrioridadBase.Alta, "", false, true);
                         }
 
                         if (!insertado)

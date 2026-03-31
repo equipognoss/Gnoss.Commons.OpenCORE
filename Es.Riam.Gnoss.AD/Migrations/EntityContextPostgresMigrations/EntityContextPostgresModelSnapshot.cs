@@ -200,6 +200,76 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("ConfiguracionServiciosProyecto");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.Asistente", b =>
+                {
+                    b.Property<Guid>("AsistenteID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("HostAsistente")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Icono")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.HasKey("AsistenteID");
+
+                    b.HasIndex("OrganizacionID", "ProyectoID");
+
+                    b.ToTable("Asistente");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.AsistenteConfigIdentidad", b =>
+                {
+                    b.Property<Guid>("AsistenteID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("AsistentePorDefecto")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("AsistenteID", "IdentidadID");
+
+                    b.HasIndex("IdentidadID");
+
+                    b.ToTable("AsistenteConfigIdentidad");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.RolAsistente", b =>
+                {
+                    b.Property<Guid>("AsistenteID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RolID")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AsistenteID", "RolID");
+
+                    b.HasIndex("RolID");
+
+                    b.ToTable("RolAsistente");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.Blog", b =>
                 {
                     b.Property<Guid>("BlogID")
@@ -9072,6 +9142,34 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.ToTable("TesauroUsuario");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Endpoint")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nivel")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Prompt")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.HasKey("OrganizacionID", "ProyectoID");
+
+                    b.ToTable("TraductorProyecto");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UltimosDocumentosVisitados", b =>
                 {
                     b.Property<Guid>("ProyectoID")
@@ -9966,6 +10064,55 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.HasKey("OrganizacionID", "ProyectoID", "AplicacionWeb");
 
                     b.ToTable("ProyectoServicioWeb");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.Asistente", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithMany("Asistentes")
+                        .HasForeignKey("OrganizacionID", "ProyectoID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.AsistenteConfigIdentidad", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.Asistente", "Asistente")
+                        .WithMany("AsistentesConfigIdentidades")
+                        .HasForeignKey("AsistenteID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", "Identidad")
+                        .WithMany("ConfiguracionesAsistentes")
+                        .HasForeignKey("IdentidadID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Asistente");
+
+                    b.Navigation("Identidad");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.RolAsistente", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.Asistente", "Asistente")
+                        .WithMany("RolAsistentes")
+                        .HasForeignKey("AsistenteID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", "Rol")
+                        .WithMany("RolAsistentes")
+                        .HasForeignKey("RolID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Asistente");
+
+                    b.Navigation("Rol");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogAgCatTesauro", b =>
@@ -12155,6 +12302,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("TraductorProyecto")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", "OrganizacionID", "ProyectoID");
+
+                    b.Navigation("Proyecto");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorGeneral", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.Usuario", "Usuario")
@@ -12427,6 +12583,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Proyecto");
                 });
 
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.Asistente", b =>
+                {
+                    b.Navigation("AsistentesConfigIdentidades");
+
+                    b.Navigation("RolAsistentes");
+                });
+
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.Blog", b =>
                 {
                     b.Navigation("BlogAgCatTesauro");
@@ -12532,9 +12695,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("HistorialTransicionDocumento");
 
-                    b.Navigation("RolOntologiaPermiso");
-
                     b.Navigation("IdiomaTraduccionAutomaticaDocumento");
+
+                    b.Navigation("RolOntologiaPermiso");
 
                     b.Navigation("VersionDocumento");
 
@@ -12641,6 +12804,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Identidad", b =>
                 {
+                    b.Navigation("ConfiguracionesAsistentes");
+
                     b.Navigation("DatoExtraProyectoOpcionIdentidad");
 
                     b.Navigation("DatoExtraProyectoVirtuosoIdentidad");
@@ -12779,6 +12944,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.Navigation("AdministradorProyecto");
 
+                    b.Navigation("Asistentes");
+
                     b.Navigation("CategoriaProyectoCookie");
 
                     b.Navigation("ConfiguracionCachesCostosas");
@@ -12838,6 +13005,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Navigation("Rol");
 
                     b.Navigation("TareasSegundoPlano");
+
+                    b.Navigation("TraductorProyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEvento", b =>
@@ -12926,6 +13095,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.Rol", b =>
                 {
+                    b.Navigation("RolAsistentes");
+
                     b.Navigation("RolGrupoIdentidades");
 
                     b.Navigation("RolIdentidad");

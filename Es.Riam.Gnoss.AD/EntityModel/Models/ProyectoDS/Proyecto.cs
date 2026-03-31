@@ -1,9 +1,11 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Asistente;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using System;
 using System.Collections.Generic;
@@ -220,5 +222,9 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<Flujo> Flujo { get; set; }
-	}
+		public virtual TraductorProyecto? TraductorProyecto { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Asistente.Asistente> Asistentes { get; set; }
+    }
 }

@@ -1,6 +1,8 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Asistente;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Blog;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Carga;
 using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Comentario;
@@ -15,6 +17,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
@@ -23,6 +26,7 @@ using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.AD.EntityModel
@@ -1213,7 +1217,131 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<Estado>()
                 .Property(e => e.PermiteMejora)
                 .HasPrecision(1)
-                .HasColumnType("NUMBER(2)");
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Rol>()
+                .Property(e => e.EsRolUsuario)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ProyectoPestanyaDashboardAsistente>()
+                .Property(e => e.Titulo)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ProyectoPestanyaDashboardAsistente>()
+                .Property(e => e.PropExtra)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<PresentacionMosaicoSemantico>()
+                .Property(e => e.MostrarEnAutocompletar)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<PresentacionMapaSemantico>()
+                .Property(e => e.MostrarEnAutocompletar)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<PresentacionListadoSemantico>()
+                .Property(e => e.MostrarEnAutocompletar)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.Video)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.RecursoSemantico)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.PaginaCMS)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.Nota)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.Link)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.Encuesta)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.Debate)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.ComponenteCMS)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Flujo>()
+                .Property(e => e.Adjunto)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<FacetaObjetoConocimientoProyectoPestanya>()
+                .Property(e => e.AutocompletarEnriquecido)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<EstadoIdentidad>()
+                .Property(e => e.Editor)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<EstadoGrupo>()
+                .Property(e => e.Editor)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Estado>()
+                .Property(e => e.Publico)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<DetallesDocumentacion>()
+                .Property(e => e.Privado)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<DatoExtraProyecto>()
+                .Property(e => e.VisiblePerfil)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ConfiguracionCachesCostosas>()
+                .Property(e => e.CachesDeBusquedasActivas)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ConfiguracionCachesCostosas>()
+                .Property(e => e.CachesAnonimas)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<Asistente>()
+                .Property(a => a.Activo)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+            modelBuilder.Entity<AsistenteConfigIdentidad>()
+                .Property(a => a.AsistentePorDefecto)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
         }
     }
 }

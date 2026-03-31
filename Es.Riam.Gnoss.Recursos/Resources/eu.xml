@@ -3554,6 +3554,8 @@
 		<Resource tag="ADMINISTRARPESTANYASCOM">kudeatu-orriak</Resource>
 		<Resource tag="ADMINISTRARREDIRECCIONES">kudeatu-bideratzeak</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSMULTIMEDIA">kudeatu-komunitate-cms-multimedia</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">itzultzailea-kudeatu</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">itzultzailea-ekosistema-kudeatu</Resource>
 		<Resource tag="DESCARGAROAUTH">deskargatu-konfigurazioa-OAuth</Resource>
 		<Resource tag="ADMINISTRARCOOKIESCOM">kudeatu-cookies</Resource>
 		<Resource tag="CONFIGURAFTP">konfiguratu-ftp</Resource>
@@ -3923,6 +3925,7 @@
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">ohiko-jakinarazpenak</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">kudeatu-lan-fluxuak</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">laguntzaileak-kudeatu</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Jakinarazpenen zerrenda</Resource>
@@ -3958,6 +3961,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Zabalpenak</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Aldaketak igo</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Lan-fluxuak</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Itzultzailea konfiguratu</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Laguntzaileak kudeatu</Resource>
 	</page>
 	<page name="DEVTOOLS">
 		<Resource tag="FECHA">Data</Resource>
@@ -3969,9 +3974,30 @@
 		<Resource tag="OTROSIDIOMAS">Beste hizkuntzak</Resource>
 		<Resource tag="INTRODUCEELTITULODELACATEGORIA">Sartu kategoria titulua</Resource>
 		<Resource tag="INTRODUCEELNUEVONOMBREDELACATEGORIA">Sartu kategoriaren izen berria</Resource>
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Komunitateko baliabideen itzulpen-zerbitzuaren konfigurazioa.</Resource>
 		<Resource tag="IMAGEN">Irudia</Resource>
 		<Resource tag="ELIMINARIMAGEN">Ezabatu irudia</Resource>
 		<Resource tag="IMAGENCATEGORIA">Kategoria irudia</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Sartu itzulpen-zerbitzuaren URLa</Resource>
+		<Resource tag="INFOURLTRADUCTOR">Itzulpen-zerbitzuaren URL osoa</Resource>
+		<Resource tag="TOKENTRADUCTOR">Baimenerako tokena</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Sartu token bat</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Itzulpen-zerbitzuari egindako eskaerak baimendu ahal izateko beharrezko tokena</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Sartu prompt osagarri bat</Resource>
+		<Resource tag="INFOPROMPT">Informazio osagarria itzulpen-zerbitzuan testuingurua sortzeko</Resource>
+		<Resource tag="TRADUCTORACTIVO">Aktibatuta</Resource>
+		<Resource tag="TESTTRADUCTOR">Itzultzailea probatu</Resource>
+		<Resource tag="TRADUCIRTEXTO">Testua itzuli</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Errorea, itzulpen zerbitzuaren URLa eta tokena ezin dira hutsik egon</Resource>
+		<Resource tag="NIVELTRADUCTOR">Itzulpen-modeloa</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Itzulpen-zerbitzuak erabiliko duen modeloaren maila</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Sartu itzultzeko testu bat</Resource>
+		<Resource tag="PROBARTRADUCTOR">Itzultzeko testua</Resource>
+		<Resource tag="IDIOMADESTINO">Testua itzuli nahi den hizkuntza</Resource>
+		<Resource tag="IDIOMAORIGINAL">Sartutako testuaren jatorrizko hizkuntza</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Itzulpenaren emaitza</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Arrastatu eta utzi fitxategi multimedia puntuaturiko eremuan igotzeko</Resource>
 		<Resource tag="IMAGENESENFORMATOPNGOJPG">Irudiak .PNG edo .JPG formatuan</Resource>
 		<Resource tag="HAYRECURSOSQUEESTANUTILIZANDOLACATEGORIAQUESEDESEAELIMINAR">Kategoriaren erabilera duten baliabideak daude, ezabatu nahi dena.</Resource>
@@ -4087,6 +4113,7 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="ROLES">Rolak</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">CMS osagaia egoera pribatuan dago; beraz, bere profilak eta/edo taldeak fluxuen administrazio orritik konfiguratu behar dira</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Osatu konponentearen ikusle izan daitezkeen pertsonak eta/edo taldeak hautatu</Resource>
 	<Resource tag="COLOR">Kolorea</Resource>
@@ -4895,6 +4922,8 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Hautatutako rola ezabatu nahi duzu?</Resource>
+    <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Rol hau laguntzaile bati edo gehiagori esleituta dago.{br} Ezabatzen baduzu, rol hori izateari utziko diote eta haien portaera alda daiteke.{br}Ziur zaude jarraitu nahi duzula?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
     <Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5919,6 +5948,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">SharePoint konfiguratu</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Ekosistemaren rolak eta baimenak kudeatu</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Kideak kudeatu</Resource>
+		<Resource tag="GESTIONARASISTENTES">Laguntzaileak kudeatu</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Eranskin motako baliabideak sortu</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Eranskin motako baliabideak editatu</Resource>
@@ -6237,5 +6267,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Ez duzu baimenik hobekuntza bat hasteko</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">Fluxua ezin da ezabatu oraindik @1@ motako edukiak daudelako azken egoeran ez daudenak.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">Fluxua ezin da ezabatu oraindik hobekuntza aktiboa duten baliabideak daudelako.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Laguntzaile berria</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Laguntzaile hau ezabatu nahi duzu?</Resource>
+		<Resource tag="ASISTENTE">Laguntzailea</Resource>
+		<Resource tag="HOSTASISTENTE">Laguntzaile host-a</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Laguntzaile IDa</Resource>
+		<Resource tag="ICONO">Ikonoa</Resource>
+		<Resource tag="NUEVOICONO">Hautatu eransteko ikono bat</Resource>
+		<Resource tag="ERRORSUBIRICONO">Errorea gertatu da ikonoa igotzerakoan, saiatu berriro geroago.</Resource>
+		<Resource tag="SELECCIONARROL">-- Hautatu rol bat --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Irudiak .JPG, .JPEG, .PNG edo .GIF formatuan</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Egin klik edo arrastatu irudi bat hona</Resource>
+		<Resource tag="ERRORPESOICONO">Ikonoak ezin du 2 MB baino gehiago pisatu</Resource>
+		<Resource tag="ERRORICONOVACIO">Fitxategi hutsa</Resource>
+		<Resource tag="TESTEARASISTENTE">konfigurazioa probatu</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">Editatzen saiatzen ari den laguntzailea ez da existitzen</Resource>
+		<Resource tag="ERRORHOST">Errore bat gertatu da laguntzailearen konexioan, egiaztatu zerbitzuaren host-a zuzena dela</Resource>
 	</page>
 </Resources>

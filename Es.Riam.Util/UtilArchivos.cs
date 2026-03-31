@@ -51,6 +51,7 @@ namespace Es.Riam.Util
         public const string ContentImagenesCategorias = "categorias";
         public const string ContentImagenesUsuarios = "Usuarios";
         public const string ContentImagenesDocumentos = "Documentos";
+        public const string ContentIconoAsistentes = "asistentes";
 
         public const string ContentImagenesEnlaces = "imagenesEnlaces";
         public const string ContentImagenesSemanticas = "imgsem";

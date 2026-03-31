@@ -3718,7 +3718,8 @@
 		<Resource tag="ADMINISTRAPARAMETROSBUSQUEDAPERSONALIZADOS">manage-custom-search-parameters</Resource>
 		<Resource tag="ADMINISTRARMAPA">manage-map</Resource>
 		<Resource tag="ADMINISTRARYCHARTS">manage-charts</Resource>
-
+		<Resource tag="ADMINISTRARTRADUCTOR">configure-translator</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">configure-translator-ecosystem</Resource>
 		<Resource tag="ADMINISTRARLISTACAMBIO">manage-change-list</Resource>
 		<Resource tag="ADMINISTRARDESPLIEGUES">manage-deployments</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">manage-continuous-integration</Resource>
@@ -4066,6 +4067,7 @@
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">admin-search-weight</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">manage-workflows</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">manage-assistants</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Notifications List</Resource>
@@ -4102,6 +4104,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Deployments</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Upload Changes</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Workflows</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Configure translator</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Manage assistants</Resource>
 	</page>
 	<page name="COMADMINPESOBUSQUEDA">
 		<Resource tag="TITULO">Setting search weights</Resource>
@@ -4155,6 +4159,7 @@
 		<Resource tag="DEBATE">Debate</Resource>
 		<Resource tag="PAGINACMS">CMS Page</Resource>
 		<Resource tag="COMPONENTECMS">CMS Component</Resource>
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Configuration of the community resource translation service.</Resource>
 		<Resource tag="RECURSOSEMANTICO">Semantic Resource</Resource>
 		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">List of custom languages on the platform.</Resource>
 		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Add language</Resource>
@@ -4168,6 +4173,26 @@
 		<Resource tag="PROPIEDADNOEXISTE">The introduced property: @1@ does not exist.</Resource>
 		<Resource tag="APLICACIONESESPECIFICAS">Specific applications (BETA)</Resource>
 		<Resource tag="EXPORTACIONDATOSCOMUNIDAD">Data Export Community</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Enter the translation service URL</Resource>
+		<Resource tag="INFOURLTRADUCTOR">Full URL of the translation service</Resource>
+		<Resource tag="TOKENTRADUCTOR">Authorization token</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Enter a token</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Token required to authorize requests made to the translation service</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Enter an additional prompt</Resource>
+		<Resource tag="INFOPROMPT">Additional information to generate context in the translation service</Resource>
+		<Resource tag="TRADUCTORACTIVO">Enabled</Resource>
+		<Resource tag="TESTTRADUCTOR">Test the translator</Resource>
+		<Resource tag="TRADUCIRTEXTO">Translate text</Resource>
+		<Resource tag="NIVELTRADUCTOR">Translation model</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Model level that the translation service will use</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Enter a text to translate</Resource>
+		<Resource tag="PROBARTRADUCTOR">Text to translate</Resource>
+		<Resource tag="IDIOMADESTINO">Target language</Resource>
+		<Resource tag="IDIOMAORIGINAL">Original language of the entered text</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Translation result</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Error, the translation service URL and token cannot be empty</Resource>
 		<Resource tag="FECHAULTIMOACCESO">Last Access</Resource>
 		<Resource tag="FECHAALTA">Discharge date</Resource>
 		<Resource tag="BUSCARCATEGORIAS">Search categories</Resource>
@@ -5009,6 +5034,7 @@
 		<Resource tag="PERMISOSECOSISTEMA">Ecosystem permits</Resource>
 		<Resource tag="PERMISOSCOMUNIDAD">Community Permits</Resource>
 		<Resource tag="DESEAELIMINARELROLSELECCIONADO">Do you want to eliminate the selected role?</Resource>
+		<Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">This role is assigned to one or more assistants.{br} If you delete it, they will no longer have this role and their behaviour may change.{br}Are you sure you want to continue?</Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integration with social networks</Resource>
 		<Resource tag="ESTRUCTURA">Structure</Resource>
 		<Resource tag="CONFIGURACION">Configuration</Resource>
@@ -6138,6 +6164,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configure SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Manage ecosystem roles and permissions</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Manage members</Resource>
+		<Resource tag="GESTIONARASISTENTES">Manage assistants</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Create attachment-type resources</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Edit attachment-type resources</Resource>
@@ -6456,5 +6483,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">You do not have permission to start an improvement</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">The flow cannot be deleted because there are still @1@ type contents that are not in the final state.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">The flow cannot be deleted because there are still resources with an active improvement.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">New assistant</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Do you want to delete this assistant?</Resource>
+		<Resource tag="ASISTENTE">Assistant</Resource>
+		<Resource tag="HOSTASISTENTE">Assistant host</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Assistant ID</Resource>
+		<Resource tag="ICONO">Icon</Resource>
+		<Resource tag="NUEVOICONO">Select an icon to attach</Resource>
+		<Resource tag="ERRORSUBIRICONO">An error occurred while uploading the icon, please try again later.</Resource>
+		<Resource tag="SELECCIONARROL">-- Select a role --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Images in .JPG, .JPEG, .PNG or .GIF format</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Click or drag an image here</Resource>
+		<Resource tag="ERRORPESOICONO">The icon cannot be larger than 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">Empty file</Resource>
+		<Resource tag="TESTEARASISTENTE">Test configuration</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">The assistant you are trying to edit does not exist</Resource>
+		<Resource tag="ERRORHOST">An error has occurred with the assistant connection, please check that the service host is correct</Resource>
 	</page>
 </Resources>

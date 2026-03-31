@@ -3748,6 +3748,8 @@
 		<Resource tag="ADMINLISTADOPERMISOSECOSISTEMA">listado-permisos-ecosistema</Resource>
 		<Resource tag="ADMINISTRARROLES">administrar-roles</Resource>
 		<Resource tag="ADMINISTRARROLESECOSISTEMA">administrar-roles-ecosistema</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">configurar-traductor</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">configurar-traductor-ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">administrar-miembros-ecosistema</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREO">administrar-buzon-correo</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREOECOSISTEMA">administrar-buzon-ecosistema</Resource>
@@ -4213,6 +4215,7 @@
 		<Resource tag="ELIMINARSESION">eliminarsesion</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-flujos</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">administrar-asistentes</Resource>
 	</page>
 	<page name="COMADMINCOMUNIDAD">
 		<Resource tag="TITULO">Listado de páginas de administración de la comunidad</Resource>
@@ -4272,6 +4275,8 @@
 		<Resource tag="DIAGNOSTICOPROBLEMAS">Diagnóstico de problemas</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">Administrar pesos de búsqueda autocompletado</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Flujos de trabajo</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Configurar traductor</Resource>		
+		<Resource tag="ADMINISTRARASISTENTES">Administrar asistentes</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4766,7 +4771,7 @@
 	</page>
 	<!-- Traducciones para DevTools -->	
 	<page name="DEVTOOLS">
-		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->		
+		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
 		<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">El componente CMS se encuentra en un estado privado, por lo que sus perfiles y/o grupos deben configurarse desde la página de administración de flujos</Resource>
 		<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona las personas y/o grupos que pueden ver el componente</Resource>
 		<Resource tag="COLOR">Color</Resource>
@@ -4776,7 +4781,28 @@
 		<Resource tag="TIPOS">Tipos</Resource>
 		<Resource tag="APLICACIONESESPECIFICASBETA">Aplicaciones especificas (BETA)</Resource>
 		<Resource tag="APLICACIONESESPECIFICAS">Aplicaciones especificas</Resource>
-		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->ç
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Configuración del servicio de traducción de recursos de la comunidad.</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Introduce la URL del servicio de traducción</Resource>
+		<Resource tag="INFOURLTRADUCTOR">URL del servicio de traducción</Resource>
+		<Resource tag="TOKENTRADUCTOR">Token de autorización</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Introduce un token</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Token necesario para autorizar las peticiones realizadas al servicio de traducción</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Introduce un prompt adicional</Resource>
+		<Resource tag="INFOPROMPT">Información adicional para generar un contexto en el servicio de traducción</Resource>
+		<Resource tag="TRADUCTORACTIVO">Activado</Resource>
+		<Resource tag="TESTTRADUCTOR">Probar el traductor</Resource>
+		<Resource tag="TRADUCIRTEXTO">Traducir texto</Resource>
+		<Resource tag="NIVELTRADUCTOR">Modelo de traducción</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Nivel del modelo que utilizará el servicio de traducción</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Introduce un texto a traducir</Resource>
+		<Resource tag="PROBARTRADUCTOR">Texto a traducir</Resource>
+		<Resource tag="IDIOMADESTINO">Idioma al que se quiere traducir el texto</Resource>
+		<Resource tag="IDIOMAORIGINAL">Idioma original del texto introducido</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Resultado de la traducción</Resource>		
+		<Resource tag="ERRORGUARDARTRADUCTOR">Error, la URL del servicio de traducción y el token no pueden estar vacíos</Resource>		
+		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
 		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Lista de idiomas personalizados en la plataforma.</Resource>
 		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Añadir idioma</Resource>
 		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clave del idioma </Resource>
@@ -5638,6 +5664,7 @@
 		<Resource tag="PERMISOSECOSISTEMA">Permisos Ecosistema</Resource>
 		<Resource tag="PERMISOSCOMUNIDAD">Permisos Comunidad</Resource>
 		<Resource tag="DESEAELIMINARELROLSELECCIONADO">¿Desea eliminar el rol seleccionado?</Resource>
+		<Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Este rol está asignado a uno o más asistentes.{br} Si lo eliminas, dejarán de tener este rol y podría cambiar su comportamiento.{br}¿Seguro que quiere continuar? </Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
 		<Resource tag="ESTRUCTURA">Estructura</Resource>
 		<Resource tag="CONFIGURACION">Configuración</Resource>
@@ -6746,6 +6773,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurar SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Gestionar roles y permisos del ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Administrar miembros</Resource>
+		<Resource tag="GESTIONARASISTENTES">Gestionar asistentes</Resource>
 		
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Crear recursos de tipo adjunto</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Editar recursos de tipo adjunto</Resource>
@@ -7085,5 +7113,25 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">No tiene permisos para iniciar una mejora</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">No se puede eliminar el flujo porque aún quedan contenidos de tipo @1@ que no están en el estado final.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">No se puede eliminar el flujo porque aún quedan recursos con una mejora activa.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Nuevo asistente</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">¿Desea eliminar este asistente?</Resource>
+		<Resource tag="ASISTENTE">Asistente</Resource>
+		<Resource tag="ASISTENTES">Asistentes</Resource>
+		<Resource tag="HOSTASISTENTE">Host asistente</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Asistente ID</Resource>
+		<Resource tag="ICONO">Icono</Resource>
+		<Resource tag="NUEVOICONO">Selecciona un icono para adjuntar</Resource>
+		<Resource tag="ERRORSUBIRICONO">Se produjo un error al subir el icono, inténtelo de nuevo más tarde.</Resource>
+		<Resource tag="SELECCIONARROL">-- Selecciona un rol --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Imágenes en formato .JPG, .JPEG, .PNG o .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Clic o arrastra una imagen aquí</Resource>
+		<Resource tag="ERRORPESOICONO">El icono no puede pesar mas de 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">Archivo vacio</Resource>
+		<Resource tag="TESTEARASISTENTE">Probar configuración</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">El asistente que se está intentando editar no existe</Resource>
+		<Resource tag="ERRORHOST">Ha ocurrido un error con la conexión del asistente, comprueba que el host del servicio es correcto</Resource>
 	</page>
 </Resources>

@@ -21,13 +21,13 @@ namespace Es.Riam.Gnoss.FileManager
         #region Constructores
         private readonly LoggingService _loggingService;
         private readonly IUtilArchivos _utilArchivos;
-        private ILogger mlogger;
+        private ILogger mLogger;
         private ILoggerFactory mLoggerFactory;
         public GestionArchivos(LoggingService loggingService, IUtilArchivos utilArchivos, ILogger<GestionArchivos> logger, ILoggerFactory loggerFactory)
         {
             _loggingService = loggingService;
             _utilArchivos = utilArchivos;
-            mlogger = logger;
+            mLogger = logger;
             mLoggerFactory = loggerFactory;
         }
 
@@ -37,7 +37,7 @@ namespace Es.Riam.Gnoss.FileManager
             _utilArchivos = utilArchivos;
             RutaFicheros = pRutaArchivos;
             AzureStorageConnectionString = pAzureStorageConnectionString;
-            mlogger = logger;
+            mLogger = logger;
             mLoggerFactory = loggerFactory;
         }
 
@@ -77,7 +77,7 @@ namespace Es.Riam.Gnoss.FileManager
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
+                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mLogger);
                         throw;
                     }
                     finally
@@ -90,7 +90,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 else
                 {
-                    _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
+                    _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mLogger);
                 }
             }
             else
@@ -106,7 +106,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (contenido == null || contenido.Length == 0)
             {
-                _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
+                _loggingService.GuardarLogError($"DescargarFichero: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mLogger);
             }
 
             //Envío el contenido.
@@ -121,9 +121,9 @@ namespace Es.Riam.Gnoss.FileManager
         public void EscribirFicheroResponse(HttpResponse httpResponse, string pRuta, string pNombreArchivo, string pExtension, bool pArchivoEncriptado = false)
         {
             string ruta = "";
-            _loggingService.GuardarLog($"parametros de la llamada RutaFicheros: {RutaFicheros} -- pRuta: {pRuta} -- pNombreArchivo: {pNombreArchivo} -- pExtension: {pExtension}", mlogger);
+            _loggingService.GuardarLog($"parametros de la llamada RutaFicheros: {RutaFicheros} -- pRuta: {pRuta} -- pNombreArchivo: {pNombreArchivo} -- pExtension: {pExtension}", mLogger);
             ruta = Path.Combine(RutaFicheros, pRuta, pNombreArchivo + pExtension);
-            _loggingService.GuardarLog($"Ruta al hacer el Path.Combine: {ruta}", mlogger);
+            _loggingService.GuardarLog($"Ruta al hacer el Path.Combine: {ruta}", mLogger);
             FileStream fileStream = null;
             string rutaAux = "";
             if (File.Exists(ruta))
@@ -159,14 +159,14 @@ namespace Es.Riam.Gnoss.FileManager
                             }
                             catch (Exception ex)
                             {
-                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}", mlogger);
+                                _loggingService.GuardarLogError($"Ha ocurrido un error en el intento de desencriptado: {ex.Message}", mLogger);
                                 throw;
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex.Message, mlogger);
+                        _loggingService.GuardarLogError(ex.Message, mLogger);
 
                         pArchivoEncriptado = false;
                         cryptoStream.Close();
@@ -201,7 +201,7 @@ namespace Es.Riam.Gnoss.FileManager
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
+                    _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mLogger);
                     throw;
                 }
                 finally
@@ -214,7 +214,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
             else
             {
-                _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mlogger);
+                _loggingService.GuardarLog($"No existe el recurso {pNombreArchivo} en {pRuta}. Ruta ficheros: {RutaFicheros}. Ruta completa: {ruta}", mLogger);
             }
 
             //if (contenido == null || contenido.Length == 0)
@@ -288,7 +288,7 @@ namespace Es.Riam.Gnoss.FileManager
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}", mlogger);
+                        _loggingService.GuardarLogError(ex, $"Error al descargar el fichero {pNombreArchivo} en {pRuta}", mLogger);
                         throw;
                     }
                     finally
@@ -307,7 +307,7 @@ namespace Es.Riam.Gnoss.FileManager
 
             if (contenido == null || contenido.Length == 0)
             {
-                _loggingService.GuardarLogError($"DescargarFicheroSinEncriptar: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}", mlogger);
+                _loggingService.GuardarLogError($"DescargarFicheroSinEncriptar: No se ha encontrado el fichero {pNombreArchivo} en {pRuta}", mLogger);
             }
 
             //Envío el contenido.
@@ -404,7 +404,7 @@ namespace Es.Riam.Gnoss.FileManager
                 _loggingService.AgregarEntrada($"Comprobamos si existe el directorio {pRuta}");
                 if (Directory.Exists(pRuta))
                 {
-                    _loggingService.GuardarLogError($"Eliminamos el directorio {pRuta}", mlogger);
+                    _loggingService.GuardarLogError($"Eliminamos el directorio {pRuta}", mLogger);
                     Directory.Delete(pRuta, true);
                 }
 
@@ -455,7 +455,7 @@ namespace Es.Riam.Gnoss.FileManager
             catch (Exception ex)
             {
                 string mensajeExtra = $"Error al crear el directorio: {pRuta}";
-                _loggingService.GuardarLogError(ex, mensajeExtra, mlogger);
+                _loggingService.GuardarLogError(ex, mensajeExtra, mLogger);
                 throw new FileManagerException(mensajeExtra, ex);
             }
         }
@@ -503,7 +503,7 @@ namespace Es.Riam.Gnoss.FileManager
             catch (Exception ex)
             {
                 string mensajeExtra = $"Error al crear el fichero {pNombreArchivo} en la ruta {pRuta}";
-                _loggingService.GuardarLogError(ex, mensajeExtra, mlogger);
+                _loggingService.GuardarLogError(ex, mensajeExtra, mLogger);
                 throw new FileManagerException(mensajeExtra, ex);
             }
         }
@@ -512,7 +512,7 @@ namespace Es.Riam.Gnoss.FileManager
         {
             try
             {
-                _loggingService.GuardarLogError("Se va a subir el fichero", mlogger);
+                _loggingService.GuardarLogError("Se va a subir el fichero", mLogger);
                 if (!string.IsNullOrEmpty(pRuta))
                 {
                     pRuta = Path.Combine(RutaFicheros, TransformarRuta(pRuta));
@@ -565,7 +565,7 @@ namespace Es.Riam.Gnoss.FileManager
             catch (Exception ex)
             {
                 string mensajeExtra = $"Error al crear el fichero {pNombreArchivo} en la ruta {pRuta}";
-                _loggingService.GuardarLogError(ex, mensajeExtra, mlogger);
+                _loggingService.GuardarLogError(ex, mensajeExtra, mLogger);
                 throw new FileManagerException(mensajeExtra, ex);
             }
         }
@@ -620,8 +620,8 @@ namespace Es.Riam.Gnoss.FileManager
             if (string.IsNullOrEmpty(AzureStorageConnectionString))
             {
                 pRuta = Path.Combine(RutaFicheros, pRuta);
-                GuardarLogTest("La cadena de conexion a RutaFicheros es: " + RutaFicheros);
-                GuardarLogTest("La cadena de conexion a de la ruta es: " + pRuta);
+                _loggingService.GuardarLogDebug("La cadena de conexion a RutaFicheros es: " + RutaFicheros, mLogger);
+                _loggingService.GuardarLogDebug("La cadena de conexion a de la ruta es: " + pRuta, mLogger);
 
 
                 DirectoryInfo directoryInfo = new DirectoryInfo(pRuta);
@@ -653,20 +653,6 @@ namespace Es.Riam.Gnoss.FileManager
                 return null;
             }
 
-        }
-        public static void GuardarLogTest(string message)
-        {
-            try
-            {
-                using (StreamWriter sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "error_servicioInterno.txt"), true, System.Text.Encoding.Default))
-                {
-                    sw.WriteLine(Environment.NewLine + "Fecha: " + DateTime.Now + Environment.NewLine + Environment.NewLine);
-                    // Escribo el error
-                    sw.WriteLine(message);
-                }
-            }
-            catch (Exception ex)
-            { }
         }
 
         public async Task<string[]> ObtenerFicherosDeDirectorio(string pRuta, string pFiltroPorNombre = null)
@@ -779,16 +765,16 @@ namespace Es.Riam.Gnoss.FileManager
             pRuta = Path.Combine(RutaFicheros, pRuta);
             DirectoryInfo dirInfoRaiz = new DirectoryInfo(pRuta);
             FileInfo[] ficheros = dirInfoRaiz.GetFiles();
-            _loggingService.GuardarLogError($"Hay {ficheros.Length} ficheros en el directorio {pRuta}", mlogger);
+            _loggingService.GuardarLogError($"Hay {ficheros.Length} ficheros en el directorio {pRuta}", mLogger);
             foreach (FileInfo fichero in ficheros)
             {
                 if (fichero.Exists)
                 {
-                    _loggingService.GuardarLogError($"Eliminamos el fichero {fichero.FullName}", mlogger);
+                    _loggingService.GuardarLogError($"Eliminamos el fichero {fichero.FullName}", mLogger);
                     fichero.Delete();
                 }
             }
-            _loggingService.GuardarLogError($"Fin EliminarFicherosDirectorio", mlogger);
+            _loggingService.GuardarLogError($"Fin EliminarFicherosDirectorio", mLogger);
         }
 
         public void EliminarDirectorioEnCascada(string pRuta)

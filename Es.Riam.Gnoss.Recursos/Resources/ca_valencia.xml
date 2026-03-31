@@ -3724,6 +3724,8 @@
 		<Resource tag="ADMINISTRARCOMUNIDADHOME">administrar-comunitat-home</Resource>
 		<Resource tag="ADMINISTRARAPLICACIONESPECIFICA">administrar-aplicacions-especifiques</Resource>
 		<Resource tag="ADMINISTRARECOSISTEMAHOME">administrar-ecosistema-home</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">gestionar-traductor</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">gestionar-traductor-ecosistema</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREO">administrar-buzon-correu</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADBUZONCORREOECOSISTEMA">administrar-buzon-ecosistema</Resource>
 		<Resource tag="ADMINISTRARSOLICITUDESUSUARIO">administrar-sol-licituds-usuaris</Resource>
@@ -4184,6 +4186,8 @@
 		<Resource tag="ACEPTARCOOKIES">acceptar-cookies</Resource>
 		<Resource tag="ELIMINARSESION">eliminarsessio</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-pes-cerca</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">administrar-assistents</Resource>
 	</page>
 	<page name="COMADMINCOMUNIDAD">
 		<Resource tag="TITULO">Llistat de pàgines d'administració de la comunitat</Resource>
@@ -4242,6 +4246,9 @@
 		<Resource tag="ADMINSERVICIOSWEB">Servicis Web</Resource>
 		<Resource tag="DIAGNOSTICOPROBLEMAS">Diagnòstic de problemes</Resource>
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">Administrar pesos de cerca autocompletat</Resource>
+		<Resource tag="ADMINISTRARFLUJOS">Administrar fluxos</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Configurar traductor</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Administrar assistents</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Arxiu pujat correctament</Resource>
@@ -4737,6 +4744,7 @@
 	<!-- Traducciones para DevTools -->
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="ROLES">Rols</Resource>
 		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Llista d'idiomes personalitzats en la plataforma.</Resource>
 		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Afegir idioma</Resource>
 		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clau de l'idioma</Resource>
@@ -4744,6 +4752,27 @@
 		<Resource tag="NOMBREIDIOMAPERSONALIZADOECOSISTEMA">Nom de l'idioma</Resource>
 		<Resource tag="NOMBREAYUDAIDIOMAPERSONALIZADOECOSISTEMA">Nom de l'idioma que es desitja afegir: Exemple: Finés</Resource>
 		<Resource tag="SOLICITADOPOR">Sol·licitat per</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Introdueix la URL del servei de traducció</Resource>
+		<Resource tag="INFOURLTRADUCTOR">URL completa del servei de traducció</Resource>
+		<Resource tag="TOKENTRADUCTOR">Token d'autorització</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Introdueix un token</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Token necessari per a autoritzar les peticions realitzades al servei de traducció</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Introdueix un prompt addicional</Resource>
+		<Resource tag="INFOPROMPT">Informació addicional per a generar un context en el servei de traducció</Resource>
+		<Resource tag="TRADUCTORACTIVO">Activat</Resource>
+		<Resource tag="TESTTRADUCTOR">Provar el traductor</Resource>
+		<Resource tag="TRADUCIRTEXTO">Traduir text</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Error, la URL del servei de traducció i el token no poden estar buits</Resource>
+		<Resource tag="NIVELTRADUCTOR">Model de traducció</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Nivell del model que utilitzarà el servei de traducció</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Introdueix un text a traduir</Resource>
+		<Resource tag="PROBARTRADUCTOR">Text a traduir</Resource>
+		<Resource tag="IDIOMADESTINO">Idioma al qual es vol traduir el text</Resource>
+		<Resource tag="IDIOMAORIGINAL">Idioma original del text introduït</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Resultat de la traducció</Resource>
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Configuració del servei de traducció de recursos de la comunitat.</Resource>
 		<Resource tag="INSERTADOSEARCH">S'ha inserit la propietat.</Resource>
 		<Resource tag="ALERTAUSUARIO">Advertència!</Resource>
 		<Resource tag="PROPIEDADNOEXISTE">La propietat introduïda: @1@ no existix.</Resource>
@@ -5542,6 +5571,8 @@
 		<Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipus de contingut / Permisos</Resource>
 		<Resource tag="INTERACCIONSOCIAL">Interacció social</Resource>
 		<Resource tag="NIVELESDECERTIFICACION">Nivells de certificació</Resource>
+		<Resource tag="DESEAELIMINARELROLSELECCIONADO">Voleu eliminar el rol seleccionat?</Resource>
+		<Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Aquest rol està assignat a un o més assistents.{br} Si l'elimineu, deixaran de tindre aquest rol i podria canviar el seu comportament.{br}Esteu segur que voleu continuar?</Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integració amb xarxes socials</Resource>
 		<Resource tag="ESTRUCTURA">Estructura</Resource>
 		<Resource tag="CONFIGURACION">Configuració</Resource>
@@ -6622,6 +6653,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurar SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Gestionar rols i permisos de l'ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Gestionar membres</Resource>
+		<Resource tag="GESTIONARASISTENTES">Gestionar assistents</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Crear recursos de tipus adjunt</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Editar recursos de tipus adjunt</Resource>
@@ -6941,5 +6973,25 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">No teniu permisos per a iniciar una millora</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">No es pot eliminar el flux perquè encara queden continguts de tipus @1@ que no estan en l'estat final.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">No es pot eliminar el flux perquè encara queden recursos amb una millora activa.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Nuevo asistente</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">¿Desea eliminar este asistente?</Resource>
+		<Resource tag="ASISTENTE">Asistente</Resource>
+		<Resource tag="ASISTENTES">Asistentes</Resource>
+		<Resource tag="HOSTASISTENTE">Host asistente</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Asistente ID</Resource>
+		<Resource tag="ICONO">Icono</Resource>
+		<Resource tag="NUEVOICONO">Selecciona un icono para adjuntar</Resource>
+		<Resource tag="ERRORSUBIRICONO">Se produjo un error al subir el icono, inténtelo de nuevo más tarde.</Resource>
+		<Resource tag="SELECCIONARROL">-- Selecciona un rol --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Imágenes en formato .JPG, .JPEG, .PNG o .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Clic o arrastra una imagen aquí</Resource>
+		<Resource tag="ERRORPESOICONO">El icono no puede pesar mas de 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">Archivo vacio</Resource>
+		<Resource tag="TESTEARASISTENTE">Probar configuración</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">El asistente que se está intentando editar no existe</Resource>
+		<Resource tag="ERRORHOST">Ha ocurrido un error con la conexión del asistente, comprueba que el host del servicio es correcto</Resource>
 	</page>
 </Resources>

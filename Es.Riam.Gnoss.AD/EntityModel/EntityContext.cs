@@ -1,4 +1,4 @@
-namespace Es.Riam.Gnoss.AD.EntityModel
+﻿namespace Es.Riam.Gnoss.AD.EntityModel
 {
     using Elementos.ParametroGeneralDSName;
     using Es.Riam.AbstractsOpen;
@@ -63,6 +63,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
     using Es.Riam.Gnoss.AD.ParametroAplicacion;
     using VDS.RDF;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
+    using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
+    using Es.Riam.Gnoss.AD.EntityModel.Models.Asistente;
 
     public partial class EntityContext : DbContext
     {
@@ -508,6 +510,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         public virtual DbSet<BaseRecursosOrganizacion> BaseRecursosOrganizacion { get; set; }
 
+        //Traductor
+        public virtual DbSet<TraductorProyecto> TraductorProyecto { get; set; }
 
         //FACETA
         public virtual DbSet<ConfiguracionConexionGrafo> ConfiguracionConexionGrafo { get; set; }
@@ -612,6 +616,11 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         // IdiomaTraduccionAutomaticaDocumento
         public virtual DbSet<IdiomaTraduccionAutomaticaDocumento> IdiomaTraduccionAutomaticaDocumento { get; set; }
+
+        //Asistentes
+        public virtual DbSet<Asistente> Asistente { get; set; }
+        public virtual DbSet<RolAsistente> RolAsistente { get; set; }
+        public virtual DbSet<AsistenteConfigIdentidad> AsistenteConfigIdentidad { get; set; }
 
         public bool NoConfirmarTransacciones
         {
@@ -1125,6 +1134,7 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<HistorialTransicionDocumento>().HasKey(c => new { c.HistorialTransicionID });
             modelBuilder.Entity<HistorialTransicionCMSComponente>().HasKey(c => new { c.HistorialTransicionID });
             modelBuilder.Entity<HistorialTransicionPestanyaCMS>().HasKey(c => new { c.HistorialTransicionID });
+            modelBuilder.Entity<TraductorProyecto>().HasKey(c => new { c.OrganizacionID, c.ProyectoID});
 
 			modelBuilder.Entity<DocumentoWebVinBaseRecursos>()
        .HasOne(a => a.DocumentoWebVinBaseRecursosExtra)
@@ -2700,6 +2710,12 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 				.HasForeignKey(e => new { e.OrganizacionID, e.ProyectoID })
 				.OnDelete(DeleteBehavior.Cascade);
 
+			modelBuilder.Entity<Proyecto>()
+				.HasOne(p => p.TraductorProyecto)
+				.WithOne(tp => tp.Proyecto)
+				.HasForeignKey<TraductorProyecto>(tp => new { tp.OrganizacionID, tp.ProyectoID })
+				.IsRequired(false);
+
 			modelBuilder.Entity<Flujo>()
 				.HasMany(e => e.FlujoObjetoConocimientoProyecto)
 				.WithOne(e => e.Flujo)
@@ -2881,6 +2897,42 @@ namespace Es.Riam.Gnoss.AD.EntityModel
             modelBuilder.Entity<VersionDocumento>()
                .Property(b => b.EstadoVersion)
                .HasDefaultValue(2);
+
+            //Asistentes
+            modelBuilder.Entity<RolAsistente>()
+                .HasKey(ra => new { ra.AsistenteID, ra.RolID });
+            modelBuilder.Entity<AsistenteConfigIdentidad>()
+                .HasKey(aci => new { aci.AsistenteID, aci.IdentidadID });
+
+            modelBuilder.Entity<Asistente>()
+                .HasMany(a => a.AsistentesConfigIdentidades)
+                .WithOne(aci => aci.Asistente)
+                .HasForeignKey(aci => aci.AsistenteID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Asistente>()
+                .HasMany(a => a.RolAsistentes)
+                .WithOne(ra => ra.Asistente)
+                .HasForeignKey(ra => ra.AsistenteID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Asistente>()
+                .HasOne(a => a.Proyecto)
+                .WithMany(p => p.Asistentes)
+                .HasForeignKey(a => new { a.OrganizacionID, a.ProyectoID })
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RolAsistente>()
+                .HasOne(ra => ra.Rol)
+                .WithMany(r => r.RolAsistentes)
+                .HasForeignKey(ra => ra.RolID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AsistenteConfigIdentidad>()
+                .HasOne(aci => aci.Identidad)
+                .WithMany(i => i.ConfiguracionesAsistentes)
+                .HasForeignKey(aci => aci.IdentidadID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))
             {

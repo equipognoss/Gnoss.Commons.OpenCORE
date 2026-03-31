@@ -20,7 +20,7 @@ using System.Linq;
 namespace Es.Riam.Gnoss.Logica.Identidad
 {
     /// <summary>
-    /// Lógica de identidades
+    /// LÃ³gica de identidades
     /// </summary>
     public class IdentidadCN : BaseCN, IDisposable
     {
@@ -31,7 +31,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         #region Constructor
 
         /// <summary>
-        /// Constructor sin parámetros
+        /// Constructor sin parÃ¡metros
         /// </summary>
         public IdentidadCN(EntityContext entityContext, LoggingService loggingService, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<IdentidadCN> logger, ILoggerFactory loggerFactory)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
@@ -51,7 +51,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
         #endregion
 
-        #region Métodos generales
+        #region MÃ©todos generales
 
         /// <summary>
         /// Obtiene la fecha de alta de una identidad
@@ -90,7 +90,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza el número de conexiones a un proyecto
+        /// Actualiza el nÃºmero de conexiones a un proyecto
         /// </summary>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         public void ActualizarNumeroConexionesProyecto(Guid pIdentidadID)
@@ -120,7 +120,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             catch (DataException ex)
             {
                 TerminarTransaccion(false);
-                //Error interno de la aplicación				
+                //Error interno de la aplicaciÃ³n				
                 mLoggingService.GuardarLogError(ex, mlogger);
                 throw new ErrorInterno();
             }
@@ -166,6 +166,16 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             return IdentidadAD.ObtenerNombredePerfilID(pPerfilid);
         }
 
+        public PerfilRedesSociales ObtenerRedesSocialesPorNombreYPerfil(Guid pPerfilID, string pNombreRedSocial)
+        {
+            return IdentidadAD.ObtenerRedesSocialesPorNombreYPerfil(pPerfilID, pNombreRedSocial);
+        }
+
+        public Dictionary<string, PerfilRedesSociales> ObtenerRedesSocialesPerfil(Guid pPerfilID)
+        {
+            return IdentidadAD.ObtenerRedesSocialesPerfil(pPerfilID);
+        }
+
         /// <summary>
         /// Obtiene el perfil de un usuario en un proyecto
         /// </summary>
@@ -209,7 +219,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         ///// </summary>
         ///// <param name="pIdentidadID">Identificador de la identidad</param>
         ///// <param name="pPrefijo">Prefijo por el que tienen que comenzar los nombres</param>
-        ///// <param name="pNumeroResultados">Número de resultados a obtener</param>
+        ///// <param name="pNumeroResultados">NÃºmero de resultados a obtener</param>
         ///// <param name="pIdentidadOrganizacion">Identidad de organizacion</param>
         //public string[] ObtenerNombresIdentidadesPorPrefijo(Guid pIdentidadID, string pPrefijo, int pNumeroResultados, Guid pIdentidadOrganizacion)
         //{
@@ -222,7 +232,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pPrefijo">Prefijo por el que tienen que comenzar los nombres</param>
-        /// <param name="pNumeroResultados">Número de resultados a obtener</param>
+        /// <param name="pNumeroResultados">NÃºmero de resultados a obtener</param>
         public string[] ObtenerNombresIdentidadesPorPrefijoEnMisProyectosPrivados(Guid pIdentidadID, string pPrefijo, int pNumeroResultados, List<string> pListaAnteriores)
         {
             return IdentidadAD.ObtenerNombresIdentidadesPorPrefijoEnMisProyectosPrivados(pIdentidadID, pPrefijo, pNumeroResultados, pListaAnteriores);
@@ -272,19 +282,19 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
 
         /// <summary>
-        /// Obtiene una lista con todos los perfiles de una organización (empleados y organización).
+        /// Obtiene una lista con todos los perfiles de una organizaciÃ³n (empleados y organizaciÃ³n).
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
-        /// <returns>Lista con todos los perfiles de una organización (empleados y organización)</returns>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
+        /// <returns>Lista con todos los perfiles de una organizaciÃ³n (empleados y organizaciÃ³n)</returns>
         public List<Guid> ObtenerListaPerfilesDeOrganizacion(Guid pOrganizacionID)
         {
             return IdentidadAD.ObtenerListaPerfilesDeOrganizacion(pOrganizacionID);
         }
 
         /// <summary>
-        /// Obtiene el identificador del perfil de la organización
+        /// Obtiene el identificador del perfil de la organizaciÃ³n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <returns></returns>
         public Guid? ObtenerPerfilIDDeOrganizacion(Guid pOrganizacionID)
         {
@@ -292,9 +302,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el perfil de la organización pasada por parámetro (Identidad, Perfil y PerfilOrganizacion)
+        /// Obtiene el perfil de la organizaciÃ³n pasada por parÃ¡metro (Identidad, Perfil y PerfilOrganizacion)
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerPerfilDeOrganizacion(Guid pOrganizacionID)
         {
@@ -325,9 +335,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// Obtiene los perfiles de una comunidad a partir del nombre para el autocompletar
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto</param>
-        /// <param name="pIdentidadID">Identidad del usuario que hace la petición(para que no aparezca el mismo)</param>
+        /// <param name="pIdentidadID">Identidad del usuario que hace la peticiÃ³n(para que no aparezca el mismo)</param>
         /// <param name="pBusqueda">Texto a buscar</param>
-        /// <param name="pNumero">Número de resultados</param>
+        /// <param name="pNumero">NÃºmero de resultados</param>
         /// <returns>Diccionario con:
         /// Clave=PerfilID
         /// Item1=NombrePerfil
@@ -345,9 +355,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pListaIdentidadesID">Lista de identidades de las que queremos obtener el perfil</param>
         /// <param name="pProyectoID">Clave del proyecto</param>
-        /// <param name="pIdentidadID">Identidad del usuario que hace la petición(para que no aparezca el mismo)</param>
+        /// <param name="pIdentidadID">Identidad del usuario que hace la peticiÃ³n(para que no aparezca el mismo)</param>
         /// <param name="pBusqueda">Texto a buscar</param>
-        /// <param name="pNumero">Número de resultados</param>
+        /// <param name="pNumero">NÃºmero de resultados</param>
         /// <returns>Diccionario con:
         /// Clave=PerfilID
         /// Item1=NombrePerfil
@@ -375,10 +385,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// Obtiene el los miembros de una comunidad a partir del nombre para el autocompletar
         /// </summary>
         /// <param name="pProyectoID">Clave del proyecto</param>
-        /// <param name="pIdentidadID">Identidad del usuario que hace la petición(para que aparezcan los públicos o aquellos a los que pertenezca la identidad)</param>
+        /// <param name="pIdentidadID">Identidad del usuario que hace la peticiÃ³n(para que aparezcan los pÃºblicos o aquellos a los que pertenezca la identidad)</param>
         /// <param name="pBusqueda">Texto a buscar</param>
-        /// <param name="pNumero">Número de resultados</param>
-        /// <param name="pEsSupervisor">Indica si el usuario que hace la petición tiene permiso de supervisión para mostrarle todos los grupos de la comunidad</param>
+        /// <param name="pNumero">NÃºmero de resultados</param>
+        /// <param name="pEsSupervisor">Indica si el usuario que hace la peticiÃ³n tiene permiso de supervisiÃ³n para mostrarle todos los grupos de la comunidad</param>
         /// <returns>Diccionario con GrupoID-NombreGrupo/returns>
         public Dictionary<Guid, string> ObtenerGruposParaAutocompletar(Guid pProyectoID, Guid pIdentidadID, string pBusqueda, int pNumero, bool pEsSupervisor)
         {
@@ -425,18 +435,18 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene los perfiles de las organizaciónes pasada por parámetro 
+        /// Obtiene los perfiles de las organizaciones pasada por parÃ¡metro 
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <returns>Dataset de identidades</returns>
         public List<Perfil> ObtenerPerfilesDeOrganizaciones(List<Guid> pOrganizacionesIDs)
         {
             return IdentidadAD.ObtenerPerfilesDeOrganizaciones(pOrganizacionesIDs);
         }
         /// <summary>
-        /// Obtiene los perfiles de la organización pasada por parámetro 
+        /// Obtiene los perfiles de la organizaciÃ³n pasada por parÃ¡metro 
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <returns>Dataset de identidades</returns>
         public List<Perfil> ObtenerPerfilesDeUnaOrganizacion(Guid organizacionID)
         {
@@ -444,10 +454,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene los perfiles de una persona pasada por parámetro
+        /// Obtiene los perfiles de una persona pasada por parÃ¡metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de persona</param>
-        /// <param name="pObtenerSoloActivos">TRUE si obtiene sólo lo que este activo (no eliminado, no fecha de baja,..)</param>
+        /// <param name="pObtenerSoloActivos">TRUE si obtiene sÃ³lo lo que este activo (no eliminado, no fecha de baja,..)</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerPerfilesDePersona(Guid pPersonaID, bool pObtenerSoloActivos)
         {
@@ -462,10 +472,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene los perfiles de una persona pasada por parámetro
+        /// Obtiene los perfiles de una persona pasada por parÃ¡metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de persona</param>
-        /// <param name="pObtenerSoloActivos">TRUE si obtiene sólo lo que este activo (no eliminado, no fecha de baja,..)</param>
+        /// <param name="pObtenerSoloActivos">TRUE si obtiene sÃ³lo lo que este activo (no eliminado, no fecha de baja,..)</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerPerfilesDePersona(Guid pPersonaID, bool pObtenerSoloActivos, Guid pIdentidadID, bool usarCompartir = false)
         {
@@ -683,7 +693,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de la identidad en My Gnoss de la persona pasada como parámetro por nombre
+        /// Obtiene el identificador de la identidad en My Gnoss de la persona pasada como parÃ¡metro por nombre
         /// </summary>
         /// <param name="pNombre">Nombre de la persona</param>
         /// <returns></returns>
@@ -733,10 +743,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de la identidad en My Gnoss de la organizacion pasada como parámetro por nombre
+        /// Obtiene el identificador de la identidad en My Gnoss de la organizacion pasada como parÃ¡metro por nombre
         /// </summary>
         /// <param name="pNombre">Nombre de la persona</param>
-        /// <param name="pNombreOrganizacion">Nombre de la organización</param>
+        /// <param name="pNombreOrganizacion">Nombre de la organizaciÃ³n</param>
         /// <returns></returns>
         public Guid ObtenerIdentidadEnOrgIDDeMyGNOSSPorNombre(string pNombre, string pNombreOrganizacion)
         {
@@ -744,7 +754,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de la identidad en My Gnoss de la persona pasada como parámetro por nombre
+        /// Obtiene el identificador de la identidad en My Gnoss de la persona pasada como parÃ¡metro por nombre
         /// </summary>
         /// <param name="pNombre">Nombre de la persona</param>
         /// <returns></returns>
@@ -754,7 +764,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador del grupo pasado como parámetro por nombre Nombre grupo . nomrbe comunidad
+        /// Obtiene el identificador del grupo pasado como parÃ¡metro por nombre Nombre grupo . nomrbe comunidad
         /// </summary>
         /// <param name="pNombre">Nombre de la persona</param>
         /// <returns></returns>
@@ -774,7 +784,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador del grupo pasado como parámetro del proyecto pasado por parámetro
+        /// Obtiene el identificador del grupo pasado como parÃ¡metro del proyecto pasado por parÃ¡metro
         /// </summary>
         /// <param name="pNombre">Nombre del grupo</param>
         /// <param name="pProyectoID">ID del proyecto</param>
@@ -805,7 +815,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de los miembros del grupo en MyGnoss pasado como parámetro
+        /// Obtiene el identificador de los miembros del grupo en MyGnoss pasado como parÃ¡metro
         /// </summary>
         /// <param name="pNombre">Nombre de la persona</param>
         /// <returns></returns>
@@ -815,7 +825,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de la identidad en My Gnoss del profesor pasado como parámetro por nombre
+        /// Obtiene el identificador de la identidad en My Gnoss del profesor pasado como parÃ¡metro por nombre
         /// </summary>
         /// <param name="pNombre">Nombre del profesor</param>
         /// <returns></returns>
@@ -828,7 +838,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// Obtiene los datos de identidades
         /// </summary>
         ///<param name="pIdentidadID">Identificador de la identidad</param>
-        /// <param name="pObtenerSoloActivos">TRUE si obtiene sólo lo que este activo (no eliminado, no fecha de baja,..)</param>
+        /// <param name="pObtenerSoloActivos">TRUE si obtiene sÃ³lo lo que este activo (no eliminado, no fecha de baja,..)</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadPorID(Guid pIdentidadID, bool pObtenerSoloActivos)
         {
@@ -916,22 +926,22 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el nombre corto de la organización con la que participa un usuario en un proyecto. NULL si no participa en el proyecto o participa con identidad personal.
+        /// Obtiene el nombre corto de la organizaciÃ³n con la que participa un usuario en un proyecto. NULL si no participa en el proyecto o participa con identidad personal.
         /// </summary>
         /// <param name="pProyectoID">ID del proyecto</param>
         /// <param name="pUsuarioID">ID del usuario</param>
-        /// <returns>Nombre corto de la organización con la que participa un usuario en un proyecto. NULL si no participa en el proyecto o participa con identidad personal</returns>
+        /// <returns>Nombre corto de la organizaciÃ³n con la que participa un usuario en un proyecto. NULL si no participa en el proyecto o participa con identidad personal</returns>
         public string ObtenerNombreCortoOrgPerfilParticipaUsuarioEnProyecto(Guid pProyectoID, Guid pUsuarioID)
         {
             return IdentidadAD.ObtenerNombreCortoOrgPerfilParticipaUsuarioEnProyecto(pProyectoID, pUsuarioID);
         }
 
         /// <summary>
-        /// Crea una identidad virtual para el perfil con el que está conectado actualmente el usuario
+        /// Crea una identidad virtual para el perfil con el que estÃ¡ conectado actualmente el usuario
         /// </summary>
         /// <param name="pDataWrapperIdentidad">Dataset de identidades</param>
         /// <param name="pPerfilID">Identificador del perfil al que se le quiere agregar la identidad de invitado</param>
-        /// <param name="pOrganizacionID">Identificador de la organización del proyecto</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n del proyecto</param>
         /// <param name="pProyectoID">Identificador del proyecto para el que se crea la identidad</param>
         /// <returns>Dataset de identidades</returns>
         public AD.EntityModel.Models.IdentidadDS.Identidad CrearIdentidadUsuarioInvitadoParaPerfil(DataWrapperIdentidad pDataWrapperIdentidad, Guid pPerfilID, Guid pOrganizacionID, Guid pProyectoID, Guid pPersonaID)
@@ -977,7 +987,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 			Perfil perfil = pDataWrapperIdentidad.ListaPerfil.FirstOrDefault(perfil => perfil.PerfilID.Equals(pPerfilID));				
             //perfil.Identidad.Add(filaIdent);
             
-			//La añado al dataset
+			//La aÃ±ado al dataset
 			pDataWrapperIdentidad.ListaIdentidad.Add(filaIdent);
             //pDataWrapperIdentidad.AcceptChanges();
 
@@ -1048,7 +1058,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             filaIdent.ActualizaHome = true;
             filaIdent.Foto = PersonaAD.SIN_IMAGENES_PERSONA;
 
-            //Las añado al dataset
+            //Las aÃ±ado al dataset
             filaPerfil.Identidad.Add(filaIdent);
             dataWrapperIdentidad.ListaPerfil.Add(filaPerfil);
             dataWrapperIdentidad.ListaPerfilPersona.Add(filaPerfilPersona);
@@ -1114,7 +1124,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene las identidades de Amigos de la identidad pasada por parámetro
+        /// Obtiene las identidades de Amigos de la identidad pasada por parÃ¡metro
         /// </summary>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <returns>Dataset de identidades</returns>
@@ -1173,10 +1183,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza la foto desnormalizada en Identidad de una organización.
+        /// Actualiza la foto desnormalizada en Identidad de una organizaciÃ³n.
         /// </summary>
-        /// <param name="pOrganizacionID">ID de organización</param>
-        /// <param name="pBorrar">TRUE si la organización ha borrado la foto, FALSE si la ha actualizado</param>
+        /// <param name="pOrganizacionID">ID de organizaciÃ³n</param>
+        /// <param name="pBorrar">TRUE si la organizaciÃ³n ha borrado la foto, FALSE si la ha actualizado</param>
         public void ActualizarFotoIdentidadesOrganizacion(Guid pOrganizacionID, bool pBorrar)
         {
             List<Guid> listaOrganizaciones = new List<Guid>();
@@ -1187,7 +1197,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Actualiza las fotos desnormalizadas en Identidades de varias organizaciones.
         /// </summary>
-        /// <param name="pOrganizacionID">ID de organización</param>
+        /// <param name="pOrganizacionID">ID de organizaciÃ³n</param>
         /// <param name="pBorrar">TRUE si las organizaciones han borrado la foto, FALSE si la han actualizado</param>
         public void ActualizarFotoIdentidadesOrganizaciones(List<Guid> pListaOrganizacionesID, bool pBorrar)
         {
@@ -1195,11 +1205,11 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza la foto desnormalizada en Identidad de una organización.
+        /// Actualiza la foto desnormalizada en Identidad de una organizaciÃ³n.
         /// </summary>
         /// <param name="pPersonaID">ID de persona</param>
-        /// <param name="pOrganizacionID">ID de organización</param>
-        /// <param name="pBorrar">TRUE si la organización ha borrado la foto, FALSE si la ha actualizado</param>
+        /// <param name="pOrganizacionID">ID de organizaciÃ³n</param>
+        /// <param name="pBorrar">TRUE si la organizaciÃ³n ha borrado la foto, FALSE si la ha actualizado</param>
         public void ActualizarFotoIdentidadesDePersonaDeOrganizacion(Guid pPersonaID, Guid pOrganizacionID, bool pBorrar, bool pUsarFotoPersonal)
         {
             List<KeyValuePair<Guid, Guid>> listaOrgPersona = new List<KeyValuePair<Guid, Guid>>();
@@ -1208,17 +1218,17 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza las foto desnormalizadas en Identidad de una organización.
+        /// Actualiza las foto desnormalizadas en Identidad de una organizaciÃ³n.
         /// </summary>
         /// <param name="pListaOrgPersona">Lista de pares con Organizacion-Persona</param>
-        /// <param name="pBorrar">TRUE si la organización ha borrado la foto, FALSE si la ha actualizado</param>
+        /// <param name="pBorrar">TRUE si la organizaciÃ³n ha borrado la foto, FALSE si la ha actualizado</param>
         public void ActualizarFotoIdentidadesDePersonasDeOrganizaciones(List<KeyValuePair<Guid, Guid>> pListaOrgPersona, bool pBorrar, bool pUsarFotoPersonal)
         {
             IdentidadAD.ActualizarFotoIdentidadesDePersonasDeOrganizaciones(pListaOrgPersona, pBorrar, pUsarFotoPersonal);
         }
 
         /// <summary>
-        /// Obtiene el id de la persona si la identidad es de tipo 0, el de la organización si es cualquier otro tipo
+        /// Obtiene el id de la persona si la identidad es de tipo 0, el de la organizaciÃ³n si es cualquier otro tipo
         /// </summary>
         /// <param name="pIdentidadID">Identidad id</param>
         /// <returns></returns>
@@ -1228,7 +1238,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el id de la persona si la identidad es de tipo 0, el de la organización si es cualquier otro tipo
+        /// Obtiene el id de la persona si la identidad es de tipo 0, el de la organizaciÃ³n si es cualquier otro tipo
         /// </summary>
         /// <param name="pIdentidadID">Identidad id</param>
         /// <returns></returns>
@@ -1448,7 +1458,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
 
         /// <summary>
-        /// Obtiene "Identidad", "Perfil", "PerfilPersonaOrg" y "PerfilPersona" de los usuarios de un determinado proyecto (excepto bloqueados y expulsados) en función de TipoListadoUsuariosCMS
+        /// Obtiene "Identidad", "Perfil", "PerfilPersonaOrg" y "PerfilPersona" de los usuarios de un determinado proyecto (excepto bloqueados y expulsados) en funciÃ³n de TipoListadoUsuariosCMS
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <returns>Dataset de identidades</returns>
@@ -1458,9 +1468,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene "Identidad", "Perfil", "PerfilPersonaOrg" y "PerfilOrganizacion" de los usuarios vinculados a una determinada organización y la misma organización
+        /// Obtiene "Identidad", "Perfil", "PerfilPersonaOrg" y "PerfilOrganizacion" de los usuarios vinculados a una determinada organizaciÃ³n y la misma organizaciÃ³n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesDeOrganizacionYEmpleados(Guid pOrganizacionID)
         {
@@ -1470,7 +1480,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene "Identidad", "Perfil", "PerfilPersonaOrg" y "PerfilOrganizacion" de los usuarios vinculados a una determinada organizacion y la misma organizacion
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <param name="pSoloActivos">Indica si debe traer solo las indentidades activas o todas</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesDeOrganizacionYEmpleados(Guid pOrganizacionID, bool pSoloActivos)
@@ -1481,7 +1491,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene las identidades de una organizacion en un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <param name="pProyecto">Proyecto del que debe obtener las identidades</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesDeOrganizacion(Guid pOrganizacionID, Guid pProyecto)
@@ -1494,7 +1504,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene las identidades de unas organizaciones en un proyecto
         /// </summary>
-        /// <param name="pListaOrganizacionesID">Identificadores de las organizaciónes</param>
+        /// <param name="pListaOrganizacionesID">Identificadores de las organizaciones</param>
         /// <param name="pProyecto">Proyecto del que debe obtener las identidades</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesDeOrganizaciones(IList<Guid> pListaOrganizacionesID, Guid pProyecto)
@@ -1505,9 +1515,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene las identidades de una organizacion en un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <param name="pProyecto">Identificador del proyecto</param>
-        /// <param name="pObtenerMyGnoss">TRUE para obtener también la identidad en MyGnoss</param>
+        /// <param name="pObtenerMyGnoss">TRUE para obtener tambiÃ©n la identidad en MyGnoss</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadDeOrganizacion(Guid pOrganizacionID, Guid pProyecto, bool pObtenerMyGnoss)
         {
@@ -1517,7 +1527,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene las identidades de unas organizaciones en un proyecto
         /// </summary>
-        /// <param name="pListaOrganizacionesID">Identificadores de las organizaciónes</param>
+        /// <param name="pListaOrganizacionesID">Identificadores de las organizaciones</param>
         /// <param name="pProyecto">Proyecto del que debe obtener las identidades</param>
         /// <param name="pTipoIdentidad">Tipo de identidad que se quiere obtener (NULL para obtener todos los tipos)</param>
         /// <returns>Dataset de identidades</returns>
@@ -1535,7 +1545,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// Obtiene las identidades a partir de una lista de identificadores de identidad
         /// </summary>
         /// <param name="pListaIdentidades">Lista de identificadores de identidad</param>
-        /// <param name="pObtenerSoloActivas">TRUE si debe obtener sólo las no eliminadas o que no tengan fecha de baja</param>
+        /// <param name="pObtenerSoloActivas">TRUE si debe obtener sÃ³lo las no eliminadas o que no tengan fecha de baja</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesPorID(List<Guid> pListaIdentidades, bool pObtenerSoloActivas)
         {
@@ -1673,9 +1683,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
         /// <summary>
         /// Carga identidad, perfil y perfilpersona de las identidades personales de MyGnoss 
-        /// que son amigos de una identidad de MyGnoss, coinciden con la cadena pasada en nombre y no pertenecen a una organización
+        /// que son amigos de una identidad de MyGnoss, coinciden con la cadena pasada en nombre y no pertenecen a una organizaciÃ³n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de organización</param>
+        /// <param name="pOrganizacionID">Identificador de organizaciÃ³n</param>
         /// <param name="pIdentidadUsuarioMyGnoss">Identificador de identidad de usuario de MyGnoss</param>
         /// <param name="pNombre">Cadena de filtro de nombre</param>
         /// <returns>Dataset de identidades</returns>
@@ -1686,7 +1696,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
 
         /// <summary>
-        /// Obtiene la identidad personal de MyGnoss de las personas pasadas por parámetro
+        /// Obtiene la identidad personal de MyGnoss de las personas pasadas por parÃ¡metro
         /// </summary>
         /// <param name="pListaPersonas">Lista de identificadores de personas</param>
         /// <returns>Dataset de identidades</returns>
@@ -1707,9 +1717,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene las identidades personales de MyGnoss de personas que no pertenecen a una organización
+        /// Obtiene las identidades personales de MyGnoss de personas que no pertenecen a una organizaciÃ³n
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización a la que no tienen que pertenecer</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n a la que no tienen que pertenecer</param>
         /// <param name="pNombre">Filtro por el nombre de la persona que se desea buscar</param>
         /// <returns>Dataset con las identidades cargadas</returns>
         public DataWrapperIdentidad ObtenerIdentidadesMyGnossNoPerteneceOrg(Guid pOrganizacionID, string pNombre)
@@ -1720,8 +1730,8 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene todos los posibles perfiles e identidades que tenga (eliminados o no). Carga tabla "Perfil" e "Identidad"
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización de la que se quiere obtener las personas</param>
-        /// <param name="pOrganizacionProyectoID">Identificador del proyecto de la organización del que se quieren obtener los participantes</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n de la que se quiere obtener las personas</param>
+        /// <param name="pOrganizacionProyectoID">Identificador del proyecto de la organizaciÃ³n del que se quieren obtener los participantes</param>
         /// <param name="pProyectoID">Identificador del proyecto del que se quieren obtener los participantes</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesDePersonasConOrganizacionEnProyecto(Guid pOrganizacionID, Guid pOrganizacionProyectoID, Guid pProyectoID)
@@ -1732,7 +1742,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene todos los posibles perfiles e identidades de los miembros de una organizacion en un proyectos. Carga tabla "Perfil" e "Identidad"
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización de la que se quiere obtener las personas</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n de la que se quiere obtener las personas</param>
         /// <param name="pProyectoID">Identificador del proyecto del que se quieren obtener los participantes</param>
         /// <param name="pTraerDadosDeBaja">Indica si se deben traer o no las identidades dadas de baja y expulsadas</param>
         /// <returns>Dataset de identidades</returns>
@@ -1742,12 +1752,12 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene a partir del identificador de organización pasado por parámetro todos 
+        /// Obtiene a partir del identificador de organizaciÃ³n pasado por parÃ¡metro todos 
         /// los posibles perfiles e identidades que tenga (eliminados o no). 
         /// Carga tabla "Perfil" e "Identidad"
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización de la que se quiere obtener las personas</param>
-        /// <param name="pOrganizacionProyectoID">Identificador del proyecto de la organización del que se quieren obtener los participantes</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n de la que se quiere obtener las personas</param>
+        /// <param name="pOrganizacionProyectoID">Identificador del proyecto de la organizaciÃ³n del que se quieren obtener los participantes</param>
         /// <param name="pProyectoID">Identidad del proyecto del que se quieren obtener los participantes</param>
         /// <param name="pTraerNombreApellidos">Indica si se deben agregar a Identidad el nombre y apellidos de cada persona</param>
         /// <returns>Dataset de identidades</returns>
@@ -1769,7 +1779,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Obtiene todos las identidades de una organizacion visibles en un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">Identificador de la organización de la que se quiere obtener las personas</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n de la que se quiere obtener las personas</param>
         /// <param name="pProyectoID">Identificador del proyecto del que se quieren obtener los participantes</param>
         /// <returns>Dataset de identidades</returns>
         public DataWrapperIdentidad ObtenerIdentidadesDePersonasEnOrganizacionVisiblesEnProyecto(Guid pOrganizacionID, Guid pProyectoID)
@@ -1837,7 +1847,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <param name="pUsuariosID">Lista de identificadores de usuario</param>
-        /// <param name="pSoloActivos">Indica si obtiene únicamente las identidades activas en el proyecto</param>
+        /// <param name="pSoloActivos">Indica si obtiene Ãºnicamente las identidades activas en el proyecto</param>
         /// <returns>Identificador de la identidad</returns>
         public List<Guid> ObtenerIdentidadesIDDeusuariosEnProyecto(Guid pProyectoID, List<Guid> pUsuariosID, bool pSoloActivos)
         {
@@ -1849,7 +1859,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pUsuario">Usuario</param>
         /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <param name="pOrganizacion">Organización</param>
+        /// <param name="pOrganizacion">OrganizaciÃ³n</param>
         /// <param name="pObtenerEliminadas">TRUE si se deben de obtener las filas ya eliminadas, FALSE en caso contrario</param>
         /// <returns>Array de identificadores de identidad</returns>
         public Guid[] ObtenerIdentidadIDDeUsuarioEnProyectoYOrg(string pUsuario, Guid pProyectoID, string pOrganizacion, bool pObtenerEliminadas)
@@ -1862,7 +1872,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pUsuario">Usuario</param>
         /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <param name="pOrganizacion">Organización</param>
+        /// <param name="pOrganizacion">OrganizaciÃ³n</param>
         /// <param name="pOrganizacionID">Identificador de la organizacion</param>
         /// <param name="pObtenerEliminadas">TRUE si se deben de obtener las filas ya eliminadas, FALSE en caso contrario</param>
         /// <returns>Array de identificadores de identidad</returns>
@@ -1872,9 +1882,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene la identidad de una organización en un proyecto
+        /// Obtiene la identidad de una organizaciÃ³n en un proyecto
         /// </summary>
-        /// <param name="pOrganizacion">Identificador de organización</param>
+        /// <param name="pOrganizacion">Identificador de organizaciÃ³n</param>
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>Identificador de identidad</returns>
         public Guid ObtenerIdentidadIDDeOrganizacionEnProyecto(string pOrganizacion, Guid pProyectoID)
@@ -1883,9 +1893,9 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene el identificador de la identidad de una organización en un proyecto
+        /// Obtiene el identificador de la identidad de una organizaciÃ³n en un proyecto
         /// </summary>
-        /// <param name="pOrganizacionID">ID de organización</param> 
+        /// <param name="pOrganizacionID">ID de organizaciÃ³n</param> 
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <returns>Identificador de la identidad</returns>
         public Guid ObtenerIdentidadIDDeOrganizacionIDEnProyecto(Guid pOrganizacionID, Guid pProyectoID)
@@ -1991,7 +2001,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si existe algún perfil personal en base de datos para la persona pasada por parámetro
+        /// Comprueba si existe algÃºn perfil personal en base de datos para la persona pasada por parÃ¡metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de la persona</param>
         /// <returns>TRUE si existe el perfil, FALSE en caso contrario</returns>
@@ -2001,10 +2011,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si existe algun perfil Persona+Organizacion en base de datos para la persona y organización pasadas por parámetro
+        /// Comprueba si existe algun perfil Persona+Organizacion en base de datos para la persona y organizaciÃ³n pasadas por parÃ¡metro
         /// </summary>
         /// <param name="pPersonaID">Identificador de la persona</param>
-        /// <param name="pOrganizacionID">Identificador de la organización</param>
+        /// <param name="pOrganizacionID">Identificador de la organizaciÃ³n</param>
         /// <returns>TRUE si existe el perfil </returns>
         public bool ExistePerfilPersonaOrg(Guid pPersonaID, Guid pOrganizacionID)
         {
@@ -2112,7 +2122,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// Obtiene los contadores de una identidad
         /// </summary>
         /// <param name="pListaIdentidadesID">Lista de identificadores de identidades</param>
-        /// <returns>Devuelve los contadores de la identidad en un diccionario de diccionario, en el que las claves serán la identidad y una de las constantes de IdentidadAD: CONTADOR_NUMERO_VISITAS, CONTADOR_NUMERO_DESCARGAS; y el valor será el contador de la identidad</returns>
+        /// <returns>Devuelve los contadores de la identidad en un diccionario de diccionario, en el que las claves serÃ¡n la identidad y una de las constantes de IdentidadAD: CONTADOR_NUMERO_VISITAS, CONTADOR_NUMERO_DESCARGAS; y el valor serÃ¡ el contador de la identidad</returns>
         public Dictionary<Guid, Dictionary<string, int>> ObtenerContadoresDeIdentidad(List<Guid> pListaIdentidadesID)
         {
             return IdentidadAD.ObtenerContadoresDeIdentidad(pListaIdentidadesID);
@@ -2123,10 +2133,10 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pIdentidadID">Identidad a la que modificar el contador</param>
         /// <param name="pTipoDoc">Tipo de documento</param>
-        /// <param name="pNombreSem">Nombre semántico del documento(****.owl) en caso de que sea semántico</param>
-        /// <param name="pIncrementarPublicado">Incremento que hay que hacer en el número de publicados (puede ser 0 o negativos)</param>
-        /// <param name="pIncrementarCompartido">Incremento que hay que hacer en el número de compartidos (puede ser 0 o negativos)</param>
-        /// <param name="pIncrementarComentario">Incremento que hay que hacer en el número de comentarios (puede ser 0 o negativos)</param>
+        /// <param name="pNombreSem">Nombre semÃ¡ntico del documento(****.owl) en caso de que sea semÃ¡ntico</param>
+        /// <param name="pIncrementarPublicado">Incremento que hay que hacer en el nÃºmero de publicados (puede ser 0 o negativos)</param>
+        /// <param name="pIncrementarCompartido">Incremento que hay que hacer en el nÃ©mero de compartidos (puede ser 0 o negativos)</param>
+        /// <param name="pIncrementarComentario">Incremento que hay que hacer en el nÃ©mero de comentarios (puede ser 0 o negativos)</param>
         public void IncrementarIdentidadContadoresRecursos(Guid pIdentidadID, TiposDocumentacion pTipoDoc, string pNombreSem, int pIncrementoPublicados, int pIncrementoCompartidos, int pIncrementoComentarios)
         {
             IdentidadAD.IncrementarIdentidadContadoresRecursos(pIdentidadID, pTipoDoc, pNombreSem, pIncrementoPublicados, pIncrementoCompartidos, pIncrementoComentarios);
@@ -2277,7 +2287,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si existe algun grupo en base de datos con el nombre pasado por parámetro
+        /// Comprueba si existe algun grupo en base de datos con el nombre pasado por parÃ¡metro
         /// </summary>
         /// <param name="pNombreGrupo">Nombre del grupo</param>
         /// <param name="pGrupoID">ID del grupo que se va a modificar</param>
@@ -2289,7 +2299,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si existe algun grupo en base de datos con el nombre pasado por parámetro
+        /// Comprueba si existe algun grupo en base de datos con el nombre pasado por parÃ¡metro
         /// </summary>
         /// <param name="pNombreGrupo">Nombre del grupo</param>
         /// <param name="pGrupoID">ID del grupo que se va a modificar</param>
@@ -2301,7 +2311,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si existe algun grupo en base de datos con el nombre corto pasado por parámetro
+        /// Comprueba si existe algun grupo en base de datos con el nombre corto pasado por parÃ¡metro
         /// </summary>
         /// <param name="pNombreGrupo">Nombre corto del grupo</param>
         /// <returns>TRUE si existe</returns>
@@ -2311,7 +2321,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si existe algun grupo en base de datos con el nombre corto pasado por parámetro
+        /// Comprueba si existe algun grupo en base de datos con el nombre corto pasado por parÃ¡metro
         /// </summary>
         /// <param name="pNombreGrupo">Nombre corto del grupo</param>
         /// <returns>TRUE si existe</returns>
@@ -2382,7 +2392,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene todas las identidades ("Identidad" y "Perfil") del perfil pasado por parámetro
+        /// Obtiene todas las identidades ("Identidad" y "Perfil") del perfil pasado por parÃ¡metro
         /// </summary>
         /// <param name="pPerfilID">Identificador de perfil</param>
         /// <returns>Dataset de identidades</returns>
@@ -2393,7 +2403,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
 
         /// <summary>
-        /// Obtiene la lista de identidades que pertenecen al perfil id pasado por parámetro
+        /// Obtiene la lista de identidades que pertenecen al perfil id pasado por parÃ¡metro
         /// </summary>
         /// <param name="pPerfilID">Identificador de perfil</param>
         /// <returns>Dataset de identidades</returns>
@@ -2443,7 +2453,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene la identidades de los perfiles pasados como parámetro en un determinado proyecto.
+        /// Obtiene la identidades de los perfiles pasados como parÃ¡metro en un determinado proyecto.
         /// Carga tablas "Perfil" , "Identidad"
         /// </summary>
         /// <param name="pPerfilesID">Lista de identificadores de perfil</param>
@@ -2457,7 +2467,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene la identidades de los perfiles pasados como parámetro en un determinado proyecto.
+        /// Obtiene la identidades de los perfiles pasados como parÃ¡metro en un determinado proyecto.
         /// Carga tablas "Perfil" , "Identidad"
         /// </summary>
         /// <param name="pPerfilesID">Lista de identificadores de perfil</param>
@@ -2469,7 +2479,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene las identidades de los perfiles pasados como parámetro(eliminados o no)
+        /// Obtiene las identidades de los perfiles pasados como parÃ¡metro(eliminados o no)
         /// Carga tablas "Perfil" , "Identidad" , "PerfilPersonas" y "PerfilOrganizaciones"
         /// </summary>
         /// <param name="pPerfilesID">Lista de identificadores de perfil</param>
@@ -2480,7 +2490,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene las identidades de los perfiles pasados como parámetro en un determinado proyecto (eliminados o no)
+        /// Obtiene las identidades de los perfiles pasados como parÃ¡metro en un determinado proyecto (eliminados o no)
         /// Carga tablas "Perfil" , "Identidad", "PerfilPersonas" y "PerfilOrganizaciones"
         /// </summary>
         /// <param name="pPerfilesID">Lista de identificadores de perfil</param>
@@ -2492,7 +2502,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene las identidades de los perfiles pasados como parámetro en un determinado proyecto.
+        /// Obtiene las identidades de los perfiles pasados como parÃ¡metro en un determinado proyecto.
         /// Carga Lista de IDs de identidades.
         /// </summary>
         /// <param name="pPerfilesID">Lista de identificadores de perfil</param>
@@ -2595,7 +2605,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Comprueba si una identidad está expulsada
+        /// Comprueba si una identidad estÃ¡ expulsada
         /// </summary>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <returns></returns>
@@ -2609,7 +2619,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// </summary>
         /// <param name="pIdentidadID">Identidad</param>
         /// <param name="pProyectoID">Proyecto</param>
-        /// <returns>Número de recursos</returns>
+        /// <returns>NÃºmero de recursos</returns>
         public double ObtenerPopularidadDeIdentidadEnProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
             return IdentidadAD.ObtenerPopularidadDeIdentidadEnProyecto(pIdentidadID, pProyectoID);
@@ -2620,49 +2630,49 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// Obtiene la popularidad maxima de las identidades en un proyecto
         /// </summary>        
         /// <param name="pProyectoID">Proyecto</param>
-        /// <returns>Número de recursos</returns>
+        /// <returns>NÃºmero de recursos</returns>
         public double ObtenerPopularidadMaxDeIdentidadEnProyecto(Guid pProyectoID)
         { return IdentidadAD.ObtenerPopularidadMaxDeIdentidadEnProyecto(pProyectoID); }
 
         /// <summary>
-        /// Obtiene el número de recursos subidos por una identidad en un proyecto
+        /// Obtiene el nÃºmero de recursos subidos por una identidad en un proyecto
         /// </summary>
         /// <param name="pIdentidadID">Identidad</param>
         /// <param name="pProyectoID">Proyecto</param>
-        /// <returns>Número de recursos</returns>
+        /// <returns>NÃºmero de recursos</returns>
         public int ObtenerNumRecursosDeIdentidadEnProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
             return IdentidadAD.ObtenerNumRecursosDeIdentidadEnProyecto(pIdentidadID, pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene el número de recursos subidos por una identidad en un proyecto
+        /// Obtiene el nÃºmero de recursos subidos por una identidad en un proyecto
         /// </summary>
         /// <param name="pIdentidadID">Identidad</param>
         /// <param name="pProyectoID">Proyecto</param>
-        /// <returns>Número de recursos</returns>
+        /// <returns>NÃºmero de recursos</returns>
         public int ObtenerNumDebatesDeIdentidadEnProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
             return IdentidadAD.ObtenerNumDebatesDeIdentidadEnProyecto(pIdentidadID, pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene el número de recursos subidos por las identidades corporativas de una organizacion en un proyecto
+        /// Obtiene el nÃºmero de recursos subidos por las identidades corporativas de una organizacion en un proyecto
         /// </summary>
         /// <param name="pOrganizacionID">Organizacion</param>
         /// <param name="pProyectoID">Proyecto</param>
-        /// <returns>Número de recursos</returns>
+        /// <returns>NÃºmero de recursos</returns>
         public int ObtenerNumRecursosDeIdentidadesDeOrgEnProyecto(Guid pOrganizacionID, Guid pProyectoID)
         {
             return IdentidadAD.ObtenerNumRecursosDeIdentidadesDeOrgEnProyecto(pOrganizacionID, pProyectoID);
         }
 
         /// <summary>
-        /// Obtiene el número de recursos subidos por las identidades corporativas de una organizacion en un proyecto
+        /// Obtiene el nÃºmero de recursos subidos por las identidades corporativas de una organizacion en un proyecto
         /// </summary>
         /// <param name="pOrganizacionID">Organizacion</param>
         /// <param name="pProyectoID">Proyecto</param>
-        /// <returns>Número de recursos</returns>
+        /// <returns>NÃºmero de recursos</returns>
         public int ObtenerNumDebatesDeIdentidadesDeOrgEnProyecto(Guid pOrganizacionID, Guid pProyectoID)
         {
             return IdentidadAD.ObtenerNumDebatesDeIdentidadesDeOrgEnProyecto(pOrganizacionID, pProyectoID);
@@ -2692,7 +2702,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza la puntuación de las Identidades más activas en los últimos n días
+        /// Actualiza la puntuaciÃ³n de las Identidades mÃ¡s activas en los Ãºltimos n dÃ­as
         /// </summary>
         public void ActualizarRankingIdentidades(int pNumDias)
         {
@@ -2758,14 +2768,14 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza la puntuación de las Identidades más activas en los últimos n días
+        /// Actualiza la puntuaciÃ³n de las Identidades mÃ¡s activas en los Ãºltimos n dÃ­as
         /// </summary>
         public void ActualizarRankingIdentidadesOrgdeIdentidad(Guid IdentidadID)
         {
             IdentidadAD.ActualizarRankingIdentidadesOrgdeIdentidad(IdentidadID);
         }
         /// <summary>
-        /// Actualiza la puntuación de las Identidades por la noche
+        /// Actualiza la puntuaciÃ³n de las Identidades por la noche
         /// </summary>
         public List<string> ActualizarIdentidadesNoche()
         {
@@ -2773,7 +2783,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Actualiza la puntuación de las Identidades en el momento
+        /// Actualiza la puntuaciÃ³n de las Identidades en el momento
         /// </summary>
         public void ActualizarPopularidadIdentidades(Guid pIDIdentidad, double pNuevaAportacion)
         { IdentidadAD.ActualizarPopularidadIdentidades(pIDIdentidad, pNuevaAportacion); }
@@ -2790,7 +2800,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene un diccionario con el perfil de la identidad dada, el id de la organización y el nombre corto del perfil (el de la organización o el del usuario, según corresponda)
+        /// Obtiene un diccionario con el perfil de la identidad dada, el id de la organizaciÃ³n y el nombre corto del perfil (el de la organizaciÃ³n o el del usuario, segÃºn corresponda)
         /// </summary>
         /// <param name="pIdentidadID">Identidad que busca</param>        
         /// <param name="pObtenerNombreCortoPerfil">Verdad si se debe obtener el nombre corto del perfil</param>
@@ -2872,20 +2882,20 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         }
 
         /// <summary>
-        /// Obtiene la organización ID a partir de la identidadID
+        /// Obtiene la organizaciÃ³n ID a partir de la identidadID
         /// </summary>
         /// <param name="pIdentidadID">Identidad de la que se quiere obtener la OrganizacionID</param>
-        /// <returns>ID de la organización</returns>
+        /// <returns>ID de la organizaciÃ³n</returns>
         public Guid? ObtenerOrganizacionIDConIdentidadID(Guid pIdentidadID)
         {
             return IdentidadAD.ObtenerOrganizacionIDConIdentidadID(pIdentidadID);
         }
 
         /// <summary>
-        /// Obtiene la organización ID a partir del perfilID
+        /// Obtiene la organizaciÃ³n ID a partir del perfilID
         /// </summary>
         /// <param name="pPerfilID">Perfil de la que se quiere obtener la OrganizacionID</param>
-        /// <returns>ID de la organización</returns>
+        /// <returns>ID de la organizaciÃ³n</returns>
         public Guid? ObtenerOrganizacionIDConPerfilID(Guid pPerfilID)
         {
             return IdentidadAD.ObtenerOrganizacionIDConPerfilID(pPerfilID);
@@ -2946,12 +2956,22 @@ namespace Es.Riam.Gnoss.Logica.Identidad
             IdentidadAD.EliminarRolAIdentidad(pIdentidadID, pRolId);
         }
 
+        /// <summary>
+        /// A partir de una lista de identidades devuelve otra lista con el identificador de las identidades que han sido dadas de baja o expulsadas.
+        /// </summary>
+        /// <param name="pIdentidadesId">Lista de IdentidadesID de las cuales queremos obtener las dadas de baja</param>
+        /// <returns>Lista con las identidades eliminadas o dadas de baja a partir de las pasadas por parÃ¡metro</returns>
+        public List<Guid> ObtenerIdentidadesEliminadas(List<Guid> pIdentidadesId)
+        {
+            return IdentidadAD.ObtenerIdentidadesEliminadas(pIdentidadesId);
+        }
+
         #endregion
 
         #region Dispose
 
         /// <summary>
-        /// Determina si está disposed
+        /// Determina si estÃ¡ disposed
         /// </summary>
         private bool mDisposed = false;
 
@@ -2978,7 +2998,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se estÃ¡ llamando desde el Dispose()</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!mDisposed)
@@ -2987,7 +3007,7 @@ namespace Es.Riam.Gnoss.Logica.Identidad
 
                 if (disposing)
                 {
-                    //Libero todos los recursos administrados que he añadido a esta clase
+                    //Libero todos los recursos administrados que he aÃ±adido a esta clase
                     if (IdentidadAD != null)
                     {
                         IdentidadAD.Dispose();

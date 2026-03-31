@@ -62,7 +62,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     flujoViewModel.ProyectoID = filaFlujo.ProyectoID;
                     flujoViewModel.Fecha = filaFlujo.Fecha;
                     flujoViewModel.TiposRecursos = flujosCN.ObtenerTiposContenidosPorFlujo(filaFlujo);
-                    flujoViewModel.OntologiasProyectoNombre = flujosCN.ObtenerOntologiasNombreFlujo(filaFlujo.FlujoID);
+                    flujoViewModel.OntologiasFlujoNombre = flujosCN.ObtenerOntologiasNombreFlujo(filaFlujo.FlujoID);
                     listaFlujosViewModel.Add(flujoViewModel);
                 }
             }
@@ -87,7 +87,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 flujoViewModel.Fecha = filaFlujo.Fecha;
                 flujoViewModel.TiposRecursos = flujosCN.ObtenerTiposContenidosPorFlujo(filaFlujo);
                 flujoViewModel.TiposRecursosProyecto = flujosCN.ObtenerTiposContenidosEnProyecto(ProyectoSeleccionado.Clave);
-                flujoViewModel.OntologiasProyectoNombre = filaFlujo.FlujoObjetoConocimientoProyecto.Select(x => x.Ontologia).ToList();
+                flujoViewModel.OntologiasFlujoNombre = filaFlujo.FlujoObjetoConocimientoProyecto.Select(x => x.Ontologia).ToList();
+                flujoViewModel.OntologiasProyectoNombre = flujosCN.ObtenerOntologiaNombrePorPoryectoID(ProyectoSeleccionado.Clave);
 
                 List<Estado> listaEstados = flujosCN.ObtenerEstadosPorFlujoID(filaFlujo.FlujoID);
                 flujoViewModel.Estados = listaEstados.Select(e => new EstadoViewModel
@@ -140,11 +141,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     ListaTransicionGrupo = t.TransicionGrupo.Select(tg => tg.GrupoID).ToList(),
                     ListaNombreTransicionGrupo = identidadCN.ObtenerNombresDeGrupos(t.TransicionGrupo.Select(tg => tg.GrupoID).ToList())
                 }).ToList();
-
-                foreach (string nombreOntologia in flujoViewModel.OntologiasProyectoNombre)
-                {
-                    flujoViewModel.OntologiasProyecto.Add(docCN.ObtenerOntologiaAPartirNombre(ProyectoSeleccionado.Clave, nombreOntologia + ".owl"), nombreOntologia);
-                }
 
                 DataWrapperDocumentacion dwDocumentacion = new DataWrapperDocumentacion();
                 docCN.ObtenerOntologiasProyecto(ProyectoSeleccionado.Clave, dwDocumentacion, true, false, false);

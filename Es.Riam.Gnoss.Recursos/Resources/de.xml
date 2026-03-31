@@ -3556,6 +3556,8 @@
 		<Resource tag="ADMINISTRARREDIRECCIONES">verwalten-weiterleitungen</Resource>
 		<Resource tag="ADMINISTRARCOMUNIDADCMSMULTIMEDIA">verwalten-community-cms-multimedia</Resource>
 		<Resource tag="DESCARGAROAUTH">herunterladen-konfiguration-OAuth</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">ubersetzer-verwalten</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">ubersetzer-okosystem-verwalten</Resource>
 		<Resource tag="ADMINISTRARCOOKIESCOM">verwalten-cookies</Resource>
 		<Resource tag="CONFIGURAFTP">konfigurieren-ftp</Resource>
 		<Resource tag="ADMINISTRARTRADUCCIONES">verwalten-uebersetzungen</Resource>
@@ -3926,6 +3928,7 @@
 		<Resource tag="ADMINISTRARVISTAS">admin-views</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">personalisierte-benachrichtigungen</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">arbeitsabläufe-verwalten</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">assistenten-verwalten</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Benachrichtigungen auflisten</Resource>
@@ -3961,6 +3964,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Bereitstellungen</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Änderungen hochladen</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Arbeitsabläufe</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Übersetzer konfigurieren</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Assistenten verwalten</Resource>
 	</page>
 
 	<page name="DEVTOOLS">
@@ -3970,9 +3975,30 @@
 		<Resource tag="NUEVACATEGORIA">Neue Kategorie</Resource>
 		<Resource tag="NUEVACATEGORIAPRINCIPAL">Neue Hauptkategorie</Resource>
 		<Resource tag="OTROSIDIOMAS">Andere Sprachen</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Geben Sie die URL des Übersetzungsdienstes ein</Resource>
+		<Resource tag="INFOURLTRADUCTOR">Vollständige URL des Übersetzungsdienstes</Resource>
+		<Resource tag="TOKENTRADUCTOR">Autorisierungstoken</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Geben Sie einen Token ein</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Token zur Autorisierung von Anfragen an den Übersetzungsdienst erforderlich</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Geben Sie einen zusätzlichen Prompt ein</Resource>
+		<Resource tag="INFOPROMPT">Zusätzliche Informationen zur Kontextgenerierung im Übersetzungsdienst</Resource>
+		<Resource tag="TRADUCTORACTIVO">Aktiviert</Resource>
+		<Resource tag="TESTTRADUCTOR">Übersetzer testen</Resource>
+		<Resource tag="TRADUCIRTEXTO">Text übersetzen</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Fehler, die URL des Übersetzungsdienstes und das Token dürfen nicht leer sein</Resource>
+		<Resource tag="NIVELTRADUCTOR">Übersetzungsmodell</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Modellebene, die der Übersetzungsdienst verwenden wird</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Geben Sie einen zu übersetzenden Text ein</Resource>
+		<Resource tag="PROBARTRADUCTOR">Zu übersetzender Text</Resource>
+		<Resource tag="IDIOMADESTINO">Zielsprache</Resource>
+		<Resource tag="IDIOMAORIGINAL">Originalsprache des eingegebenen Textes</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Übersetzungsergebnis</Resource>
 		<Resource tag="INTRODUCEELTITULODELACATEGORIA">Gib den Titel der Kategorie ein</Resource>
 		<Resource tag="INTRODUCEELNUEVONOMBREDELACATEGORIA">Gib den neuen Namen der Kategorie ein</Resource>
 		<Resource tag="IMAGEN">Bild</Resource>
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Konfiguration des Übersetzungsdienstes für Community-Ressourcen.</Resource>
 		<Resource tag="ELIMINARIMAGEN">Bild löschen</Resource>
 		<Resource tag="IMAGENCATEGORIA">Kategoriebild</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Ziehe die Mediendatei in den gepunkteten Bereich, um sie hochzuladen</Resource>
@@ -4090,6 +4116,7 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="ROLES">Rollen</Resource>
 	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Liste der benutzerdefinierten Sprachen auf der Plattform.</Resource>
 	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Sprache hinzufügen</Resource>
 	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Sprachschlüssel</Resource>
@@ -4898,6 +4925,8 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Möchten Sie die ausgewählte Rolle löschen?</Resource>
+    <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Diese Rolle ist einem oder mehreren Assistenten zugewiesen.{br} Wenn Sie sie löschen, haben diese die Rolle nicht mehr und ihr Verhalten könnte sich ändern.{br}Sind Sie sicher, dass Sie fortfahren möchten?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
     <Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5922,6 +5951,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">SharePoint konfigurieren</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Ökosystem-Rollen und Berechtigungen verwalten</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Mitglieder verwalten</Resource>
+		<Resource tag="GESTIONARASISTENTES">Assistenten verwalten</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Anhang-Ressourcen erstellen</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Anhang-Ressourcen bearbeiten</Resource>
@@ -6240,5 +6270,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Sie haben keine Berechtigung, eine Verbesserung zu starten</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">Der Ablauf kann nicht gelöscht werden, da noch Inhalte vom Typ @1@ vorhanden sind, die sich nicht im Endzustand befinden.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">Der Ablauf kann nicht gelöscht werden, da noch Ressourcen mit einer aktiven Verbesserung vorhanden sind.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Neuer Assistent</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Möchten Sie diesen Assistenten löschen?</Resource>
+		<Resource tag="ASISTENTE">Assistent</Resource>
+		<Resource tag="HOSTASISTENTE">Assistent-Host</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Assistent-ID</Resource>
+		<Resource tag="ICONO">Symbol</Resource>
+		<Resource tag="NUEVOICONO">Wählen Sie ein Symbol zum Anhängen aus</Resource>
+		<Resource tag="ERRORSUBIRICONO">Beim Hochladen des Symbols ist ein Fehler aufgetreten, bitte versuchen Sie es später erneut.</Resource>
+		<Resource tag="SELECCIONARROL">-- Rolle auswählen --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Bilder im Format .JPG, .JPEG, .PNG oder .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Klicken oder ziehen Sie ein Bild hierher</Resource>
+		<Resource tag="ERRORPESOICONO">Das Symbol darf nicht größer als 2 MB sein</Resource>
+		<Resource tag="ERRORICONOVACIO">Leere Datei</Resource>
+		<Resource tag="TESTEARASISTENTE">Konfiguration testen</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">Der Assistent, der bearbeitet werden soll, existiert nicht</Resource>
+		<Resource tag="ERRORHOST">Bei der Verbindung mit dem Assistenten ist ein Fehler aufgetreten, überprüfen Sie, ob der Diensthost korrekt ist</Resource>
 	</page>
 </Resources>

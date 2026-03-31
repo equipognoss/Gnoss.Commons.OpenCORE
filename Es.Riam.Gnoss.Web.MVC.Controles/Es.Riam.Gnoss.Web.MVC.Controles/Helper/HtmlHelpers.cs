@@ -1,32 +1,32 @@
-﻿using Es.Riam.Gnoss.AD.ServiciosGenerales;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
+using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.CMS;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.MVC.Controles.Controladores;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
+using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
-using Microsoft.Extensions.Primitives;
 using System.Text.RegularExpressions;
-using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
+using System.Web;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel.SearchTabModel;
-using Es.Riam.Gnoss.UtilServiciosWeb;
-using Microsoft.Extensions.Logging;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
     public static class HtmlHelpers
     {
-
         /// <summary>
         /// Método para conocer a través del ViewBag si el usuario es o no MetaAdministrador. Usado para necesidades del Front. En DevTools se puede realizar con permisosPaginas.        
         /// </summary>
@@ -426,7 +426,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return extractString;
         }
 
-        private static Dictionary<string, string> ELEMENTOS_HTML_LIMPIAR = new Dictionary<string, string>() { { "<pre ", "</pre>" }, { "<img ", ">" }, { "<iframe ", "</iframe>" }, { "<table", "</table>" }, { "<strong>", "<strong>" }, { "</strong>", "</strong>" }, { "<ul", ">" }, { "</ul>", "</ul>" }, { "<ol", ">" }, { "</ol>", "</ol>" }, { "<a", ">" }, { "</a>", "</a>" }, { "<span", ">" }, { "</span>", "</span>" }, { "<h1", ">" }, { "</h1>", "</h1>" }, { "<h2", ">" }, { "</h2>", "</h2>" }, { "<h3>", ">" }, { "</h3>", "</h3>" }, { "<h4>", ">" }, { "</h4>", "</h4>" }, { "<figure", ">" }, { "<em", ">" }, { "</em>", "</em>" }, { "<b>", ">" }, { "</b>", "</b>" }, { "<li>", ">" }, { "</li>", "</li>" }, { "<i>", "</i>" }, { "<code>", "</code>" }, { "<code ", ">"} , { "<div>", "</div>" } };
+        private static Dictionary<string, string> ELEMENTOS_HTML_LIMPIAR = new Dictionary<string, string>() { { "<pre ", "</pre>" }, { "<img ", ">" }, { "<iframe ", "</iframe>" }, { "<table", "</table>" }, { "<strong>", "<strong>" }, { "</strong>", "</strong>" }, { "<ul", ">" }, { "</ul>", "</ul>" }, { "<ol", ">" }, { "</ol>", "</ol>" }, { "<a", ">" }, { "</a>", "</a>" }, { "<span", ">" }, { "</span>", "</span>" }, { "<h1", ">" }, { "</h1>", "</h1>" }, { "<h2", ">" }, { "</h2>", "</h2>" }, { "<h3>", ">" }, { "</h3>", "</h3>" }, { "<h4>", ">" }, { "</h4>", "</h4>" }, { "<figure", ">" }, { "<em", ">" }, { "</em>", "</em>" }, { "<b>", ">" }, { "</b>", "</b>" }, { "<li>", ">" }, { "</li>", "</li>" }, { "<i>", "</i>" }, { "<code>", "</code>" }, { "<code ", ">" }, { "<div>", "</div>" } };
 
         // Método para limpiar un String que contiene imagenes, videos de youtube pero no se desean ser mostrados (Ej: Ficha Mini Recurso)
         public static string CleanHtmlFromMultimediaItems(this IHtmlHelper helper, string stringHtml)
@@ -735,7 +735,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             return (string)helper.ViewBag.SessionTimeout;
         }
-                
+
         public static Dictionary<Guid, ProfileModel> GetIdentitiesByUserID(this IHtmlHelper helper, List<Guid> pListUsers, bool pExtraData = false)
         {
             ControladorProyectoMVC controladorProyectoMVC = helper.ViewBag.ControladorProyectoMVC;
@@ -830,7 +830,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         }
         public static bool ObtenerEdicionMultiIidoma(this IHtmlHelper helper)
         {
-            return (bool) helper.ViewBag.MultiIdioma;
+            return (bool)helper.ViewBag.MultiIdioma;
         }
 
         private static bool TienePersonalizacion(this IHtmlHelper htmlHelper)
@@ -847,7 +847,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         }
 
         public static IHtmlContent PartialView(this IHtmlHelper htmlHelper, string partialViewName)
-        {
+        {            
             IHtmlContent resultado = null;
             CommunityModel Comunidad = htmlHelper.ViewBag.Comunidad;
 
@@ -860,11 +860,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                 }
                 catch (Exception ex)
                 {
-                    ILogger mLogger=null;
-                    ILoggerFactory mLoggerFactory=null;
-                    LoggingService loggingService = new LoggingService(null, null, null, mLoggerFactory.CreateLogger<LoggingService>(), mLoggerFactory);
-
-                    loggingService.GuardarLogError(ex,mLogger);
+                    ILoggerFactory loggerFactory = ObtenerLoggerFactory(htmlHelper);
+                    LoggingService loggingService = new LoggingService(null, null, null, loggerFactory, loggerFactory.CreateLogger<LoggingService>());
+                    loggingService.GuardarLogError(ex, loggerFactory.CreateLogger(typeof(HtmlHelpers)));
                 }
             }
 
@@ -880,9 +878,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             IHtmlContent resultado = null;
             CommunityModel Comunidad = htmlHelper.ViewBag.Comunidad;
-            ILogger mLogger = null;
-            ILoggerFactory mLoggerFactory = null;
-            LoggingService loggingService = new LoggingService(null, null, null, null, null);
             try
             {
                 if (TienePersonalizacion(htmlHelper))
@@ -894,7 +889,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     }
                     catch (Exception ex)
                     {
-                        loggingService.GuardarLogError(ex,mLogger);
+                        ILoggerFactory loggerFactory = ObtenerLoggerFactory(htmlHelper);
+                        LoggingService loggingService = new LoggingService(null, null, null, loggerFactory, loggerFactory.CreateLogger<LoggingService>());
+                        loggingService.GuardarLogError(ex, loggerFactory.CreateLogger(typeof(HtmlHelpers)));
                     }
                 }
 
@@ -905,7 +902,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
             catch (Exception ex)
             {
-                loggingService.GuardarLogError(ex, mLogger);
+                ILoggerFactory loggerFactory = ObtenerLoggerFactory(htmlHelper);
+                LoggingService loggingService = new LoggingService(null, null, null, loggerFactory, loggerFactory.CreateLogger<LoggingService>());
+                loggingService.GuardarLogError(ex, loggerFactory.CreateLogger(typeof(HtmlHelpers)));
             }
 
             return resultado;
@@ -920,9 +919,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             {
                 if (TienePersonalizacion(htmlHelper))
                 {
-                    ILogger mLogger = null;
-                    ILoggerFactory mLoggerFactory = null;
-                    LoggingService loggingService = new LoggingService(null, null, null, mLoggerFactory.CreateLogger<LoggingService>(), mLoggerFactory);
                     string personalizacion = MultiViewResult.ComprobarPersonalizacion(htmlHelper.ViewBag, Comunidad, partialViewName);
                     try
                     {
@@ -930,7 +926,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
                     }
                     catch (Exception ex)
                     {
-                        loggingService.GuardarLogError(ex, mLogger);
+                        ILoggerFactory loggerFactory = ObtenerLoggerFactory(htmlHelper);
+                        LoggingService loggingService = new LoggingService(null, null, null, loggerFactory, loggerFactory.CreateLogger<LoggingService>());
+                        loggingService.GuardarLogError(ex, loggerFactory.CreateLogger(typeof(HtmlHelpers)));
                     }
                 }
 
@@ -1272,12 +1270,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             return helper.ViewBag.IdentidadTienePermisoAdministracion;
         }
 
-		public static bool TienePermisoAdministracionEcosistema(this IHtmlHelper helper)
-		{
-			return helper.ViewBag.UsuarioTienePermisoAdministracionEcosistema;
-		}
+        public static bool TienePermisoAdministracionEcosistema(this IHtmlHelper helper)
+        {
+            return helper.ViewBag.UsuarioTienePermisoAdministracionEcosistema;
+        }
 
-		public static string GetBodyClass(this IHtmlHelper helper)
+        public static string GetBodyClass(this IHtmlHelper helper)
         {
             string bodyClass = (string)helper.ViewBag.BodyClass;
 
@@ -1375,7 +1373,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetURLRSS(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.URLRSS;
-        }   
+        }
 
         public static string GetURLRDF(this IHtmlHelper helper)
         {
@@ -1464,7 +1462,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         {
             return (string)helper.ViewBag.UrlServicioLogin;
         }
-      
+
         public static string GetBaseUrlPersonalizacionEcosistema(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.BaseUrlPersonalizacionEcosistema;
@@ -1786,5 +1784,12 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             helper.ViewBag.OcultarMenusComunidad = pOcultarMenusComunidad;
         }
         #endregion
+
+        private static ILoggerFactory ObtenerLoggerFactory(IHtmlHelper htmlHelper)
+        {
+            return htmlHelper.ViewContext.HttpContext
+                .RequestServices
+                .GetRequiredService<ILoggerFactory>();
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
     [Serializable]
     public class ConfigService
     {
-		private IConfigurationRoot Configuration { get; set; }
+        private IConfigurationRoot Configuration { get; set; }
         private IDictionary EnvironmentVariables { get; set; }
         private string sqlConnectionString { get; set; }
         private string virtuosoConnectionString;
@@ -76,8 +76,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlApiDesplieguesEntorno;
         private string urlApiIntegracionContinua;
         private string urlApiAnsible;
-		private string passwordDescomprimir;
-		private string tokenLecturaAnsible;
+        private string passwordDescomprimir;
+        private string tokenLecturaAnsible;
         private string tokenEscrituraAnsible;
         private ConfiguracionDespliegue configuracionDespliegue;
         private string urlApi;
@@ -89,7 +89,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string urlEtiquetadoInteligente;
         private string ignorarVistasPersonalizadas;
         private string urlContent;
-        private string logStahsConnection;
         private string implementationKeyAutocompletar;
         private string implementationKeyFacetas;
         private string implementationKeyResultados;
@@ -165,7 +164,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private int? puertoVirtuosoAux;
         private bool? trazasHabilitadas;
         private string azureStorageConnectionString;
-        private string logstashEndpoint;
         private string implementationKey;
         private string logLocation;
         private string rutaOntologias;
@@ -457,23 +455,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
             }
             return logLocation;
-        }
-
-        public string GetLogstashEndpoint()
-        {
-            if (string.IsNullOrEmpty(logstashEndpoint))
-            {
-                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-                if (environmentVariables.Contains("logstashEndpoint"))
-                {
-                    logstashEndpoint = environmentVariables["logstashEndpoint"] as string;
-                }
-                else
-                {
-                    logstashEndpoint = Configuration["logstash:logstashEndpoint"];
-                }
-            }
-            return logstashEndpoint;
         }
 
 
@@ -1063,21 +1044,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return tiempos;
         }
 
-        public string ObtenerLogStashConnection()
-        {
-            if (string.IsNullOrEmpty(logStahsConnection))
-            {
-                if (EnvironmentVariables.Contains("logStahsConnection"))
-                {
-                    logStahsConnection = EnvironmentVariables["logStahsConnection"] as string;
-                }
-                else
-                {
-                    logStahsConnection = Configuration.GetConnectionString("HA_logStahsConnectionPROXY");
-                }
-            }
-            return logStahsConnection;
-        }
         public string ObtenerVirutosoLectura()
         {
             string cadena = "";
@@ -1101,7 +1067,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         }
 
         public KeyValuePair<string, VirtuosoConnectionData> ObtenerVirtuosoEscritura()
-        { 
+        {
             string cadena = "";
             string nombreConexionVirtuoso = "";
             var rand = new Random();
@@ -1162,7 +1128,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     cadena = element.Value;
                     nombreConexionVirtuoso = element.Key;
                     VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
-                    
+
                     listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
                     EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
                 }
@@ -1219,7 +1185,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         }
 
         public List<string> ObtenerListaIdiomas()
-        {            
+        {
             if (listaIdiomas == null)
             {
                 listaIdiomas = ObtenerListaIdiomasDictionary().Keys.ToList();
@@ -1243,12 +1209,12 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     idiomas = Configuration["idiomas"];
                 }
-                
+
                 if (!string.IsNullOrEmpty(idiomas))
                 {
                     codes = idiomas.Split(',').ToList();
                 }
-                
+
                 foreach (string idioma in codes)
                 {
                     listaIdiomasDictionary.Add(idioma.Split('|')[0], idioma.Split('|')[1]);
@@ -1534,7 +1500,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return tipoBD;
         }
 
-        public string ObtenerNivelCompatibiliadBaseDatos() 
+        public string ObtenerNivelCompatibiliadBaseDatos()
         {
             if (string.IsNullOrEmpty(nivelCompatibilidadBD))
             {
@@ -1844,7 +1810,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 else
                 {
                     urlDespliegues = Configuration.GetSection("Servicios")["urlDespliegues"];
-                }                
+                }
 
                 if (!string.IsNullOrEmpty(urlDespliegues) && urlDespliegues.EndsWith('/'))
                 {
@@ -1894,7 +1860,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
 
         public string ObtenerUrlServiciosCheckStatus()
-        {             
+        {
             if (string.IsNullOrEmpty(urlCheckStatus))
             {
                 if (EnvironmentVariables.Contains("Servicios__urlApiCheckServices"))
@@ -2245,8 +2211,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return urlApiAnsible;
         }
 
-		public string ObtenerPasswordDescomprimir()
-		{
+        public string ObtenerPasswordDescomprimir()
+        {
             if (string.IsNullOrEmpty(passwordDescomprimir))
             {
                 if (EnvironmentVariables.Contains("passwordDescomprimir"))
@@ -2258,19 +2224,19 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     passwordDescomprimir = Configuration["passwordDescomprimir"];
                 }
             }
-			return passwordDescomprimir;
-		}
+            return passwordDescomprimir;
+        }
 
-		
 
-		public ConfiguracionDespliegue ObtenerConfiguracionDespliegue()
+
+        public ConfiguracionDespliegue ObtenerConfiguracionDespliegue()
         {
-            if (configuracionDespliegue==null) 
+            if (configuracionDespliegue == null)
             {
-                configuracionDespliegue=new ConfiguracionDespliegue();
-                Entornos entornos=new Entornos();
-                Actual actual=new Actual();
-                Superior superior=new Superior();
+                configuracionDespliegue = new ConfiguracionDespliegue();
+                Entornos entornos = new Entornos();
+                Actual actual = new Actual();
+                Superior superior = new Superior();
                 configuracionDespliegue.Entornos = entornos;
                 configuracionDespliegue.Entornos.Actual = actual;
                 configuracionDespliegue.Entornos.Superior = superior;
@@ -2843,8 +2809,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         public int ObtenerMinutoChequeo()
         {
             string hilos;
-			int minutos;
-			if (EnvironmentVariables.Contains("minutosChequeo"))
+            int minutos;
+            if (EnvironmentVariables.Contains("minutosChequeo"))
             {
                 hilos = EnvironmentVariables["minutosChequeo"] as string;
             }
@@ -2862,13 +2828,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-				minutos = 10;
+                minutos = 10;
             }
             return minutos;
         }
 
 
-		public bool ObtenerProcesarStringGrafo()
+        public bool ObtenerProcesarStringGrafo()
         {
             if (procesarStringGrafo == null)
             {
@@ -4042,16 +4008,16 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             string clasesConPrefijo;
 
-			if (EnvironmentVariables.Contains("ClasesGeneradasConPrefijo"))
+            if (EnvironmentVariables.Contains("ClasesGeneradasConPrefijo"))
             {
                 clasesConPrefijo = EnvironmentVariables["ClasesGeneradasConPrefijo"] as string;
-			}
+            }
             else
             {
                 clasesConPrefijo = Configuration["ClasesGeneradasConPrefijo"];
             }
 
-            if(string.IsNullOrEmpty(clasesConPrefijo))
+            if (string.IsNullOrEmpty(clasesConPrefijo))
             {
                 return false;
             }
@@ -4075,7 +4041,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     sameSiteModeStrict = Configuration["SameSiteModeStrict"];
                 }
 
-                if(!string.IsNullOrEmpty(sameSiteModeStrict) && sameSiteModeStrict.Equals("true"))
+                if (!string.IsNullOrEmpty(sameSiteModeStrict) && sameSiteModeStrict.Equals("true"))
                 {
                     sameSiteMode = SameSiteMode.Strict;
                 }
@@ -4343,7 +4309,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     rutaEjecucionWeb = EnvironmentVariables["rutaEjecucionWeb"] as string;
                 }
-                else if(Configuration["rutaEjecucionWeb"] != null)
+                else if (Configuration["rutaEjecucionWeb"] != null)
                 {
                     rutaEjecucionWeb = Configuration["rutaEjecucionWeb"];
                 }
@@ -4400,32 +4366,32 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return borrarCacheMigracion.Value;
         }
 
-		public List<ulong> ObtenerServiciosDisponibles()
-		{
+        public List<ulong> ObtenerServiciosDisponibles()
+        {
             string serviciosDisponiblesCodificado = null;
             List<ulong> listaServiciosDisponibles = new List<ulong>();
 
-			if (EnvironmentVariables.Contains("serviciosDisponibles"))
-			{
-				serviciosDisponiblesCodificado = EnvironmentVariables["serviciosDisponibles"] as string;
-			}
-			else
-			{
-				serviciosDisponiblesCodificado = Configuration["serviciosDisponibles"];
-			}
+            if (EnvironmentVariables.Contains("serviciosDisponibles"))
+            {
+                serviciosDisponiblesCodificado = EnvironmentVariables["serviciosDisponibles"] as string;
+            }
+            else
+            {
+                serviciosDisponiblesCodificado = Configuration["serviciosDisponibles"];
+            }
 
-			if (!string.IsNullOrEmpty(serviciosDisponiblesCodificado))
+            if (!string.IsNullOrEmpty(serviciosDisponiblesCodificado))
             {
                 string[] serviciosDisponiblesFrontYBack = serviciosDisponiblesCodificado.Split("|||");
                 string serviciosFront = serviciosDisponiblesFrontYBack[0];
                 string serviciosBack = serviciosDisponiblesFrontYBack[1];
 
                 listaServiciosDisponibles.Add(UtilCadenas.ObtenerULongDeStringBase64(serviciosFront));
-                listaServiciosDisponibles.Add(UtilCadenas.ObtenerULongDeStringBase64(serviciosBack));                
-			}
-			
-			return listaServiciosDisponibles;
-		}
+                listaServiciosDisponibles.Add(UtilCadenas.ObtenerULongDeStringBase64(serviciosBack));
+            }
+
+            return listaServiciosDisponibles;
+        }
 
         public bool ObtenerLuceneMisspelling()
         {
@@ -4451,7 +4417,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return luceneMisspelling.Value;
         }
 
-		public string GetColaTraducciones()
+        public string GetColaTraducciones()
         {
             if (string.IsNullOrEmpty(colaTraducciones))
             {
@@ -4488,43 +4454,22 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     hostSCIA = hostSCIA.TrimEnd('/');
                 }
             }
-			return hostSCIA;
-		}
+            return hostSCIA;
+        }
 
         public string ObtenerTokenUrlServicioTraducciones()
         {
-			string cadena = "";
-			if (EnvironmentVariables.Contains($"Servicios__traducciones__token"))
-			{
-				cadena = EnvironmentVariables[$"Servicios__traducciones__token"] as string;
-			}
-			else
-			{
-				cadena = Configuration.GetSection("Servicios").GetSection("traducciones")["token"];
-			}
-
-			return cadena;
-		}
-
-        public string ObtenerTokenAsistente()
-        {
-            if (string.IsNullOrEmpty(tokenAsistente))
+            string cadena = "";
+            if (EnvironmentVariables.Contains($"Servicios__traducciones__token"))
             {
-                if (EnvironmentVariables.Contains("tokenAsistente"))
-                {
-                    tokenAsistente = EnvironmentVariables["tokenAsistente"] as string;
-                }
-                else if (Configuration["tokenAsistente"] != null)
-                {
-                    tokenAsistente = Configuration["tokenAsistente"];
-                }
-                else
-                {
-                    tokenAsistente = "";
-                }
+                cadena = EnvironmentVariables[$"Servicios__traducciones__token"] as string;
+            }
+            else
+            {
+                cadena = Configuration.GetSection("Servicios").GetSection("traducciones")["token"];
             }
 
-            return tokenAsistente;
+            return cadena;
         }
 
         public string ObtenerModeloTraduccion()
@@ -4630,6 +4575,23 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
 
             return colaErroresTraducciones;
+        }
+
+        public bool EscribirLogEnFichero()
+        {
+            bool escribirLogEnFichero = false;
+            if (EnvironmentVariables.Contains("escribirLogEnFichero"))
+            {
+                escribirLogEnFichero = Environment.GetEnvironmentVariable("escribirLogEnFichero")
+                        ?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+            }
+            else if (Configuration["escribirLogEnFichero"] != null)
+            {
+                escribirLogEnFichero = Configuration["escribirLogEnFichero"]
+                    ?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+            }
+
+            return escribirLogEnFichero;
         }
     }
 }

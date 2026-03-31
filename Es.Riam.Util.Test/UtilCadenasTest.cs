@@ -1,7 +1,7 @@
-namespace Es.Riam.Util.Test
+锘縩amespace Es.Riam.Util.Test
 {
     /// <summary>
-    /// Esta clase se encarga de hacer pruebas de los m閠odos de la clase UtilCadenas
+    /// Esta clase se encarga de hacer pruebas de los m茅todos de la clase UtilCadenas
     /// </summary>
     public class UtilCadenasTest
     {
@@ -727,7 +727,7 @@ namespace Es.Riam.Util.Test
         [Test]
         public void LimpiarInyeccionCodigo_SharePageOutput()
         {
-            string test = "<script>\r\nvar contentType = 1; alert(1);\r\nvar title = \"This is a regular title\";\r\n匼r\n//some user agreement and sending to server logic might be here\r\n匼r\n</script>";
+            string test = "<script>\r\nvar contentType = 1; alert(1);\r\nvar title = \"This is a regular title\";\r\n鈥r\n//some user agreement and sending to server logic might be here\r\n鈥r\n</script>";
             string expected = string.Empty;
             string result = UtilCadenas.LimpiarInyeccionCodigo(test);
             Assert.That(result, Is.EqualTo(expected));
@@ -736,7 +736,7 @@ namespace Es.Riam.Util.Test
 		[Test]
 		public void LimpiarInyeccionCodigo_LimpiarFormularios()
 		{
-			//Codificado 3 veces con codificaci髇 de url
+			//Codificado 3 veces con codificaci贸n de url
 			string test = "Esto es un formulario <form action=\"change-password\"><input type=\"text\"/><input type=\"submit\" value=\"Enviar\"/></form>";
 			string expected = "Esto es un formulario ";
 			string result = UtilCadenas.LimpiarInyeccionCodigo(test);
@@ -746,7 +746,7 @@ namespace Es.Riam.Util.Test
 		[Test]
 		public void LimpiarInyeccionCodigo_MultipleUrlEncodedText()
 		{
-            //Codificado 3 veces con codificaci髇 de url
+            //Codificado 3 veces con codificaci贸n de url
 			string test = "%25253Cform%252520id%25253D%252522testvuln%252522%252520action%25253D%252522https%25253A%25252F%25252Fdominio.prueba.gnos.com%252522%252520method%25253D%252522POST%252522%252520enctype%25253D%252522multipart%25252Fform-data%252522%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522peticionAJAX%252522%252520value%25253D%252522true%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BName%252522%252520value%25253D%252522RT%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BLastName%252522%252520value%25253D%252522Modified%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BCountry%252522%252520value%25253D%2525226fa9b8c0%252526%25252345%25253Becb9%252526%25252345%25253B4e63%252526%25252345%25253Ba1ac%252526%25252345%25253B6bef0299e56a%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BLang%252522%252520value%25253D%252522es%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BRegion%252522%252520value%25253D%252522wewew%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BSex%252522%252520value%25253D%252522M%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BPostalCode%252522%252520value%25253D%25252228033%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BLocation%252522%252520value%25253D%252522wqwqwq%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BBornDate%252522%252520value%25253D%25252214%252526%25252347%25253B03%252526%25252347%25253B1995%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522ProfilePersonal%252526%25252346%25253BEmail%252522%252520value%25253D%252522joxesaj776%252526%25252364%25253Bbsomek%252526%25252346%25253Bcom%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cinput%252520type%25253D%252522hidden%252522%252520name%25253D%252522a3f03440%252526%25252345%25253B790b%252526%25252345%25253B43ec%252526%25252345%25253B94a5%252526%25252345%25253B48ea8fcdeb42%252522%252520value%25253D%252522a8b2d414%252526%25252345%25253Bbf02%252526%25252345%25253B4b2b%252526%25252345%25253B9686%252526%25252345%25253B1c3bab84c362%252522%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253Cbr%252520%25252F%25253E%25253C%25252Fform%25253E%25253Cimg%252520src%25253Dx%252520onerror%25253D%252527document.getElementById%252528%252522testvuln%252522%252529.submit%252528%252529%252527%25253E";
 			string expected = "<img src=\"x\">";
 			string result = UtilCadenas.LimpiarInyeccionCodigo(test);
@@ -756,7 +756,7 @@ namespace Es.Riam.Util.Test
         [Test]
         public void LimpiarInyeccionCodigo_MultipleUrlEncodedTextWithPlus()
         {
-            //Codificado 3 veces con codificaci髇 de url
+            //Codificado 3 veces con codificaci贸n de url
             string test = "esto%2520es%2520una%2520prueba%2520de%2520limpieza%2520de%2520codigo%2520con%2520%252B%2520estando%2520varias%2520veces%2520codificado";
             string expected = "esto es una prueba de limpieza de codigo con + estando varias veces codificado";
             string result = UtilCadenas.LimpiarInyeccionCodigo(test);
@@ -788,7 +788,7 @@ namespace Es.Riam.Util.Test
 		#region LimpiarCaracteresNombreCortoRegistro
 
 		/// <summary>
-		/// Se comprueba que el m閠odo limpia y remplaza correctamente todos los caracteres ascii y remplaza y deja 鷑icamente los permitidos
+		/// Se comprueba que el m茅todo limpia y remplaza correctamente todos los caracteres ascii y remplaza y deja 煤nicamente los permitidos
 		/// </summary>
 		[Test]
         public void LimpiarCaracteresNombreCortoRegistro_ASCIICharacters()
@@ -813,7 +813,7 @@ namespace Es.Riam.Util.Test
         [Test]
         public void LimpiarCaracteresNombreCortoRegistro_TestNombreRegistro()
         {
-            string test = "Santiago-L髉ez de Luzuriaga Olmos";
+            string test = "Santiago-L贸pez de Luzuriaga Olmos";
 
             //Letras numeros y guion
             string expected = "santiago-lopez-de-luzuriaga-olmos";

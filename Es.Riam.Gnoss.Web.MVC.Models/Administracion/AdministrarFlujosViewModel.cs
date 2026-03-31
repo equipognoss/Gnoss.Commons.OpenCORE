@@ -27,7 +27,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public Dictionary<string, string> Idiomas { get; set; }
         public string IdiomaPorDefecto { get; set; }
         public List<FlujoViewModel> ListaFlujos { get; set; }
-
     }
 
     public class FlujoViewModel
@@ -54,6 +53,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public List<string> OntologiasProyectoNombre { get; set; }
         public Dictionary<Guid, string> OntologiasProyecto { get; set; }
         public bool Nuevo {  get; set; } = false;
+        public List<string> OntologiasFlujoNombre = new List<string>();
     }
 
     public class EstadoViewModel

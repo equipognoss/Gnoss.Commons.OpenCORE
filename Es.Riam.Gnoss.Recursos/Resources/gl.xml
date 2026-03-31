@@ -3631,6 +3631,8 @@
 		<Resource tag="ADMINISTRARCOOKIESCOM">administrar-cookies</Resource>
 		<Resource tag="CONFIGURAFTP">configurar-ftp</Resource>
 		<Resource tag="ADMINISTRARTRADUCCIONES">administrar-traduccions</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">administrar-tradutor</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">administrar-tradutor-ecosistema</Resource>
 		<Resource tag="ADMINISTRARDATOSEXTRA">administrar-datos-extra</Resource>
 		<Resource tag="ADMINISTRARTRAZAS">administrar-rastros</Resource>
 		<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">administrar-descargar-configuracion</Resource>
@@ -3996,6 +3998,7 @@
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">notificacións-personalizadas</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">administrar-asistentes</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Lista notificacións</Resource>
@@ -4121,6 +4124,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Despregues</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Subir cambios</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Fluxos de traballo</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">Configurar tradutor</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Administrar asistentes</Resource>
 	</page>
 	<page name="COMADMINPESOBUSQUEDA">
 		<Resource tag="TITULO">Configurar pesos de busca</Resource>
@@ -4166,13 +4171,35 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="ROLES">Roles</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">O compoñente CMS atópase nun estado privado, polo que os seus perfís e/ou grupos deben configurarse desde a páxina de administración de fluxos</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona as persoas e/ou grupos que poden ver o compoñente</Resource>
 	<Resource tag="COLOR">Cor</Resource>
 	<Resource tag="ACEPTAR">Aceptar</Resource>
 	<Resource tag="CANCELAR">Cancelar</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Xurdiu un problema ao cargar o formulario</Resource>
-	<Resource tag="TIPOS">Tipos</Resource>	
+	<Resource tag="TIPOS">Tipos</Resource>
+	<Resource tag="INFOCONFIGURARTRADUCTOR">Configuración do servizo de tradución de recursos da comunidade.</Resource>
+	<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+	<Resource tag="INTRODUCEURLTRADUCTOR">Introduce a URL do servizo de tradución</Resource>
+	<Resource tag="INFOURLTRADUCTOR">URL completa do servizo de tradución</Resource>
+	<Resource tag="TOKENTRADUCTOR">Token de autorización</Resource>
+	<Resource tag="INTRODUCETOKENTRADUCTOR">Introduce un token</Resource>
+	<Resource tag="INFOTOKENTRADUCTOR">Token necesario para autorizar as peticións realizadas ao servizo de tradución</Resource>
+	<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+	<Resource tag="INTRODUCEPROMPTTRADUCTOR">Introduce un prompt adicional</Resource>
+	<Resource tag="INFOPROMPT">Información adicional para xerar un contexto no servizo de tradución</Resource>
+	<Resource tag="TRADUCTORACTIVO">Activado</Resource>
+	<Resource tag="TESTTRADUCTOR">Probar o tradutor</Resource>
+	<Resource tag="TRADUCIRTEXTO">Traducir texto</Resource>
+	<Resource tag="NIVELTRADUCTOR">Modelo de tradución</Resource>
+	<Resource tag="INFONIVELTRADUCTOR">Nivel do modelo que utilizará o servizo de tradución</Resource>
+	<Resource tag="INTRODUCETESTTRADUCTOR">Introduce un texto a traducir</Resource>
+	<Resource tag="PROBARTRADUCTOR">Texto a traducir</Resource>
+	<Resource tag="IDIOMADESTINO">Idioma ao que se quere traducir o texto</Resource>
+	<Resource tag="IDIOMAORIGINAL">Idioma orixinal do texto introducido</Resource>
+	<Resource tag="TEXTOTRADUCIDO">Resultado da tradución</Resource>
+	<Resource tag="ERRORGUARDARTRADUCTOR">Erro, o URL do servizo de tradución e o token non poden estar baleiros</Resource>
 	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Lista de idiomas personalizados na plataforma.</Resource>
 	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Engadir idioma</Resource>
 	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clave do idioma</Resource>
@@ -4973,6 +5000,8 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Desexa eliminar o rol seleccionado?</Resource>
+    <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Este rol está asignado a un ou máis asistentes.{br} Se o eliminas, deixarán de ter este rol e podería cambiar o seu comportamento.{br}Está seguro de que quere continuar?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
     <Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5997,6 +6026,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurar SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Xestionar roles e permisos do ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Xestionar membros</Resource>
+		<Resource tag="GESTIONARASISTENTES">Xestionar asistentes</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Crear recursos de tipo anexo</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Editar recursos de tipo anexo</Resource>
@@ -6315,5 +6345,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Non ten permisos para iniciar unha mellora</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">Non se pode eliminar o fluxo porque aínda quedan contidos de tipo @1@ que non están no estado final.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">Non se pode eliminar o fluxo porque aínda quedan recursos cunha mellora activa.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Novo asistente</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Desexa eliminar este asistente?</Resource>
+		<Resource tag="ASISTENTE">Asistente</Resource>
+		<Resource tag="HOSTASISTENTE">Host asistente</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">Asistente ID</Resource>
+		<Resource tag="ICONO">Icona</Resource>
+		<Resource tag="NUEVOICONO">Selecciona unha icona para adxuntar</Resource>
+		<Resource tag="ERRORSUBIRICONO">Produciuse un erro ao subir a icona, ténteo de novo máis tarde.</Resource>
+		<Resource tag="SELECCIONARROL">-- Selecciona un rol --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Imaxes en formato .JPG, .JPEG, .PNG ou .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Fai clic ou arrastra unha imaxe aquí</Resource>
+		<Resource tag="ERRORPESOICONO">A icona non pode pesar máis de 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">Arquivo baleiro</Resource>
+		<Resource tag="TESTEARASISTENTE">Probar a configuración</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">O asistente que se está intentando editar non existe</Resource>
+		<Resource tag="ERRORHOST">Produciuse un erro coa conexión do asistente, comproba que o host do servizo é correcto</Resource>
 	</page>
 </Resources>

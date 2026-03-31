@@ -2775,13 +2775,32 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         }
 
         /// <summary>
+        /// Elimina las identidades que han sido dadas de baja o expulsadas de la lista original
+        /// </summary>
+        /// <param name="pListaIdentidades">Lista de indentidades sobre la cual queremos realizar el filtro</param>
+        /// <returns>Nueva lista de identidades validas</returns>
+        private List<Guid> FiltrarIdentidadesNoEliminadas(List<Guid> pListaIdentidades)
+        {
+            List<Guid> identidadesEliminadas = new List<Guid>();
+            using (IdentidadCN identidadCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory))
+            {
+                identidadesEliminadas = identidadCN.ObtenerIdentidadesEliminadas(pListaIdentidades);
+            }
+            return pListaIdentidades.Except(identidadesEliminadas).ToList();
+        }
+
+        /// <summary>
         /// Obtiene los modelos de las identidades del proyecto en función de la identidad
         /// </summary>
         /// <param name="pListaIdentidades">Indetificadores de las identidades</param>
         /// <param name="pObtenerDatosExtraIdentidades">Especifica si se deben obtener los datos extra de las identidades</param>
         /// <returns></returns>
-        public Dictionary<Guid, ProfileModel> ObtenerIdentidadesPorID(List<Guid> pListaIdentidades, bool pObtenerDatosExtraIdentidades = false)
+        public Dictionary<Guid, ProfileModel> ObtenerIdentidadesPorID(List<Guid> pListaIdentidades, bool pObtenerDatosExtraIdentidades = false, bool pExcluirIdentidadesEliminadas = false)
         {
+            if (pExcluirIdentidadesEliminadas)
+            {
+                pListaIdentidades = FiltrarIdentidadesNoEliminadas(pListaIdentidades);
+            }
             //Obtiene los modelos de caché
             Dictionary<Guid, ProfileModel> listaIdentidades = mIdentidadCL.ObtenerFichasIdentiadesMVC(pListaIdentidades);
 

@@ -3560,6 +3560,8 @@
 		<Resource tag="ADMINISTRARCOOKIESCOM">amministrare-cookies</Resource>
 		<Resource tag="CONFIGURAFTP">configurare-ftp</Resource>
 		<Resource tag="ADMINISTRARTRADUCCIONES">amministrare-traduzioni</Resource>
+		<Resource tag="ADMINISTRARTRADUCTOR">amministrare-traduttore</Resource>
+		<Resource tag="ADMINISTRARTRADUCTORECOSISTEMA">amministrare-traduttore-ecosistema</Resource>
 		<Resource tag="ADMINISTRARDATOSEXTRA">amministrare-dati-extra</Resource>
 		<Resource tag="ADMINISTRARTRAZAS">amministrare-tracce</Resource>
 		<Resource tag="ADMINISTRARDESCARGARCONFIGURACION">amministrare-scaricare-configurazione</Resource>
@@ -3923,6 +3925,7 @@
 		<Resource tag="ADMINISTRARVISTAS">amministrare-visualizzazioni</Resource>
 		<Resource tag="NOTIFICACIONESPERSO">notifiche-personalizzate</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">gestire-flussi</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">amministrare-assistenti</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Notifiche elenco</Resource>
@@ -3958,7 +3961,8 @@
 		<Resource tag="ADMINISTRARDESPLIEGUES">Distribuzioni</Resource>
 		<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Carica modifiche</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">Flussi di lavoro</Resource>
-
+		<Resource tag="ADMINISTRARTRADUCTOR">Configurare traduttore</Resource>
+		<Resource tag="ADMINISTRARASISTENTES">Amministrare assistenti</Resource>
 	</page>
 	<page name="DEVTOOLS">
 		<Resource tag="FECHAULTIMOACCESO">Ultimo accesso</Resource>
@@ -3972,6 +3976,27 @@
 		<Resource tag="IMAGEN">Immagine</Resource>
 		<Resource tag="ELIMINARIMAGEN">Eliminare immagine</Resource>
 		<Resource tag="IMAGENCATEGORIA">Immagine della categoria</Resource>
+		<Resource tag="INFOCONFIGURARTRADUCTOR">Configurazione del servizio di traduzione delle risorse della comunità.</Resource>
+		<Resource tag="URLTRADUCTOR">Endpoint</Resource>
+		<Resource tag="INTRODUCEURLTRADUCTOR">Inserisci l'URL del servizio di traduzione</Resource>
+		<Resource tag="INFOURLTRADUCTOR">URL completo del servizio di traduzione</Resource>
+		<Resource tag="TOKENTRADUCTOR">Token di autorizzazione</Resource>
+		<Resource tag="INTRODUCETOKENTRADUCTOR">Inserisci un token</Resource>
+		<Resource tag="INFOTOKENTRADUCTOR">Token necessario per autorizzare le richieste effettuate al servizio di traduzione</Resource>
+		<Resource tag="PROMPTTRADUCTOR">Prompt</Resource>
+		<Resource tag="INTRODUCEPROMPTTRADUCTOR">Inserisci un prompt aggiuntivo</Resource>
+		<Resource tag="INFOPROMPT">Informazioni aggiuntive per generare un contesto nel servizio di traduzione</Resource>
+		<Resource tag="TRADUCTORACTIVO">Attivato</Resource>
+		<Resource tag="TESTTRADUCTOR">Testare il traduttore</Resource>
+		<Resource tag="TRADUCIRTEXTO">Tradurre testo</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Errore, l'URL del servizio di traduzione e il token non possono essere vuoti</Resource>
+		<Resource tag="NIVELTRADUCTOR">Modello di traduzione</Resource>
+		<Resource tag="INFONIVELTRADUCTOR">Livello del modello che il servizio di traduzione utilizzerà</Resource>
+		<Resource tag="INTRODUCETESTTRADUCTOR">Inserisci un testo da tradurre</Resource>
+		<Resource tag="PROBARTRADUCTOR">Testo da tradurre</Resource>
+		<Resource tag="IDIOMADESTINO">Lingua di destinazione</Resource>
+		<Resource tag="IDIOMAORIGINAL">Lingua originale del testo inserito</Resource>
+		<Resource tag="TEXTOTRADUCIDO">Risultato della traduzione</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Trascina e rilascia un file multimediale nell'area tratteggiata per caricarlo</Resource>
 		<Resource tag="IMAGENESENFORMATOPNGOJPG">Immagini in formato .PNG o .JPG</Resource>
 		<Resource tag="HAYRECURSOSQUEESTANUTILIZANDOLACATEGORIAQUESEDESEAELIMINAR">Ci sono risorse che stanno utilizzando la categoria che si desidera eliminare.</Resource>
@@ -4087,6 +4112,7 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="ROLES">Ruoli</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">Il componente CMS si trova in uno stato privato, quindi i suoi profili e/o gruppi devono essere configurati dalla pagina di amministrazione dei flussi</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Seleziona le persone e/o i gruppi che possono visualizzare il componente</Resource>
 	<Resource tag="COLOR">Colore</Resource>
@@ -4894,6 +4920,8 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Vuoi eliminare il ruolo selezionato?</Resource>
+    <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Questo ruolo è assegnato a uno o più assistenti.{br} Se lo elimini, non avranno più questo ruolo e il loro comportamento potrebbe cambiare.{br}Sei sicuro di voler continuare?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
     <Resource tag="CONFIGURACION">Configuración</Resource>
@@ -5918,6 +5946,7 @@
 		<Resource tag="CONFIGURACIONDESHAREPOINT">Configurare SharePoint</Resource>
 		<Resource tag="GESTIONARROLESYPERMISOSECOSISTEMA">Gestire i ruoli e i permessi dell'ecosistema</Resource>
 		<Resource tag="ADMINISTRARMIEMBROSECOSISTEMA">Gestire i membri</Resource>
+		<Resource tag="GESTIONARASISTENTES">Gestire assistenti</Resource>
 
 		<Resource tag="CREARRECURSOTIPOADJUNTO">Creare risorse di tipo allegato</Resource>
 		<Resource tag="EDITARRECURSOTIPOADJUNTO">Modificare risorse di tipo allegato</Resource>
@@ -6236,5 +6265,24 @@
 		<Resource tag="ERRORPERMISOINICIARMEJORA">Non si dispone dei permessi per avviare un miglioramento</Resource>
 		<Resource tag="ERRORRECURSOSSINFINALIZAR">Il flusso non può essere eliminato perché ci sono ancora contenuti di tipo @1@ che non sono nello stato finale.</Resource>
 		<Resource tag="ERRORHAYMEJORASACTIVAS">Il flusso non può essere eliminato perché ci sono ancora risorse con un miglioramento attivo.</Resource>
+	</page>
+	<page name="ASISTENTES">
+		<Resource tag="NUEVOASISTENTE">Nuovo assistente</Resource>
+		<Resource tag="DESEAELIMINARASISTENTE">Vuoi eliminare questo assistente?</Resource>
+		<Resource tag="ASISTENTE">Assistente</Resource>
+		<Resource tag="HOSTASISTENTE">Host assistente</Resource>
+		<Resource tag="TOKEN">Token</Resource>
+		<Resource tag="ASISTENTEID">ID assistente</Resource>
+		<Resource tag="ICONO">Icona</Resource>
+		<Resource tag="NUEVOICONO">Seleziona un'icona da allegare</Resource>
+		<Resource tag="ERRORSUBIRICONO">Si è verificato un errore durante il caricamento dell'icona, riprovare più tardi.</Resource>
+		<Resource tag="SELECCIONARROL">-- Seleziona un ruolo --</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Immagini in formato .JPG, .JPEG, .PNG o .GIF</Resource>
+		<Resource tag="ARRASTRA_Y_SUELTA">Clicca o trascina un'immagine qui</Resource>
+		<Resource tag="ERRORPESOICONO">L'icona non può superare i 2 MB</Resource>
+		<Resource tag="ERRORICONOVACIO">File vuoto</Resource>
+		<Resource tag="TESTEARASISTENTE">Testare la configurazione</Resource>
+		<Resource tag="ERRORASISTENTENOEXISTE">L'assistente che si sta tentando di modificare non esiste</Resource>
+		<Resource tag="ERRORHOST">Si è verificato un errore nella connessione dell'assistente, verifica che l'host del servizio sia corretto</Resource>
 	</page>
 </Resources>

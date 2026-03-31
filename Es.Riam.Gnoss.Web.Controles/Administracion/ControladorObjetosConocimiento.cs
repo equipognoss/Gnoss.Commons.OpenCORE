@@ -169,18 +169,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
             else if (pCargarCompartidas && filaDoc.Tipo == (short)TiposDocumentacion.Ontologia)
             {
-				ObjetoConocimientoModel objetoConocimiento = new ObjetoConocimientoModel();
-				objetoConocimiento.DocumentoID = ontologiaID;
-				objetoConocimiento.Name = filaDoc.Titulo.Replace(".owl", string.Empty);
-				objetoConocimiento.EsObjetoPrimario = true;
-				objetoConocimiento.Ontologia = filaDoc.Enlace.Replace(".owl", string.Empty);
-				objetoConocimiento.GrafoActual = filaDoc.Enlace;
-				objetoConocimiento.FechaCreacion = filaDoc.FechaCreacion ?? DateTime.Parse("01/01/2024"); ;
-				objetoConocimiento.FechaModificacion = filaDoc.FechaModificacion ?? DateTime.Parse("01/01/2024");
+                ObjetoConocimientoModel objetoConocimiento = new ObjetoConocimientoModel();
+                objetoConocimiento.DocumentoID = ontologiaID;
+                objetoConocimiento.Name = filaDoc.Titulo.Replace(".owl", string.Empty);
+                objetoConocimiento.EsObjetoPrimario = true;
+                objetoConocimiento.Ontologia = filaDoc.Enlace.Replace(".owl", string.Empty);
+                objetoConocimiento.GrafoActual = filaDoc.Enlace;
+                objetoConocimiento.FechaCreacion = filaDoc.FechaCreacion ?? DateTime.Parse("01/01/2024"); ;
+                objetoConocimiento.FechaModificacion = filaDoc.FechaModificacion ?? DateTime.Parse("01/01/2024");
                 objetoConocimiento.EsOntologiaCompartida = true;
 
                 return objetoConocimiento;
-			}
+            }
 
             return null;
         }
@@ -265,23 +265,23 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private List<ObjetoConocimientoModel.AutocompletadoPresentacionModel> CargarAutocompletadoDePropiedades(Guid pOntologiaID)
         {
             List<ObjetoConocimientoModel.AutocompletadoPresentacionModel> autocompletadoPresentacionModels = new List<ObjetoConocimientoModel.AutocompletadoPresentacionModel>();
-            var listaPresentaciones = DataWrapperProyecto.ListaPresentacionMapaSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar})
+            var listaPresentaciones = DataWrapperProyecto.ListaPresentacionMapaSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar })
                 .Union(DataWrapperProyecto.ListaPresentacionListadoSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar }))
                 .Union(DataWrapperProyecto.ListaPresentacionMosaicoSemantico.Where(presentacion => presentacion.OntologiaID == pOntologiaID).Select(item => new { item.Propiedad, item.MostrarEnAutocompletar })).Distinct().ToList();
-            foreach(var presentacion in listaPresentaciones)
+            foreach (var presentacion in listaPresentaciones)
             {
                 ObjetoConocimientoModel.AutocompletadoPresentacionModel autocompletadoPresentacionModel = new ObjetoConocimientoModel.AutocompletadoPresentacionModel()
                 {
                     MostrarEnAutocompletar = presentacion.MostrarEnAutocompletar,
                     Propiedad = presentacion.Propiedad
                 };
-				autocompletadoPresentacionModels.Add(autocompletadoPresentacionModel);
-			}
+                autocompletadoPresentacionModels.Add(autocompletadoPresentacionModel);
+            }
 
-			return autocompletadoPresentacionModels;
-		}
+            return autocompletadoPresentacionModels;
+        }
 
-		private ObjetoConocimientoModel.PresentacionPersonalizadoModel CargarPresentacionPersonalizado(Guid pOntologiaID)
+        private ObjetoConocimientoModel.PresentacionPersonalizadoModel CargarPresentacionPersonalizado(Guid pOntologiaID)
         {
             ObjetoConocimientoModel.PresentacionPersonalizadoModel PresentacionPersonalizado = new ObjetoConocimientoModel.PresentacionPersonalizadoModel();
 
@@ -676,53 +676,53 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         }
 
         private void GuardarDatosPropiedadesAutocompletar(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
-		{
-            if(pObjetoConocimientoModel.ListaAutocompletadoPresentacionModel == null)
+        {
+            if (pObjetoConocimientoModel.ListaAutocompletadoPresentacionModel == null)
             {
                 return;
             }
 
-            foreach (AutocompletadoPresentacionModel propiedadAutocompletado in pObjetoConocimientoModel.ListaAutocompletadoPresentacionModel) 
+            foreach (AutocompletadoPresentacionModel propiedadAutocompletado in pObjetoConocimientoModel.ListaAutocompletadoPresentacionModel)
             {
-				PresentacionListadoSemantico presentacionListado = DataWrapperProyecto.ListaPresentacionListadoSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
-                if(presentacionListado != null)
+                PresentacionListadoSemantico presentacionListado = DataWrapperProyecto.ListaPresentacionListadoSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
+                if (presentacionListado != null)
                 {
                     if (presentacionListado.MostrarEnAutocompletar != propiedadAutocompletado.MostrarEnAutocompletar)
                     {
                         presentacionListado.MostrarEnAutocompletar = propiedadAutocompletado.MostrarEnAutocompletar;
                     }
-				}
+                }
                 else
                 {
-					PresentacionMapaSemantico presentacionMapa = DataWrapperProyecto.ListaPresentacionMapaSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
-                    if(presentacionMapa != null)
+                    PresentacionMapaSemantico presentacionMapa = DataWrapperProyecto.ListaPresentacionMapaSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
+                    if (presentacionMapa != null)
                     {
                         if (presentacionMapa.MostrarEnAutocompletar != propiedadAutocompletado.MostrarEnAutocompletar)
                         {
                             presentacionMapa.MostrarEnAutocompletar = propiedadAutocompletado.MostrarEnAutocompletar;
                         }
-					}
+                    }
                     else
                     {
-						PresentacionMosaicoSemantico presentacionMosaico = DataWrapperProyecto.ListaPresentacionMosaicoSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
-						if (presentacionMosaico != null)
-						{
+                        PresentacionMosaicoSemantico presentacionMosaico = DataWrapperProyecto.ListaPresentacionMosaicoSemantico.FirstOrDefault(presentacion => presentacion.OntologiaID.Equals(pOntologiaID) && presentacion.Propiedad.Equals(propiedadAutocompletado.Propiedad));
+                        if (presentacionMosaico != null)
+                        {
                             if (presentacionMosaico.MostrarEnAutocompletar != propiedadAutocompletado.MostrarEnAutocompletar)
                             {
                                 presentacionMosaico.MostrarEnAutocompletar = propiedadAutocompletado.MostrarEnAutocompletar;
                             }
-						}
-					}
-				}
+                        }
+                    }
+                }
             }
-		}
+        }
 
-		/// <summary>
-		/// Aplicamos los cambios hechos en la administración a la tabla Documento (solamente es necesario el título)
-		/// </summary>
-		/// <param name="pOntologiaID">Identificador de la ontología</param>
-		/// <param name="pObjetoConocimientoModel">Modelo con los cambios devuelto por la vista</param>
-		private void GuardarDatosDocumento(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
+        /// <summary>
+        /// Aplicamos los cambios hechos en la administración a la tabla Documento (solamente es necesario el título)
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <param name="pObjetoConocimientoModel">Modelo con los cambios devuelto por la vista</param>
+        private void GuardarDatosDocumento(Guid pOntologiaID, ObjetoConocimientoModel pObjetoConocimientoModel)
         {
             AD.EntityModel.Models.Documentacion.Documento documento = mEntityContext.Documento.Where(item => item.DocumentoID.Equals(pOntologiaID)).First();
             documento.Titulo = pObjetoConocimientoModel.Name;
@@ -1123,7 +1123,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     {
                         mEntityContext.NoConfirmarTransacciones = false;
                     }
-                    
+
                     if (pEsPrincipal)
                     {
                         mLoggingService.AgregarEntrada($"EliminarObjetoConocimiento - Preparado para obtener ontología de BD --> ObjetoConocimientoID: {pObjetoConocimientoID} -- ProyectoID: {ProyectoSeleccionado.Clave}");
@@ -1148,7 +1148,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
                 catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex);
+                    mLoggingService.GuardarLogError(ex, mlogger);
                     proyAD.TerminarTransaccion(false);
                     throw new Exception("Ha ocurrido un error al eliminar la ontología", ex);
                 }
@@ -1156,7 +1156,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             else
             {
                 string mensajeError = "No se puede eliminar la ontología porque tiene recursos asociados.";
-                mLoggingService.GuardarLogError(mensajeError);
+                mLoggingService.GuardarLogError(mensajeError, mlogger);
                 throw new Exception(mensajeError);
             }
         }
@@ -1183,7 +1183,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 mEntityContext.EliminarElemento(filaPresentacionRelacionados);
                 DataWrapperProyecto.ListaRecursosRelacionadosPresentacion.Remove(filaPresentacionRelacionados);
             }
-            foreach(ProyectoPestanyaBusquedaPesoOC proyectoPestanyaBusquedaPesoOC in DataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC.Where(item => item.OntologiaProyecto1.Equals(pFilaOntologia.OntologiaProyecto1)).ToList())
+            foreach (ProyectoPestanyaBusquedaPesoOC proyectoPestanyaBusquedaPesoOC in DataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC.Where(item => item.OntologiaProyecto1.Equals(pFilaOntologia.OntologiaProyecto1)).ToList())
             {
                 mEntityContext.EliminarElemento(proyectoPestanyaBusquedaPesoOC);
                 DataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC.Remove(proyectoPestanyaBusquedaPesoOC);
@@ -1195,7 +1195,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         private EditOntologyViewModel EliminarOntologia(Guid pOntologiaID)
         {
             using (DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory))
-            {                
+            {
                 AD.EntityModel.Models.Documentacion.Documento documento = docCN.ObtenerDocumentoPorIdentificador(pOntologiaID);
 
                 ProyectoConfigExtraSem filasConfig = ProyectoConfigSemDataWrapperProyecto.ListaProyectoConfigExtraSem.Where(proy => proy.UrlOntologia.Equals(documento.Enlace)).FirstOrDefault();
@@ -1219,7 +1219,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
 
                 return ontologyBorrar;
-            }            
+            }
         }
 
         /// <summary>

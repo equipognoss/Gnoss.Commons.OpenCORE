@@ -93,7 +93,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 return false;
             }
         }
@@ -114,7 +114,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex);
+                mLoggingService.GuardarLogError(ex,mlogger);
                 return false;
             }
         }       

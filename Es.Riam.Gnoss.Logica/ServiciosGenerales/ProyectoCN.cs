@@ -1,4 +1,4 @@
-using Es.Riam.AbstractsOpen;
+﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
@@ -24,6 +24,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
 
 
 namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
@@ -2979,6 +2980,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerRolesDeProyecto(pProyectoID);
         }
 
+        public Dictionary<Guid, string> ObtenerNombreRolesDeProyecto(List<Guid> pRolesId)
+        {
+            return ProyectoAD.ObtenerNombreRolesDeProyecto(pRolesId);
+        }
+
         public List<RolEcosistema> ObtenerRolesAdministracionEcosistema()
         {
             return ProyectoAD.ObtenerRolesAdministracionEcosistema();
@@ -3033,7 +3039,22 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerRolUsuarioEnProyecto(pProyectoID);
         }
 
-		#endregion
+        public TraductorProyecto ObtenerTraductorDeProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ObtenerTraductorDeProyecto(pProyectoID);
+        }
+
+        public void EliminarTraductorProyecto(Guid pProyectoID)
+        {
+            ProyectoAD.EliminarTraductorProyecto(pProyectoID);
+        }
+
+        public void GuardarTraductorProyecto(Guid pProyectoID, string pToken, string pEndpoint, string pPrompt, bool pActivo, string pModelo)
+        {
+            ProyectoAD.GuardarTraductorProyecto(pProyectoID, pToken, pEndpoint, pPrompt, pActivo, pModelo);
+        }
+
+        #endregion
 
         /// <summary>
         /// Obtenemos el número de miembros por proyecto en un diccionario donde la clave 

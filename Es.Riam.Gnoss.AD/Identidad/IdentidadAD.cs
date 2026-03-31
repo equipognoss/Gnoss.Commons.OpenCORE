@@ -6331,6 +6331,16 @@ namespace Es.Riam.Gnoss.AD.Identidad
             return dataWrapper;
         }
 
+        public PerfilRedesSociales ObtenerRedesSocialesPorNombreYPerfil(Guid pPerfilID, string pNombreRedSocial)
+        {
+            return mEntityContext.PerfilRedesSociales.FirstOrDefault(x => x.PerfilID.Equals(pPerfilID) && x.NombreRedSocial.Equals(pNombreRedSocial));
+        }
+
+        public Dictionary<string, PerfilRedesSociales> ObtenerRedesSocialesPerfil(Guid pPerfilID)
+        {
+            return mEntityContext.PerfilRedesSociales.Where(item => item.PerfilID.Equals(pPerfilID)).GroupBy(item => item.NombreRedSocial).ToDictionary(g => g.Key, g => g.First());
+        }
+
         /// <summary>
         /// Obtiene los perfiles de una persona (pObtenerSoloActivos--> no eliminado, no fecha de baja,..)
         /// </summary>
@@ -12775,6 +12785,16 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 mEntityContext.RolIdentidad.Remove(rolIdentidadExistente);
                 ActualizarBaseDeDatosEntityContext();
             }
+        }
+
+        /// <summary>
+        /// A partir de una lista de identidades devuelve otra lista con el identificador de las identidades que han sido dadas de baja o expulsadas.
+        /// </summary>
+        /// <param name="pIdentidadesId">Lista de IdentidadesID de las cuales queremos obtener las dadas de baja</param>
+        /// <returns>Lista con las identidades eliminadas o dadas de baja a partir de las pasadas por parámetro</returns>
+        public List<Guid> ObtenerIdentidadesEliminadas(List<Guid> pIdentidadesId)
+        {
+            return mEntityContext.Identidad.Where(item => pIdentidadesId.Contains(item.IdentidadID) && (item.FechaBaja.HasValue || item.FechaExpulsion.HasValue)).Select(item => item.IdentidadID).ToList();
         }
 
         #endregion

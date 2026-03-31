@@ -1,4 +1,5 @@
-﻿using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+﻿using Es.Riam.Gnoss.AD.EntityModel.Models.Asistente;
+using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -50,5 +51,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.Roles
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<RolOntologiaPermiso> RolOntologiaPermiso { get; set; }
-	}
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RolAsistente> RolAsistentes { get; set; }
+    }
 }

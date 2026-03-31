@@ -123,4 +123,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
 
         public bool EsGrupo { get; set; }
     }
+
+    public partial class RolEliminar
+    {
+        public Guid RolId { get; set; }
+        public Dictionary<Guid, string> Asistentes { get; set; } = new Dictionary<Guid, string>();
+    }
 }

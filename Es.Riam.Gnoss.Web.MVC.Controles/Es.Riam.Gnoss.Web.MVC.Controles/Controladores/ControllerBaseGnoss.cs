@@ -757,37 +757,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             mLoggingService.GuardarLogError(pError, mlogger);
         }
 
-        /// <summary>
-        /// Guarda el log de error
-        /// </summary>
-        /// <param name="pError">Cadena de texto con el error</param>
-        [NonAction]
-        public void GuardarLogErrorAJAX(string pError)
-        {
-            mLoggingService.GuardarLogErrorAJAX(pError);
-        }
-
-        /// <summary>
-        /// Guarda el log de error
-        /// </summary>
-        /// <param name="pExcepcion">Excepción que a producido el error</param>
-        [NonAction]
-        public void GuardarLogErrorAJAX(Exception pExcepcion)
-        {
-            mLoggingService.GuardarLogError(pExcepcion, mlogger);
-        }
-
-        /// <summary>
-        /// Guarda el log de error
-        /// </summary>
-        /// <param name="pExcepcion">Excepción que a producido el error</param>
-        /// <param name="pMensajeExtra">Mensaje extra para guardar en el log</param>
-        [NonAction]
-        public void GuardarLogErrorAJAX(Exception pExcepcion, string pMensajeExtra)
-        {
-            mLoggingService.GuardarLogError(pExcepcion, pMensajeExtra, mlogger);
-        }
-
         [NonAction]
         protected GnossResult GnossResultUrl(string pUrl)
         {

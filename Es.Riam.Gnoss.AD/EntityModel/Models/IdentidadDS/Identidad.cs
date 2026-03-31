@@ -10,6 +10,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Asistente;
 
 namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 {
@@ -104,5 +105,8 @@ namespace Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public virtual ICollection<HistorialTransicionPestanyaCMS> HistorialTransicionPestanyaCMS { get; set; }
-	}
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AsistenteConfigIdentidad> ConfiguracionesAsistentes {  get; set; }
+    }
 }

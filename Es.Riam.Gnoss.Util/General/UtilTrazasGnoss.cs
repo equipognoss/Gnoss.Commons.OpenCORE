@@ -16,8 +16,8 @@ namespace Es.Riam.Gnoss.Util.General
         /// Contructor
         /// </summary>
         /// <param name="pRutaTraza">Ruta de la traza</param>
-        public TrazaGnossWeb(string pIP, int pPuerto, IHttpContextAccessor pHttpContextAccessor, UtilTelemetry pUtilTelemetry, Usuario usuario)
-            : base(pIP, pPuerto, pHttpContextAccessor, pUtilTelemetry)
+        public TrazaGnossWeb(IHttpContextAccessor pHttpContextAccessor, Usuario usuario)
+            : base(pHttpContextAccessor)
         {
             if (mEstaTrazaHabilitada)
             {

@@ -1,5 +1,6 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,16 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 			return config;
 		}
 
-		public static string ComprobarIdiomasDisponibles(List<string> pIdiomasTraducir, List<string> pIdiomasDisponibles, LoggingService pLoggingService, ILogger pLogger)
+        public static TranslationConfig CrearTranslationConfig(string pEndpoint, string pToken)
+        {
+            TranslationConfig config = new TranslationConfig();
+            config.EndPoint = pEndpoint;
+            config.ApiKey = pToken;
+
+            return config;
+        }
+
+        public static string ComprobarIdiomasDisponibles(List<string> pIdiomasTraducir, List<string> pIdiomasDisponibles, LoggingService pLoggingService, ILogger pLogger)
 		{
 			List<string> idiomasNoContenidos = pIdiomasTraducir.Where(item => !pIdiomasDisponibles.Contains(item)).ToList();
 
@@ -34,5 +44,22 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 
 			return "";
 		}
-	}
+
+        public static TranslationResponse TraducirTexto(string pTexto, string pEndpoint, string pToken, string pPrompt, string pModelo, string pIdiomaOrigen, string pIdiomaDestino)
+        {
+            TranslationConfig config = CrearTranslationConfig(pEndpoint, pToken);
+            ITranslationStrategy strategy = new TranslationStrategyFactory().CreateTranslationStrategy(config, TranslationProvider.Scia);
+            TranslationService service = new TranslationService(strategy);
+            TranslationRequest request = new TranslationRequest
+            {
+                Text = pTexto,
+                AdditionalInstructions = pPrompt,
+                Model = pModelo,
+                SourceLanguage = pIdiomaOrigen,
+                TargetLanguage = pIdiomaDestino
+            };
+
+            return service.ExecuteTranslation(request);
+        }
+    }
 }

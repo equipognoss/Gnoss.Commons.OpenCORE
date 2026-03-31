@@ -8003,7 +8003,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 correcto = CopiarImagenDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo, UrlIntragnossServicios);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar la imagen del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar la imagen del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}", mlogger);
                 }
             }
             else if (pTipo == TipoCampoOntologia.Archivo)
@@ -8011,7 +8011,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 correcto = CopiarArchivoDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo, UrlServicioWebDocumentacion);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar el documento del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar el documento del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}", mlogger);
                 }
             }
             else if (pTipo == TipoCampoOntologia.ArchivoLink)
@@ -8019,7 +8019,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 correcto = CopiarArchivoLinkDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar el doclink del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar el doclink del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}", mlogger);
                 }
             }
             else if (pTipo == TipoCampoOntologia.Video)
@@ -8028,7 +8028,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 CopiarVideosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, IdentidadActual, ProyectoSeleccionado.Clave != ProyectoAD.MyGnoss, extension);
                 if (!correcto)
                 {
-                    mLoggingService.GuardarLogError($"No se ha podido copiar el video del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}");
+                    mLoggingService.GuardarLogError($"No se ha podido copiar el video del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}", mlogger);
                 }
             }
             return correcto;
