@@ -5881,6 +5881,9 @@
 	  <Resource tag="SERVICIOCACHE">gestió de memòries cau</Resource>
 	  <Resource tag="SERVICIODESCARGACONFIGURACIONES">descarrega de les configuracions de la plataforma</Resource>
 	  <Resource tag="SERVICIOTRAZAS">gestió de les traces de la plataforma</Resource>
+	  <Resource tag="ADQUIRIRVERSIONENTERPRISECONTACTO1">Esta funcionalidad forma parte de nuestro plan Enterprise, diseñado para organizaciones que necesitan capacidades exigentes de alta disponibilidad, carga masiva o servicios de cognición artificial avanzados. Con Enterprise también obtienes funcionalidades avanzadas en el servicio de autocompletado y posibilidad de despliegue continuo a través de Odysseus</Resource>
+	  <Resource tag="ADQUIRIRVERSIONENTERPRISECONTACTO2">¿Quieres explorar cómo Enterprise puede potenciar tu operación? Podemos mostrarte exactamente cómo funcionaría en tu caso específico</Resource>
+	  <Resource tag="ENLACECONTACTO">https://www.gnoss.com/contacto</Resource>
   </page>
 	<page name="ROLESYPERMISOS">
 		<Resource tag="GESTIONARINFORMACIONGENERAL">Editar informació general</Resource>

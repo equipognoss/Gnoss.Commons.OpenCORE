@@ -5896,6 +5896,9 @@
     <Resource tag="SIMODIFICASLARUTARELATIVAELCAMBIONOSURTIRAEFECTOHASTAQUESERE">Si modificas la ruta relativa el cambio no surtirá efecto hasta que se reinicie la plataforma. Ponte en contacto con el administrador de sistemas para ello.</Resource>
 	<Resource tag="HISTORIALCONFIGURACION">Storico configurazione</Resource>
 	<Resource tag="HISTORIALESTRUCTURA">Storico struttura</Resource>
+	  <Resource tag="ADQUIRIRVERSIONENTERPRISECONTACTO1">This functionality is part of our Enterprise plan, designed for organizations that need demanding capabilities for high availability, massive data loading, or advanced artificial cognition services. With Enterprise you also get advanced features in the autocomplete service and the possibility of continuous deployment through Odysseus</Resource>
+	  <Resource tag="ADQUIRIRVERSIONENTERPRISECONTACTO2">Would you like to explore how Enterprise can boost your operation? We can show you exactly how it would work in your specific case</Resource>
+	  <Resource tag="ENLACECONTACTO">https://www.gnoss.com/contacto</Resource>
   </page>
 	<page name="ROLESYPERMISOS">
 		<Resource tag="GESTIONARINFORMACIONGENERAL">Modificare le informazioni generali</Resource>
