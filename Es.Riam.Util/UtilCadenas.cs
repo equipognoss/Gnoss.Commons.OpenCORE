@@ -1848,18 +1848,20 @@ namespace Es.Riam.Util
         /// Se encarga de limpiar inyección de código a través de textos como formularios de la web.
         /// </summary>
         /// <param name="pTexto">Texto a limpiar</param>
+        /// <param name="pDecodificar">Indica si se debe decodificar el texto de Html tras sanitizar</param>
         /// <returns>Devuelve el texto introducido pero limpio</returns>
-        public static string LimpiarInyeccionCodigo(string pTexto)
+        public static string LimpiarInyeccionCodigo(string pTexto, bool pDecodificar = false)
         {
-            return LimpiarInyeccionCodigo(pTexto, new HtmlSanitizer());
+            return LimpiarInyeccionCodigo(pTexto, new HtmlSanitizer(), pDecodificar);
         }
 
         /// <summary>
         /// Se encarga de limpiar inyección de código a través de textos como formularios de la web.
         /// </summary>
         /// <param name="pTexto">Texto a limpiar</param>
+        /// <param name="pDecodificar">Indica si se debe decodificar el texto de Html tras sanitizar</param>
         /// <returns>Devuelve el texto introducido pero limpio</returns>
-        public static string LimpiarInyeccionCodigo(string pTexto, HtmlSanitizer pSanitizer)
+        public static string LimpiarInyeccionCodigo(string pTexto, HtmlSanitizer pSanitizer, bool pDecodificar = false)
         {
             //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
             pSanitizer.AllowedAttributes.Add("class");
@@ -1869,8 +1871,13 @@ namespace Es.Riam.Util
             pSanitizer.AllowedTags.Add("audio");
             pSanitizer.AllowedTags.Add("source");
             pSanitizer.AllowedTags.Remove("form");
-            pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);                       
-            return pSanitizer.Sanitize(pTexto);
+            pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);
+            pTexto = pSanitizer.Sanitize(pTexto);
+            if (pDecodificar)
+            {
+                pTexto = HttpUtility.HtmlDecode(pTexto);
+            }
+            return pTexto;
         }
 
         /// <summary>

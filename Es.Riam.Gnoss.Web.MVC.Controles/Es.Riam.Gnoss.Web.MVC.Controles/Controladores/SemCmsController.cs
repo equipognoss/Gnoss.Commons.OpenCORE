@@ -6938,6 +6938,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             #endregion
 
             Propiedad propiedad = pEntidad.ObtenerPropiedad(nombreProp);
+
+            bool esCampoTiny = propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Tiny;
+
             propiedad.ElementoOntologia = pEntidad;
 
             if (propiedad.Tipo == TipoPropiedad.DatatypeProperty)
@@ -6945,7 +6948,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 string valor = pTexto.Replace("[--C]", "<").Replace("[C--]", ">");
                 if (!propiedad.EspecifPropiedad.PermitirScript)
                 {
-                    valor = UtilCadenas.LimpiarInyeccionCodigo(valor);
+                    valor = UtilCadenas.LimpiarInyeccionCodigo(valor, !esCampoTiny);
                 }
                 if (!string.IsNullOrEmpty(valor))
                 {
@@ -7023,7 +7026,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             string valorSinIdioma = valorIdioma.Substring(0, valorIdioma.LastIndexOf("@"));
                             if (!propiedad.EspecifPropiedad.PermitirScript)
                             {
-                                valorSinIdioma = UtilCadenas.LimpiarInyeccionCodigo(valorSinIdioma);
+                                valorSinIdioma = UtilCadenas.LimpiarInyeccionCodigo(valorSinIdioma, !esCampoTiny);
                             }
 
                             idiomasSinAgregar.Remove(idioma);
@@ -7074,7 +7077,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     if (!propiedad.EspecifPropiedad.PermitirScript)
                     {
-                        pTexto = UtilCadenas.LimpiarInyeccionCodigo(pTexto);
+                        pTexto = UtilCadenas.LimpiarInyeccionCodigo(pTexto, !esCampoTiny);
                     }
                     if (!string.IsNullOrEmpty(pTexto))
                     {

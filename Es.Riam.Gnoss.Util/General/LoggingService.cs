@@ -3,19 +3,18 @@ using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -28,11 +27,11 @@ namespace Es.Riam.Gnoss.Util.General
 
         private readonly ILoggerFactory _loggerFactory;
 
-        public static UtilTelemetry.UbicacionLogsYTrazas UBICACIONLOGS = UtilTelemetry.UbicacionLogsYTrazas.Archivo;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UtilPeticion _utilPeticion;
         private readonly Usuario _usuario;
+
+        private static string s_logFormat = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {SingleLineMessage}{NewLine}{SingleLineException}";
 
 
         public LoggingService(UtilPeticion utilPeticion, IHttpContextAccessor httpContextAccessor, Usuario usuario, ILoggerFactory loggerFactory, ILogger<LoggingService> logger)
@@ -539,42 +538,57 @@ namespace Es.Riam.Gnoss.Util.General
             return ruta;
         }
 
-        public static void ConfigurarLogging(IServiceCollection pServices, IConfiguration pConfiguration)
+        public static LoggerConfiguration ConfigurarBasicStartupSerilog()
         {
-            bool logToFile = new ConfigService().EscribirLogEnFichero();
+            ConfigService configService = new ConfigService();
+            bool logToFile = configService.EscribirLogEnFichero();
+            int retainedFileCountLimit = configService.LimiteFicherosLogRetenidos();
 
-            var serilogConfig = new LoggerConfiguration()
-                .ReadFrom.Configuration(pConfiguration)
-                .Enrich.FromLogContext()  // ← habilita los scopes
+            LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.With<SingleLineEnricher>() // elimina los saltos de linea de los mensajes
+                .Enrich.With<SingleLineExceptionEnricher>() // elimina los saltos de linea de las excepciones
                 .WriteTo.Console(
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}"
+                    outputTemplate: s_logFormat
                 );
-
             if (logToFile)
             {
-                serilogConfig.WriteTo.File(
+                loggerConfiguration.WriteTo.File(
                     path: "logs/log_.log",
                     rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 7,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}"
+                    retainedFileCountLimit: retainedFileCountLimit,
+                    outputTemplate: s_logFormat
+                );
+            }
+            return loggerConfiguration;
+        }
+
+        public static LoggerConfiguration ConfigurarSerilog(IConfiguration pConfiguration, IServiceProvider pServices, LoggerConfiguration pLoggerConfiguration)
+        {
+            ConfigService configService = new ConfigService();
+            bool logToFile = configService.EscribirLogEnFichero();
+            int retainedFileCountLimit = configService.LimiteFicherosLogRetenidos();
+
+            LoggerConfiguration loggerConfiguration = pLoggerConfiguration
+                .ReadFrom.Configuration(pConfiguration)
+                .ReadFrom.Services(pServices)
+                .Enrich.FromLogContext()
+                .Enrich.With<SingleLineEnricher>() // elimina los saltos de linea de los mensajes
+                .Enrich.With<SingleLineExceptionEnricher>() // elimina los saltos de linea de las excepciones
+                .WriteTo.Console(
+                    outputTemplate: s_logFormat
+                );
+            if (logToFile)
+            {
+                loggerConfiguration.WriteTo.File(
+                    path: "logs/log_.log",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: retainedFileCountLimit,
+                    outputTemplate: s_logFormat
                 );
             }
 
-            Log.Logger = serilogConfig.CreateLogger();
-
-            // Recarga en caliente cuando cambia el ConfigMap
-            ChangeToken.OnChange(
-                () => pConfiguration.GetReloadToken(),
-                () => Log.Logger = new LoggerConfiguration()
-                    .ReadFrom.Configuration(pConfiguration)
-                    .CreateLogger()
-            );
-
-            pServices.AddLogging(loggingBuilder =>
-            {
-                loggingBuilder.ClearProviders();
-                loggingBuilder.AddSerilog(Log.Logger, dispose: true);
-            });
+            return loggerConfiguration;
         }
 
         public ILogger<T> CrearLogger<T>()
@@ -894,5 +908,37 @@ namespace Es.Riam.Gnoss.Util.General
         }
 
         #endregion
+    }
+
+    public class SingleLineEnricher : ILogEventEnricher
+    {
+        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            // Reemplaza saltos de línea en el mensaje renderizado
+            var message = logEvent.MessageTemplate.Text
+                .Replace("\r\n", " ")
+                .Replace("\n", " ")
+                .Replace("\r", " ");
+
+            logEvent.AddOrUpdateProperty(
+                propertyFactory.CreateProperty("SingleLineMessage", message));
+        }
+    }
+
+    public class SingleLineExceptionEnricher : ILogEventEnricher
+    {
+        public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+        {
+            if (logEvent.Exception != null)
+            {
+                var exceptionString = logEvent.Exception.ToString()
+                    .Replace("\r\n", " | ")
+                    .Replace("\n", " | ")
+                    .Replace("\r", " | ");
+
+                logEvent.AddOrUpdateProperty(
+                    propertyFactory.CreateProperty("SingleLineException", exceptionString));
+            }
+        }
     }
 }

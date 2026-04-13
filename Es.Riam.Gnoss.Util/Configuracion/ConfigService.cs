@@ -4580,18 +4580,32 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         public bool EscribirLogEnFichero()
         {
             bool escribirLogEnFichero = false;
-            if (EnvironmentVariables.Contains("escribirLogEnFichero"))
+            if (EnvironmentVariables.Contains("Log__EscribirEnFichero"))
             {
-                escribirLogEnFichero = Environment.GetEnvironmentVariable("escribirLogEnFichero")
+                escribirLogEnFichero = Environment.GetEnvironmentVariable("Log__EscribirEnFichero")
                         ?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
             }
-            else if (Configuration["escribirLogEnFichero"] != null)
+            else if (Configuration.GetSection("Log")["EscribirEnFichero"] != null)
             {
-                escribirLogEnFichero = Configuration["escribirLogEnFichero"]
+                escribirLogEnFichero = Configuration.GetSection("Log")["EscribirEnFichero"]
                     ?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
             }
 
             return escribirLogEnFichero;
+        }
+        public int LimiteFicherosLogRetenidos()
+        {
+            int limiteFicherosRetenidos = 0;
+            if (EnvironmentVariables.Contains("Log__LimiteFicherosRetenidos"))
+            {
+                int.TryParse(Environment.GetEnvironmentVariable("Log__LimiteFicherosRetenidos"), out limiteFicherosRetenidos);
+            }
+            else if (Configuration.GetSection("Log")["LimiteFicherosRetenidos"] != null)
+            {
+                int.TryParse(Configuration.GetSection("Log")["LimiteFicherosRetenidos"], out limiteFicherosRetenidos);
+            }
+
+            return limiteFicherosRetenidos > 0 ? limiteFicherosRetenidos : 30;
         }
     }
 }
