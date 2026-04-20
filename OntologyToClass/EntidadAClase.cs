@@ -1190,7 +1190,7 @@ namespace OntologiaAClase
                         }
                         else
                         {
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}multiTitleList.Add(new Multilanguage(string.Join(\", \", {nombrePropTitulo}[idioma]), idioma.ToString()));");
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}multiTitleList.Add(new Multilanguage(string.Join(\", \", {nombrePropTitulo}[idioma]), idioma.ToString().Replace('_','-')));");
                         }
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.MultilanguageTitle = multiTitleList;");
@@ -1231,7 +1231,7 @@ namespace OntologiaAClase
                         }
                         else
                         {
-                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}listMultilanguageDescription.Add(new Multilanguage(string.Join(\", \", {nombrePropDescripcion}[idioma]), idioma.ToString()));");
+                            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}listMultilanguageDescription.Add(new Multilanguage(string.Join(\", \", {nombrePropDescripcion}[idioma]), idioma.ToString().Replace('_','-')));");
                         }
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
                         Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}resource.MultilanguageDescription = listMultilanguageDescription;");

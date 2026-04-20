@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Serilog;
@@ -32,6 +34,9 @@ namespace Es.Riam.Gnoss.Util.General
         private readonly Usuario _usuario;
 
         private static string s_logFormat = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {SingleLineMessage}{NewLine}{SingleLineException}";
+        private static LoggingLevelSwitch s_levelSwitch = new LoggingLevelSwitch();
+        private static Dictionary<string, LoggingLevelSwitch> _overrideSwitches = new();
+        private static DateTime s_ultimoCambioNivel = DateTime.MinValue;
 
 
         public LoggingService(UtilPeticion utilPeticion, IHttpContextAccessor httpContextAccessor, Usuario usuario, ILoggerFactory loggerFactory, ILogger<LoggingService> logger)
@@ -569,6 +574,9 @@ namespace Es.Riam.Gnoss.Util.General
             bool logToFile = configService.EscribirLogEnFichero();
             int retainedFileCountLimit = configService.LimiteFicherosLogRetenidos();
 
+            s_levelSwitch.MinimumLevel = ObtenerNivelSerilog(pConfiguration["Serilog:MinimumLevel:Default"] ?? "Information");
+
+
             LoggerConfiguration loggerConfiguration = pLoggerConfiguration
                 .ReadFrom.Configuration(pConfiguration)
                 .ReadFrom.Services(pServices)
@@ -578,6 +586,15 @@ namespace Es.Riam.Gnoss.Util.General
                 .WriteTo.Console(
                     outputTemplate: s_logFormat
                 );
+
+            var overrides = pConfiguration.GetSection("Serilog:MinimumLevel:Override").GetChildren();
+            foreach (var overrideEntry in overrides)
+            {
+                var levelSwitch = new LoggingLevelSwitch(ObtenerNivelSerilog(overrideEntry.Value ?? "Warning"));
+                _overrideSwitches[overrideEntry.Key] = levelSwitch;
+                loggerConfiguration.MinimumLevel.Override(overrideEntry.Key, levelSwitch);
+            }
+
             if (logToFile)
             {
                 loggerConfiguration.WriteTo.File(
@@ -590,6 +607,89 @@ namespace Es.Riam.Gnoss.Util.General
 
             return loggerConfiguration;
         }
+
+        public static void ConfigurarSeguimientoFicheros(HostBuilderContext pHostContext,IConfigurationBuilder pConfig, Serilog.ILogger pLooger)
+        {
+            pConfig.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            pConfig.AddJsonFile($"appsettings.{pHostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+            if (Directory.Exists("/app/logging-config"))
+            {
+                var physicalProvider = new PhysicalFileProvider("/app/logging-config")
+                {
+                    // Fuerza a vigilar el directorio completo incluyendo cambios de symlinks
+                    UseActivePolling = true,
+                    UsePollingFileWatcher = true
+                };
+
+                pConfig.AddJsonFile(
+                    physicalProvider,
+                    "appsettings.json",
+                    optional: true,
+                    reloadOnChange: true);
+            }
+            else
+            {
+                pLooger.Warning("No se ha encontrado la carpeta /app/logging-config");
+            }
+        }
+
+        public static void SuscribirCambios(HostBuilderContext pHostContext, Serilog.ILogger pLooger)
+        {
+            var token = pHostContext.Configuration.GetReloadToken();
+            pLooger.Debug("Token CanChange: {CanChange}", token.ActiveChangeCallbacks);
+            token.RegisterChangeCallback(_ =>
+            {
+                pLooger.Debug("ChangeToken disparado");
+                ActualizarNivelLog(pHostContext.Configuration);
+                SuscribirCambios(pHostContext, pLooger); // se resuscribe para el siguiente cambio
+            }, null);
+        }
+
+        public static void ActualizarNivelLog(IConfiguration pConfiguration)
+        {
+            // Ignorar si han pasado menos de 500ms desde el último cambio
+            // evitar doble evento escritura y cierre de fichero.
+            if ((DateTime.UtcNow - s_ultimoCambioNivel).TotalMilliseconds < 500)
+            {
+                return;
+            }
+
+            s_ultimoCambioNivel = DateTime.UtcNow;
+
+            var nivelDefault = ObtenerNivelSerilog(pConfiguration["Serilog:MinimumLevel:Default"] ?? "Information");
+            Log.Warning("Actualizando nivel default de {NivelActual} a {NuevoNivel}", s_levelSwitch.MinimumLevel, nivelDefault);
+            s_levelSwitch.MinimumLevel = nivelDefault;
+
+            // Actualizar overrides existentes
+            var overrides = pConfiguration.GetSection("Serilog:MinimumLevel:Override").GetChildren();
+            foreach (var overrideEntry in overrides)
+            {
+                var nuevoNivel = ObtenerNivelSerilog(overrideEntry.Value ?? "Warning");
+                if (_overrideSwitches.TryGetValue(overrideEntry.Key, out var levelSwitch))
+                {
+                    // Override ya existente → actualizar su nivel
+                    Log.Warning("Actualizando override {Namespace} de {NivelActual} a {NuevoNivel}", overrideEntry.Key, levelSwitch.MinimumLevel, nuevoNivel);
+                    levelSwitch.MinimumLevel = nuevoNivel;
+                }
+                else
+                {
+                    // Override nuevo que no existía al arrancar → no se puede añadir en caliente
+                    Log.Warning("Override {Namespace} no existía al arrancar, ignorado", overrideEntry.Key);
+                }
+            }
+        }
+
+        private static LogEventLevel ObtenerNivelSerilog(string pNivel) => pNivel switch
+        {
+            "Verbose" => LogEventLevel.Verbose,
+            "Debug" => LogEventLevel.Debug,
+            "Information" => LogEventLevel.Information,
+            "Warning" => LogEventLevel.Warning,
+            "Error" => LogEventLevel.Error,
+            "Fatal" => LogEventLevel.Fatal,
+            _ => LogEventLevel.Information
+        };
 
         public ILogger<T> CrearLogger<T>()
         {
@@ -915,7 +1015,7 @@ namespace Es.Riam.Gnoss.Util.General
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             // Reemplaza saltos de línea en el mensaje renderizado
-            var message = logEvent.MessageTemplate.Text
+            var message = logEvent.RenderMessage()
                 .Replace("\r\n", " ")
                 .Replace("\n", " ")
                 .Replace("\r", " ");

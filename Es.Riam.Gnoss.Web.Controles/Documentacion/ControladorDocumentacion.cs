@@ -658,7 +658,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                 TipoCampoOntologia tipo = ObtenerTipoCampoOntologiaDeRuta(rutaArchivo);
                 
-                nombreArchivos.Add(rutaArchivo.Substring(rutaArchivo.LastIndexOf("/") + 1), tipo);
+                nombreArchivos.TryAdd(rutaArchivo.Substring(rutaArchivo.LastIndexOf("/") + 1), tipo);
             }
 
             return nombreArchivos;

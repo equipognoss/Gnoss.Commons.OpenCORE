@@ -1246,13 +1246,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
 				ComprobarInconsistencias();
 				
-				mEntityContext.SaveChanges();
-
-				ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
-				proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_INVALIDAR + ProyectoSeleccionado.Clave, listaRutasPestanyasInvalidarEnCache, 64800);
-				proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_REGISTRAR + ProyectoSeleccionado.Clave, listaRutasPestanyasRegistrarEnCache, 64800);
-
+				mEntityContext.SaveChanges();				
 			}
+
+			ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+			proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_INVALIDAR + ProyectoSeleccionado.Clave, listaRutasPestanyasInvalidarEnCache, 64800);
+			proyCL.AgregarObjetoCache(ProyectoCL.CLAVE_CACHE_LISTA_RUTAPESTANYAS_REGISTRAR + ProyectoSeleccionado.Clave, listaRutasPestanyasRegistrarEnCache, 64800);
 		}
 
 		public void GuardarVersionPagina(TabModel pestanya, string pComentario = null)
