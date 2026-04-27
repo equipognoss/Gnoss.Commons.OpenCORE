@@ -9,6 +9,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
+using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using System;
@@ -112,10 +113,12 @@ namespace Es.Riam.Gnoss.CL.CMS
         /// <param name="pComponenteID">ID del componente</param>
         /// <param name="pLanguageCode">Idioma</param>
         /// <param name="pFichaComponente">FichaComponente</param>
-        public void RefrescarComponentePorIDEnProyecto(Guid pProyectoID, Guid pComponenteID, string pLanguageCode, CMSComponent pFichaComponente)
+        /// <param name="pTipoCaducidadComponente">Tipo de caducidad del componente</param>
+        public void RefrescarComponentePorIDEnProyecto(Guid pProyectoID, Guid pComponenteID, string pLanguageCode, CMSComponent pFichaComponente, TipoCaducidadComponenteCMS pTipoCaducidadComponente)
         {
+            int segundosCaducidad = ObtenerDuracionCaducidadComponente(pTipoCaducidadComponente);
             string rawKey = string.Concat("ComponenteCMSDeproyectoMVC_", pProyectoID.ToString(), "_", pComponenteID.ToString(), "_", pLanguageCode);
-            AgregarObjetoCache(rawKey, pFichaComponente);
+            AgregarObjetoCache(rawKey, pFichaComponente, segundosCaducidad);
         }
 
         /// <summary>
@@ -154,6 +157,29 @@ namespace Es.Riam.Gnoss.CL.CMS
             return listaComponentes;
         }
 
+        /// <summary>
+        /// Obtiene la duración de la caducidad de un componente en segundos en función del tipo de caducidad que se le haya asignado
+        /// </summary>
+        /// <param name="pTipoCaducidadComponente">Tipo de caducidad configurada en el componente</param>
+        /// <returns>La caducidad correspondiente en segundos según la configurada</returns>
+        private static int ObtenerDuracionCaducidadComponente(TipoCaducidadComponenteCMS pTipoCaducidadComponente)
+        {
+            int segundosCaducidad = 0;
+            switch (pTipoCaducidadComponente)
+            {
+                case TipoCaducidadComponenteCMS.Hora:
+                    segundosCaducidad = 3600;
+                    break;
+                case TipoCaducidadComponenteCMS.Dia:
+                    segundosCaducidad = 86400;
+                    break;
+                case TipoCaducidadComponenteCMS.Semana:
+                    segundosCaducidad = 604800;
+                    break;
+            }
+
+            return segundosCaducidad;
+        }
 
         #endregion
 

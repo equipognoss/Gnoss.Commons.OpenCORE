@@ -445,7 +445,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 column: "EstadoID",
                 principalTable: "Estado",
                 principalColumn: "EstadoID",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Documento_Estado_EstadoID",
@@ -453,7 +453,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 column: "EstadoID",
                 principalTable: "Estado",
                 principalColumn: "EstadoID",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ProyectoPestanyaCMS_Estado_EstadoID",
@@ -461,7 +461,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 column: "EstadoID",
                 principalTable: "Estado",
                 principalColumn: "EstadoID",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
         }
 
         /// <inheritdoc />

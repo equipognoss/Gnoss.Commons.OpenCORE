@@ -608,7 +608,7 @@ namespace Es.Riam.Gnoss.Util.General
             return loggerConfiguration;
         }
 
-        public static void ConfigurarSeguimientoFicheros(HostBuilderContext pHostContext,IConfigurationBuilder pConfig, Serilog.ILogger pLooger)
+        public static void ConfigurarSeguimientoFicheros(HostBuilderContext pHostContext, IConfigurationBuilder pConfig, Serilog.ILogger pLooger)
         {
             pConfig.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             pConfig.AddJsonFile($"appsettings.{pHostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);

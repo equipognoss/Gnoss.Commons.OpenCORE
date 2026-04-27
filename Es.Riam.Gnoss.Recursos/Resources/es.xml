@@ -6334,6 +6334,10 @@
 		<Resource tag="CLAUSULASDEREGISTRO">Cláusulas de registro</Resource>
 		<Resource tag="CONFIGURACIONINICIAL">Configuración inicial</Resource>
 		<Resource tag="CARACTERESMINIMOSMAXIMOSNOMBRECORTOUSUARIO">El nombre del usuario administrador debe contener entre 3 y 12 caracteres.</Resource>
+		<Resource tag="EMAILNOVALIDO">El email "@1@" introducido no es válido</Resource>
+		<Resource tag="CONTRASEÑANULANOVALIDA">La contraseña de usuario no puede ser nula</Resource>
+		<Resource tag="CONTRASEÑANOVALIDAESPACIO">La contraseña de usuario no puede contener espacios en blanco</Resource>
+		<Resource tag="CONTRASEÑACONFIGURACIONPERMITIDA">La contraseña de usuario debe contener entre 6 y 12 caracteres y al menos una letra y un número. Se permiten los siguientes carácteres especiales: # _ $ *</Resource>
 		<Resource tag="DATOSDEACCESOYURLS">Datos de acceso y Urls</Resource>
 		<Resource tag="INFORMACIONCONTEXTUAL">Información contextual</Resource>
 		<Resource tag="DOCUMENTACION">Documentación</Resource>

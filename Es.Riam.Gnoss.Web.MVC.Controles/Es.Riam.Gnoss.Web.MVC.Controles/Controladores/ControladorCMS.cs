@@ -503,14 +503,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             fichaComponente = null;
                         }
 
-                        if (pComponente.TipoCaducidadComponenteCMS != TipoCaducidadComponenteCMS.NoCache)
+                        if (pComponente.TipoCaducidadComponenteCMS != TipoCaducidadComponenteCMS.NoCache && fichaComponente != null)
                         {
-                            if (fichaComponente != null)
-                            {
-                                CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
-                                cmsCL.RefrescarComponentePorIDEnProyecto(ProyectoSeleccionado.Clave, pComponente.Clave, pIdioma, fichaComponente);
-                                cmsCL.Dispose();
-                            }
+                            CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
+                            cmsCL.RefrescarComponentePorIDEnProyecto(ProyectoSeleccionado.Clave, pComponente.Clave, pIdioma, fichaComponente, pComponente.TipoCaducidadComponenteCMS);
+                            cmsCL.Dispose();
                         }
                     }
                     if (fichaComponente != null)
