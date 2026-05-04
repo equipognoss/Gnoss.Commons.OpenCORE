@@ -9224,6 +9224,18 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return dataWrapperDocumentacion;
         }
 
+        public Documento ObtenerOntologiaDeDocumentoYProyecto(Guid documentoID, Guid pProyectoID)
+        {
+            var enlaces = mEntityContext.Documento.Join(mEntityContext.Documento, documentoOriginal => documentoOriginal.ElementoVinculadoID.Value, ontologia => ontologia.DocumentoID, (documentoOriginal, ontologia) => new
+            {
+                Ontologia = ontologia,
+                DocumentoOriginal = documentoOriginal
+            }).Where(item => item.DocumentoOriginal.DocumentoID.Equals(documentoID) && (item.Ontologia.Tipo == 7 || item.Ontologia.Tipo == 23)).Select(item => item.Ontologia.Enlace);
+
+            return mEntityContext.Documento.Where(ontologia => ontologia.ProyectoID == pProyectoID && enlaces.Contains(ontologia.Enlace)).FirstOrDefault();
+        }
+
+
         /// <summary>
         /// Se obtiene el documento vinculado al pasado por parámetro
         /// </summary>

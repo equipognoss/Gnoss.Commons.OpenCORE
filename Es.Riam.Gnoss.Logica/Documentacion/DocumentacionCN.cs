@@ -2807,6 +2807,11 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         public DataWrapperDocumentacion ObtenerOntologiasDeDocumentos(List<Guid> pListaDocumentosID)
         {
             return DocumentacionAD.ObtenerOntologiasDeDocumentos(pListaDocumentosID);
+        }       
+
+        public Documento ObtenerOntologiaDeDocumentoYProyecto(Guid pDocumentoOriginalID, Guid pProyectoID)
+        {
+            return DocumentacionAD.ObtenerOntologiaDeDocumentoYProyecto(pDocumentoOriginalID, pProyectoID);
         }
 
         /// <summary>
