@@ -1864,13 +1864,20 @@ namespace Es.Riam.Util
         public static string LimpiarInyeccionCodigo(string pTexto, HtmlSanitizer pSanitizer, bool pDecodificar = false)
         {
             //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
-            pSanitizer.AllowedAttributes.Add("class");
             pSanitizer.AllowDataAttributes = true;
+            pSanitizer.AllowedAttributes.Add("class");
+            pSanitizer.AllowedAttributes.Add("crossorigin");
+            pSanitizer.AllowedAttributes.Add("controls");
+            pSanitizer.AllowedAttributes.Add("kind");
+            pSanitizer.AllowedAttributes.Add("srclang");
+            pSanitizer.AllowedAttributes.Add("default");
             pSanitizer.AllowedTags.Add("iframe");            
             pSanitizer.AllowedTags.Add("video");
             pSanitizer.AllowedTags.Add("audio");
             pSanitizer.AllowedTags.Add("source");
+            pSanitizer.AllowedTags.Add("track");
             pSanitizer.AllowedTags.Remove("form");
+            
             pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);
             pTexto = pSanitizer.Sanitize(pTexto);
             if (pDecodificar)

@@ -5888,22 +5888,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             return dataWrapperProyecto;
         }
 
-
-
         public List<UsuarioAdministradorComunidad> CargarProyectosParticipaPersonaOrg(Guid pOrganizacionID, Guid pPersonaID)
         {
+            var administradoresProyectoSQL = mEntityContext.Proyecto.JoinOrganizacionParticipaProy().JoinPerfil().LeftJoinIdentidad().LeftJoinPerfil().LeftJoinPersona().LeftJoinAdministradorProyecto().Where(x => x.OrganizacionParticipaProy.OrganizacionID.Equals(pOrganizacionID) && x.Perfil.PersonaID.HasValue && x.Perfil.PersonaID.Value.Equals(pPersonaID) && x.Proyecto.Estado != 0 && x.Proyecto.Estado != 1 && !x.Proyecto.ProyectoID.Equals(MetaProyecto));
 
-            var administradoresProyectoSQL = mEntityContext.Proyecto.JoinOrganizacionParticipaProy().JoinPerfil().LeftJoinIdentidad().LeftJoinPerfil().LeftJoinPersona().LeftJoinAdministradorProyecto().Where(x => !x.Identidad.FechaBaja.HasValue && !x.Identidad.FechaExpulsion.HasValue && x.OrganizacionParticipaProy.OrganizacionID.Equals(pOrganizacionID) && x.Perfil.PersonaID.HasValue && x.Perfil.PersonaID.Value.Equals(pPersonaID) && x.Proyecto.Estado != 0 && x.Proyecto.Estado != 1 && !x.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto));
-
-            var administradoresProyectoSQL2 = administradoresProyectoSQL.GroupBy(x => new { OrganizacionID = x.Proyecto.OrganizacionID, ProyectoID = x.Proyecto.ProyectoID, Nombre = x.Proyecto.Nombre, Tipo = x.Identidad.Tipo });
+            var administradoresProyectoSQL2 = administradoresProyectoSQL.GroupBy(x => new { OrganizacionID = x.Proyecto.OrganizacionID, ProyectoID = x.Proyecto.ProyectoID, Nombre = x.Proyecto.Nombre, Tipo = x.Identidad.Tipo, x.Identidad.FechaBaja, x.Identidad.FechaExpulsion });
 
             var administradoresProyectoSQL3 = administradoresProyectoSQL2.Select(x => new
             {
                 OrganizacionID = x.Key.OrganizacionID,
                 ProyectoID = x.Key.ProyectoID,
                 Nombre = x.Key.Nombre,
-                Tipo = ((short?)x.Key.Tipo).HasValue ? (short?)x.Key.Tipo : null,
-                Administrador = (x.Count(y => ((Guid?)y.AdministradorProyecto.UsuarioID).HasValue)) > 0 ? 1 : 0
+                Tipo = x.Key.Tipo,
+                EstaEnProyecto = ((short?)x.Key.Tipo).HasValue && !x.Key.FechaBaja.HasValue && !x.Key.FechaExpulsion.HasValue,
+                Administrador = x.Any(y => ((Guid?)y.AdministradorProyecto.UsuarioID).HasValue)
             }).Distinct();
 
 
@@ -5913,7 +5911,8 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
                 ProyectoID = x.ProyectoID,
                 Nombre = x.Nombre,
                 Tipo = x.Tipo,
-                Administrador = x.Administrador
+                Administrador = x.Administrador,
+                EstaEnProyecto = x.EstaEnProyecto
             }).OrderBy(item => item.Nombre).ToList();
 
 

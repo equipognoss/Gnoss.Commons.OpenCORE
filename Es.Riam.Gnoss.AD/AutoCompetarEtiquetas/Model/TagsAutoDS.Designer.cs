@@ -1927,7 +1927,6 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas.Model
                 this.columnEtiqueta.AllowDBNull = false;
                 this.columnEtiqueta.MaxLength = 1000;
                 this.columnCantidad.AllowDBNull = false;
-                this.columnIdioma.MaxLength = 4;
                 this.urlImagen = new global::System.Data.DataColumn("UrlImagen", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.urlImagen);
                 this.tipoDato = new global::System.Data.DataColumn("TipoDato", typeof(short), null, global::System.Data.MappingType.Element);

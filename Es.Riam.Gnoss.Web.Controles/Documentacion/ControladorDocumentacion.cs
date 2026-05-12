@@ -35,6 +35,7 @@ using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Live;
 using Es.Riam.Gnoss.Logica.Notificacion;
+using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.RDF;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
@@ -570,12 +571,28 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
         public string GenerarNuevoRdfYFicheros(Documento pDocumentoOriginal, Documento pDocumentoNuevo, Ontologia pOntologia)
         {
+            DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+
             try
             {
                 string rdf = ObtenerTextoRDFDeBDRdfHistorico(pDocumentoOriginal.Clave, GestionOWL.NAMESPACE_ONTO_GNOSS);
-                if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
+                if (string.IsNullOrEmpty(rdf))
                 {
-                    DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+                    rdf = ObtenerTextoRDFDeBDRDF(pDocumentoOriginal.Clave, pDocumentoOriginal.ProyectoID, GestionOWL.NAMESPACE_ONTO_GNOSS);
+
+                    if (string.IsNullOrEmpty(rdf))
+                    {
+                        byte[] rdfByteArray = ObtenerRDFDeVirtuoso(pDocumentoOriginal.Clave, $"{pOntologia.GestorOWL.NamespaceOntologia}.owl", UrlIntragnoss, pOntologia.GestorOWL.UrlOntologia, GestionOWL.NAMESPACE_ONTO_GNOSS, pOntologia, true);
+                        MemoryStream buffer = new MemoryStream(rdfByteArray);
+                        StreamReader reader = new StreamReader(buffer);
+                        rdf = reader.ReadToEnd();
+                        reader.Close();
+                        reader.Dispose();
+                    }
+                }
+               
+                if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
+                {                    
                     pDocumentoOriginal.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumentoOriginal.ElementoVinculadoID));
 
                     pDocumentoOriginal.GestorDocumental.CargarDocumentos(false);

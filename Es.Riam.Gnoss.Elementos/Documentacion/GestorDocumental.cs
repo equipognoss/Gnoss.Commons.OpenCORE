@@ -1191,16 +1191,14 @@ namespace Es.Riam.Gnoss.Elementos.Documentacion
             // Crear la nueva versión a partir del documento de origen
             Documento nuevaVersion = CrearNuevaVersionDocumento(pVersionDestino, pIdentidadActual, pRestaurando: true, pEsMejora: pEsMejora);
 
-            // Si estamos restaurando una mejora hay que actualizar el estado de la version anterior a historico
-            // Sino seguimos el flujo de una restauracion normal.
-            if (pEsMejora)
-            {
-                pUltimaVersionActual.FilaDocumento.VersionDocumento.EstadoVersion = (short)EstadoVersion.Historico;
-            }
-            else
+            // Si no estamos restaurando una mejora, indicar que la ultima version actual ya no lo es.
+            if (!pEsMejora)
             {
                 pUltimaVersionActual.FilaDocumento.UltimaVersion = false;
             }
+
+            // Marcar el recurso actual como historico
+            pUltimaVersionActual.FilaDocumento.VersionDocumento.EstadoVersion = (short)EstadoVersion.Historico;
 
             return nuevaVersion;
         }
