@@ -930,8 +930,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     componenteListadoProyectos.TipoListadoProyectos = (TipoListadoProyectosCMS)tipoListadoProyectos;
                     switch ((TipoListadoProyectosCMS)tipoListadoProyectos)
                     {
-                        case TipoListadoProyectosCMS.RecomendadosProyecto:
                         case TipoListadoProyectosCMS.ComunidadesUsuario:
+                            componenteListadoProyectos.NumeroItems = numItemsListadoProyectos;
+                            componenteListadoProyectos.ListaGuids = listaComponentesListadoProyectos;
+                            break;
+                        case TipoListadoProyectosCMS.RecomendadosProyecto:
                         case TipoListadoProyectosCMS.RecomendadosUsuario:
                             componenteListadoProyectos.NumeroItems = numItemsListadoProyectos;
                             componenteListadoProyectos.ListaGuids = new List<Guid>();

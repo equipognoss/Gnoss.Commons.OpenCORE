@@ -2833,6 +2833,17 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene un n�mero espec�fico de proyectos en los que participa el usuario
+        /// </summary>
+        /// <param name="pUsuarioID">Id del usuario</param>
+        /// <param name="pNumeroResultados">Numero de proyectos que se van a devolver</param>
+        /// <returns>Devuelve lista con los Id de los proyectos que participa el usuario</returns>
+        public List<Guid> ObtenerProyectosIDParticipaUsuarioConFiltroProyectos(Guid pUsuarioID, int pNumeroResultados, List<Guid> pListaProyectos)
+        {
+            return ProyectoAD.ObtenerProyectosIDParticipaUsuarioConFiltroProyectos(pUsuarioID, pNumeroResultados, pListaProyectos);
+        }
+
+        /// <summary>
         /// Obtiene el peso de una ontología para una pestaña concreta para poder crear el autocompletar con dicho peso
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto donde se encuentra la pesta�a</param>

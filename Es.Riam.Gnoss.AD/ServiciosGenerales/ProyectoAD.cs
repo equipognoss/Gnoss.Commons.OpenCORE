@@ -4198,6 +4198,71 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         }
 
         /// <summary>
+        /// Obtiene un n?mero espec?fico de proyectos en los que participa el usuario
+        /// </summary>
+        /// <param name="pUsuarioID">Id del usuario</param>
+        /// <param name="numeroResultados">Numero de proyectos que se van a devolver</param>
+        /// <returns>Devuelve lista con los Id de los proyectos que participa el usuario</returns>
+        public List<Guid> ObtenerProyectosIDParticipaUsuarioConFiltroProyectos(Guid pUsuarioID, int pNumeroResultados, List<Guid> pProyectos)
+        {
+            List<Guid> proyectosUsuario = new List<Guid>();
+
+            List<Guid> listaPerfilID = mEntityContext.Perfil.Join(mEntityContext.Persona, perfil => perfil.PersonaID.Value, persona => persona.PersonaID, (perfil, persona) => new
+            {
+                Perfil = perfil,
+                Persona = persona
+            }).Where(objeto => objeto.Persona.UsuarioID.HasValue && objeto.Persona.UsuarioID.Value.Equals(pUsuarioID)).Select(objeto => objeto.Perfil.PerfilID).ToList();
+
+            List<Guid> listaProyectoID = mEntityContext.AdministradorProyecto.Join(mEntityContext.Usuario, adminProy => adminProy.UsuarioID, usuario => usuario.UsuarioID, (adminProy, usuario) => new
+            {
+                AdminProy = adminProy,
+                User = usuario
+            }).Join(mEntityContext.Persona, objeto => objeto.User.UsuarioID, persona => persona.UsuarioID.Value, (objeto, persona) => new
+            {
+                AdminProy = objeto.AdminProy,
+                User = objeto.User,
+                Persona = persona
+            }).Join(mEntityContext.Perfil, objeto => objeto.Persona.PersonaID, perfil => perfil.PersonaID.Value, (objeto, perfil) => new
+            {
+                UsurioID = objeto.Persona.UsuarioID,
+                ProyectoID = objeto.AdminProy.ProyectoID
+            }).Where(objeto => objeto.UsurioID.HasValue && objeto.UsurioID.Value.Equals(pUsuarioID)).Select(objeto => objeto.UsurioID.Value).ToList();
+
+            var listaProyectoAux = mEntityContext.Proyecto.Join(mEntityContext.Identidad, proyecto => proyecto.ProyectoID, identidad => identidad.ProyectoID, (proyecto, identidad) => new
+            {
+                Proyecto = proyecto,
+                Identidad = identidad
+            }).Where(objeto => listaPerfilID.Contains(objeto.Identidad.PerfilID) && !objeto.Identidad.FechaBaja.HasValue && !objeto.Identidad.FechaExpulsion.HasValue && !objeto.Proyecto.ProyectoID.Equals(ProyectoAD.MetaProyecto) && (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Abierto) || objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Cerrandose) || (objeto.Proyecto.Estado.Equals((short)EstadoProyecto.Definicion) && listaProyectoID.Contains(objeto.Proyecto.ProyectoID)))).OrderByDescending(objeto => objeto.Identidad.NumConnexiones).Select(objeto => new
+            {
+                objeto.Proyecto.ProyectoID
+            });
+            List<Guid> listaProyecto = new List<Guid>();
+            if (pProyectos != null && pProyectos.Count > 0)
+            {
+                listaProyecto = listaProyectoAux.Where(item => pProyectos.Contains(item.ProyectoID)).Select(item => item.ProyectoID).ToList();
+            }
+            else
+            {
+                listaProyecto = listaProyectoAux.Select(item => item.ProyectoID).ToList();
+            }
+
+
+            foreach (Guid proyectoID in listaProyecto)
+            {
+                if (!proyectosUsuario.Contains(proyectoID))
+                {
+                    proyectosUsuario.Add(proyectoID);
+                }
+                if (pNumeroResultados.Equals(proyectosUsuario.Count))
+                {
+                    break;
+                }
+            }
+
+            return proyectosUsuario;
+        }
+
+        /// <summary>
         /// Devuvle los usuarios que no pertenecen al proyecto
         /// </summary>
         /// <param name="listaUsuarios">Lista de los usuarios de la organizacion</param>

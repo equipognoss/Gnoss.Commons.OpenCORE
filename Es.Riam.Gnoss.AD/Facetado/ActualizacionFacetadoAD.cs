@@ -1242,14 +1242,14 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/haspublicador>", Objeto = $"\"{RemplazarCaracteresBD(resultado.NombreOrganizacion)}\" ." });
                         }
-                        if (resultado.TipoAcceso == 2 || resultado.TipoAcceso == 0)
-                        {
+                        //if (resultado.TipoAcceso == 2 || resultado.TipoAcceso == 0)
+                        //{
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasnumeroComentarios>", Objeto = $"{resultado.NumeroComentariosPublicos} ." });
-                        }
-                        else
-                        {
-                            resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasnumeroComentarios>", Objeto = $"{resultado.NumeroComentariosPublicos + resultado.NumeroComentarios} ." });
-                        }
+                        //}
+                        //else
+                        //{
+                        //    resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasnumeroComentarios>", Objeto = $"{resultado.NumeroComentarios} ." });
+                        //}
                         if (resultado.Rank_Tiempo.HasValue)
                         {
                             resultadoConsulta.Add(new QueryTriples { Sujeto = $"<http://gnoss/{resultado.DocumentoID.ToString().ToUpper()}>", Predicado = "<http://gnoss/hasPopularidad>", Objeto = $"{resultado.Rank_Tiempo.Value} ." });

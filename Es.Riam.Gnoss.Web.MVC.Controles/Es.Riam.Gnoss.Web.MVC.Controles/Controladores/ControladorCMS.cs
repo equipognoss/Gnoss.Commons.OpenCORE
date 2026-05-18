@@ -2132,7 +2132,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     break;
                 case TipoListadoProyectosCMS.ComunidadesUsuario:
-                    List<Guid> listaComunidades = proyCN.ObtenerProyectosIDParticipaUsuario(UsuarioActual.UsuarioID, pComponente.NumeroItems);
+                    List<Guid> listaComunidades = proyCN.ObtenerProyectosIDParticipaUsuarioConFiltroProyectos(UsuarioActual.UsuarioID, pComponente.NumeroItems, pComponente.ListaGuids);
                     GestionProyecto gestor = new GestionProyecto(proyCN.ObtenerProyectosPorIDsCargaLigera(listaComunidades), mLoggingService, mEntityContext, mloggerFactory.CreateLogger<GestionProyecto>(), mloggerFactory);
 
                     foreach (Guid proyectoID in listaComunidades)
