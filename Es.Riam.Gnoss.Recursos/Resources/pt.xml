@@ -2177,6 +2177,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">A senha foi alterada com sucesso.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">A senha atual não está correta.</Resource>
 		<Resource tag="IRINICIO">Voltar ao início</Resource>
+		<Resource tag="PANELERROR">É necessário introduzir a sua senha atual e a nova para solicitar a alteração.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Solicitações de contatos e amigos</Resource>

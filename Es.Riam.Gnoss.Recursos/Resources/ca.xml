@@ -2235,6 +2235,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">La contrasenya s'ha canviat amb èxit.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">La contrasenya actual no és correcta.</Resource>
 		<Resource tag="IRINICIO">Anar a l'inici</Resource>
+		<Resource tag="PANELERROR">És necessari que introduïu la contrasenya anterior i la nova per sol·licitar el canvi.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Sol·licituds de contactes i amics</Resource>

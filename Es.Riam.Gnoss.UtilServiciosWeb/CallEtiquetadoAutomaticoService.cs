@@ -18,10 +18,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             mConfigService = configService;
             mServicioEtiquetadoUrl = mConfigService.ObtenerUrlServicio("etiquetadoAutomatico");
-            if (mServicioEtiquetadoUrl.StartsWith("https://"))
-            {
-                mServicioEtiquetadoUrl = mServicioEtiquetadoUrl.Replace("https://", "http://");
-            }
         }
 
         public string SeleccionarEtiquetasDesdeServicio(string titulo, string descripcion, string proyectoID)

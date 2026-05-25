@@ -2255,6 +2255,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">La password è stata cambiata con successo.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">La password attuale non è corretta.</Resource>
 		<Resource tag="IRINICIO">Vai alla Home Page</Resource>
+		<Resource tag="PANELERROR">È necessario inserire la password attuale e quella nuova per richiedere il cambio.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Richieste di contatti e amici</Resource>

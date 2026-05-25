@@ -2338,6 +2338,7 @@
 		<Resource tag="INSERTARPASSWORDACTUAL">Introduïx la teua contrasenya actual</Resource>
 		<Resource tag="INSERTARPASSWORDNUEVA">Introduïx la teua nova contrasenya</Resource>
 		<Resource tag="INSERTARPASSWORDCONFIRMAR">Confirma la nova contrasenya</Resource>
+		<Resource tag="PANELERROR">És necessari que introduïu la contrasenya anterior i la nova per a sol·licitar el canvi.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Sol·licituds de contactes i amics</Resource>

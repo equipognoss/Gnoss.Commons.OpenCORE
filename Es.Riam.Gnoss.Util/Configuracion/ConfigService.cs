@@ -1461,22 +1461,30 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return virtuosoConnectionData;
         }
 
+        /// <summary>
+        /// Se obtiene la conexión con virtuoso a través de la conexión con virtuoso home. En caso de no estar definida esta cadena de conexión e indicarse en los 
+        /// parámetros se devolverá la cadena de conexión general de virtuoso.
+        /// </summary>
+        /// <param name="pGetVirtuosoConnectionStringIfNull">Indica si debería devolver la cadena de conexión general de virtuoso si no está configurada la home</param>
+        /// <returns>Cadena de conexión de virtuoso home</returns>
         public VirtuosoConnectionData ObtenerVirtuosoConnectionStringHome(bool pGetVirtuosoConnectionStringIfNull = true)
         {
             if (string.IsNullOrEmpty(virtuosoConnectionStringHome))
             {
                 if (EnvironmentVariables.Contains($"virtuosoConnectionString_home"))
                 {
-                    virtuosoConnectionStringHome = EnvironmentVariables[$"virtuosoConnectionString_home"] as string;
-                    virtuosoConnectionDataHome = new VirtuosoConnectionData("virtuosoConnectionString_home", virtuosoConnectionStringHome, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
+                    virtuosoConnectionStringHome = EnvironmentVariables[$"virtuosoConnectionString_home"] as string;                    
                 }
                 else
-                {
-                    virtuosoConnectionStringHome = Configuration.GetConnectionString($"virtuosoConnectionString_home");
-                    virtuosoConnectionDataHome = new VirtuosoConnectionData("virtuosoConnectionString_home", virtuosoConnectionStringHome, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
-                }
+                {                    
+                    virtuosoConnectionStringHome = Configuration.GetConnectionString($"virtuosoConnectionString_home");                    
+                }             
 
-                if (pGetVirtuosoConnectionStringIfNull && string.IsNullOrEmpty(virtuosoConnectionStringHome))
+                if (!string.IsNullOrEmpty(virtuosoConnectionStringHome))
+                {
+                    virtuosoConnectionDataHome = new VirtuosoConnectionData("virtuosoConnectionString_home", virtuosoConnectionStringHome, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);                    
+                }
+                else if(pGetVirtuosoConnectionStringIfNull)
                 {
                     return ObtenerVirtuosoConnectionString();
                 }

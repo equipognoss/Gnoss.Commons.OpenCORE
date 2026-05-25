@@ -2259,6 +2259,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">Das Passwort wurde erfolgreich geändert.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">Das derzeitige Passwort ist falsch.</Resource>
 		<Resource tag="IRINICIO">Zur Startseite gehen</Resource>
+		<Resource tag="PANELERROR">Sie müssen Ihr aktuelles Passwort und das neue eingeben, um die Änderung anzufordern.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Anfragen von Kontakten und Freunden</Resource>

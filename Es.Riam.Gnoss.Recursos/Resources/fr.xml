@@ -2259,6 +2259,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">Le mot de passe a été modifié avec succès.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">Le mot de passe actuel est incorrect.</Resource>
 		<Resource tag="IRINICIO">Aller à l’accueil</Resource>
+		<Resource tag="PANELERROR">Vous devez saisir votre mot de passe actuel et le nouveau pour demander le changement.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Demandes de contacts et amis</Resource>

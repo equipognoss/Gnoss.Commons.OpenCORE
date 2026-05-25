@@ -855,7 +855,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 DocumentacionCL docCL = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
                 if (pPagina == 0 && !mSoloGenerarRelacionados)
                 {
-                    listaIDs = (List<Guid>)docCL.ObtenerRelacionadosRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave);
+                    listaIDs = (List<Guid>)docCL.ObtenerRelacionadosRecursoMVC(Documento.VersionOriginalID, ControllerBase.ProyectoSeleccionado.Clave);
                 }
                 if (listaIDs == null || mSoloGenerarRelacionados)
                 {
@@ -890,7 +890,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         categorias = categorias.Substring(0, categorias.Length - 1);
                     }
 
-                    facetadoCN.ObtenerRecursosRelacionadosNuevo(ControllerBase.ProyectoSeleccionado.Clave.ToString(), Documento.Clave.ToString(), facetadoDS, inicio, elementosMostrar, tags, categorias, ControllerBase.ProyectoSeleccionado.TipoProyecto == TipoProyecto.CatalogoNoSocialConUnTipoDeRecurso, NombreSemPestanya);
+                    facetadoCN.ObtenerRecursosRelacionadosNuevo(ControllerBase.ProyectoSeleccionado.Clave.ToString(), Documento.VersionOriginalID.ToString(), facetadoDS, inicio, elementosMostrar, tags, categorias, ControllerBase.ProyectoSeleccionado.TipoProyecto == TipoProyecto.CatalogoNoSocialConUnTipoDeRecurso, NombreSemPestanya);
 
                     if (facetadoDS.Tables["RecurosRelacionados"].Rows.Count > 0)
                     {
@@ -904,13 +904,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     if (pPagina == 0 && listaIDs.Count > 0)
                     {
-                        docCL.AgregarRelacionadosRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, listaIDs);
+                        docCL.AgregarRelacionadosRecursoMVC(Documento.VersionOriginalID, ControllerBase.ProyectoSeleccionado.Clave, listaIDs);
                     }
                 }
             }
             catch (Exception ex)
             {
-                ControllerBase.GuardarLogError("Error pintando los recursos relacionados del recurso: " + Documento.Clave.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n" + ex.ToString());
+                ControllerBase.GuardarLogError("Error pintando los recursos relacionados del recurso: " + Documento.VersionOriginalID.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n" + ex.ToString());
             }
 
             return listaIDs;
@@ -1115,7 +1115,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     //Intentamos obtener desde la cache
                     DocumentacionCL docCl = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
-                    List<Guid> listaRecursos = docCl.ObtenerContextoRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, pFilaProyGadget.GadgetID);
+                    List<Guid> listaRecursos = docCl.ObtenerContextoRecursoMVC(Documento.VersionOriginalID, ControllerBase.ProyectoSeleccionado.Clave, pFilaProyGadget.GadgetID);
                     docCl.Dispose();
 
                     if (listaRecursos != null)
@@ -1235,8 +1235,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     {
                         FiltrosOrden = "null";
                     }
-                    string filtros = UtilidadesVirtuoso.Obtenerfiltros(FiltrosOrigenDestino, Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, ControllerBase.UtilIdiomas.LanguageCode, pFilaProyGadget.ProyectoOrigenID, GestorFacetasComunidad, pUsarAfinidad);
-                    FiltrosOrigen = UtilidadesVirtuoso.ObtenerfiltrosOrigen(FiltrosOrigen, Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, pUsarAfinidad);
+                    string filtros = UtilidadesVirtuoso.Obtenerfiltros(FiltrosOrigenDestino, Documento.VersionOriginalID, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, ControllerBase.UtilIdiomas.LanguageCode, pFilaProyGadget.ProyectoOrigenID, GestorFacetasComunidad, pUsarAfinidad);
+                    FiltrosOrigen = UtilidadesVirtuoso.ObtenerfiltrosOrigen(FiltrosOrigen, Documento.VersionOriginalID, ControllerBase.ProyectoSeleccionado.Clave, ControllerBase.ProyectoOrigenBusquedaID, ControllerBase.UrlIntragnoss, ControllerBase.InformacionOntologias, pUsarAfinidad);
 
                     if (FiltrosOrigen == "nomostrar")
                     {
@@ -1262,7 +1262,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                     string filtroContexto = "Recursos relacionados con: '" + tituloRecurso + "' en " + nombreComunidad + "|||" + filtroContextoSelect + "|||" + filtroContextoWhere + "|||" + FiltrosOrden + "|||" + pesoMinimo;
 
-                    string docsAEliminar = Documento.Clave.ToString();
+                    string docsAEliminar = Documento.VersionOriginalID.ToString();
 
                     #region obtener resultados a eliminar
 
@@ -1422,19 +1422,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                     Uri uriContextoEcosistema = new Uri(pFilaProyGadget.ComunidadOrigen);
                                     if (estadoProyecto == EstadoProyecto.Cerrado || uriPropioEcosistema.Host != uriContextoEcosistema.Host)
                                     {
-                                        mLoggingService.GuardarLog($"estadoProyecto: {estadoProyecto}, uriPropioEcosistema.Host {uriPropioEcosistema.Host}, uriContextoEcosistema.Host {uriContextoEcosistema.Host} Documento?.Clave {Documento?.Clave} pFilaProyGadget?.GadgetID {pFilaProyGadget?.GadgetID}", mlogger);
+                                        mLoggingService.GuardarLog($"estadoProyecto: {estadoProyecto}, uriPropioEcosistema.Host {uriPropioEcosistema.Host}, uriContextoEcosistema.Host {uriContextoEcosistema.Host} Documento?.VersionOriginalID {Documento?.VersionOriginalID} pFilaProyGadget?.GadgetID {pFilaProyGadget?.GadgetID}", mlogger);
                                         proyectoDeEcosistema = false;
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    mLoggingService.GuardarLogError(ex, $"No se ha podido concretar si el proyecto es del ecosistema o no  Documento?.Clave {Documento?.Clave} pFilaProyGadget?.GadgetID {pFilaProyGadget?.GadgetID}", mlogger);
+                                    mLoggingService.GuardarLogError(ex, $"No se ha podido concretar si el proyecto es del ecosistema o no  Documento?.VersionOriginalID {Documento?.VersionOriginalID} pFilaProyGadget?.GadgetID {pFilaProyGadget?.GadgetID}", mlogger);
                                     proyectoDeEcosistema = false;
                                 }
                             }
                             else
                             {
-                                mLoggingService.GuardarLog($"No se ha encontrado el proyecto de origen: dataWrapperProyecto.ListaProyecto.Count: {dataWrapperProyecto.ListaProyecto.Count}  Documento?.Clave {Documento?.Clave} pFilaProyGadget?.GadgetID {pFilaProyGadget?.GadgetID}", mlogger);
+                                mLoggingService.GuardarLog($"No se ha encontrado el proyecto de origen: dataWrapperProyecto.ListaProyecto.Count: {dataWrapperProyecto.ListaProyecto.Count}  Documento?.VersionOriginalID {Documento?.VersionOriginalID} pFilaProyGadget?.GadgetID {pFilaProyGadget?.GadgetID}", mlogger);
                                 proyectoDeEcosistema = false;
                             }
                         }
@@ -1467,15 +1467,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             if (!pFilaProyGadget.ObtenerPrivados)
                             {
                                 DocumentacionCL docCl = new DocumentacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
-                                docCl.AgregarContextoRecursoMVC(Documento.Clave, ControllerBase.ProyectoSeleccionado.Clave, pFilaProyGadget.GadgetID, listaRecursos);
+                                docCl.AgregarContextoRecursoMVC(Documento.VersionOriginalID, ControllerBase.ProyectoSeleccionado.Clave, pFilaProyGadget.GadgetID, listaRecursos);
                                 docCl.Dispose();
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        ControllerBase.GuardarLogErrorContextos("Error producido en la llamada al servicio de resultados(el error debería de estar en el servicio de resultados:" + cargadorResultadosContexto.Url + ") del contexto: " + pFilaProyGadget.GadgetID.ToString() + " del recurso: " + Documento.Clave.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n " + mLoggingService.DevolverCadenaError(ex, ControllerBase.Version));
-                        mLoggingService.AgregarEntradaDependencia($"Error producido en la llamada al servicio de resultados '{cargadorResultadosContexto.Url}' del contexto '{pFilaProyGadget.GadgetID}' del recurso '{Documento.Clave}' en la comunidad '{ControllerBase.ProyectoSeleccionado.Nombre}'", false, "CargarRecursosContexto", sw, false);
+                        ControllerBase.GuardarLogErrorContextos("Error producido en la llamada al servicio de resultados(el error debería de estar en el servicio de resultados:" + cargadorResultadosContexto.Url + ") del contexto: " + pFilaProyGadget.GadgetID.ToString() + " del recurso: " + Documento.VersionOriginalID.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n " + mLoggingService.DevolverCadenaError(ex, ControllerBase.Version));
+                        mLoggingService.AgregarEntradaDependencia($"Error producido en la llamada al servicio de resultados '{cargadorResultadosContexto.Url}' del contexto '{pFilaProyGadget.GadgetID}' del recurso '{Documento.VersionOriginalID}' en la comunidad '{ControllerBase.ProyectoSeleccionado.Nombre}'", false, "CargarRecursosContexto", sw, false);
                     }
 
                     #endregion
@@ -1492,8 +1492,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 {
                     throw;
                 }
-                ControllerBase.GuardarLogErrorContextos("Error pintando el contexto: " + pFilaProyGadget.GadgetID.ToString() + " del recurso: " + Documento.Clave.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n " + mLoggingService.DevolverCadenaError(ex, ControllerBase.Version));
-                mLoggingService.AgregarEntradaDependencia($"Error pintando el contexto '{pFilaProyGadget.GadgetID}' del recurso '{Documento.Clave}' en la comunidad '{ControllerBase.ProyectoSeleccionado.Nombre}'", false, "CargarRecursosContextos", sw, false);
+                ControllerBase.GuardarLogErrorContextos("Error pintando el contexto: " + pFilaProyGadget.GadgetID.ToString() + " del recurso: " + Documento.VersionOriginalID.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n " + mLoggingService.DevolverCadenaError(ex, ControllerBase.Version));
+                mLoggingService.AgregarEntradaDependencia($"Error pintando el contexto '{pFilaProyGadget.GadgetID}' del recurso '{Documento.VersionOriginalID}' en la comunidad '{ControllerBase.ProyectoSeleccionado.Nombre}'", false, "CargarRecursosContextos", sw, false);
             }
 
             return new KeyValuePair<string, List<ResourceModel>>(pNombreCortoGadget, listaRecursosContextos);
@@ -1511,7 +1511,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     FacetadoDS facetadoDS2 = new FacetadoDS();
 
                     #region Querys
-                    string query = " select distinct ?nombreasignatura ?otrotemaURL ?order  from <" + ControllerBase.UrlIntragnoss + pFilaProyGadget.ProyectoID + "> where { ?asignatura <http://ltsc.ieee.org/rdf/lomv1p0/lom#title> ?nombreasignatura . ?asignatura <http://rdfs.org/sioc/ns#topic> ?tema.  ?tema  <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicURL> ?temaURL. filter(?temaURL LIKE '%" + Documento.Clave.ToString() + "') ?asignatura <http://rdfs.org/sioc/ns#topic> ?otrotema .  ?otrotema <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicURL> ?otrotemaURL. ?asignatura <http://rdfs.org/sioc/ns#topic> ?otrotema . ?otrotema <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicOrder> ?order. ?asignatura rdf:type 'asignatura'. } order by xsd:int(?order)";
+                    string query = " select distinct ?nombreasignatura ?otrotemaURL ?order  from <" + ControllerBase.UrlIntragnoss + pFilaProyGadget.ProyectoID + "> where { ?asignatura <http://ltsc.ieee.org/rdf/lomv1p0/lom#title> ?nombreasignatura . ?asignatura <http://rdfs.org/sioc/ns#topic> ?tema.  ?tema  <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicURL> ?temaURL. filter(?temaURL LIKE '%" + Documento.VersionOriginalID.ToString() + "') ?asignatura <http://rdfs.org/sioc/ns#topic> ?otrotema .  ?otrotema <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicURL> ?otrotemaURL. ?asignatura <http://rdfs.org/sioc/ns#topic> ?otrotema . ?otrotema <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicOrder> ?order. ?asignatura rdf:type 'asignatura'. } order by xsd:int(?order)";
 
                     FacetadoCN facetadoCN = new FacetadoCN(ControllerBase.UrlIntragnoss, ControllerBase.ProyectoSeleccionado.Clave.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
                     facetadoCN.ObtenerResultadosBusqueda(query, ControllerBase.ProyectoSeleccionado.Clave.ToString(), facetadoDS, 0, 50, "");
@@ -1551,7 +1551,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             catch (Exception ex)
             {
-                ControllerBase.GuardarLogError("Error pintando el contexto: " + pFilaProyGadget.GadgetID.ToString() + " del recurso: " + Documento.Clave.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n " + ex.ToString());
+                ControllerBase.GuardarLogError("Error pintando el contexto: " + pFilaProyGadget.GadgetID.ToString() + " del recurso: " + Documento.VersionOriginalID.ToString() + " en la comunidad " + ControllerBase.ProyectoSeleccionado.Nombre + " \n " + ex.ToString());
             }
             return null;
         }

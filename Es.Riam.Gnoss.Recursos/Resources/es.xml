@@ -2342,6 +2342,7 @@
     <Resource tag="INSERTARPASSWORDACTUAL">Introduce tu contraseña actual</Resource>
     <Resource tag="INSERTARPASSWORDNUEVA">Introduce tu nueva contraseña</Resource>
     <Resource tag="INSERTARPASSWORDCONFIRMAR">Confirma la nueva contraseña</Resource>
+		<Resource tag="PANELERROR">Es necesario que introduzcas la contraseña anterior y la nueva para solicitar el cambio.</Resource>	
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Solicitudes de contactos y amigos</Resource>

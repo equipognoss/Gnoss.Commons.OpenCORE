@@ -2241,6 +2241,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">O contrasinal cambiouse con éxito.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">O contrasinal actual non é correcto.</Resource>
 		<Resource tag="IRINICIO">Ir ao inicio</Resource>
+		<Resource tag="PANELERROR">É necesario que introduzas o contrasinal anterior e o novo para solicitar o cambio.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Solicitudes de contactos e amigos</Resource>

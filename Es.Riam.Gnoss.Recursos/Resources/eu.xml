@@ -2257,6 +2257,7 @@
 		<Resource tag="PASSCAMBIADOEXITO">Pasahitza ondo aldatu da.</Resource>
 		<Resource tag="PASSANTERIORNOCHUNGA">Gaur egungo pasahitza ez da zuzena.</Resource>
 		<Resource tag="IRINICIO">Hasierara joan</Resource>
+		<Resource tag="PANELERROR">Aldaketa eskatzeko uneko pasahitza eta berria sartu behar dituzu.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Kontaktuen eta lagun izateko eskariak</Resource>

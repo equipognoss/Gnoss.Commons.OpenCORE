@@ -2276,6 +2276,7 @@
     <Resource tag="INSERTARPASSWORDACTUAL">Enter your current password</Resource>
     <Resource tag="INSERTARPASSWORDNUEVA">Enter your new password</Resource>
     <Resource tag="INSERTARPASSWORDCONFIRMAR">Confirm the new password</Resource>
+		<Resource tag="PANELERROR">You must enter your current password and the new one to request the change.</Resource>
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Contact and friend requests</Resource>

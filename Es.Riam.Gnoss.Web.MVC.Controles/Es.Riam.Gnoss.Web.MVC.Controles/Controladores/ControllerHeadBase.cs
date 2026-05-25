@@ -329,7 +329,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             string inpt_urlEtiquetadoAutomatico = "";
             //inpt_urlEtiquetadoAutomatico = $"{mConfigService.ObtenerUrlServicio("etiquetadoAutomatico")}/EtiquetadoAutomatico.asmx";
-            inpt_urlEtiquetadoAutomatico = $"{mConfigService.ObtenerUrlServicio("etiquetadoAutomatico")}";
+            inpt_urlEtiquetadoAutomatico = $"{mConfigService.ObtenerUrlServicio("etiquetadoAutomatico__externo")}";
 
             ViewBag.ListaInputHidden.Add(new KeyValuePair<string, string>("inpt_urlEtiquetadoAutomatico", inpt_urlEtiquetadoAutomatico));
 
