@@ -60,7 +60,8 @@
 		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Link to see all communities</Resource>
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Link to go to the personal space</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Search a group and press ADD</Resource>
-		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Search a profile and press ADD</Resource>		
+		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Search a profile and press ADD</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Search for a group and select the desired one</Resource>
 		<Resource tag="INTRODUCETUCORREOELECTRONICO">Enter your email</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Enter your password</Resource>
 		<Resource tag="INICIASESION">Log in to</Resource>

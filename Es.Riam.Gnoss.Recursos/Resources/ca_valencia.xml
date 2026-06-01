@@ -61,6 +61,7 @@
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Enllaç per a anar a l'espai personal</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Busca un grup i polsa AFEGIR</Resource>
 		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Busca un perfil i polsa AFEGIR</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Busca un grupo y selecciona el deseado</Resource>
 		<Resource tag="INTRODUCETUCORREOELECTRONICO">Introduïx el teu correu electrònic</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Introduïx la teua contrasenya</Resource>
 		<Resource tag="INICIASESION">Inicia sessió en</Resource>

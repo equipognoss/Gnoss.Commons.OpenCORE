@@ -59,8 +59,9 @@
 		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Enllaç per veure totes les comunitats</Resource>
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Enllaç per anar a l'espai personal</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Cerca un grup i premi AFEGEIX</Resource>
-		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Cerca un perfil i premi AFEGEIX</Resource>
-		<Resource tag="INTRODUCETUCORREOELECTRONICO">Introdueix el teu correu electrònic</Resource>
+		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Busca un grup i selecciona el desitjat</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Busca un grupo y selecciona el deseado</Resource>
+    <Resource tag="INTRODUCETUCORREOELECTRONICO">Introdueix el teu correu electrònic</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Introdueix la teva contrasenya</Resource>
 		<Resource tag="INICIASESION">Inicia sessió a</Resource>
 		<Resource tag="SITODAVIANOTIENESCUENTA">Si encara no tens un compte</Resource>

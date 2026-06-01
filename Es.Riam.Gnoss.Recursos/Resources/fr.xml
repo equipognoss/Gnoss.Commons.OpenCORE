@@ -61,7 +61,8 @@
 		<Resource tag="ENLACEPARAVERTODASLASCOMUNIDADES">Lien pour voir toutes les communautés</Resource>
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Lien pour accéder à l'espace personnel</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Recherchez un groupe et appuyez sur AJOUTER</Resource>
-		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Recherchez un profil et appuyez sur AJOUTER</Resource>		
+		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Recherchez un profil et appuyez sur AJOUTER</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Recherchez un groupe et sélectionnez celui que vous souhaitez.</Resource>
 		<Resource tag="INTRODUCETUCORREOELECTRONICO">Entrez votre adresse e-mail</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Entrez votre mot de passe</Resource>
 		<Resource tag="INICIASESION">Connexion à</Resource>

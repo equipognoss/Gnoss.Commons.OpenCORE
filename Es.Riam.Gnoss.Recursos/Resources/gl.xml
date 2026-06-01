@@ -61,6 +61,7 @@
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Ligazón para ir ao espazo persoal</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Busca un grupo y preme ENGADIR</Resource>
 		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Busca un perfil y preme ENGADIR</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Busca un grupo e selecciona o desexado</Resource>
 		<Resource tag="INTRODUCETUCORREOELECTRONICO">Introduce o teu correo electrónico</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Introduce a túa contrasinal</Resource>
 		<Resource tag="INICIASESION">Inicia sesión en</Resource>

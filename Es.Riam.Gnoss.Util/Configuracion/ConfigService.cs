@@ -3176,22 +3176,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return proyectoID;
         }
-        public string ObtenerDirectorioServiciosWeb()
-        {
-            if (string.IsNullOrEmpty(proyectoID))
-            {
-                if (EnvironmentVariables.Contains("rootWebServiceDirectory"))
-                {
-                    proyectoID = EnvironmentVariables["rootWebServiceDirectory"] as string;
-                }
-                else
-                {
-                    proyectoID = Configuration["rootWebServiceDirectory"];
-                }
-            }
-            return proyectoID;
-        }
-
+        
         public int ObtenerNumVisitasHilo()
         {
             if (mNumVisitasHilo == 0 || mNumVisitasHilo == 100)

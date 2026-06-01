@@ -61,6 +61,7 @@
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Link per andare allo spazio personale</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Cerca un gruppo e premi AGGIUNGI</Resource>
 		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Cerca un profilo e premi AGGIUNGI</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Cerca un gruppo e seleziona quello desiderato</Resource>
 		<Resource tag="INTRODUCETUCORREOELECTRONICO">Inserisci la tua email</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Inserisci la tua password</Resource>
 		<Resource tag="INICIASESION">Accedi a</Resource>

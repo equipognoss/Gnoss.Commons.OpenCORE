@@ -67,6 +67,7 @@
 		<Resource tag="ENLACEPARAIRALESPACIOPERSONAL">Link zum persönlichen Bereich gehen</Resource>
 		<Resource tag="BUSCAUNGRUPOYPULSAAÑADIR">Suche eine Gruppe und drücke HINZUFÜGEN</Resource>
 		<Resource tag="BUSCAUNPERFILYPULSAAÑADIR">Suche ein Profil und drücke HINZUFÜGEN</Resource>
+    <Resource tag="BUSCAUNGRUPOYSELECCIONADESEADO">Suchen Sie nach einer Gruppe und wählen Sie die gewünschte aus</Resource>
 		<Resource tag="INTRODUCETUCORREOELECTRONICO">Geben Sie Ihre E-Mail-Adresse ein</Resource>
 		<Resource tag="INTRODUCETUCONTRASEÑA">Geben Sie Ihr Passwort ein</Resource>
 		<Resource tag="INICIASESION">Anmelden bei</Resource>
