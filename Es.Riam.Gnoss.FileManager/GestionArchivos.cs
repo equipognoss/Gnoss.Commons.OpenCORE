@@ -18,6 +18,8 @@ namespace Es.Riam.Gnoss.FileManager
 {
     public class GestionArchivos
     {
+        private static readonly string[] LISTA_IDIOMAS_DISPONIBLES = {"es", "ca", "ca_valencia", "de", "en", "eu", "fr", "gl", "it", "pt" };
+
         #region Constructores
         private readonly LoggingService _loggingService;
         private readonly IUtilArchivos _utilArchivos;
@@ -851,64 +853,86 @@ namespace Es.Riam.Gnoss.FileManager
                 }
             }
 
-            if (string.IsNullOrEmpty(AzureStorageConnectionString))
-            {
-                pRutaOrigen = Path.Combine(RutaFicheros, pRutaOrigen);
-                pRutaDestino = Path.Combine(RutaFicheros, pRutaDestino);
+            pRutaOrigen = Path.Combine(RutaFicheros, pRutaOrigen);
+            pRutaDestino = Path.Combine(RutaFicheros, pRutaDestino);
 
-                if (Directory.Exists(pRutaOrigen))
+            if (Directory.Exists(pRutaOrigen))
+            {                
+                if (string.IsNullOrEmpty(Path.GetExtension(pNombreArchivoOrigen)))
                 {
-                    if (!Directory.Exists(pRutaDestino))
+                    // Si el fichero no tiene extensión, se copiarán todos los ficheros del directorio origen al directorio destino que comiencen por el nombre del
+                    // fichero. De esta forma se copian las redimensiones de las imágenes y las carpetas de openseadragons en caso de haberlas.
+                    string[] directoriesNames = Directory.GetDirectories(pRutaOrigen).Where(item => item.Contains(pNombreArchivoOrigen)).ToArray();
+                    string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).ToArray();
+
+                    foreach (string fileName in filesNames)
                     {
-                        Directory.CreateDirectory(pRutaDestino);
+                        CopiarMoverArchivo(pRutaOrigen, pRutaDestino, fileName, pCopiar, pSobreEscribir);
                     }
 
-                    if (string.IsNullOrEmpty(Path.GetExtension(pNombreArchivoOrigen)))
+                    foreach (string directoryName in directoriesNames)
                     {
-                        string[] directoriesNames = Directory.GetDirectories(pRutaOrigen).Where(item => item.Contains(pNombreArchivoOrigen)).ToArray();
-                        string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).ToArray();
+                        string rutaOrigen = Path.Combine(pRutaOrigen, Path.GetFileName(directoryName));
+                        string rutaDestino = Path.Combine(pRutaDestino, Path.GetFileName(directoryName));
 
-                        foreach(string fileName in filesNames)
-                        {
-                            string rutaOrigen = Path.Combine(pRutaOrigen, Path.GetFileName(fileName));
-                            string rutaDestino = Path.Combine(pRutaDestino, Path.GetFileName(fileName));
-
-                            CopiarMoverArchivo(rutaOrigen, rutaDestino, pCopiar, pSobreEscribir);
-                        }
-
-                        foreach(string directoryName in directoriesNames)
-                        {
-                            string rutaOrigen = Path.Combine(pRutaOrigen, Path.GetFileName(directoryName));
-                            string rutaDestino = Path.Combine(pRutaDestino, Path.GetFileName(directoryName));
-
-                            CopyDirectory(rutaOrigen, rutaDestino);
-                        }
+                        CopyDirectory(rutaOrigen, rutaDestino);
+                    }
+                }
+                else
+                {
+                    // Si el fichero tiene extensión, se copia sólo ese fichero.
+                    string filePath = Path.Combine(pRutaOrigen, pNombreArchivoOrigen);
+                    if (File.Exists(filePath))
+                    {
+                        // Si existe se copia
+                        CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoDestino, pCopiar, pSobreEscribir);
                     }
                     else
                     {
-                        pRutaOrigen = Path.Combine(pRutaOrigen, pNombreArchivoOrigen);
-                        pRutaDestino = Path.Combine(pRutaDestino, pNombreArchivoDestino);
+                        // Si no existe es posible que sea multiidioma, por lo que buscamos las carpetas de idiomas dentro del directorio de origne y se copia el mismo fichero dentro de cada una de esas carpetas.
+                        string[] directoriesNames = Directory.GetDirectories(pRutaOrigen).Where(item => LISTA_IDIOMAS_DISPONIBLES.Contains(Path.GetFileName(item))).Select(item => Path.GetFileName(item)).ToArray();
 
-                        CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pCopiar, pSobreEscribir);
-                    }  
-                }               
-            }
-            else
-            {
-                //AzureStorageClient.CopiarArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pNombreArchivoDestino);
+                        foreach (string directoryName in directoriesNames)
+                        {
+                            pRutaOrigen = Path.Combine(pRutaOrigen, directoryName);
+                            pRutaDestino = Path.Combine(pRutaDestino, directoryName);
+                            
+                            if (File.Exists(Path.Combine(pRutaOrigen, pNombreArchivoOrigen)))
+                            {
+                                CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pSobreEscribir);
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        private void CopiarMoverArchivo(string pRutaArchivoOrigen, string pRutaArchivoDestino, bool pCopiar, bool pSobreEscribir = false)
-        {
-            FileInfo fichOrigen = new FileInfo(pRutaArchivoOrigen);
+        /// <summary>
+        /// Copia o mueve un archivo de la ruta origen indicada a la ruta destino indicada.
+        /// </summary>
+        /// <param name="pRutaCarpetaOrigen"> Ruta donde se ubica el fichero a copiar</param>
+        /// <param name="pRutaCarpetaDestino"> Ruta donde queremos copiar el fichero</param>
+        /// <param name="pNombreFichero"> Nombre del archivo, debe llevar la extensión</param>
+        /// <param name="pCopiar"> True si queremos copiarlo, en caso de ser false, se moverá</param>
+        /// <param name="pSobreEscribir"> True si se quiere sobreescribir los archivos en caso de haberlos en el destino</param>
+        private void CopiarMoverArchivo(string pRutaCarpetaOrigen, string pRutaCarpetaDestino, string pNombreFichero, bool pCopiar, bool pSobreEscribir = false)
+        {            
+            if (!Directory.Exists(pRutaCarpetaDestino))
+            {
+                Directory.CreateDirectory(pRutaCarpetaDestino);
+            }
+
+            string rutaOrigen = Path.Combine(pRutaCarpetaOrigen, pNombreFichero);
+            string rutaDestino = Path.Combine(pRutaCarpetaDestino, pNombreFichero);
+
+            FileInfo fichOrigen = new FileInfo(rutaOrigen);
             if (pCopiar)
-            {//Copiar:
-                fichOrigen.CopyTo(pRutaArchivoDestino, pSobreEscribir);
+            {
+                fichOrigen.CopyTo(rutaDestino, pSobreEscribir);
             }
             else
-            {//Cortar:
-                fichOrigen.MoveTo(pRutaArchivoDestino, pSobreEscribir);
+            {
+                fichOrigen.MoveTo(rutaDestino, pSobreEscribir);
             }
         }
 

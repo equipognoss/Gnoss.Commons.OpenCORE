@@ -2315,6 +2315,16 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         }
 
         /// <summary>
+        /// Se obtiene un diccionario cuya clave es la última versión del documento y el valor es el identificador del documento original. Si el documento original no tiene versiones tanto la clave como el valor serán el mismo identificador del documento original.
+        /// </summary>
+        /// <param name="pDocumentosId">Lista de identificadores de documentos a obtener la última versión</param>
+        /// <returns>Diccionario clave valor cuya clave es la ultima versión del documento y el valor el documento original</returns>
+        public Dictionary<Guid, Guid> ObtenerUltimaVersionPorDocumentosId(IEnumerable<Guid> pDocumentosId)
+        {
+            return DocumentacionAD.ObtenerUltimaVersionPorDocumentosId(pDocumentosId);
+        }
+
+        /// <summary>
         /// Verdad si el documento está marcado como privado para editores
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento</param>

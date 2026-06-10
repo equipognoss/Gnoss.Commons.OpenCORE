@@ -7696,11 +7696,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <returns></returns>
         public Documento ObtenerUltimaVersionDocumento(Guid pDocumentoID)
         {
-           return mEntityContext.Documento.Join(mEntityContext.VersionDocumento, doc => doc.DocumentoID, version => version.DocumentoID, (doc, version) => new
+            return mEntityContext.Documento.Join(mEntityContext.VersionDocumento, doc => doc.DocumentoID, version => version.DocumentoID, (doc, version) => new
             {
                 Documento = doc,
                 VersionDocumento = version
-            }).Where(item => item.Documento.UltimaVersion && item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID)).Select(item => item.Documento).FirstOrDefault();      
+            }).Where(item => item.Documento.UltimaVersion && item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID)).Select(item => item.Documento).FirstOrDefault();
         }
 
         /// <summary>
@@ -7735,7 +7735,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
         public bool ComprobarDocumentoTieneMejoraActiva(Guid pDocumentoID)
         {
-            return mEntityContext.VersionDocumento.JoinDocumento().Any(item => item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID) && item.VersionDocumento.EsMejora &&  item.VersionDocumento.EstadoVersion == (short)EstadoVersion.Pendiente);
+            return mEntityContext.VersionDocumento.JoinDocumento().Any(item => item.VersionDocumento.DocumentoOriginalID.Equals(pDocumentoID) && item.VersionDocumento.EsMejora && item.VersionDocumento.EstadoVersion == (short)EstadoVersion.Pendiente);
         }
 
         public bool ComprobarDocumentoTieneVersiones(Guid pDocumentoID)
@@ -7911,7 +7911,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
         }
 
-		public bool ComprobarSiDocumentoEsUnaMejora(Guid pDocumentoID)
+        public bool ComprobarSiDocumentoEsUnaMejora(Guid pDocumentoID)
         {
             VersionDocumento versionMejora = mEntityContext.VersionDocumento.Where(x => x.DocumentoID.Equals(pDocumentoID) && x.EsMejora && x.EstadoVersion == (short)EstadoVersion.Pendiente).FirstOrDefault();
 
@@ -7925,13 +7925,13 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             }
         }
 
-		/// <summary>
-		/// Carga la tabla VersionDocumento para los documentos pasados en la lista.
-		/// </summary>
-		/// <param name="pDataWrapperDocumentacion">DataSet de documentación</param>
-		/// <param name="pListaDocumentosID">Lista de identificadores de los documentos para traer la información</param>
-		/// <param name="pRelaciones">Especifica si deben traerse todas la versiones de los documentos originales o no</param>
-		public void ObtenerVersionDocumentosPorIDs(DataWrapperDocumentacion pDataWrapperDocumentacion, List<Guid> pListaDocumentosID, bool pRelaciones)
+        /// <summary>
+        /// Carga la tabla VersionDocumento para los documentos pasados en la lista.
+        /// </summary>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentación</param>
+        /// <param name="pListaDocumentosID">Lista de identificadores de los documentos para traer la información</param>
+        /// <param name="pRelaciones">Especifica si deben traerse todas la versiones de los documentos originales o no</param>
+        public void ObtenerVersionDocumentosPorIDs(DataWrapperDocumentacion pDataWrapperDocumentacion, List<Guid> pListaDocumentosID, bool pRelaciones)
         {
             if (pListaDocumentosID.Count > 0)
             {
@@ -7984,7 +7984,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public Guid ObtenerUltimaVersionDeDocumento(Guid pDocumentoID)
         {
             return mEntityContext.VersionDocumento.Join(mEntityContext.Documento, vd => vd.DocumentoID, d => d.DocumentoID, (vd, d) => new { vd, d }).Where(x => x.vd.DocumentoOriginalID == pDocumentoID && x.d.UltimaVersion).Select(x => x.d.DocumentoID).FirstOrDefault();
-		}
+        }
 
         /// <summary>
         /// Dado un documentoID que tiene que ser una version vigente o pendiente
@@ -8016,7 +8016,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             // Comprobar si el documento pasado es una version de otro sino es un documento original
             var version = mEntityContext.VersionDocumento.FirstOrDefault(doc => doc.DocumentoID.Equals(pDocumentoID));
-            if(version != null)
+            if (version != null)
             {
                 return version.DocumentoOriginalID;
             }
@@ -8055,12 +8055,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return proyectoPestanyaMenuVersionPaginasCorrectas;
         }
 
-
         /// <summary>
         /// Carga todas las versiones de un documento.
         /// </summary>
         /// <param name="pDocumentoID">Identificador del documento del que se quieren obtener las versiones</param>
-        /// <returns>DataSet de documentación</return s>
+        /// <returns>DataSet de documentación</returns>
         public DataWrapperDocumentacion ObtenerVersionesDocumentoPorID(Guid pDocumentoID)
         {
             DataWrapperDocumentacion dataWrapperDocumentacion = new DataWrapperDocumentacion();
@@ -8085,6 +8084,26 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             dataWrapperDocumentacion.ListaDocumentoComentario = mEntityContext.DocumentoComentario.JoinVersionDocumento().Where(item => item.VersionDocumento.DocumentoOriginalID.Equals(documentoOriginal)).Select(item => item.DocumentoComentario).Union(mEntityContext.DocumentoComentario.Where(item => item.DocumentoID.Equals(documentoOriginal))).ToList();
 
             return dataWrapperDocumentacion;
+        }
+
+        /// <summary>
+        /// Se obtiene un diccionario cuya clave es la última versión del documento y el valor es el identificador del documento original. Si el documento original no tiene versiones tanto la clave como el valor serán el mismo identificador del documento original.
+        /// </summary>
+        /// <param name="pDocumentosId">Lista de identificadores de documentos a obtener la última versión</param>
+        /// <returns>Diccionario clave valor cuya clave es la ultima versión del documento y el valor el documento original</returns>
+        public Dictionary<Guid, Guid> ObtenerUltimaVersionPorDocumentosId(IEnumerable<Guid> pDocumentosId)
+        {
+            Dictionary<Guid, Guid> documentosOriginales = mEntityContext.VersionDocumento.Where(version => pDocumentosId.Contains(version.DocumentoID) || pDocumentosId.Contains(version.DocumentoOriginalID)).GroupBy(item => item.DocumentoOriginalID).ToDictionary(group => group.OrderByDescending(item => item.Version).Select(item => item.DocumentoID).FirstOrDefault(), group => group.Key);
+
+            foreach (var documentoId in pDocumentosId)
+            {
+                if (!documentosOriginales.ContainsValue(documentoId))
+                {
+                    documentosOriginales.Add(documentoId, documentoId);
+                }
+            }
+
+            return documentosOriginales;
         }
 
         #endregion
@@ -9284,24 +9303,24 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public Guid? ObtenerEstadoIDDeDocumento(Guid pDocumentoID)
         {
             return mEntityContext.Documento.Where(x => x.DocumentoID.Equals(pDocumentoID)).Select(x => x.EstadoID).FirstOrDefault();
-        }        
+        }
 
         public void EliminarTraduccionesAutomaticasDocumento(Guid pDocumentoID)
         {
-			List<IdiomaTraduccionAutomaticaDocumento> listaTraduccionesAutomaticas = mEntityContext.IdiomaTraduccionAutomaticaDocumento.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
-			foreach (IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento in listaTraduccionesAutomaticas)
-			{
-				mEntityContext.EliminarElemento(idiomaTraduccionAutomaticaDocumento);
-			}
+            List<IdiomaTraduccionAutomaticaDocumento> listaTraduccionesAutomaticas = mEntityContext.IdiomaTraduccionAutomaticaDocumento.Where(item => item.DocumentoID.Equals(pDocumentoID)).ToList();
+            foreach (IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento in listaTraduccionesAutomaticas)
+            {
+                mEntityContext.EliminarElemento(idiomaTraduccionAutomaticaDocumento);
+            }
 
-			mEntityContext.SaveChanges();
-		}
+            mEntityContext.SaveChanges();
+        }
 
-		public bool ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(Guid pDocumentoID, string pLanguageCode)
-		{
+        public bool ComprobarSiDocumentoEstaTraducidoConIAEnIdioma(Guid pDocumentoID, string pLanguageCode)
+        {
             IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento = mEntityContext.IdiomaTraduccionAutomaticaDocumento.FirstOrDefault(x => x.DocumentoID.Equals(pDocumentoID) && x.Idioma.Equals(pLanguageCode));
             return idiomaTraduccionAutomaticaDocumento != null;
-		}
+        }
         #region Estados        
         public void CambiarEstadoDocumento(Guid pDocumentoID, Guid pEstadoID)
         {
@@ -9316,19 +9335,19 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             mEntityContext.SaveChanges();
         }
 
-		#endregion
+        #endregion
 
-		#endregion
+        #endregion
 
-		#region Privados
+        #region Privados
 
 
-		/// <summary>
-		/// Obtiene los datos de las tablas DocumentoWebVinBaseRecursos y DocumentoWebAgCatTesauro de los documentos ya cargados en la
-		/// tabla Documento.
-		/// </summary>
-		/// <param name="pDocumentacionDS">DataSet con los documentos cargados y donde hay que cargar las tablas</param>
-		private void CargarDocumentoWebVinBRYDocumentoWebAgCatTesDeDocumentosCargados(DataWrapperDocumentacion pDocumentacionDS)
+        /// <summary>
+        /// Obtiene los datos de las tablas DocumentoWebVinBaseRecursos y DocumentoWebAgCatTesauro de los documentos ya cargados en la
+        /// tabla Documento.
+        /// </summary>
+        /// <param name="pDocumentacionDS">DataSet con los documentos cargados y donde hay que cargar las tablas</param>
+        private void CargarDocumentoWebVinBRYDocumentoWebAgCatTesDeDocumentosCargados(DataWrapperDocumentacion pDocumentacionDS)
         {
             //Cargo los Tag de los documentos antes cargados
             if (pDocumentacionDS.ListaDocumento.Count > 0)
@@ -9911,7 +9930,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             #endregion
         }
 
-        
+
 
 
 
