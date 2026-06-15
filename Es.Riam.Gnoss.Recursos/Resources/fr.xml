@@ -6293,4 +6293,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">L'assistant que vous essayez de modifier n'existe pas</Resource>
 		<Resource tag="ERRORHOST">Une erreur s'est produite lors de la connexion de l'assistant, veuillez vérifier que l'hôte du service est correct</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Espagnol</Resource>
+    <Resource tag="INGLÉS">Anglais</Resource>
+    <Resource tag="PORTUGUÉS">Portugais</Resource>
+    <Resource tag="CATALÁN">Catalan</Resource>
+    <Resource tag="VALENCIANO">Valencien</Resource>
+    <Resource tag="EUSKERA">Basque</Resource>
+    <Resource tag="GALLEGO">Galicien</Resource>
+    <Resource tag="FRANCÉS">Français</Resource>
+    <Resource tag="ALEMÁN">Allemand</Resource>
+    <Resource tag="ITALIANO">Italien</Resource>
+  </page>
 </Resources>

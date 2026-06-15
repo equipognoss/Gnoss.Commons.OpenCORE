@@ -6288,4 +6288,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">Editatzen saiatzen ari den laguntzailea ez da existitzen</Resource>
 		<Resource tag="ERRORHOST">Errore bat gertatu da laguntzailearen konexioan, egiaztatu zerbitzuaren host-a zuzena dela</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Gaztelania</Resource>
+    <Resource tag="INGLÉS">Ingelesa</Resource>
+    <Resource tag="PORTUGUÉS">Portugesa</Resource>
+    <Resource tag="CATALÁN">Katalana</Resource>
+    <Resource tag="VALENCIANO">Valentziarra</Resource>
+    <Resource tag="EUSKERA">Euskara</Resource>
+    <Resource tag="GALLEGO">Galegoa</Resource>
+    <Resource tag="FRANCÉS">Frantsesa</Resource>
+    <Resource tag="ALEMÁN">Alemana</Resource>
+    <Resource tag="ITALIANO">Italiarra</Resource>
+  </page>
 </Resources>

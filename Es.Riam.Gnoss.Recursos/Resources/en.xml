@@ -6509,4 +6509,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">The assistant you are trying to edit does not exist</Resource>
 		<Resource tag="ERRORHOST">An error has occurred with the assistant connection, please check that the service host is correct</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Spanish</Resource>
+    <Resource tag="INGLÉS">English</Resource>
+    <Resource tag="PORTUGUÉS">Portuguese</Resource>
+    <Resource tag="CATALÁN">Catalan</Resource>
+    <Resource tag="VALENCIANO">Valencian</Resource>
+    <Resource tag="EUSKERA">Basque</Resource>
+    <Resource tag="GALLEGO">Galician</Resource>
+    <Resource tag="FRANCÉS">French</Resource>
+    <Resource tag="ALEMÁN">German</Resource>
+    <Resource tag="ITALIANO">Italian</Resource>
+  </page>
 </Resources>

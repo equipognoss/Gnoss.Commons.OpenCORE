@@ -6295,4 +6295,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">Der Assistent, der bearbeitet werden soll, existiert nicht</Resource>
 		<Resource tag="ERRORHOST">Bei der Verbindung mit dem Assistenten ist ein Fehler aufgetreten, überprüfen Sie, ob der Diensthost korrekt ist</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Spanisch</Resource>
+    <Resource tag="INGLÉS">Englisch</Resource>
+    <Resource tag="PORTUGUÉS">Portugiesisch</Resource>
+    <Resource tag="CATALÁN">Katalanisch</Resource>
+    <Resource tag="VALENCIANO">Valencianisch</Resource>
+    <Resource tag="EUSKERA">Baskisch</Resource>
+    <Resource tag="GALLEGO">Galizisch</Resource>
+    <Resource tag="FRANCÉS">Französisch</Resource>
+    <Resource tag="ALEMÁN">Deutsch</Resource>
+    <Resource tag="ITALIANO">Italienisch</Resource>
+  </page>
 </Resources>

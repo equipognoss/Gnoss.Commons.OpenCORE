@@ -6274,4 +6274,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">L'assistent que s'està intentant editar no existeix</Resource>
 		<Resource tag="ERRORHOST">S'ha produït un error amb la connexió de l'assistent, comprova que l'host del servei és correcte</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Espanyol</Resource>
+    <Resource tag="INGLÉS">Anglès</Resource>
+    <Resource tag="PORTUGUÉS">Portuguès</Resource>
+    <Resource tag="CATALÁN">Català</Resource>
+    <Resource tag="VALENCIANO">Valencià</Resource>
+    <Resource tag="EUSKERA">Euskera</Resource>
+    <Resource tag="GALLEGO">Gallec</Resource>
+    <Resource tag="FRANCÉS">Francés</Resource>
+    <Resource tag="ALEMÁN">Francès</Resource>
+    <Resource tag="ITALIANO">Italià</Resource>
+  </page>
 </Resources>

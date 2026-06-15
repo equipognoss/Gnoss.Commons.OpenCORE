@@ -6290,4 +6290,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">L'assistente che si sta tentando di modificare non esiste</Resource>
 		<Resource tag="ERRORHOST">Si è verificato un errore nella connessione dell'assistente, verifica che l'host del servizio sia corretto</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Spagnolo</Resource>
+    <Resource tag="INGLÉS">Inglese</Resource>
+    <Resource tag="PORTUGUÉS">Portoghese</Resource>
+    <Resource tag="CATALÁN">Catalano</Resource>
+    <Resource tag="VALENCIANO">Valenciano</Resource>
+    <Resource tag="EUSKERA">Basco</Resource>
+    <Resource tag="GALLEGO">Galiziano</Resource>
+    <Resource tag="FRANCÉS">Francese</Resource>
+    <Resource tag="ALEMÁN">Tedesco</Resource>
+    <Resource tag="ITALIANO">Italiano</Resource>
+  </page>
 </Resources>

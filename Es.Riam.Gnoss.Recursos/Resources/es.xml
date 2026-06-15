@@ -7143,4 +7143,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">El asistente que se está intentando editar no existe</Resource>
 		<Resource tag="ERRORHOST">Ha ocurrido un error con la conexión del asistente, comprueba que el host del servicio es correcto</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Español</Resource>
+    <Resource tag="INGLÉS">Inglés</Resource>
+    <Resource tag="PORTUGUÉS">Portugués</Resource>
+    <Resource tag="CATALÁN">Catalán</Resource>
+    <Resource tag="VALENCIANO">Valenciano</Resource>
+    <Resource tag="EUSKERA">Euskera</Resource>
+    <Resource tag="GALLEGO">Gallego</Resource>
+    <Resource tag="FRANCÉS">Francés</Resource>    
+    <Resource tag="ALEMÁN">Alemán</Resource>
+    <Resource tag="ITALIANO">Italiano</Resource>
+  </page>
 </Resources>

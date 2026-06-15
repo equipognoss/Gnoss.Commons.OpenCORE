@@ -6370,4 +6370,16 @@
 		<Resource tag="ERRORASISTENTENOEXISTE">O asistente que se está intentando editar non existe</Resource>
 		<Resource tag="ERRORHOST">Produciuse un erro coa conexión do asistente, comproba que o host do servizo é correcto</Resource>
 	</page>
+  <page name="IDIOMAS">
+    <Resource tag="ESPAÑOL">Español</Resource>
+    <Resource tag="INGLÉS">Inglés</Resource>
+    <Resource tag="PORTUGUÉS">Portugués</Resource>
+    <Resource tag="CATALÁN">Catalán</Resource>
+    <Resource tag="VALENCIANO">Valenciano</Resource>
+    <Resource tag="EUSKERA">Vasco</Resource>
+    <Resource tag="GALLEGO">Galego</Resource>
+    <Resource tag="FRANCÉS">Francés</Resource>
+    <Resource tag="ALEMÁN">Alemán</Resource>
+    <Resource tag="ITALIANO">Italiano</Resource>
+  </page>
 </Resources>
