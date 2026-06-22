@@ -863,7 +863,7 @@ namespace Es.Riam.Gnoss.FileManager
                     // Si el fichero no tiene extensión, se copiarán todos los ficheros del directorio origen al directorio destino que comiencen por el nombre del
                     // fichero. De esta forma se copian las redimensiones de las imágenes y las carpetas de openseadragons en caso de haberlas.
                     string[] directoriesNames = Directory.GetDirectories(pRutaOrigen).Where(item => item.Contains(pNombreArchivoOrigen)).ToArray();
-                    string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).ToArray();
+                    string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).Select(item => item.Substring(item.LastIndexOf(Path.DirectorySeparatorChar) + 1)).ToArray();
 
                     foreach (string fileName in filesNames)
                     {

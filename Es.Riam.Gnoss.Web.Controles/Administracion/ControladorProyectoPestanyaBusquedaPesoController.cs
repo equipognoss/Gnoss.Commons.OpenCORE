@@ -72,7 +72,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     ontologiaProyecto = dataWrapperProyecto.ListaOntologiaProyecto.FirstOrDefault(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.OntologiaProyecto1.Equals(elementoBuscado));
                     if (ontologiaProyecto == null)
                     {//para el gnoss:type, ejemplo cidoc:E22_Man-Made_Object, que esto aparece en los subtipos de la ontologia
-                        ontologiaProyecto = dataWrapperProyecto.ListaOntologiaProyecto.FirstOrDefault(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.SubTipos.Contains(elementoBuscado));
+                        ontologiaProyecto = dataWrapperProyecto.ListaOntologiaProyecto.FirstOrDefault(item => item.ProyectoID.Equals(ProyectoSeleccionado.Clave) && item.SubTipos != null && item.SubTipos.Contains(elementoBuscado));
                         if (ontologiaProyecto != null && ontologiaBusqueda.Contains("gnoss:type="))
                         {
                             ontologia = ontologiaProyecto.OntologiaProyecto1;

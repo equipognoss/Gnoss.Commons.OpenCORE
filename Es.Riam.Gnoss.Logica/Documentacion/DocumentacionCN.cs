@@ -2314,6 +2314,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             return DocumentacionAD.ObtenerVersionesDocumentoPorID(pDocumentoID);
         }
 
+
+        /// <summary>
+        /// Se obtiene el identificador de la última versión de un documento. En caso de no tener versiones, se devuelve el identificador del documento original.
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del documento del cual queremos obtener la última versión. No tiene porque ser el DocumentoID original</param>
+        /// <returns>Identificador de la ultima versión del documento, de no haber versiones el identificador del documento original</returns>
+        public Guid ObtenerUltimaVersionDocumentoID(Guid pDocumentoID)
+        {
+            return DocumentacionAD.ObtenerUltimaVersionDocumentoID(pDocumentoID);
+        }
+
         /// <summary>
         /// Se obtiene un diccionario cuya clave es la última versión del documento y el valor es el identificador del documento original. Si el documento original no tiene versiones tanto la clave como el valor serán el mismo identificador del documento original.
         /// </summary>

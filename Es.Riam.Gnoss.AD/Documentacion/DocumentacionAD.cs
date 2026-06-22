@@ -8086,6 +8086,26 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             return dataWrapperDocumentacion;
         }
 
+
+        /// <summary>
+        /// Se obtiene el identificador de la última versión de un documento. En caso de no tener versiones, se devuelve el identificador del documento original.
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del documento del cual queremos obtener la última versión. No tiene porque ser el DocumentoID original</param>
+        /// <returns>Identificador de la ultima versión del documento, de no haber versiones el identificador del documento original</returns>
+        public Guid ObtenerUltimaVersionDocumentoID(Guid pDocumentoID)
+        {
+            Guid? ultimaVersionID = mEntityContext.VersionDocumento.Where(version => version.DocumentoID.Equals(pDocumentoID) || version.DocumentoOriginalID.Equals(pDocumentoID)).OrderByDescending(item => item.Version).Select(item => item.DocumentoID).FirstOrDefault();
+            
+            if (ultimaVersionID.HasValue)
+            {
+                return ultimaVersionID.Value;
+            }
+            else
+            {
+                return pDocumentoID;
+            }
+        }
+
         /// <summary>
         /// Se obtiene un diccionario cuya clave es la última versión del documento y el valor es el identificador del documento original. Si el documento original no tiene versiones tanto la clave como el valor serán el mismo identificador del documento original.
         /// </summary>

@@ -282,8 +282,6 @@ namespace Es.Riam.Util.AnalisisSintactico
 
         private static List<string> mListaCONJUNCIONES = null;
 
-        private static List<string> mListaCONJUNCIONESSeparadoras = null;
-
         private static List<string> mListaPRONOMBRES = null;
 
         private static List<string> mListaNEXOS = null;
@@ -352,6 +350,11 @@ namespace Es.Riam.Util.AnalisisSintactico
         public static string[] PREPOSICIONESMUYCOMUNES = { "a", "ante", "bajo", "con", "contra", "de", "del", "desde", "en", "entre", "hacia", "hasta", "para", "por", "segun", "sin", "so", "sobre", "tras", "durante", "mediante", "al", "excepto", "salvo" };
 
         public static Regex RegExSiglos = new Regex(@"\bx{0,3}(i{1,3}|i[vx]|vi{0,3})\b", RegexOptions.IgnoreCase);
+
+        /// <summary>
+        /// Caracteres cuyas palabras compuestas exclusivamente por ellos deben ignorarse siempre.
+        /// </summary>
+        public static char[] CARACTERES_IGNORADOS_EN_PALABRAS = { '_' };
 
         #endregion
 
@@ -458,53 +461,32 @@ namespace Es.Riam.Util.AnalisisSintactico
         /// Obtiene los tags de una frase convencional
         /// </summary>
         /// <param name="pFrase">Frase de la que se desea obtener sus tags</param>
-        /// <param name="pNumeroPalabrasDescartadas">Número de palabras descartadas</param>
-        /// <returns>lista de tags</returns>
+        /// <param name="pNumeroPalabrasDescartadas">Número de palabras descartadas por ser no relevantes, caracteres ignorados o duplicadas</param>
+        /// <param name="pSeparador">Separador adicional a los definidos en <see cref="SEPARADORES"/></param>
+        /// <param name="pOmitirPalabrasNoRelevantesSearch">Si es <c>true</c>, descarta las palabras presentes en <see cref="ListaPalabrasNoRelevantes"/></param>
+        /// <returns>Lista de tags únicos extraídos de la frase</returns>
         public static List<string> ObtenerTagsFrase(string pFrase, out int pNumeroPalabrasDescartadas, string pSeparador, bool pOmitirPalabrasNoRelevantesSearch)
         {
-            List<string> listaTags = new List<string>();
-            string[] listaSeparadores = new string[SEPARADORES.Length + 1];
-
-            SEPARADORES.CopyTo(listaSeparadores, 0);
-            listaSeparadores[SEPARADORES.Length] = pSeparador;
             pNumeroPalabrasDescartadas = 0;
 
+            // Las frases entre comillas se tratan como un token único e indivisible (ej: '"gestión del conocimiento"').
+            // Se extraen antes del split para que los separadores internos no las fragmenten.
+            var frasesConComillas = Regex.Matches(pFrase, "\"([^\"]*)\"")
+                .Cast<Match>()
+                .Select(m => m.Groups[1].Value.Trim())
+                .Where(f => !string.IsNullOrEmpty(f))
+                .ToList();
 
-            int i = 0;
-            List<int> comillas = new List<int>();
-            while (i > -1)
-            {
-                i = pFrase.IndexOf('"', i);
-                if (i > -1)
-                {
-                    comillas.Add(i);
-                    i++;
-                }
-            }
+            // Se eliminan del texto las frases ya capturadas para que el split posterior
+            // no genere tokens vacíos ni fragmentos de comillas sueltas.
+            string textoProcesado = Regex.Replace(pFrase, "\"[^\"]*\"", "");
+            string[] listaSeparadores = SEPARADORES.Append(pSeparador).ToArray();
+            string[] subcadenas = textoProcesado.Split(listaSeparadores, StringSplitOptions.RemoveEmptyEntries);
 
-            List<string> frasesConComillas = new List<string>();
-            int fraseActual = -1;
-            string pFraseProcesada = pFrase;
-            foreach (int apracionComillas in comillas)
-            {
-                if (fraseActual == -1)
-                {
-                    fraseActual = apracionComillas;
-                }
-                else
-                {
-                    string frase = pFrase.Substring(fraseActual, apracionComillas - fraseActual + 1);
-                    pFraseProcesada = pFraseProcesada.Replace(frase, "");
-                    frasesConComillas.Add(frase.Replace("\"", "").Trim());
-                    fraseActual = -1;
-                }
-            }
-
-            string[] subcadenas = pFraseProcesada.Split(listaSeparadores, StringSplitOptions.RemoveEmptyEntries);
+            var resultado = new HashSet<string>(StringComparer.Ordinal);
 
             foreach (string palabra in subcadenas)
             {
-                //Limpiamos la palabra para que no se confundan las palabras no relevantes.
                 string palabraTratar = palabra;
                 if (palabra.Contains("\"") || palabra.Contains("'"))
                 {
@@ -522,9 +504,18 @@ namespace Es.Riam.Util.AnalisisSintactico
                     }
                 }
 
-                if ((!pOmitirPalabrasNoRelevantesSearch || !ListaPalabrasNoRelevantes.Contains(palabraTratar)) && (!listaTags.Contains(palabraTratar)))
+                bool esNoRelevante = pOmitirPalabrasNoRelevantesSearch && ListaPalabrasNoRelevantes.Contains(palabraTratar);
+                // EsPalabraDeCaracteresIgnorados filtra siempre tokens compuestos únicamente por caracteres
+                // como '_' (ej: '___'), que bif:contains de Virtuoso rechaza con error en tiempo de ejecución.
+                bool esCaracterIgnorado = EsPalabraDeCaracteresIgnorados(palabraTratar);
+
+                if (!esNoRelevante && !esCaracterIgnorado)
                 {
-                    listaTags.Add(palabraTratar);
+                    // Add devuelve false si el token ya existía
+                    if (!resultado.Add(palabraTratar))
+                    {
+                        pNumeroPalabrasDescartadas++;
+                    }
                 }
                 else
                 {
@@ -532,31 +523,10 @@ namespace Es.Riam.Util.AnalisisSintactico
                 }
             }
 
-            if (frasesConComillas.Count > 0)
-            {
-                frasesConComillas.Remove("");
-                listaTags.AddRange(frasesConComillas);
-            }
+            // Las frases entre comillas se incorporan al final sin pasar por el filtro de noise words
+            resultado.UnionWith(frasesConComillas);
 
-            //Lo quitamos porque fallan las busquedas que terminan en '.'. Ej (BuscaEmpresas s.l.)
-            ////Eliminamos el punto de la ultima palabra
-
-            return listaTags;
-        }
-
-        /// <summary>
-        /// Copia un array a otro.
-        /// </summary>
-        /// <param name="pArray">Array a copiar</param>
-        /// <param name="pIndice">Indice desde el que se comienza la copia</param>
-        /// <returns></returns>
-        private static object[] CopiarArray(object[] pArray, int pIndice)
-        {
-            object[] arrayAuxiliar = new object[100];
-            pArray.CopyTo(arrayAuxiliar, pIndice);
-
-
-            return arrayAuxiliar;
+            return resultado.ToList();
         }
 
         /// <summary>
@@ -716,24 +686,17 @@ namespace Es.Riam.Util.AnalisisSintactico
             return (ListaARTICULOS.Contains(pPalabra) || ListaCONJUNCIONES.Contains(pPalabra) || ListaPREPOSICIONESMUYCOMUNES.Contains(pPalabra));
         }
 
+        /// <summary>
+        /// Devuelve true si la palabra está compuesta exclusivamente por alguno de los caracteres definidos en <see cref="CARACTERES_IGNORADOS_EN_PALABRAS"/>.
+        /// </summary>
+        private static bool EsPalabraDeCaracteresIgnorados(string pPalabra)
+        {
+            return CARACTERES_IGNORADOS_EN_PALABRAS.Any(c => pPalabra.Length > 0 && pPalabra.All(ch => ch == c));
+        }
+
         #endregion
 
         #region Propiedades
-
-        /// <summary>
-        /// Devuelve la lista de conjunciones, pero considerando que son separadoras (" y ", " o "...)
-        /// </summary>
-        private static List<string> ListaCONJUNCIONESSeparadoras
-        {
-            get
-            {
-                if (mListaCONJUNCIONESSeparadoras == null)
-                {
-                    mListaCONJUNCIONESSeparadoras = new List<string>(CONJUNCIONES_SEPARADORAS);
-                }
-                return mListaCONJUNCIONESSeparadoras;
-            }
-        }
 
         /// <summary>
         /// Devuelve la lista de conjunciones
