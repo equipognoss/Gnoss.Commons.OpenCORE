@@ -2846,7 +2846,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ProyectoPestanyaBusqueda filasBusqueda = pFilaPestanya.ProyectoPestanyaBusqueda;
             if (filasBusqueda != null)
             {
-                List<ProyectoPestanyaBusquedaPesoOC> listaProyectoPestanyaBusquedaPesoOCs = pFilaPestanya.ProyectoPestanyaBusqueda.ProyectoPestanyaBusquedaPesoOC.ToList();
+                List<ProyectoPestanyaBusquedaPesoOC> listaProyectoPestanyaBusquedaPesoOCs = pFilaPestanya.ProyectoPestanyaBusqueda.ProyectoPestanyaBusquedaPesoOC?.ToList() ?? new List<ProyectoPestanyaBusquedaPesoOC>();
 
                 foreach (ProyectoPestanyaBusquedaPesoOC filaPesoOC in listaProyectoPestanyaBusquedaPesoOCs)
                 {
@@ -2854,7 +2854,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                     mEntityContext.EliminarElemento(filaPesoOC);
                 }
 
-				List<FacetaObjetoConocimientoProyectoPestanya> listaFacetaObjetoConocimientoProyectoPestanyas = pFilaPestanya.FacetaObjetoConocimientoProyectoPestanya.Where(item => item.PestanyaID.Equals(pFilaPestanya.PestanyaID)).ToList();
+				List<FacetaObjetoConocimientoProyectoPestanya> listaFacetaObjetoConocimientoProyectoPestanyas = pFilaPestanya.FacetaObjetoConocimientoProyectoPestanya?.Where(item => item.PestanyaID.Equals(pFilaPestanya.PestanyaID)).ToList() ?? new List<FacetaObjetoConocimientoProyectoPestanya>();
 
 				foreach(FacetaObjetoConocimientoProyectoPestanya filaFacetaObjetoConocimientoProyPest in listaFacetaObjetoConocimientoProyectoPestanyas)
 				{

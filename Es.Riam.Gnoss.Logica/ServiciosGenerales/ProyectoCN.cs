@@ -948,12 +948,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pOrganizacionID"></param>
-        /// <param name="pProyectoID"></param>
-        /// <returns></returns>
-        public Dictionary<string, Guid> ObtenerOntologiasConIDPorNombreCortoProy(string pNombreCortoProyecto)
+        /// Obtiene un diccionario con el nombre de la ontología y su identificador a partir del nombre corto del proyecto. En caso de indicarse pObtenerOntoProyPadre a true, se obtendrán también las ontologías del proyecto padre en caso de tenerlo.
+        /// <param name="pNombreCortoProyecto"> Nombre corto del proyecto del cual queremos obtener las ontologías</param>
+        /// <param name="pObtenerOntoProyPadre"> Indica si se deben obtener también las ontologías del proyecto padre en caso de tenerlo</param>
+        /// <returns> Diccionario con el nombre de la ontología y su identificador</returns>
+        public Dictionary<string, Guid> ObtenerOntologiasConIDPorNombreCortoProy(string pNombreCortoProyecto, bool pObtenerOntoProyPadre = false)
         {
             return ProyectoAD.ObtenerOntologiasConIDPorNombreCortoProy(pNombreCortoProyecto);
         }

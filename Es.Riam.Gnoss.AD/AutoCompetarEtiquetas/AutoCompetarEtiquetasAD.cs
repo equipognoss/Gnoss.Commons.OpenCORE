@@ -1318,7 +1318,7 @@ namespace Es.Riam.Gnoss.AD.AutoCompetarEtiquetas
 			}
 			else if (ConexionMaster is OracleConnection)
 			{
-				selectTablas = ObtenerComando("SELECT 'DELETE FROM \"'||TABLE_NAME||'\";' " +
+				selectTablas = ObtenerComando("SELECT 'DELETE FROM \"'||TABLE_NAME||'\"' " +
 											"FROM   all_tables " +
 											"WHERE  TABLE_NAME like 'EtiquetasElemento%'");
 				CargarDataSet(selectTablas, tagsDS, "EtiquetasElemento", null, true, false, mEntityContextBASE);

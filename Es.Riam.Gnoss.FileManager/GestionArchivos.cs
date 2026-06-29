@@ -836,11 +836,6 @@ namespace Es.Riam.Gnoss.FileManager
         /// <param name="pSobreEscribir">Si se quiere sobreescribir los archivos en caso de haberlos en el destino</param>
         public void CopiarArchivo(string pRutaOrigen, string pRutaDestino, string pNombreArchivoOrigen, bool pCopiar, string pExtension = null, string pNombreArchivoDestino = null, bool pSobreEscribir = false)
         {
-            if (string.IsNullOrEmpty(pNombreArchivoDestino))
-            {
-                pNombreArchivoDestino = pNombreArchivoOrigen;
-            }
-
             if (!string.IsNullOrEmpty(pExtension))
             {
                 if (!pNombreArchivoOrigen.EndsWith(pExtension))
@@ -885,7 +880,7 @@ namespace Es.Riam.Gnoss.FileManager
                     if (File.Exists(filePath))
                     {
                         // Si existe se copia
-                        CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoDestino, pCopiar, pSobreEscribir);
+                        CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pSobreEscribir, pNombreArchivoDestino);
                     }
                     else
                     {
@@ -899,7 +894,7 @@ namespace Es.Riam.Gnoss.FileManager
                             
                             if (File.Exists(Path.Combine(pRutaOrigen, pNombreArchivoOrigen)))
                             {
-                                CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pSobreEscribir);
+                                CopiarMoverArchivo(pRutaOrigen, pRutaDestino, pNombreArchivoOrigen, pCopiar, pSobreEscribir, pNombreArchivoDestino);
                             }
                         }
                     }
@@ -912,18 +907,23 @@ namespace Es.Riam.Gnoss.FileManager
         /// </summary>
         /// <param name="pRutaCarpetaOrigen"> Ruta donde se ubica el fichero a copiar</param>
         /// <param name="pRutaCarpetaDestino"> Ruta donde queremos copiar el fichero</param>
-        /// <param name="pNombreFichero"> Nombre del archivo, debe llevar la extensión</param>
+        /// <param name="pNombreArchivoOriginal"> Nombre del archivo, debe llevar la extensión</param>
         /// <param name="pCopiar"> True si queremos copiarlo, en caso de ser false, se moverá</param>
         /// <param name="pSobreEscribir"> True si se quiere sobreescribir los archivos en caso de haberlos en el destino</param>
-        private void CopiarMoverArchivo(string pRutaCarpetaOrigen, string pRutaCarpetaDestino, string pNombreFichero, bool pCopiar, bool pSobreEscribir = false)
+        private void CopiarMoverArchivo(string pRutaCarpetaOrigen, string pRutaCarpetaDestino, string pNombreArchivoOriginal, bool pCopiar, bool pSobreEscribir = false, string pNombreArchivoDestino = null)
         {            
             if (!Directory.Exists(pRutaCarpetaDestino))
             {
                 Directory.CreateDirectory(pRutaCarpetaDestino);
             }
 
-            string rutaOrigen = Path.Combine(pRutaCarpetaOrigen, pNombreFichero);
-            string rutaDestino = Path.Combine(pRutaCarpetaDestino, pNombreFichero);
+            if (string.IsNullOrEmpty(pNombreArchivoDestino))
+            {
+                pNombreArchivoDestino = pNombreArchivoOriginal;
+            }
+
+            string rutaOrigen = Path.Combine(pRutaCarpetaOrigen, pNombreArchivoOriginal);
+            string rutaDestino = Path.Combine(pRutaCarpetaDestino, pNombreArchivoDestino);
 
             FileInfo fichOrigen = new FileInfo(rutaOrigen);
             if (pCopiar)

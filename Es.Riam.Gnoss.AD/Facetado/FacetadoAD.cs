@@ -14424,9 +14424,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
             }
 
-            //Quitamos los posibles saltos de linea
-            tripleta = $"{tripleta.Replace("\n", " ").Replace("\r", string.Empty)} \n ";
-
             if (pObjeto.Contains("geonames"))
             {
                 tripletaGeonames = ObtieneTripletasGeonames(pObjeto);
