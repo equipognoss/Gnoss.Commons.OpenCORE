@@ -80,7 +80,8 @@ namespace OntologiaAClase
 
         public string UrlIntragnoss
         {
-            get{
+            get
+            {
 
                 if (string.IsNullOrEmpty(grafoUrl))
                 {
@@ -212,9 +213,10 @@ namespace OntologiaAClase
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(1)}{{");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public enum LanguageEnum");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-            foreach (string idiom in listaIdiomas)
+            foreach (string idioma in listaIdiomas)
             {
-                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{idiom.Replace("-","_")},");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}[Description(\"{idioma}\")]");
+                Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{idioma.Replace("-", "_")},");
             }
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}internal List<OntologyEntity> entList = new List<OntologyEntity>();");
@@ -310,7 +312,7 @@ namespace OntologiaAClase
             ObtenerNumberFloatPropertyValueSemCMS();
             Clase.AppendLine();
             ObtenerMultiNumberFloatPropertyValueSemCMS();
-			Clase.AppendLine();
+            Clase.AppendLine();
             ObtenerDateTimePropertyValueSemCMS();
             Clase.AppendLine();
             ObtenerBoolPropertyValueSemCMS();
@@ -332,6 +334,8 @@ namespace OntologiaAClase
             CrearAgregarTags();
             Clase.AppendLine();
             GetLabel();
+            Clase.AppendLine();
+            PintarParseLanguageEnum();
             Clase.AppendLine();
             MetodosAbstractos();
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(1)}}}");
@@ -413,6 +417,26 @@ $@"
         }}
 ");
         }
+
+        private void PintarParseLanguageEnum()
+        {
+            Clase.AppendLine(
+                $@"
+        public static LanguageEnum ParseLanguageEnum(string languageCode)
+        {{
+            foreach (LanguageEnum value in Enum.GetValues(typeof(LanguageEnum)))
+            {{
+                var field = typeof(LanguageEnum).GetField(value.ToString());
+                var attr = field?.GetCustomAttribute<DescriptionAttribute>();
+                if (attr != null && string.Equals(attr.Description, languageCode, StringComparison.OrdinalIgnoreCase))
+                    return value;
+            }}
+            return (LanguageEnum)Enum.Parse(typeof(LanguageEnum), languageCode, ignoreCase: true);
+        }}
+");
+        }
+
+
         public void MetodosAbstractos()
         {
             Clase.AppendLine(
@@ -537,17 +561,17 @@ $@"
 
         public void ObtenerMultiNumberFloatPropertyValueSemCMS()
         {
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static float? GetNumberFloatPropertyValueSemCms(string pProperty)");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pProperty))");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty, new CultureInfo(\"en-US\"));");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
-			Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
-		}
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static float? GetNumberFloatPropertyValueSemCms(string pProperty)");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}if(!string.IsNullOrEmpty(pProperty))");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}{{");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(4)}return float.Parse(pProperty, new CultureInfo(\"en-US\"));");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}}}");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(3)}return 0;");
+            Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}}}");
+        }
 
-		public void ObtenerBoolPropertyValueSemCMS()
+        public void ObtenerBoolPropertyValueSemCMS()
         {
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}public static bool GetBooleanPropertyValueSemCms(SemanticPropertyModel pProperty)");
             Clase.AppendLine($"{UtilCadenasOntology.Tabs(2)}{{");
@@ -643,6 +667,7 @@ $@"
             Clase.AppendLine("using System.Reflection;");
             Clase.AppendLine("using System.Collections;");
             Clase.AppendLine("using System.Globalization;");
+            Clase.AppendLine("using System.ComponentModel;");
             Clase.AppendLine();
         }
 

@@ -661,7 +661,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         public FacetadoAD(string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoAD> logger, ILoggerFactory loggerFactory)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mUrlIntranet = pUrlIntragnoss;
@@ -676,13 +676,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pTipoBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        public FacetadoAD(string pTipoBD, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoAD> logger,ILoggerFactory loggerFactory)
-            : base(pTipoBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+        public FacetadoAD(string pTipoBD, string pUrlIntragnoss, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoAD> logger, ILoggerFactory loggerFactory)
+            : base(pTipoBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mUrlIntranet = pUrlIntragnoss;
             mlogger = logger;
-            mloggerFactory= loggerFactory;
+            mloggerFactory = loggerFactory;
         }
 
         /// <summary>
@@ -692,8 +692,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         /// <param name="pTablaReplica">Tabla donde se va a insertar la consulta ("ColaReplicacionMaster" o "ColaReplicacionMasterHome")</param>
-        public FacetadoAD(string pTipoBD, string pUrlIntragnoss, string pTablaReplica, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoAD> logger,ILoggerFactory loggerFactory)
-            : base(pTipoBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+        public FacetadoAD(string pTipoBD, string pUrlIntragnoss, string pTablaReplica, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoAD> logger, ILoggerFactory loggerFactory)
+            : base(pTipoBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;
             mUrlIntranet = pUrlIntragnoss;
@@ -707,8 +707,8 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         /// <param name="pObtenerPrivados">Verdad si el usuario actual puede ver los privados</param>
-        public FacetadoAD(string pUrlIntragnoss, bool pObtenerPrivados, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesBidirectionalReplication, ILogger<FacetadoAD> logger,ILoggerFactory loggerFactory)
-            : this(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesBidirectionalReplication,logger,loggerFactory)
+        public FacetadoAD(string pUrlIntragnoss, bool pObtenerPrivados, LoggingService loggingService, EntityContext entityContext, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesBidirectionalReplication, ILogger<FacetadoAD> logger, ILoggerFactory loggerFactory)
+            : this(pUrlIntragnoss, loggingService, entityContext, configService, virtuosoAD, servicesBidirectionalReplication, logger, loggerFactory)
         {
             ObtenerPrivados = pObtenerPrivados;
             mlogger = logger;
@@ -912,7 +912,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         {
             get
             {
-                if (mNamespacesBasicos == null ||  mNamespacesBasicos.Length == 0)
+                if (mNamespacesBasicos == null || mNamespacesBasicos.Length == 0)
                 {
                     foreach (string key in ListaNamespacesBasicos.Keys)
                     {
@@ -1082,7 +1082,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     try
                     {
-                        FacetaAD facetaAD = new FacetaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<FacetaAD>(),mloggerFactory);
+                        FacetaAD facetaAD = new FacetaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetaAD>(), mloggerFactory);
                         mServidoresGrafo = facetaAD.ObtenerConfiguracionGrafoConexion();
                         facetaAD.Dispose();
                     }
@@ -1429,7 +1429,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (mServicesUtilVirtuosoAndReplication.ControlarErrorVirtuosoConection())
                 {
                     LeerDeVirtuoso(pQuery, pNombreTabla, pFacetadoDS, pGrafo, pUsarHilos, pDesdeApi);
-                    mLoggingService.GuardarLogError("Consulta ejecutada correctamente en el segundo intento",mlogger);
+                    mLoggingService.GuardarLogError("Consulta ejecutada correctamente en el segundo intento", mlogger);
                     return;
                 }
                 else
@@ -1443,7 +1443,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         private int ObtenerNumeroReplicacionesPendienes(string nombreConexion)
         {
-            int numReplicacionesPendientes = new ReplicacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<ReplicacionAD>(),mloggerFactory).ContarReplicacionesPendientesEnReplica(nombreConexion);
+            int numReplicacionesPendientes = new ReplicacionAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ReplicacionAD>(), mloggerFactory).ContarReplicacionesPendientesEnReplica(nombreConexion);
 
             return numReplicacionesPendientes;
         }
@@ -1626,7 +1626,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         respuesta = dataStream.ReadToEnd();
                     }
                 }
-                catch 
+                catch
                 {
                     //Si falla la lectura no rompemos el proceso, pero guardamos el error.
                 }
@@ -1762,7 +1762,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, $"\n\nQuery: {pQuery}\n\nUrl: {url}",mlogger);
+                mLoggingService.GuardarLogError(ex, $"\n\nQuery: {pQuery}\n\nUrl: {url}", mlogger);
                 throw;
             }
             finally
@@ -1803,7 +1803,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             using (WebClient webClient = new RiamWebClient(600))
             {
                 webClient.Encoding = Encoding.UTF8;
-                webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");     
+                webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 
                 string url = virtuosoConnectionData.SparqlEndpoint;
 
@@ -1835,7 +1835,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     HttpStatusCode status = ((HttpWebResponse)webException.Response).StatusCode;
                     string errorString = string.Empty;
-                    
+
                     try
                     {
                         if (webException.Response != null)
@@ -1846,7 +1846,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                             webException.Response.Close();
                         }
                     }
-                    catch 
+                    catch
                     {
                         //Si falla la lectura no rompemos el proceso
                     }
@@ -2026,7 +2026,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                     webException.Response.Close();
                 }
-                catch 
+                catch
                 {
                     //Si no consigo obtener información del error no se almacena
                 }
@@ -2615,7 +2615,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             string from = ObtenerFrom(pProyectoID);
 
             StringBuilder where = new StringBuilder(" {");
-            
+
             string condicionesWhere = ObtenerParteFiltros("", pListaFiltros, pListaFiltrosExtra, pEsMiembroComunidad, pProyectoID, pFiltroContextoWhere, pTipoProyecto, pExcluirPersonas, pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion.Ninguno, pFiltrosSearchPersonalizados, false);
 
             where.Append(condicionesWhere);
@@ -2872,7 +2872,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         //Facetas excluyentes.
                         //Excluyente: http://pruebas.gnoss.net/comunidad/aegp2/empresas#company:product@@@company:productSubgroup=hombre
                         //NO Excluyente: http://comunidades.gnoss.net/comunidad/publicacionesDeusto3/Publications#dc:creator@@@publication:autorID@@@foaf:name=diego%20l%C3%B3pez%20de%20ipi%C3%B1a%20gonz%C3%A1lez%20de%20artaza
-                        FacetaAD facAD = new FacetaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<FacetaAD>(), mloggerFactory);
+                        FacetaAD facAD = new FacetaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetaAD>(), mloggerFactory);
                         string sujetoReciproco = $"?reciproca{NumeroReciproca}";
 
                         if (pExcluyente)
@@ -2889,7 +2889,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                             }
 
                             nombreObjeto.Append(i);
-                            
+
                             //Solamente añadimos 0 en el caso de que la faceta sea excluyente y de tipo TesauroSemántico. Actualmente no lo es =S
                             while (query.ToString().Contains(nombreObjeto.ToString()) && !string.IsNullOrEmpty(filtroExtraCons) && !string.IsNullOrEmpty(consultaExtraFiltro))
                             {
@@ -3039,7 +3039,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
 
                 rangoMayor = ObtenerComplementoRango(pTipoPropiedadesFaceta, rangoMayor, pListaFiltros.ContainsKey(pClaveFaceta));
-                
+
                 if (!string.IsNullOrEmpty(rangoMenor))
                 {
                     rangoMenor = ObtenerComplementoRango(pTipoPropiedadesFaceta, rangoMenor, pListaFiltros.ContainsKey(pClaveFaceta));
@@ -3199,9 +3199,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     //Año y Mes y día
                     pRango += "000000";
-                }                
+                }
             }
-            
+
             return pRango;
         }
 
@@ -3324,7 +3324,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             query.Append("WHERE ");
             query.Append("{ ");
-            
+
             bool esRecomendacion = false;
 
             if (pProyectoID.Contains("contactos"))
@@ -3359,7 +3359,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 if (pClaveFaceta.Contains("@@@"))
                 {
                     string nombreObjeto = QuitaPrefijo(LNiveles[0]);
-                    
+
                     //Facetas excluyentes.
                     //Excluyente: http://pruebas.gnoss.net/comunidad/aegp2/empresas#company:product@@@company:productSubgroup=hombre
                     //NO Excluyente: http://comunidades.gnoss.net/comunidad/publicacionesDeusto3/Publications#dc:creator@@@publication:autorID@@@foaf:name=diego%20l%C3%B3pez%20de%20ipi%C3%B1a%20gonz%C3%A1lez%20de%20artaza
@@ -4279,7 +4279,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (Guid.TryParse(pProyectoID, out proyectoID))
             {
-                ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<ProyectoAD>(),mloggerFactory);
+                ProyectoAD proyAD = new ProyectoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<ProyectoAD>(), mloggerFactory);
                 string listaExcepciones = proyAD.ObtenerExcepcionesMovil(proyectoID);
 
                 if (!string.IsNullOrEmpty(listaExcepciones))
@@ -6344,9 +6344,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
             List<KeyValuePair<string, int>> tempList = new List<KeyValuePair<string, int>>(myDictionary);
 
             tempList.Sort(delegate (KeyValuePair<string, int> firstPair, KeyValuePair<string, int> secondPair)
-                            {
-                                return firstPair.Value.CompareTo(secondPair.Value);
-                            }
+            {
+                return firstPair.Value.CompareTo(secondPair.Value);
+            }
                          );
 
             Dictionary<string, int> mySortedDictionary = new Dictionary<string, int>();
@@ -8607,23 +8607,35 @@ namespace Es.Riam.Gnoss.AD.Facetado
             string finalQuery = $"{NamespacesVirtuosoLectura} {select} {query}";
 
             string nombreTabla = "SelectPropEnt";
-            if (pUsarClienteWeb)
+            int iteraciones = 0;
+            FacetadoDS facetadoDSPaginado = new FacetadoDS();
+            DataSet ds = null;
+
+            do
             {
-                LeerDeVirtuoso(finalQuery, nombreTabla, facetadoDSAux, pGrafo, pUsarAfinidad);
+                string queryPaginada = $"{finalQuery} limit 10000 offset {iteraciones * 10000}";
+
+                if (pUsarClienteWeb)
+                {
+                    LeerDeVirtuoso(queryPaginada, nombreTabla, facetadoDSPaginado, pGrafo, pUsarAfinidad);
+                    facetadoDSAux.Merge(facetadoDSPaginado);
+                }
+                else
+                {
+                    VirtuosoAD virtuosoAD = new VirtuosoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<VirtuosoAD>(), mloggerFactory);
+
+                    // los carácteres especiales deben ir en UTF-8
+                    UtilCadenas.PasarAUtf8(queryPaginada);
+
+                    ds = virtuosoAD.LeerDeVirtuoso(queryPaginada, nombreTabla);
+                    virtuosoAD.Dispose();
+
+                    facetadoDSAux.Tables.Add(nombreTabla);
+                    facetadoDSAux.Tables[nombreTabla].Merge(ds.Tables[nombreTabla]);
+                }
+                iteraciones++;
             }
-            else
-            {
-                VirtuosoAD virtuosoAD = new VirtuosoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<VirtuosoAD>(),mloggerFactory);
-
-                // los carácteres especiales deben ir en UTF-8
-                UtilCadenas.PasarAUtf8(finalQuery);
-
-                DataSet ds = virtuosoAD.LeerDeVirtuoso(finalQuery, nombreTabla);
-                virtuosoAD.Dispose();
-
-                facetadoDSAux.Tables.Add(nombreTabla);
-                facetadoDSAux.Tables[nombreTabla].Merge(ds.Tables[nombreTabla]);
-            }
+            while (facetadoDSAux.Tables[nombreTabla].Rows.Count % 10000 == 0 && ((facetadoDSPaginado.Tables[nombreTabla] != null && facetadoDSPaginado.Tables[nombreTabla].Rows.Count > 0) || (ds != null && ds.Tables[nombreTabla].Rows.Count > 0)));
 
             FacetadoDS facetadoDS;
             if (pEsExportacionExcel)
@@ -8663,7 +8675,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
                 else
                 {
-                    VirtuosoAD virtuosoAD = new VirtuosoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<VirtuosoAD>(),mloggerFactory);
+                    VirtuosoAD virtuosoAD = new VirtuosoAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<VirtuosoAD>(), mloggerFactory);
 
                     // los carácteres especiales deben ir en UTF-8
                     query = UtilCadenas.PasarAUtf8(query);
@@ -10112,7 +10124,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
             while (facetadoDS.Tables["Recursos"].Rows.Count % limiteRecursos == 0 && facetadoDS.Tables["Recursos"].Rows.Count > 0);
             List<string> listaIDsRecursos = new List<string>();
-            foreach(string fila in facetadoDS.Tables["Recursos"].Rows.OfType<DataRow>().Select((row) => row[0].ToString()).ToList())
+            foreach (string fila in facetadoDS.Tables["Recursos"].Rows.OfType<DataRow>().Select((row) => row[0].ToString()).ToList())
             {
                 string id = fila;
                 if (id.Contains("/"))
@@ -15299,7 +15311,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             query.Remove(caracteresEliminar, query.Length - caracteresEliminar);
             query.Append($" FILTER (?s = <http://gnoss/{pDocumentoID.ToString().ToUpper()}>) }}");
             query.Insert(0, $"{NamespacesVirtuosoLectura} select ?o{count - 1} lang(?o{count - 1}) as ?idioma ");
-                      
+
             LeerDeVirtuoso(query.ToString(), "TripleDoc", facetadoDS, pGrafo);
             return facetadoDS;
         }
@@ -16028,7 +16040,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pOrganizacionID">Identificador de la organizacion del proyecto</param>
         public Dictionary<string, List<string>> ObtenerInformacionOntologias(Guid pOrganizacionID, Guid pProyectoID)
         {
-            FacetaAD facetaAD = new FacetaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication,mloggerFactory.CreateLogger<FacetaAD>(),mloggerFactory);
+            FacetaAD facetaAD = new FacetaAD(mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<FacetaAD>(), mloggerFactory);
 
             List<OntologiaProyecto> listaOntologias = facetaAD.ObtenerOntologiasProyecto(pOrganizacionID, pProyectoID);
 

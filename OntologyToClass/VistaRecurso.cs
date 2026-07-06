@@ -269,7 +269,7 @@ namespace OntologiaAClase
 
             Vista.AppendLine($@"{UtilCadenasOntology.Tabs(1)}}}");
             Vista.AppendLine($@"{UtilCadenasOntology.Tabs(1)}SemanticResourceModel semCmsModel = Model.SemanticFrom;");
-            Vista.AppendLine($@"{UtilCadenasOntology.Tabs(1)} GnossOCBase.LanguageEnum idiomaUsuario = (GnossOCBase.LanguageEnum)Enum.Parse(typeof(GnossOCBase.LanguageEnum), Html.GetUtilIdiomas().LanguageCode.ToLower());");
+            Vista.AppendLine($@"{UtilCadenasOntology.Tabs(1)} GnossOCBase.LanguageEnum idiomaUsuario = GnossOCBase.ParseLanguageEnum(Html.GetUtilIdiomas().LanguageCode.ToLower());");
             Vista.AppendLine($@"{UtilCadenasOntology.Tabs(1)}{UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad)} p{UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad)} = new {UtilCadenasOntology.ObtenerNombreProp(pEntidad.TipoEntidad)}(semCmsModel,idiomaUsuario);");
             // Vista.AppendLine($@"{UtilCadenasOntology.Tabs(1)}GnossOCBase.LanguageEnum idiomaUsuario = GnossOCBase.LanguageEnum.es;");
             Vista.AppendLine($@"}}");

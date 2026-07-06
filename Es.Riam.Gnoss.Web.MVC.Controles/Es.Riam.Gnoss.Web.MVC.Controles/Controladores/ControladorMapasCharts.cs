@@ -264,7 +264,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     _entityContext.FacetaConfigProyMapa.Add(nuevoMapaBBDDD);
                 }
                 _entityContext.SaveChanges();
-                _gnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
+                facetadoCL.InvalidarPropsMapaPerYOrgProyecto(ProyectoSeleccionado.Clave);
             }
         }
     }

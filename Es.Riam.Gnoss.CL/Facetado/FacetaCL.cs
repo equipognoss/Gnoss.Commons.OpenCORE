@@ -720,7 +720,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
         /// <returns>Filtro de latitud y longitud para la consulta de mapas</returns>
         public DataWrapperFacetas ObtenerPropsMapaPerYOrgProyecto(Guid pOrganizacionID, Guid pProyectoID, TipoBusqueda pTipoBusqueda)
         {
-            string rawKey = "FiltroPropsMapaPerYOrgProyecto" + "_" + pProyectoID;
+            string rawKey = $"FiltroPropsMapaPerYOrgProyecto_{pProyectoID}";
 
             if (pTipoBusqueda == TipoBusqueda.PersonasYOrganizaciones)
             {
@@ -747,6 +747,18 @@ namespace Es.Riam.Gnoss.CL.Facetado
             return PropsMapaPerYOrg;
         }
 
+        /// <summary>
+        /// Ivalida la caché de las propiedades de mapa de un proyecto
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        public void InvalidarPropsMapaPerYOrgProyecto(Guid pProyectoID)
+        {
+            string rawKey = $"FiltroPropsMapaPerYOrgProyecto_{pProyectoID}";
+
+            InvalidarCacheQueContengaCadena(rawKey);
+
+            VersionarCacheLocal(pProyectoID);
+        }
 
         #region Propiedades
 

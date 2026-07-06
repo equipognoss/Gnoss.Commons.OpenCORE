@@ -426,9 +426,9 @@ namespace Es.Riam.Util
         /// <param name="pUrl">URL para la petición</param>
         /// <param name="pParametros">Clave y valor de cada parámetro de la petición. El valor NO debe estar codificado, se hará en el método.</param>
         /// <returns></returns>
-        public static WebResponse HacerPeticionPostDevolviendoWebResponse(string pUrl, Dictionary<string, string> pParametros)
+        public static WebResponse HacerPeticionPostDevolviendoWebResponse(string pUrl, Dictionary<string, string> pParametros, string pToken = "")
         {
-            return HacerPeticionDevolviendoWebResponse("POST", pUrl, pParametros);
+            return HacerPeticionDevolviendoWebResponse("POST", pUrl, pParametros, pToken);
         }
 
         /// <summary>
@@ -448,13 +448,18 @@ namespace Es.Riam.Util
         /// <param name="pUrl">URL para la petición</param>
         /// <param name="pParametros">Clave y valor de cada parámetro de la petición. El valor NO debe estar codificado, se hará en el método.</param>
         /// <returns></returns>
-        private static WebResponse HacerPeticionDevolviendoWebResponse(string pMethod, string pUrl, Dictionary<string, string> pParametros)
+        private static WebResponse HacerPeticionDevolviendoWebResponse(string pMethod, string pUrl, Dictionary<string, string> pParametros, string pToken = "")
         {
             HttpWebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
             wr.Timeout = 1200000;//20 minutos
             wr.Method = pMethod;
             wr.ContentType = "application/x-www-form-urlencoded";
             wr.UserAgent = GenerarUserAgent();
+
+            if (!string.IsNullOrEmpty(pToken))
+            {
+                wr.Headers.Add("Authorization", $"Bearer {pToken}");
+            }
 
             //Codificación del mensaje
             string requestParameters = "";
