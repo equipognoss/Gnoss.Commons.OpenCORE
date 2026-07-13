@@ -493,6 +493,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                         ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
                         proyCL.InvalidarMisProyectos(idenDW.ListaIdentidad[0].PerfilID);
                         proyCL.Dispose();
+                        //Invalida la cache de usuario bloqueado
+                        proyCL.InvalidarUsuarioBloqueadoProyecto(pProyecto.Clave, usuarioId);
 
                         //Lo marcamos como expulsado
                         gestorIdentidades.DataWrapperIdentidad.ListaIdentidad.Find(identidad => identidad.IdentidadID.Equals(identidadID)).FechaExpulsion = DateTime.Now;
@@ -644,6 +646,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
                 controladorPers.ActualizarModeloBASE(gestorIdentidades.ListaIdentidades[identidadID], proyectoID, true, false, PrioridadBase.Alta, pAvailableServices);
 
                 #endregion
+            }
+
+            using (ProyectoCL proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory))
+            {
+                proyCL.InvalidarUsuarioBloqueadoProyecto(pProyecto.Clave, pIdentidad.Persona.UsuarioID);
             }
 
             IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);

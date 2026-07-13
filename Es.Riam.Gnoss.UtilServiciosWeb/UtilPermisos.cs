@@ -441,7 +441,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 		{
 			bool result = false;
 
-			if (pAmbito.Equals((short)AmbitoRol.Ecosistema) && permisos > 0)
+			if (pAmbito.Equals((short)AmbitoRol.Transversal) && permisos > 0)
 			{
 				result = true;
 			}

@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
+using Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS;
 
 
 namespace Es.Riam.Gnoss.AD.ServiciosGenerales
@@ -609,7 +610,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
     public enum AmbitoRol
     {
         Comunidad,
-        Ecosistema
+        Transversal
     }
 
     /// <summary>
@@ -3320,7 +3321,14 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EstaUsuarioBloqueadoEnProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
-            return mEntityContext.ProyectoRolUsuario.Any(proyecto => proyecto.ProyectoID.Equals(pProyectoID) && proyecto.UsuarioID.Equals(pUsuarioID) && proyecto.EstaBloqueado);
+            ProyectoRolUsuario proyectoRolUsuario = mEntityContext.ProyectoRolUsuario.FirstOrDefault(proyecto => proyecto.ProyectoID.Equals(pProyectoID) && proyecto.UsuarioID.Equals(pUsuarioID));
+
+            if (proyectoRolUsuario == null)
+            {
+                return true;
+            }
+
+            return proyectoRolUsuario.EstaBloqueado;
         }
 
         /// <summary>
@@ -7070,7 +7078,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         public List<Rol> ObtenerRolesDeProyecto(Guid pProyectoID)
         {
-            return mEntityContext.Rol.Where(x => x.ProyectoID.Equals(pProyectoID) || x.ProyectoID.Equals(MetaProyecto) || x.Tipo.Equals((short)AmbitoRol.Ecosistema)).OrderBy(r => r.Nombre).ToList();
+            return mEntityContext.Rol.Where(x => x.ProyectoID.Equals(pProyectoID) || x.ProyectoID.Equals(MetaProyecto) || x.Tipo.Equals((short)AmbitoRol.Transversal)).OrderBy(r => r.Nombre).ToList();
         }
 
         public Dictionary<Guid, string> ObtenerNombreRolesDeProyecto(List<Guid> pRolesId)

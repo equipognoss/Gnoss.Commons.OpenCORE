@@ -1514,7 +1514,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     string query = " select distinct ?nombreasignatura ?otrotemaURL ?order  from <" + ControllerBase.UrlIntragnoss + pFilaProyGadget.ProyectoID + "> where { ?asignatura <http://ltsc.ieee.org/rdf/lomv1p0/lom#title> ?nombreasignatura . ?asignatura <http://rdfs.org/sioc/ns#topic> ?tema.  ?tema  <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicURL> ?temaURL. filter(?temaURL LIKE '%" + Documento.VersionOriginalID.ToString() + "') ?asignatura <http://rdfs.org/sioc/ns#topic> ?otrotema .  ?otrotema <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicURL> ?otrotemaURL. ?asignatura <http://rdfs.org/sioc/ns#topic> ?otrotema . ?otrotema <" + ControllerBase.UrlIntragnoss + "Ontologia/asignatura.owl#topicOrder> ?order. ?asignatura rdf:type 'asignatura'. } order by xsd:int(?order)";
 
                     FacetadoCN facetadoCN = new FacetadoCN(ControllerBase.UrlIntragnoss, ControllerBase.ProyectoSeleccionado.Clave.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
-                    facetadoCN.ObtenerResultadosBusqueda(query, ControllerBase.ProyectoSeleccionado.Clave.ToString(), facetadoDS, 0, 50, "");
+                    facetadoCN.ObtenerResultadosBusqueda(query, ControllerBase.ProyectoSeleccionado.Clave.ToString(), facetadoDS, 50, "");
 
                     List<Guid> listaIdsRecursos = new List<Guid>();
                     string nombreAsignatura = "";

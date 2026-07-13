@@ -2280,6 +2280,7 @@
 		<Resource tag="INTRODUCEUSU">Introduce o teu nome de usuario</Resource>
 		<Resource tag="BLOQUEADOENCOM">O teu usuario foi bloqueado temporalmente nesta comunidade. Para máis información contacta cos administradores da comunidade.</Resource>
 		<Resource tag="EXPULSADOENCOM">O teu usuario foi expulsado desta comunidade. Para máis información contacta cos administradores da comunidade.</Resource>
+		<Resource tag="SINPERMISOCOM">Actualmente non tes permisos para acceder á comunidade. Se fuches engadido recentemente á comunidade, por favor, pecha a sesión e volve iniciar sesión.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Tes que facerte membro da comunidade se queres comentar, votar ou publicar contidos.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Tes que solicitar acceso á comunidade se queres comentar, votar ou publicar contidos.</Resource>
 		<Resource tag="HACERSEMIEMBRO">Faite membro</Resource>

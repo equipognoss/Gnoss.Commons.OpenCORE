@@ -2298,6 +2298,7 @@
 		<Resource tag="INTRODUCEUSU">Introduisez votre nom d’utilisateur</Resource>
 		<Resource tag="BLOQUEADOENCOM">Votre utilisateur a été bloqué temporellement dans cette communauté. Pour plus d’informations, veuillez contacter les administrateurs de la communauté.</Resource>
 		<Resource tag="EXPULSADOENCOM">Votre utilisateur a été expulsé de cette communauté. Pour plus d’informations, veuillez contacter les administrateurs de la communauté.</Resource>
+		<Resource tag="SINPERMISOCOM">Vous n'avez actuellement pas les autorisations nécessaires pour accéder à la communauté. Si vous avez été ajouté récemment à la communauté, veuillez vous déconnecter puis vous reconnecter.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Vous devez devenir membre de la communauté si vous voulez commenter, voter ou publier des contenus.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Vous devez demander l’accès à la communauté si vous voulez commenter, voter ou publier des contenu.</Resource>
 		<Resource tag="HACERSEMIEMBRO">Devenez membre</Resource>

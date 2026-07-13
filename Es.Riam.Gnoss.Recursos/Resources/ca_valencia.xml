@@ -2377,6 +2377,7 @@
 		<Resource tag="INTRODUCEUSU">Introduïx el teu nom d'usuari</Resource>
 		<Resource tag="BLOQUEADOENCOM">El teu usuari ha sigut bloquejat temporalment en esta comunitat. Per a més informació contacta amb els administradors de la comunitat.</Resource>
 		<Resource tag="EXPULSADOENCOM">El teu usuari ha sigut expulsat d'esta comunitat. Per a més informació contacta amb els administradors de la comunitat.</Resource>
+		<Resource tag="SINPERMISOCOM">Actualment no tens permisos per a accedir a la comunitat. Si has sigut afegit recentment a la comunitat, per favor, tanca la sessió i torna a iniciar-la.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Has de fer-te membre de la comunitat si vols comentar, votar o publicar continguts.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Has de sol·licitar accés a la comunitat si vols comentar, votar o publicar continguts.</Resource>
 		<Resource tag="HACERSEMIEMBRO">Fes-te membre</Resource>

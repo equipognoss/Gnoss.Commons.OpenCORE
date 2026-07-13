@@ -2316,7 +2316,8 @@
 		<Resource tag="INTRODUCEPASS">Enter your password</Resource>
 		<Resource tag="INTRODUCEUSU">Enter your username</Resource>
 		<Resource tag="BLOQUEADOENCOM">Your user has been temporarily locked in this community. For more information, please contact the community managers.</Resource>
-		<Resource tag="EXPULSADOENCOM"></Resource>
+		<Resource tag="EXPULSADOENCOM">Your user account has been banned from this community. For more information, please contact the community administrators.</Resource>
+		<Resource tag="SINPERMISOCOM">You currently do not have permission to access the community. If you have recently been added to the community, please log out and log back in.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">You should join the community in order to comment, vote or create new resources.</Resource>
 		<Resource tag="TIENESQUESOLICITAR"></Resource>
 		<Resource tag="CONTACTAADMINISTRADORORG"></Resource>
@@ -5029,7 +5030,7 @@
 		<Resource tag="TIPOROL">Type of role</Resource>
 		<Resource tag="AMBITO">Scope</Resource>
 		<Resource tag="TIPOROLCOMUNIDAD">Community</Resource>
-		<Resource tag="TIPOROLECOSISTEMA">Ecosystem</Resource>
+		<Resource tag="TIPOROLTODASCOMUNIDADES">All communities</Resource>
 		<Resource tag="PERMISOSADMINISTRACIONLABEL">Permissions related to administration pages</Resource>
 		<Resource tag="PERMISOSRECURSOS">Permissions related to the creation of resources</Resource>
 		<Resource tag="PERMISOSADMINISTRACIONECOSISTEMA">Permits related to ecosystem administration pages</Resource>

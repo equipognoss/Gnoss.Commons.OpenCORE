@@ -2381,6 +2381,7 @@
 		<Resource tag="INTRODUCEUSU">Introduce tu nombre de usuario</Resource>
 		<Resource tag="BLOQUEADOENCOM">Tu usuario ha sido bloqueado temporalmente en esta comunidad. Para más información contacta con los administradores de la comunidad.</Resource>
 		<Resource tag="EXPULSADOENCOM">Tu usuario ha sido expulsado de esta comunidad. Para más información contacta con los administradores de la comunidad.</Resource>
+		<Resource tag="SINPERMISOCOM">Actualmente no tienes permisos para acceder a la comunidad. Si has sido recientemente añadido a la comunidad, por favor, cierra sesión y vuelve a logearte.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Tienes que hacerte miembro de la comunidad si quieres comentar, votar o publicar contenidos.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Tienes que solicitar acceso a la comunidad si quieres comentar, votar o publicar contenidos.</Resource>
 		<Resource tag="HACERSEMIEMBRO">Hazte miembro</Resource>
@@ -5659,7 +5660,7 @@
 		<Resource tag="TIPOROL">Tipo de rol</Resource>
 		<Resource tag="AMBITO">Ámbito</Resource>
 		<Resource tag="TIPOROLCOMUNIDAD">Comunidad</Resource>
-		<Resource tag="TIPOROLECOSISTEMA">Ecosistema</Resource>
+		<Resource tag="TIPOROLTODASCOMUNIDADES">Todas las comunidades</Resource>
 		<Resource tag="PERMISOSADMINISTRACIONLABEL">Permisos relacionados con las páginas de administración</Resource>
 		<Resource tag="PERMISOSRECURSOS">Permisos relacionados con la creación de recursos</Resource>
 		<Resource tag="PERMISOSADMINISTRACIONECOSISTEMA">Permisos relacionados con las páginas de administración del ecosistema</Resource>

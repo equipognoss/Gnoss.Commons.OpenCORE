@@ -2298,6 +2298,7 @@
 		<Resource tag="INTRODUCEUSU">Gib deinen Benutzernamen ein</Resource>
 		<Resource tag="BLOQUEADOENCOM">Dein Benutzername wurde in die Gemeinde vorübergehend gesperrt. Weitere Information erhältst du von den Gemeinde Managern.</Resource>
 		<Resource tag="EXPULSADOENCOM">Dein Benutzername wurde aus die Gemeinde verwiesen. Weitere Informationen erhältst du von den Gemeinde Managern.</Resource>
+		<Resource tag="SINPERMISOCOM">Du hast derzeit keine Berechtigung, auf die Community zuzugreifen. Falls du der Community kürzlich hinzugefügt wurdest, melde dich bitte ab und anschließend wieder an.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Du musst Mitglieder die Gemeinde werden, wenn du Inhalte kommentieren, darüber abstimmen oder veröffentlichen willst.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Du musst um Zugang zu die Gemeinde bitten, wenn du Inhalte kommentieren, darüber abstimmen oder veröffentlichen willst.</Resource>
 		<Resource tag="HACERSEMIEMBRO">Werde Mitglied</Resource>

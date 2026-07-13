@@ -2295,6 +2295,7 @@
 		<Resource tag="INTRODUCEUSU">Sartu zure erabiltzaile izena</Resource>
 		<Resource tag="BLOQUEADOENCOM">Zure erabiltzailea behin behineko blokeatu da komunitate honetan. Informazio gehiagorako kontaktatu komunitateko administratzaileekin.</Resource>
 		<Resource tag="EXPULSADOENCOM">Zure erabiltzailea kanporatu egin da komunitate honetatik. Informazio gehiagorako kontaktatu komunitateko administratzaileekin.</Resource>
+		<Resource tag="SINPERMISOCOM">Une honetan ez duzu komunitatera sartzeko baimenik. Duela gutxi komunitatera gehitu bazaituzte, mesedez, itxi saioa eta hasi berriro.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Edukiak aipatu, bozkatu edo argitaratu nahi badituzu, komunitateko kide egin behar duzu.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Edukiak aipatu, bozkatu edo argitaratu nahi badituzu, komunitatera sartzeko eskaria egin behar duzu</Resource>
 		<Resource tag="HACERSEMIEMBRO">Egin zaitez kide</Resource>

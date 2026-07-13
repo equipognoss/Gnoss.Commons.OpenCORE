@@ -350,19 +350,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         {
             FacetadoAD.InsertarPopularidad(pProyectoID, pElementoAModificarID, pProyectoID_2);
         }
-
-        ///// <summary>
-        ///// Modifica la participación de un usuario de corporativo a personal
-        ///// </summary>
-        ///// <param name="pProyectoID">Identificador del proyecto</param>
-        ///// <param name="pIdentidadID">Identificadro de la identidad</param>
-        ///// <returns>Triples con la forma: Dictionary<Nombre,Dictionary<Predicado,List<idrecurso>>></returns>
-        //public Dictionary<string, Dictionary<string, List<Guid>>> ModificarParticipaciondeCooperativoaPersonal(Guid pProyectoID, Guid pIdentidadID)
-        //{
-        //    return FacetadoAD.ModificarParticipaciondeCooperativoaPersonal(pProyectoID, pIdentidadID);
-        //}
-
-
+       
         /// <summary>
         /// 
         /// </summary>
@@ -377,9 +365,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// Obtiene las comunidades que le pueden interesar a un perfil
         /// </summary>     
         /// <param name="pIdentidadMyGnoss">Identidad en MyGnoss del perfil</param>     
-        public DataSet ComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, int pInicio, int pLimite, bool pResultados, Dictionary<string, List<string>> pListaFiltros)
+        public DataSet ComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, int pLimite, bool pResultados, Dictionary<string, List<string>> pListaFiltros)
         {
-            return FacetadoAD.ComunidadesQueTePuedanInteresar(pIdentidadMyGnoss, pInicio, pLimite, pResultados, pListaFiltros);
+            return FacetadoAD.ComunidadesQueTePuedanInteresar(pIdentidadMyGnoss, pLimite, pResultados, pListaFiltros);
         }
 
         /// <summary>
@@ -391,15 +379,15 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.NumeroComunidadesQueTePuedanInteresar(pIdentidadMyGnoss, pListaFiltros);
         }
 
-        public DataSet ObtenerContactos(Guid pPerfilID1, Guid pPerfilID2, Guid pProyectoID, int pInicio, int pLimite)
+        public DataSet ObtenerContactos(Guid pPerfilID1, Guid pPerfilID2, Guid pProyectoID, int pLimite)
         {
-            return FacetadoAD.ObtenerContactos(pPerfilID1, pPerfilID2, pProyectoID, pInicio, pLimite);
+            return FacetadoAD.ObtenerContactos(pPerfilID1, pPerfilID2, pProyectoID, pLimite);
         }
 
 
-        public DataSet ObtenerSeguidoresComunidad(Guid pPerfilID1, Guid pPerfilID2, Guid pProyectoID, int pInicio, int pLimite)
+        public DataSet ObtenerSeguidoresComunidad(Guid pPerfilID1, Guid pPerfilID2, Guid pProyectoID, int pLimite)
         {
-            return FacetadoAD.ObtenerSeguidoresComunidad(pPerfilID1, pPerfilID2, pProyectoID, pInicio, pLimite);
+            return FacetadoAD.ObtenerSeguidoresComunidad(pPerfilID1, pPerfilID2, pProyectoID, pLimite);
         }
 
 
@@ -558,40 +546,40 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.RecursoBuscablePorTermino(pProyectoID, pRecurso, pTermino);
         }
 
-		public void ObtenerAutocompletar(string proyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, int pInicio, int pLimite, List<string> pSemanticos, string pFiltrosContexto)
+		public void ObtenerAutocompletar(string proyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, int pLimite, List<string> pSemanticos, string pFiltrosContexto)
         {
             //Obtener predicados semánticos. arecipe:type, arecipe:nutrition
-            FacetadoAD.ObtenerAutocompletar(proyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pInicio, pLimite, pSemanticos, pFiltrosContexto);
+            FacetadoAD.ObtenerAutocompletar(proyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pLimite, pSemanticos, pFiltrosContexto);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, Guid pPestanyaID = new Guid(), List<Guid> pListaExcluidos = null)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, Guid pPestanyaID = new Guid(), List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, "", pExcluyente, pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, "", pExcluyente, pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, bool pExcluyente, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, bool pExcluyente, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluyente, bool pInmutable = false, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluyente, bool pInmutable = false, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pInmutable, pEsMovil, pListaExcluidos);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pInmutable = false, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pInmutable = false, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pInmutable);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pInmutable);
         }
 
-        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
+        public void ObtenerFaceta(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil = false, List<Guid> pListaExcluidos = null)
         {
-            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil, pListaExcluidos);
+            FacetadoAD.ObtenerFaceta(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil, pListaExcluidos);
         }
 
         /// <summary>
@@ -606,59 +594,35 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pInicio">Inicio</param>
         /// <param name="pLimite">límite de resultados</param>
         /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
         /// <param name="pSemanticos">Lista de formularios semánticos</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerTituloFacetas(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, List<int> pListaRangos, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, Dictionary<string, int> pListaFacetas, Dictionary<string, string> pListaFacetasExtraContexto)
+        public void ObtenerTituloFacetas(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, List<int> pListaRangos, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, Dictionary<string, int> pListaFacetas, Dictionary<string, string> pListaFacetasExtraContexto)
         {
-            FacetadoAD.ObtenerTituloFacetas(pProyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pListaRangos, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pFiltrosSearchPersonalizados, pListaFacetas, pListaFacetasExtraContexto);
+            FacetadoAD.ObtenerTituloFacetas(pProyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pListaRangos, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pFiltrosSearchPersonalizados, pListaFacetas, pListaFacetasExtraContexto);
         }
 
-        public void ObtenerContadoresRecursosAgrupadosParaFacetaRangos(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
+        public void ObtenerContadoresRecursosAgrupadosParaFacetaRangos(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
         {
-            FacetadoAD.ObtenerContadoresRecursosAgrupadosParaFacetaRangos(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
+            FacetadoAD.ObtenerContadoresRecursosAgrupadosParaFacetaRangos(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
         }
 
-        public void ObtenerFacetaMultiple(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, string pConsulta)
+        public void ObtenerFacetaMultiple(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, string pConsulta)
         {
-            FacetadoAD.ObtenerFacetaMultiple(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pEsMovil, pConsulta);
+            FacetadoAD.ObtenerFacetaMultiple(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados, pEsMovil, pConsulta);
         }
 
-        public void ObtenerSubrangosDeCantidad(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, int pNumCifrasCantidad, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
+        public void ObtenerSubrangosDeCantidad(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, int pNumCifrasCantidad, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
         {
-            FacetadoAD.ObtenerSubrangosDeCantidad(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pNumCifrasCantidad, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
+            FacetadoAD.ObtenerSubrangosDeCantidad(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pNumCifrasCantidad, pFiltrosSearchPersonalizados, pInmutable, pEsMovil);
         }
 
-        public void ObtenerFacetaSinOrdenDBLP(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos)
+        public void ObtenerFacetaSinOrdenDBLP(string proyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos)
         {
-            FacetadoAD.ObtenerFacetaSinOrdenDBLP(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos);
-        }
-
-        /// <summary>
-        /// Obtiene una faceta concreta
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
-        /// <param name="pListaFiltros">Lista de filtros</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
-        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
-        /// <param name="pIdentidadID">Identificador de la identidad</param>
-        /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pInicio">Inicio</param>
-        /// <param name="pLimite">límite de resultados</param>
-        /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
-        /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
-        /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-        /// <param name="pSemanticos">Lista de formularios semánticos</param>
-        public void ObtenerFacetaEspecialDBLPJournalPartOF(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere)
-        {
-            FacetadoAD.ObtenerFacetaEspecialDBLPJournalPartOF(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoWhere);
+            FacetadoAD.ObtenerFacetaSinOrdenDBLP(proyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos);
         }
 
         /// <summary>
@@ -673,15 +637,36 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pInicio">Inicio</param>
         /// <param name="pLimite">límite de resultados</param>
         /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
         /// <param name="pSemanticos">Lista de formularios semánticos</param>
-        public void ObtenerFacetaEspecialDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere)
+        public void ObtenerFacetaEspecialDBLPJournalPartOF(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere)
         {
-            FacetadoAD.ObtenerFacetaEspecialDBLP(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite, pSemanticos, pFiltroContextoWhere);
+            FacetadoAD.ObtenerFacetaEspecialDBLPJournalPartOF(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoWhere);
+        }
+
+        /// <summary>
+        /// Obtiene una faceta concreta
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pFacetadoDS">DataSet de facetado</param>
+        /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
+        /// <param name="pListaFiltros">Lista de filtros</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+        /// <param name="pIdentidadID">Identificador de la identidad</param>
+        /// <param name="pOrden">Orden de los resultados</param>
+        /// <param name="pLimite">límite de resultados</param>
+        /// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+        /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
+        /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
+        /// <param name="pSemanticos">Lista de formularios semánticos</param>
+        public void ObtenerFacetaEspecialDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere)
+        {
+            FacetadoAD.ObtenerFacetaEspecialDBLP(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoWhere);
         }
 
 
@@ -722,11 +707,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
         /// <param name="pLimite">Límite de los resultados</param>
-        public void ObtenerRecursosRelacionados(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite)
+        public void ObtenerRecursosRelacionados(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite)
         {
-            FacetadoAD.ObtenerRecursosRelacionados(pProyectoID, pRecursoID, pFacetadoDS, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pInicio, pLimite);
+            FacetadoAD.ObtenerRecursosRelacionados(pProyectoID, pRecursoID, pFacetadoDS, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite);
         }
 
         /// <summary>
@@ -779,7 +763,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
         /// <param name="pLimite">Límite de los resultados</param>
         public void ObtenerRecursosRelacionadosNuevo(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, int pInicio, int pLimite, string pTags, string pConceptID, string pPestanyaRecurso)
         {
@@ -796,42 +779,41 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
         /// <param name="pLimite">Límite de los resultados</param>
         public void ObtenerRecursosRelacionadosNuevo(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, int pInicio, int pLimite, string pTags, string pConceptID, bool pEsCatalogoNoSocial, string pPestanyaRecurso)
         {
             FacetadoAD.ObtenerRecursosRelacionadosNuevo(pProyectoID, pRecursoID, pFacetadoDS, pInicio, pLimite, pTags, pConceptID, pEsCatalogoNoSocial, pPestanyaRecurso);
         }
 
-        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, List<string> pSemanticos, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pLimite, List<string> pSemanticos, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, pSemanticos, "", "", "", 0, pEsMovil, pListaExcluidos, pUsarAfinidad);
+            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pLimite, pSemanticos, "", "", "", 0, pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, List<string> pSemanticos, TipoProyecto pTipoProyecto, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pLimite, List<string> pSemanticos, TipoProyecto pTipoProyecto, Guid pProyectoID, bool pEsUsuarioInvitado, bool pEsIdentidadInvitada, Guid pIdentidadID, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, pSemanticos, "", "", "", 0, pTipoProyecto, "", "", pEsMovil, pListaExcluidos, pUsarAfinidad);
+            ObtenerResultadosBusqueda(ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pLimite, pSemanticos, "", "", "", 0, pTipoProyecto, "", "", pEsMovil, pListaExcluidos, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pEsMovil, pListaExcluidos, string.Empty, pUsarAfinidad);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pEsMovil, pListaExcluidos, string.Empty, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pEsMovil, pListaExcluidos, string.Empty, pUsarAfinidad);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pEsMovil, pListaExcluidos, string.Empty, pUsarAfinidad);
         }
 
-        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pInicio, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, string pLanguageCode, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, string pLanguageCode, bool pEsMovil = false, List<Guid> pListaExcluidos = null, bool pUsarAfinidad = false)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pInicio, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
+            FacetadoAD.ObtenerResultadosBusqueda(mIdGrafo, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
         }
 
 
-        public void ObtenerResultadosBusquedaTags(string pProyectoID, FacetadoDS pFacetadoDS, List<string> pTagsDocumento, int pInicio, int pLimite, string pNamespaceExtra, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMiembroComunidad, List<string> pSemanticos, string pIdentidadID, bool pEstaEnMyGnoss, bool pEsInvitado)
+        public void ObtenerResultadosBusquedaTags(string pProyectoID, FacetadoDS pFacetadoDS, List<string> pTagsDocumento, int pLimite, string pNamespaceExtra, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMiembroComunidad, List<string> pSemanticos, string pIdentidadID, bool pEstaEnMyGnoss, bool pEsInvitado)
         {
-            FacetadoAD.ObtenerResultadosBusquedaTags(pProyectoID, pFacetadoDS, pTagsDocumento, pInicio, pLimite, pNamespaceExtra, pListaFiltros, pListaFiltrosExtra, pEsMiembroComunidad, pSemanticos, pIdentidadID, pEstaEnMyGnoss, pEsInvitado);
+            FacetadoAD.ObtenerResultadosBusquedaTags(pProyectoID, pFacetadoDS, pTagsDocumento, pLimite, pNamespaceExtra, pListaFiltros, pListaFiltrosExtra, pEsMiembroComunidad, pSemanticos, pIdentidadID, pEstaEnMyGnoss, pEsInvitado);
         }
 
         /// <summary>
@@ -846,7 +828,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
         /// <param name="pLimite">Fin de los resultados</param>
         /// <param name="pListaFiltrosExtra"></param>
         /// <param name="pSemanticos"></param>
@@ -872,7 +853,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pInicio">Inicio de los resultados</param>
         /// <param name="pLimite">Fin de los resultados</param>
         /// <param name="pListaFiltrosExtra"></param>
         /// <param name="pSemanticos"></param>
@@ -889,19 +869,19 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             FacetadoAD.ObtenerResultadosBusquedaFormatoChart(mIdGrafo, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID.ToUpper(), pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pSelectChart, pFiltroChart, pPermitirRecursosPrivados, pEsMovil, pFiltrosSearchPersonalizados);
         }
 
-        public void ObtenerResultadosBusqueda(string pQuery, string pGrafoID, FacetadoDS pFacetadoDS, int pInicio, int pLimite, string pNamespaceExtra)
+        public void ObtenerResultadosBusqueda(string pQuery, string pGrafoID, FacetadoDS pFacetadoDS, int pLimite, string pNamespaceExtra)
         {
-            FacetadoAD.ObtenerResultadosBusqueda(pQuery, pGrafoID, pFacetadoDS, pInicio, pLimite, pNamespaceExtra);
+            FacetadoAD.ObtenerResultadosBusqueda(pQuery, pGrafoID, pFacetadoDS, pLimite, pNamespaceExtra);
         }
 
-        public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pInicio, int pLimite, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, Guid pProyectoID)
+        public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pLimite, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, Guid pProyectoID)
         {
-            ObtienePersonasExacto(pFacetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID, pInicio, pLimite);
+            ObtienePersonasExacto(pFacetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID, pLimite);
         }
 
-        public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMyGnoss, bool pEstaEnProyecto, bool pEsUsuarioInvitado, Guid pIdentidadID, int pInicio, int pLimite)
+        public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMyGnoss, bool pEstaEnProyecto, bool pEsUsuarioInvitado, Guid pIdentidadID, int pLimite)
         {
-            FacetadoAD.ObtenerPersonas(mIdGrafo, ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEsMyGnoss, pEstaEnProyecto, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pInicio, pLimite, new List<string>());
+            FacetadoAD.ObtenerPersonas(mIdGrafo, ascOdes, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEsMyGnoss, pEstaEnProyecto, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), pLimite, new List<string>());
         }
 
         public int ObtenerValorSegundosParametroAplicacion()
@@ -2258,33 +2238,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         {
             return FacetadoAD.ObtenerEntidadesEnProyectoIDDocumentoID(pProyectoID, pDocumentoID);
         }
-
-
-		public string ObtenerConsultaDeFaceta(string pProyectoID, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra,
-            bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pInicio, int pLimite, 
-            List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluyente, 
-            bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, 
-            TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, 
-            bool pEsMovil, List<Guid> pListaExcluidos = null, Guid pPestanyaID = new Guid()) 
-        {
-            int numeroAuxiliarVariablesIguales = 2;
-            string nombreFacetaSinPrefijo = string.Empty;
-            string consultaReciproca = string.Empty;
-			string ultimaFacetaAux = string.Empty;
-			if (pListaFiltros.ContainsKey("autocompletar"))
-			{
-				ultimaFacetaAux = "autocompletar";
-			}
-			FacetadoAD.ObtenerDatosFiltroReciproco(out consultaReciproca, pClaveFaceta, out pClaveFaceta);
-
-			return FacetadoAD.ObtenerConsultaDeFaceta(numeroAuxiliarVariablesIguales, nombreFacetaSinPrefijo, consultaReciproca, ultimaFacetaAux,
-                pProyectoID, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID,
-                pTipoDisenio, pInicio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluyente, pExcluirPersonas,
-                pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pReciproca, pTipoPropiedadesFaceta, pFiltrosSearchPersonalizados,
-                pInmutable, pEsMovil, pListaExcluidos, pPestanyaID);
-        }
-
-
 
         #endregion
 

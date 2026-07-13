@@ -1908,6 +1908,25 @@ namespace Es.Riam.Util
         #endregion
 
         #region HTML
+        private static readonly HashSet<string> NAMESPACES_PROHIBIDOS = new HashSet<string>
+{
+    "System.Diagnostics",
+    "System.IO",
+    "System.Reflection",
+    "System.Net",
+    "System.Threading",
+    "Microsoft.Win32"
+};
+
+        /// <summary>
+        /// Devuelve si el html de una vista contiene algún using capado
+        /// </summary>
+        /// <param name="pCodigoVista"></param>
+        /// <returns></returns>
+        public static bool ValidarUsings(string pCodigoVista)
+        {
+            return !NAMESPACES_PROHIBIDOS.Any(ns => pCodigoVista.Contains(ns));
+        }
 
         /// <summary>
         /// Elimina de una cadena HTML los videos e imágenes.

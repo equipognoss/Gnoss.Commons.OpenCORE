@@ -2216,8 +2216,8 @@
 		<Resource tag="INTRODUCEPASS">Insira a senha</Resource>
 		<Resource tag="INTRODUCEUSU">Insira seu nome de usuario</Resource>
 		<Resource tag="BLOQUEADOENCOM">Seu usuario foi bloqueado temporariamente nesta comunidade. Para mais informações contacta os administradores da comunidade.</Resource>
-		<Resource tag="EXPULSADOENCOM">
-		</Resource>
+		<Resource tag="EXPULSADOENCOM">A sua conta de utilizador foi expulsa desta comunidade. Para mais informações, contacte os administradores da comunidade.</Resource>
+		<Resource tag="SINPERMISOCOM">Atualmente não tens permissões para aceder à comunidade. Se foste adicionado recentemente à comunidade, termina a sessão e volta a iniciar sessão.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">
 		</Resource>
 		<Resource tag="TIENESQUESOLICITAR">

@@ -2294,6 +2294,7 @@
 		<Resource tag="INTRODUCEUSU">Inserisci il tuo nome utente</Resource>
 		<Resource tag="BLOQUEADOENCOM">Il tuo utente è stato temporaneamente bloccato in questa comunità. Per ulteriori informazioni contatta gli amministratori della comunità.</Resource>
 		<Resource tag="EXPULSADOENCOM">Il tuo utente è stato respinto da questa comunità. Per ulteriori informazioni contatta gli amministratori della comunità.</Resource>
+		<Resource tag="SINPERMISOCOM">Al momento non disponi delle autorizzazioni per accedere alla community. Se sei stato aggiunto recentemente alla community, esci dall'account e accedi nuovamente.</Resource>
 		<Resource tag="TIENESQUEHACERTEMIEMBRO">Devi diventare membro della comunità se vuoi lascare un commento, votare o pubblicare contenuti.</Resource>
 		<Resource tag="TIENESQUESOLICITAR">Devi richiedere l'accesso alla comunità per lasciare un commento, votare o pubblicare contenuti.</Resource>
 		<Resource tag="HACERSEMIEMBRO">Diventa  membro</Resource>
