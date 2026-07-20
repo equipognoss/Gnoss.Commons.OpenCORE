@@ -49,6 +49,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		public bool EsMiembroComunidad { get; set; }
 		public bool EsInvitado { get; set; }
 		public string IdentidadID { get; set; }
+		public int Inicio { get; set; }
 		public int Limite { get; set; }
 		public List<string> Semanticos { get; set; }
 		public string FiltroContextoSelect { get; set; }
@@ -1045,12 +1046,12 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			}
 		}
 
-		public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pLimite, Guid pProyectoID, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, IAvailableServices pAvailableServices)
+		public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, int pLimite, Guid pProyectoID, bool pEsIdentidadInvitada, bool pEsUsuarioInvitado, Guid pIdentidadID, IAvailableServices pAvailableServices, int pInicio)
 		{
-			ObtienePersonasExacto(pFacetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID, pLimite, pProyectoID, pAvailableServices);
+			ObtienePersonasExacto(pFacetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID, pLimite, pProyectoID, pAvailableServices, pInicio);
 		}
 
-		public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMyGnoss, bool pEstaEnProyecto, bool pEsUsuarioInvitado, Guid pIdentidadID, int pLimite, Guid pProyectoID, IAvailableServices pAvailableServices)
+		public void ObtienePersonasExacto(FacetadoDS pFacetadoDS, bool ascOdes, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEsMyGnoss, bool pEstaEnProyecto, bool pEsUsuarioInvitado, Guid pIdentidadID, int pLimite, Guid pProyectoID, IAvailableServices pAvailableServices, int pInicio)
 		{
 			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
 			{
@@ -1064,7 +1065,8 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				cacheModel.EstaEnProyecto = pEstaEnProyecto;
 				cacheModel.EsInvitado = pEsUsuarioInvitado;
 				cacheModel.IdentidadID = pIdentidadID.ToString();
-				cacheModel.Limite = pLimite;
+                cacheModel.Inicio = pInicio;
+                cacheModel.Limite = pLimite;
 				cacheModel.ProyectoID = pProyectoID;
 
 				string clave = GenerarClaveCacheBusqueda(cacheModel);
@@ -1074,7 +1076,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				{
 					facetadoDS = new FacetadoDS();
 					DateTime horaInicio = DateTime.Now;
-					FacetadoCN.ObtienePersonasExacto(facetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEsMyGnoss, pEstaEnProyecto, pEsUsuarioInvitado, pIdentidadID, pLimite);
+					FacetadoCN.ObtienePersonasExacto(facetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEsMyGnoss, pEstaEnProyecto, pEsUsuarioInvitado, pIdentidadID, pLimite, pInicio);
 					DateTime horaFin = DateTime.Now;
 
 					if (ComprobarConsultaSuperaTiempoConfigurado(horaInicio, horaFin, pProyectoID))
@@ -1091,16 +1093,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			}
 			else
 			{
-				FacetadoCN.ObtienePersonasExacto(pFacetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEsMyGnoss, pEstaEnProyecto, pEsUsuarioInvitado, pIdentidadID, pLimite);
+				FacetadoCN.ObtienePersonasExacto(pFacetadoDS, ascOdes, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEsMyGnoss, pEstaEnProyecto, pEsUsuarioInvitado, pIdentidadID, pLimite, pInicio);
 			}
 		}
 
-		public string ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, Guid pProyectoID, IAvailableServices pAvailableServices, bool pUsarAfinidad = false)
+		public string ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, Guid pProyectoID, IAvailableServices pAvailableServices, bool pUsarAfinidad = false, int? pInicio = null)
 		{
-			return ObtenerResultadosBusqueda(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pLanguageCode, pProyectoID, pAvailableServices, pUsarAfinidad);
+			return ObtenerResultadosBusqueda(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, pFiltrosSearchPersonalizados, pEsMovil, pListaExcluidos, pLanguageCode, pProyectoID, pAvailableServices, pUsarAfinidad, pInicio);
 		}
 
-		public string ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, Guid pProyectoID, IAvailableServices pAvailableServices, bool pUsarAfinidad = false)
+		public string ObtenerResultadosBusqueda(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, Guid pProyectoID, IAvailableServices pAvailableServices, bool pUsarAfinidad = false, int? pInicio = null)
 		{
 			string clave = "";
 
@@ -1132,15 +1134,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				cacheModel.TipoFiltro = pTipoFiltro;
 				cacheModel.TipoProyecto = pTipoProyecto;
 				cacheModel.LanguageCode = pLanguageCode;
+				cacheModel.Inicio = pInicio.HasValue ? pInicio.Value : 0;
 
-				clave = GenerarClaveCacheBusqueda(cacheModel);
+                clave = GenerarClaveCacheBusqueda(cacheModel);
 				FacetadoDS facetadoDS = ObtenerObjetoDeCache(clave, typeof(FacetadoDS)) as FacetadoDS;
 
 				if (facetadoDS == null)
 				{
 					facetadoDS = new FacetadoDS();
 					DateTime horaInicio = DateTime.Now;
-					FacetadoCN.ObtenerResultadosBusqueda(pDescendente, facetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pLanguageCode, pEsMovil, pListaExcluidos, pUsarAfinidad);
+					FacetadoCN.ObtenerResultadosBusqueda(pDescendente, facetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pLanguageCode, pEsMovil, pListaExcluidos, pUsarAfinidad, pInicio);
 					DateTime horaFin = DateTime.Now;
 
 					if (ComprobarConsultaSuperaTiempoConfigurado(horaInicio, horaFin, pProyectoID))
@@ -1157,7 +1160,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			}
 			else
 			{
-				FacetadoCN.ObtenerResultadosBusqueda(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pLanguageCode, pEsMovil, pListaExcluidos, pUsarAfinidad);
+				FacetadoCN.ObtenerResultadosBusqueda(pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespacesExtra, pResultadosEliminar, pPermitirRecursosPrivados, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pLanguageCode, pEsMovil, pListaExcluidos, pUsarAfinidad, pInicio);
 			}
 
 			return clave;
@@ -1220,7 +1223,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			return dictionary;
 		}
 
-		public bool ExisteResultadosBusquedaCache(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, Guid pProyectoID)
+		public bool ExisteResultadosBusquedaCache(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, Guid pProyectoID, int? pInicio = null)
 		{
 			bool exist = false;
 			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
@@ -1250,8 +1253,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				cacheModel.TipoAlgoritmoTransformacion = pTipoAlgoritmoTransformacion;
 				cacheModel.FiltrosSearchPersonalizados = pFiltrosSearchPersonalizados;
 				cacheModel.EsMovil = pEsMovil;
+				cacheModel.Inicio = pInicio.HasValue ? pInicio.Value : 0;
 
-				string clave = GenerarClaveCacheBusqueda(cacheModel);
+                string clave = GenerarClaveCacheBusqueda(cacheModel);
 				exist = ExisteClaveEnCache(clave);
 			}
 			return exist;
@@ -1636,9 +1640,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Obtiene las comunidades que le pueden interesar a un perfil
 		/// </summary>     
 		/// <param name="pIdentidadMyGnoss">Identidad en MyGnoss del perfil</param>     
-		public DataSet ComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, int pLimite, bool pObtenerComunidades, Dictionary<string, List<string>> pListaFiltros)
+		public DataSet ComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, int pLimite, bool pObtenerComunidades, Dictionary<string, List<string>> pListaFiltros, int? pInicio = null)
 		{
-			return FacetadoCN.ComunidadesQueTePuedanInteresar(pIdentidadMyGnoss, pLimite, pObtenerComunidades, pListaFiltros);
+			return FacetadoCN.ComunidadesQueTePuedanInteresar(pIdentidadMyGnoss, pLimite, pObtenerComunidades, pListaFiltros, pInicio);
 		}
 
 		/// <summary>
@@ -2461,7 +2465,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			switch (pCacheConsultasCostosas.TipoDeCache)
 			{
 				case TipoCacheCostosa.Resultados:
-					claveCache = $"BusquedaResultados_{pCacheConsultasCostosas.ProyectoID}_{pCacheConsultasCostosas.IdentidadID}_{pCacheConsultasCostosas.Descendente}_{pCacheConsultasCostosas.TipoFiltro}_Filtros_{listaFiltros}_FinFiltros_FiltrosExtra_{listaFiltrosExtra}_FinFiltrosExtra_{pCacheConsultasCostosas.EstaEnMyGnoss}_{pCacheConsultasCostosas.EsMiembroComunidad}_{pCacheConsultasCostosas.EsInvitado}_{pCacheConsultasCostosas.Limite}_Semanticos_{listaSemanticos}_FinSemanticos_{pCacheConsultasCostosas.FiltroContextoSelect}_{pCacheConsultasCostosas.FiltroContextoWhere}_{pCacheConsultasCostosas.FiltroContextoOrderBy}_{pCacheConsultasCostosas.FiltroContextoPesoMinimo}_{pCacheConsultasCostosas.TipoProyecto}_{pCacheConsultasCostosas.NamespacesExtra}_{pCacheConsultasCostosas.ResultadosEliminar}_{pCacheConsultasCostosas.PermitirRecursosPrivados}_{pCacheConsultasCostosas.OmitirPalabrasNoRelevantesSearch}_{pCacheConsultasCostosas.TipoAlgoritmoTransformacion}_FiltrosSearch_{listaFiltrosSearch}_FinFiltrosSearch_{pCacheConsultasCostosas.LanguageCode}_{pCacheConsultasCostosas.EsMovil}_Excluidos_{listaExcluidos}_FinExcluidos";
+					claveCache = $"BusquedaResultados_{pCacheConsultasCostosas.ProyectoID}_{pCacheConsultasCostosas.IdentidadID}_{pCacheConsultasCostosas.Descendente}_{pCacheConsultasCostosas.TipoFiltro}_Filtros_{listaFiltros}_FinFiltros_FiltrosExtra_{listaFiltrosExtra}_FinFiltrosExtra_{pCacheConsultasCostosas.EstaEnMyGnoss}_{pCacheConsultasCostosas.EsMiembroComunidad}_{pCacheConsultasCostosas.EsInvitado}_{pCacheConsultasCostosas.Inicio}_{pCacheConsultasCostosas.Limite}_Semanticos_{listaSemanticos}_FinSemanticos_{pCacheConsultasCostosas.FiltroContextoSelect}_{pCacheConsultasCostosas.FiltroContextoWhere}_{pCacheConsultasCostosas.FiltroContextoOrderBy}_{pCacheConsultasCostosas.FiltroContextoPesoMinimo}_{pCacheConsultasCostosas.TipoProyecto}_{pCacheConsultasCostosas.NamespacesExtra}_{pCacheConsultasCostosas.ResultadosEliminar}_{pCacheConsultasCostosas.PermitirRecursosPrivados}_{pCacheConsultasCostosas.OmitirPalabrasNoRelevantesSearch}_{pCacheConsultasCostosas.TipoAlgoritmoTransformacion}_FiltrosSearch_{listaFiltrosSearch}_FinFiltrosSearch_{pCacheConsultasCostosas.LanguageCode}_{pCacheConsultasCostosas.EsMovil}_Excluidos_{listaExcluidos}_FinExcluidos";
 					break;
 				case TipoCacheCostosa.NumeroResultados:
 					claveCache = $"NumeroResultados_{pCacheConsultasCostosas.ProyectoID}_{pCacheConsultasCostosas.NombreFaceta}_Filtros_{listaFiltros}_FinFiltros_FiltrosExtra_{listaFiltrosExtra}_FinFiltrosExtra_{pCacheConsultasCostosas.EstaEnMyGnoss}_{pCacheConsultasCostosas.EsMiembroComunidad}_{pCacheConsultasCostosas.EsInvitado}_{pCacheConsultasCostosas.IdentidadID}_Semanticos_{listaSemanticos}_FinSemanticos_{pCacheConsultasCostosas.FiltroContextoWhere}_{pCacheConsultasCostosas.TipoProyecto}_{pCacheConsultasCostosas.PermitirRecursosPrivados}_{pCacheConsultasCostosas.OmitirPalabrasNoRelevantesSearch}_{pCacheConsultasCostosas.TiposAlgoritmoTransformacion}_{pCacheConsultasCostosas.FiltrosSearchPersonalizados}_{pCacheConsultasCostosas.EsMovil}_Excluidos_{listaExcluidos}_FinExcluidos";

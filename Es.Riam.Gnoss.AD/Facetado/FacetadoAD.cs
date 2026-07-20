@@ -3612,9 +3612,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         }
 
 
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false, int? pInicio = null)
         {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad, pInicio);
         }
 
         /// <summary>
@@ -3637,35 +3637,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pFiltroContextoOrderBy"></param>
         /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false, int? pInicio = null)
         {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", true, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
-        }
-
-        /// <summary>
-        /// Obtiene los resultados de una búsqueda
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pTipoFiltro">Tipo de filtro</param>
-        /// <param name="pListaFiltros">Lista de filtros del usuario</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
-        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
-        /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pLimite">Fin de los resultados</param>
-        /// <param name="pListaFiltrosExtra"></param>
-        /// <param name="pSemanticos"></param>
-        /// <param name="pFiltroContextoSelect"></param>
-        /// <param name="pFiltroContextoWhere"></param>
-        /// <param name="pFiltroContextoOrderBy"></param>
-        /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
-        /// <param name="pNamespaceExtra">NamespacesExtra</param>
-        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
-        {
-            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad);
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, TipoProyecto.Catalogo, "", "", true, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad, pInicio);
         }
 
         /// <summary>
@@ -3689,7 +3663,33 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
-        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false)
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false, int? pInicio = null)
+        {
+            ObtenerResultadosBusqueda(pProyectoID, pDescendente, pFacetadoDS, pTipoFiltro, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pFiltroContextoPesoMinimo, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pPermitirRecursosPrivados, true, TiposAlgoritmoTransformacion.Ninguno, null, pEsMovil, pListaExcluidos, pLanguageCode, pUsarAfinidad, pInicio);
+        }
+
+        /// <summary>
+        /// Obtiene los resultados de una búsqueda
+        /// </summary>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
+        /// <param name="pFacetadoDS">DataSet de facetado</param>
+        /// <param name="pTipoFiltro">Tipo de filtro</param>
+        /// <param name="pListaFiltros">Lista de filtros del usuario</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
+        /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+        /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
+        /// <param name="pLimite">Fin de los resultados</param>
+        /// <param name="pListaFiltrosExtra"></param>
+        /// <param name="pSemanticos"></param>
+        /// <param name="pFiltroContextoSelect"></param>
+        /// <param name="pFiltroContextoWhere"></param>
+        /// <param name="pFiltroContextoOrderBy"></param>
+        /// <param name="pTipoProyecto">Tipo del proyecto para el que se está haciendo la consulta</param>        
+        /// <param name="pNamespaceExtra">NamespacesExtra</param>
+        /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
+        public void ObtenerResultadosBusqueda(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, bool pObtenerRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, List<Guid> pListaExcluidos, string pLanguageCode, bool pUsarAfinidad = false, int? pInicio = null)
         {
             string[] filtrosContextos = null;
             if (!string.IsNullOrEmpty(pFiltroContextoOrderBy))
@@ -4153,7 +4153,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (pLimite > 0)
             {
-                query += "LIMIT " + pLimite;
+                query += $"LIMIT {pLimite}";
+            }
+
+            if(pInicio.HasValue && pInicio.Value > 0)
+            {
+                query += $" OFFSET {pInicio.Value}";
             }
             
             if (haySubconsultaScoreTitle)
@@ -6085,7 +6090,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pLimite">Fin de los resultados</param>
-        public void ObtenerPersonas(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos)
+        public void ObtenerPersonas(string pProyectoID, bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, int? pInicio = null)
         {
             string orden = "";
 
@@ -6158,6 +6163,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 query += "LIMIT " + pLimite;
             }
 
+            if (pInicio.HasValue && pInicio > 0)
+            {
+                query += " OFFSET " + pInicio;
+            }
+            
             query = NamespacesVirtuosoLectura + select + query;
 
             LeerDeVirtuoso(query, "RecursosBusqueda", pFacetadoDS, pProyectoID);
@@ -6413,7 +6423,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <param name="pIdentidadMyGnoss">Identidad en MyGnoss del perfil</param>
         /// <param name="pLimite">Limite</param>
         /// <param name="pResultados">TRUE obtenemos los resultados/ FALSE obtenemos las facetas</param>
-        public DataSet ComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, int pLimite, bool pResultados, Dictionary<string, List<string>> pListaFiltros)
+        public DataSet ComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, int pLimite, bool pResultados, Dictionary<string, List<string>> pListaFiltros, int? pInicio = null)
         {
             FacetadoDS resultadoDS = new FacetadoDS();
 
@@ -6448,6 +6458,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
             if (pLimite > 0)
             {
                 query.Append($" LIMIT {pLimite}");
+            }
+
+            if (pInicio.HasValue && pInicio != 0)
+            {
+                query.Append($" OFFSET {pInicio}");
             }
 
             string nombreTabla = "RecursosBusqueda";

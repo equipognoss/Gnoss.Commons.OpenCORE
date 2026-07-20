@@ -7516,7 +7516,7 @@ namespace Es.Riam.Gnoss.AD.Identidad
                         IdentidadID = item.Key,
                         NumRecursos = item.Count()
                     }).OrderByDescending(item => item.NumRecursos);
-                    var unionSubconsulta = mEntityContext.Identidad.JoinPerfil().JoinPerfilesMiembro().JoinIdentidadesMiembro().JoinDocumentoWebVinBaseRecursos().Where(item => !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && item.Identidad.Tipo.Equals((short)TiposIdentidad.Organizacion) && item.IdentidadesMiembro.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo)).GroupBy(item => item.Identidad.IdentidadID).Select(item => new
+                    var unionSubconsulta = mEntityContext.Identidad.JoinPerfil().JoinPerfilesMiembro().JoinIdentidadesMiembro().JoinDocumentoWebVinBaseRecursos().Where(item => item.Identidad.ProyectoID.Equals(pProyectoID) && item.IdentidadesMiembro.ProyectoID.Equals(pProyectoID) && !item.Identidad.FechaBaja.HasValue && !item.Identidad.FechaExpulsion.HasValue && item.Identidad.Tipo.Equals((short)TiposIdentidad.Organizacion) && item.IdentidadesMiembro.Tipo.Equals((short)TiposIdentidad.ProfesionalCorporativo)).GroupBy(item => item.Identidad.IdentidadID).Select(item => new
                     {
                         IdentidadID = item.Key,
                         NumRecursos = item.Count()
