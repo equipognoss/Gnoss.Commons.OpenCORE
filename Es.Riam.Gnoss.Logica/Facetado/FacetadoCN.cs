@@ -2304,6 +2304,18 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             }
         }
 
+        public List<string> ListaIdiomas
+        {
+            get
+            {
+                return this.FacetadoAD.ListaIdiomas;
+            }
+            set
+            {
+                this.FacetadoAD.ListaIdiomas = value;
+            }
+        }
+
         public string MandatoryRelacion
         {
             get

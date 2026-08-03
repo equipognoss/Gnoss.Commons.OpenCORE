@@ -7,6 +7,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
 using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
+using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.Facetado.Model;
@@ -5926,11 +5927,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <returns>Verdad si el usuario administra alguna comunidad que contenga esta ontología</return s>
         public bool ComprobarUsuarioAdministraOntologia(Guid pUsuarioID, string pOntologia)
         {
-            return mEntityContext.AdministradorProyecto.Join(mEntityContext.Documento, adminProy => adminProy.ProyectoID, doc => doc.ProyectoID.Value, (adminProy, doc) => new
+            Guid? proyID = mEntityContext.Documento.Where(item => item.Enlace.ToLower() == pOntologia.ToLower() && (item.Tipo == 7 || item.Tipo == 23) && !item.Eliminado).Select(item => item.ProyectoID)?.FirstOrDefault();
+
+            if (proyID.HasValue)
             {
-                AdministradorProyecto = adminProy,
-                Documento = doc
-            }).Where(objeto => (objeto.Documento.Tipo == 7 || objeto.Documento.Tipo == 23) && objeto.AdministradorProyecto.Tipo == 0 && objeto.Documento.Enlace.ToLower().Equals(pOntologia.ToLower()) && objeto.AdministradorProyecto.UsuarioID.Equals(pUsuarioID) && !objeto.Documento.Eliminado).Any();
+                return mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().JoinRolIdentidad().Any(item => item.Usuario.UsuarioID.Equals(pUsuarioID) && item.RolIdentidad.RolID.Equals(ProyectoAD.RolAdministrador) && item.Identidad.ProyectoID.Equals(proyID.Value));
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion

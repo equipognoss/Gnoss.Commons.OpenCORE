@@ -3377,7 +3377,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTipo">Tipo del rol que se quiere comprobar</param>
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
-        public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID, TipoRolUsuario pTipo)
+        public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
 			bool esAdministrador = false;
 
@@ -3391,24 +3391,44 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 			}
 			else
 			{
-				Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.Persona persona = mEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
+				AD.EntityModel.Models.PersonaDS.Persona persona = mEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
 				if (persona != null)
 				{
-					Guid perfilID = mEntityContext.PerfilPersona.Where(x => x.PersonaID.Equals(persona.PersonaID)).Select(x => x.PerfilID).FirstOrDefault();
-					Guid identidadID = mEntityContext.Identidad.Where(x => x.PerfilID.Equals(perfilID) && x.ProyectoID.Equals(pProyectoID)).Select(x => x.IdentidadID).FirstOrDefault();
-					RolIdentidad rolIdentidad = mEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(identidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
-					if (rolIdentidad != null)
-					{
-						esAdministrador = true;
-					}
+                    Guid identidadID = mEntityContext.Perfil.JoinIdentidad().Where(x => x.Perfil.PersonaID.Equals(persona.PersonaID) && x.Identidad.ProyectoID.Equals(pProyectoID)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
+
+                    esAdministrador = EsIdentidadAdministradorProyecto(identidadID, pProyectoID);
+
+                    if (!esAdministrador)
+                    {
+                        esAdministrador = UsuarioPerteneceGrupoAdministrador(pUsuarioID, pProyectoID, identidadID);   
+                    }
 				}
 			}
 
 			return esAdministrador;
-			/*List<AdministradorProyecto> listaAdministradorProyecto = mEntityContext.AdministradorProyecto.Where(adminProy => adminProy.ProyectoID.Equals(pProyectoID) && adminProy.UsuarioID.Equals(pUsuarioID) && adminProy.Tipo.Equals((short)pTipo)).ToList();
-            bool EsAdministrador = (listaAdministradorProyecto.Count > 0);
-            return (EsAdministrador);*/
 		}
+
+        /// <summary>
+        /// Comprueba si el usuario pertenece a un grupo de administradores del proyecto
+        /// </summary>
+        /// <param name="pUsuarioID"> Identificador del usuario</param>
+        /// <param name="pProyectoID"> Identificador del proyecto</param>
+        /// <param name="pIdentidadID"> Identificador de la identidad. Es nullable, si no se pasa, se obtiene de la base de datos</param>
+        /// <param name="pIdentidadMyGnossID"> Identificador de la identidad del proyecto MyGnoss. Es nullable, si no se pasa, se obtiene de la base de datos</param>
+        /// <returns> TRUE si lo es, FALSE en caso contrario</returns>
+        private bool UsuarioPerteneceGrupoAdministrador(Guid pUsuarioID, Guid pProyectoID, Guid? pIdentidadID = null, Guid? pIdentidadMyGnossID = null)
+        {
+            if (!pIdentidadID.HasValue)
+            {
+                pIdentidadID = mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(x => x.Usuario.UsuarioID.Equals(pUsuarioID) && x.Identidad.ProyectoID.Equals(pProyectoID)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
+            }
+            if (!pIdentidadMyGnossID.HasValue)
+            {
+                pIdentidadMyGnossID = mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(x => x.Usuario.UsuarioID.Equals(pUsuarioID) && x.Identidad.ProyectoID.Equals(MetaProyecto)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
+            }
+
+            return mEntityContext.GrupoIdentidadesParticipacion.JoinRolGrupoIdentidades().JoinRol().Any(item => (item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID.Value) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadMyGnossID.Value)) && item.Rol.RolID.Equals(ProyectoAD.RolAdministrador));
+        }
 
         /// <summary>
         /// Comprueba si la identidad es administrador del proyecto
@@ -3417,7 +3437,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTipo">Tipo del rol que se quiere comprobar</param>
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
-        public bool EsIdentidadAdministradorProyecto(Guid pIdentidadID, Guid pProyectoID, TipoRolUsuario pTipo)
+        public bool EsIdentidadAdministradorProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
 			bool esAdministrador = false;
 
@@ -3440,32 +3460,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 			}
 
 			return esAdministrador;
-			/*var listaAdministradorProyectoVar = mEntityContext.AdministradorProyecto.Join(mEntityContext.Persona, adminProy => adminProy.UsuarioID, persona => persona.UsuarioID, (adminProy, persona) => new
-            {
-                ProyectoID = adminProy.ProyectoID,
-                PersonaID = persona.PersonaID,
-                UsuarioID = adminProy.UsuarioID,
-                Proyecto = adminProy.Proyecto,
-                Tipo = adminProy.Tipo
-            }).Join(mEntityContext.Perfil, adminProyPer => adminProyPer.PersonaID, perfil => perfil.PersonaID, (adminProyPer, perfil) => new
-            {
-                ProyectoID = adminProyPer.ProyectoID,
-                Proyecto = adminProyPer.Proyecto,
-                PersonaID = adminProyPer.PersonaID,
-                PerfilID = perfil.PerfilID,
-                Tipo = adminProyPer.Tipo
-            }).Join(mEntityContext.Identidad, adminProyPerPer => adminProyPerPer.PerfilID, identidad => identidad.PerfilID, (adminProyPerPer, identidad) => new
-            {
-                ProyectoID = adminProyPerPer.ProyectoID,
-                Proyecto = adminProyPerPer.Proyecto,
-                PersonaID = adminProyPerPer.PersonaID,
-                PerfilID = adminProyPerPer.PerfilID,
-                Tipo = adminProyPerPer.Tipo,
-                IdentidadID = identidad.IdentidadID
-            }).Where(adminProyPerPerIden => adminProyPerPerIden.IdentidadID.Equals(pIdentidadID) && adminProyPerPerIden.ProyectoID.Equals(pProyectoID) && adminProyPerPerIden.Tipo <= (short)pTipo).ToList();
-            bool EsAdministrador = (listaAdministradorProyectoVar.ToList().Count > 0);
-
-            return (EsAdministrador);*/
 		}
 
         /// <summary>

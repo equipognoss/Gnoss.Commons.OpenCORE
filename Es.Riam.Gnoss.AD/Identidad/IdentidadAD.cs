@@ -730,6 +730,19 @@ namespace Es.Riam.Gnoss.AD.Identidad
         public GrupoIdentidadesOrganizacion GrupoIdentidadesOrganizacion { get; set; }
     }
 
+    public class JoinGrupoIdentidadesParticipacionRolGrupoIdentidades
+    {
+        public GrupoIdentidadesParticipacion GrupoIdentidadesParticipacion { get; set; }
+        public RolGrupoIdentidades RolGrupoIdentidades { get; set; }
+    }
+
+    public class JoinGrupoIdentidadesParticipacionRolGrupoIdentidadesRol
+    {
+        public GrupoIdentidadesParticipacion GrupoIdentidadesParticipacion { get; set; }
+        public RolGrupoIdentidades RolGrupoIdentidades { get; set; }
+        public Rol Rol { get; set; }
+    }
+
     public class JoinGrupoIdentGrupoIdentidadesProyectoGrupoIdentidadesParticipacion
     {
         public GrupoIdentidades GrupoIdentidades { get; set; }
@@ -742,6 +755,21 @@ namespace Es.Riam.Gnoss.AD.Identidad
         public GrupoIdentidades GrupoIdentidades { get; set; }
         public GrupoIdentidadesParticipacion GrupoIdentidadesParticipacion { get; set; }
     }
+
+    public class JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidades
+    {
+        public GrupoIdentidades GrupoIdentidades { get; set; }
+        public GrupoIdentidadesParticipacion GrupoIdentidadesParticipacion { get; set; }
+        public RolGrupoIdentidades RolGrupoIdentidades { get; set; }
+    }
+    public class JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidadesRol
+    {
+        public GrupoIdentidades GrupoIdentidades { get; set; }
+        public GrupoIdentidadesParticipacion GrupoIdentidadesParticipacion { get; set; }
+        public RolGrupoIdentidades RolGrupoIdentidades { get; set; }
+        public Rol Rol { get; set; }
+    }
+
     public class JoinGrupoIdentidadesParticipacionIdentidadDocumentoRolGrupoIdentidades
     {
         public GrupoIdentidadesParticipacion GrupoIdentidadesParticipacion { get; set; }
@@ -1537,6 +1565,15 @@ namespace Es.Riam.Gnoss.AD.Identidad
         public Persona Persona { get; set; }
         public Perfil Perfil { get; set; }
         public EntityModel.Models.IdentidadDS.Identidad Identidad { get; set; }
+    }
+
+    public class JoinUsuarioPersonaPerfilIdentidadRolIdentidad
+    {
+        public Usuario Usuario { get; set; }
+        public Persona Persona { get; set; }
+        public Perfil Perfil { get; set; }
+        public EntityModel.Models.IdentidadDS.Identidad Identidad { get; set; }
+        public RolIdentidad RolIdentidad { get; set; }
     }
 
     public class JoinUsuarioPersonaPerfilIdentidadNotificacionCorreoPersona
@@ -3032,6 +3069,19 @@ namespace Es.Riam.Gnoss.AD.Identidad
             });
         }
 
+        public static IQueryable<JoinUsuarioPersonaPerfilIdentidadRolIdentidad> JoinRolIdentidad(this IQueryable<JoinUsuarioPersonaPerfilIdentidad> pQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
+            return pQuery.Join(entityContext.RolIdentidad, item => item.Identidad.IdentidadID, rolIdentidad => rolIdentidad.IdentidadID, (item, rolIdentidad) => new JoinUsuarioPersonaPerfilIdentidadRolIdentidad
+            {
+                Identidad = item.Identidad,
+                Perfil = item.Perfil,
+                Persona = item.Persona,
+                Usuario = item.Usuario,
+                RolIdentidad = rolIdentidad
+            });
+        }
+
         public static IQueryable<JoinUsuarioPersonaPerfil> JoinPerfil(this IQueryable<JoinUsuarioPersona> pQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pQuery);
@@ -4383,6 +4433,28 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 GrupoIdentidadesParticipacion = participacion
             });
         }
+        public static IQueryable<JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidades> JoinRolGrupoIdentidades(this IQueryable<JoinGrupoIdentGrupoIdentidadesParticipacion> pIQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
+            return pIQuery.Join(entityContext.RolGrupoIdentidades, item => item.GrupoIdentidades.GrupoID, rolGrupoIdentidades => rolGrupoIdentidades.GrupoID, (item, rolGrupoIdentidades) =>
+            new JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidades
+            {
+                GrupoIdentidades = item.GrupoIdentidades,
+                GrupoIdentidadesParticipacion = item.GrupoIdentidadesParticipacion,
+                RolGrupoIdentidades = rolGrupoIdentidades                
+            });
+        }
+        public static IQueryable<JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidadesRol> JoinRol(this IQueryable<JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidades> pIQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
+            return pIQuery.Join(entityContext.Rol, item => item.RolGrupoIdentidades.RolID, rol => rol.RolID, (item, rol) => new JoinGrupoIdentGrupoIdentidadesParticipacionRolGrupoIdentidadesRol
+            {
+                GrupoIdentidades = item.GrupoIdentidades,
+                GrupoIdentidadesParticipacion = item.GrupoIdentidadesParticipacion,
+                RolGrupoIdentidades = item.RolGrupoIdentidades,
+                Rol = rol
+            });
+        }
         public static IQueryable<JoinGrupoIdentGrupoIdentidadesProyectoGrupoIdentidadesParticipacion> JoinGrupoIdentidadesParticipacion(this IQueryable<JoinGrupoIdentGrupoIdentidadesProyecto> pIQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
@@ -4394,6 +4466,28 @@ namespace Es.Riam.Gnoss.AD.Identidad
                 GrupoIdentidadesParticipacion = participacion
             });
         }
+
+        public static IQueryable<JoinGrupoIdentidadesParticipacionRolGrupoIdentidades> JoinRolGrupoIdentidades(this IQueryable<GrupoIdentidadesParticipacion> pIQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
+            return pIQuery.Join(entityContext.RolGrupoIdentidades, grupoIdentidadesParticipacion => grupoIdentidadesParticipacion.GrupoID, rolGrupoIdentidades => rolGrupoIdentidades.GrupoID, (grupoIdentidadesParticipacion, rolGrupoIdentidades) => new JoinGrupoIdentidadesParticipacionRolGrupoIdentidades
+            {
+                GrupoIdentidadesParticipacion = grupoIdentidadesParticipacion,
+                RolGrupoIdentidades = rolGrupoIdentidades
+            });
+        }
+
+        public static IQueryable<JoinGrupoIdentidadesParticipacionRolGrupoIdentidadesRol> JoinRol(this IQueryable<JoinGrupoIdentidadesParticipacionRolGrupoIdentidades> pIQuery)
+        {
+            EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);
+            return pIQuery.Join(entityContext.Rol, item => item.RolGrupoIdentidades.RolID, rol => rol.RolID, (item, rol) => new JoinGrupoIdentidadesParticipacionRolGrupoIdentidadesRol
+            {
+                GrupoIdentidadesParticipacion = item.GrupoIdentidadesParticipacion,
+                RolGrupoIdentidades = item.RolGrupoIdentidades,
+                Rol = rol
+            });
+        }
+
         public static IQueryable<JoinGrupoIdentidadesParticipacionGrupoIdentidadesOrganizacion> JoinGrupoIdentidadesOrganizacion(this IQueryable<EntityModel.Models.IdentidadDS.GrupoIdentidadesParticipacion> pIQuery)
         {
             EntityContext entityContext = (EntityContext)QueryContextAccess.GetDbContext(pIQuery);

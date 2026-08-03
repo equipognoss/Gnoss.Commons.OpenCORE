@@ -135,6 +135,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		private Dictionary<string, List<string>> mInformacionOntologias;
 
+		/// <summary>
+		/// Lista de códigos de idioma configurados en la plataforma (ParametroAplicacionCL.ObtenerListaIdiomas)
+		/// </summary>
+		private List<string> mListaIdiomas;
+
 
 		/// <summary>
 		/// Objetos por los cuales se va a filtrar y no se va a cambiar su parametro de busqueda. EJ: cotecmembership0, cotecmembership1, cotecmembership3 en la busqueda
@@ -2656,6 +2661,29 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			{
 				mInformacionOntologias = value;
 				mFacetadoCN.InformacionOntologias = value;
+			}
+		}
+
+		/// <summary>
+		/// Lista de códigos de idioma configurados en la plataforma, usada por FacetadoAD para distinguir los
+		/// valores multi-idioma ("texto@idioma") de los que no lo son. Si no se establece, FacetadoAD conserva
+		/// la heurística anterior (UtilCadenas.EsMultiIdioma) como comportamiento por defecto.
+		/// </summary>
+		public List<string> ListaIdiomas
+		{
+			get
+			{
+				if (mListaIdiomas == null)
+				{
+					mListaIdiomas = new List<string>();
+					mFacetadoCN.ListaIdiomas = mListaIdiomas;
+				}
+				return mListaIdiomas;
+			}
+			set
+			{
+				mListaIdiomas = value;
+				mFacetadoCN.ListaIdiomas = value;
 			}
 		}
 

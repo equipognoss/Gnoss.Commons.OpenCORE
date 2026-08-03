@@ -1492,18 +1492,7 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         {
             return ProyectoAD.EsUsuarioAdministradorProyectoMYGnoss(pUsuarioID);
         }
-
-        /// <summary>
-        /// Comprueba si el usuario es administrador del proyecto
-        /// </summary>
-        /// <param name="pUsuarioID">Identificador de usuario</param>
-        /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
-        public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID)
-        {
-            return EsUsuarioAdministradorProyecto(pUsuarioID, pProyectoID, TipoRolUsuario.Administrador);
-        }
-
+                
         /// <summary>
         /// Comprueba si el usuario esta bloqueado en el proyecto proyecto
         /// </summary>
@@ -1522,9 +1511,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <param name="pProyectoID">Identificador de proyecto</param>
         /// <param name="pTipo">Tipo del rol que se quiere comprobar</param>
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
-        public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID, TipoRolUsuario pTipo)
+        public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
-            return ProyectoAD.EsUsuarioAdministradorProyecto(pUsuarioID, pProyectoID, pTipo);
+            return ProyectoAD.EsUsuarioAdministradorProyecto(pUsuarioID, pProyectoID);
         }
 
         /// <summary>
@@ -1534,9 +1523,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTipo">Tipo del rol que se quiere comprobar</param>
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
-        public bool EsIdentidadAdministradorProyecto(Guid pIdentidadID, Guid pProyectoID, TipoRolUsuario pTipo)
+        public bool EsIdentidadAdministradorProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
-            return ProyectoAD.EsIdentidadAdministradorProyecto(pIdentidadID, pProyectoID, pTipo);
+            return ProyectoAD.EsIdentidadAdministradorProyecto(pIdentidadID, pProyectoID);
         }
 
         /// <summary>

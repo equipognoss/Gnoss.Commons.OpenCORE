@@ -44,7 +44,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());
             parametros.Add("pGrafo", pGrafo);
             parametros.Add("pParametros_adiccionales", pParametros_adiccionales);
-            parametros.Add("pParametros", pParametros);
+            parametros.Add("pParametros", HttpUtility.UrlEncode(pParametros));
             parametros.Add("pPrimeraCarga", pPrimeraCarga.ToString());
             parametros.Add("pLanguageCode", pLanguageCode);
             parametros.Add("pNumeroParteResultados", pNumeroParteResultados.ToString(new System.Globalization.CultureInfo("en-US")));
@@ -74,7 +74,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());
             parametros.Add("pGrafo", pGrafo);
             parametros.Add("pParametros_adiccionales", pParametros_adiccionales);
-            parametros.Add("pParametros", pParametros);
+            parametros.Add("pParametros", HttpUtility.UrlEncode(pParametros));
             parametros.Add("pPrimeraCarga", pPrimeraCarga.ToString());
             parametros.Add("pLanguageCode", pLanguageCode);
             parametros.Add("pNumeroParteResultados", pNumeroParteResultados.ToString());
@@ -95,8 +95,8 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             string metodo = "CargarResultadosContexto";
 
             Dictionary<string,string> parametros=new Dictionary<string,string>();
-            parametros.Add("pProyectoID",pProyectoID.ToString());  
-            parametros.Add("pParametros", pParametros);
+            parametros.Add("pProyectoID",pProyectoID.ToString());
+            parametros.Add("pParametros", HttpUtility.UrlEncode(pParametros));
             parametros.Add("pPrimeraCarga",pPrimeraCarga.ToString());
             parametros.Add("pLanguageCode", pLanguageCode);
             parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());
@@ -147,7 +147,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pEstaEnProyecto", pEstaEnProyecto.ToString());
             parametros.Add("pEsUsuarioInvitado", pEsUsuarioInvitado.ToString());
             parametros.Add("pIdentidadID", pIdentidadID.ToString());
-            parametros.Add("pParametros", pParametros);
+            parametros.Add("pParametros", HttpUtility.UrlEncode(pParametros));
             parametros.Add("pPrimeraCarga", pPrimeraCarga.ToString());
             parametros.Add("pLanguageCode", pLanguageCode);
             parametros.Add("pTipoBusqueda", ((short)pTipoBusqueda).ToString());

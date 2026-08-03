@@ -1161,7 +1161,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 
             bool esPrimeraCarga = (string.IsNullOrEmpty(pParametros) || pParametros.Equals("recibidos") || pParametros.Equals("enviados") || pParametros.Equals("eliminados")) && !pCargadorResultadosModel.SinCache && (parametrosNegados == null || parametrosNegados.Count == 0);
             FacetadoCL facetadoCL = new FacetadoCL(mUtilServicios.UrlIntragnoss, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCL>(), mLoggerFactory);
-
+            
             if (esBusquedaGrafoHome)
             {
                 if (pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.Mensajes) && !string.IsNullOrEmpty(pParametros))
@@ -1175,6 +1175,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 }
             }
 
+            using (ParametroAplicacionCL parametroAplicacionCL = new ParametroAplicacionCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroAplicacionCL>(), mLoggerFactory))
+            {
+                pCargadorResultadosModel.FacetadoCL.FacetadoCN.FacetadoAD.ListaIdiomas = parametroAplicacionCL.ObtenerListaIdiomas();
+            }
+            
             //Modifico para que cualquier cosa de mygnoss no se caché.
             bool traerDeCache = (esPrimeraCarga && !pBusquedaSoloIDs && (pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.PersonasYOrganizaciones || !pCargadorResultadosModel.AdministradorQuiereVerTodasLasPersonas)) && string.IsNullOrEmpty(pCargadorResultadosModel.FiltroContextoWhere) && pCargadorResultadosModel.ProyectoOrigenID == Guid.Empty;
             traerDeCache = traerDeCache && (pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.Contribuciones && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.Comentarios && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.Invitaciones && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.Notificaciones && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.Contactos && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.Suscripciones && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.VerRecursosPerfil && pCargadorResultadosModel.TipoBusqueda != TipoBusqueda.EditarRecursosPerfil);
@@ -1464,6 +1469,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             bool ignorarPrivacidadPorPestanya = false;
 			pCargadorResultadosModel.FacetadoCL.FacetadoCN.FacetadoAD.ObtenerSoloConsulta = pCargadorResultadosModel.ObtenerSoloConsulta;
+
 			//pCargadorResultadosModel.FilaPestanyaActual != null && pCargadorResultadosModel.FilaPestanyaActual.GetProyectoPestanyaBusquedaRows().Length == 1
 			if (pCargadorResultadosModel.FilaPestanyaActual != null && pCargadorResultadosModel.FilaPestanyaActual.ProyectoPestanyaBusqueda != null)
             {
@@ -1619,7 +1625,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                             searchPaginadoSinResultados = true;
                         }
                     }
-
+                    
                     if (!recursosCargados && !searchPaginadoSinResultados)
                     {
                         //Buscar cualquier otro tipo de resultado

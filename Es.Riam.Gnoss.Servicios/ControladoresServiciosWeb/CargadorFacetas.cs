@@ -95,7 +95,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             parametros.Add("pEstaEnProyecto", pEstaEnProyecto.ToString());
             parametros.Add("pEsUsuarioInvitado", pEsUsuarioInvitado.ToString());
             parametros.Add("pIdentidadID", pIdentidadID.ToString());
-            parametros.Add("pParametros", pParametros);
+            parametros.Add("pParametros", HttpUtility.UrlEncode(pParametros));
             parametros.Add("pUbicacionBusqueda", pUbicacionBusqueda);
             parametros.Add("pPrimeraCarga", pPrimeraCarga.ToString());
             parametros.Add("pLanguageCode", pLanguageCode);
@@ -128,7 +128,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
 			parametros.Add("pEstaEnProyecto", pEstaEnProyecto.ToString());
 			parametros.Add("pEsUsuarioInvitado", pEsUsuarioInvitado.ToString());
 			parametros.Add("pIdentidadID", pIdentidadID.ToString());
-			parametros.Add("pParametros", pParametros);
+			parametros.Add("pParametros", HttpUtility.UrlEncode(pParametros));
 			parametros.Add("pUbicacionBusqueda", pUbicacionBusqueda);
 			parametros.Add("pLanguageCode", pLanguageCode);
 			parametros.Add("pAdministradorVeTodasPersonas", pAdministradorVeTodasPersonas.ToString());

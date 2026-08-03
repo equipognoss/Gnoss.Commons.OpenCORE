@@ -606,6 +606,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
         private Dictionary<string, List<string>> mInformacionOntologias;
 
         /// <summary>
+        /// Lista de códigos de idioma configurados en la plataforma (ParametroAplicacionCL.ObtenerListaIdiomas)
+        /// </summary>
+        private List<string> mListaIdiomas;
+
+        /// <summary>
         /// Objetos por los cuales se va a filtrar y no se va a cambiar su parametro de busqueda. EJ: cotecmembership0, cotecmembership1, cotecmembership3 en la busqueda
         /// </summary>
         private string mMandatoryRelacion;
@@ -803,6 +808,26 @@ namespace Es.Riam.Gnoss.AD.Facetado
             set
             {
                 mInformacionOntologias = value;
+            }
+        }
+
+        /// <summary>
+        /// Lista de códigos de idioma configurados en la plataforma. Se establece desde la capa de negocio
+        /// (ParametroAplicacionCL.ObtenerListaIdiomas) para evitar que la capa de acceso a datos dependa de ella.
+        /// </summary>
+        public List<string> ListaIdiomas
+        {
+            get
+            {
+                if (mListaIdiomas == null)
+                {
+                    mListaIdiomas = new List<string>();
+                }
+                return mListaIdiomas;
+            }
+            set
+            {
+                mListaIdiomas = value;
             }
         }
 
@@ -3792,6 +3817,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                     }
                 }
             }
+            
 
             StringBuilder filtros = new StringBuilder(ObtenerParteFiltros("", new Dictionary<string, List<string>>(pListaFiltros), pListaFiltrosExtra, pEsMiembroComunidad, pProyectoID, pFiltroContextoWhere, pTipoProyecto, false, pOmitirPalabrasNoRelevantesSearch, pTipoAlgoritmoTransformacion, pFiltrosSearchPersonalizados, pEsMovil));
 
@@ -10175,12 +10201,35 @@ namespace Es.Riam.Gnoss.AD.Facetado
         }
 
         /// <summary>
+        /// Verdad si el valor tiene el formato "texto@idioma" para alguno de los idiomas configurados en la plataforma (ListaIdiomas)
+        /// </summary>
+        /// <param name="pValor">Valor a comprobar</param>
+        /// <returns></returns>
+        private bool EsValorMultiIdioma(string pValor)
+        {
+            if (ListaIdiomas == null || ListaIdiomas.Count == 0)
+            {
+                //Si no se ha establecido la lista de idiomas desde la capa de negocio, se mantiene el comportamiento heredado
+                return UtilCadenas.EsMultiIdioma(pValor);
+            }
+
+            int posArroba = pValor.LastIndexOf('@');
+            if (posArroba < 0)
+            {
+                return false;
+            }
+
+            string idioma = pValor.Substring(posArroba + 1);
+            return ListaIdiomas.Any(item => item.Equals(idioma, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         /// Obtiene el valor concreto para un filtro
         /// </summary>
         /// <param name="pClave">Clave del filtro</param>
         /// <param name="pValor">Valor del filtro</param>
         /// <returns></returns>
-        public static string ObtenerValorParaFiltro(string pClave, string pValor, short pTipoPropiedadFaceta)
+        public string ObtenerValorParaFiltro(string pClave, string pValor, short pTipoPropiedadFaceta)
         {
             if (pClave.Contains(";"))
             {
@@ -10223,7 +10272,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             facetasNoConvertir.Add("gnoss:hasNombreCortoJerarquia");
 
             //prod7711
-            if (!facetasNoConvertir.Contains(pClave) && !EsIDGnoss(pValor) && !UtilCadenas.EsMultiIdioma(pValor) && !pTipoPropiedadFaceta.Equals((short)TipoPropiedadFaceta.TextoInvariable) && !pClave.EndsWith(FacetaAD.Faceta_Gnoss_SubType))
+            if (!facetasNoConvertir.Contains(pClave) && !EsIDGnoss(pValor) && !EsValorMultiIdioma(pValor) && !pTipoPropiedadFaceta.Equals((short)TipoPropiedadFaceta.TextoInvariable) && !pClave.EndsWith(FacetaAD.Faceta_Gnoss_SubType))
             {
                 //bug7596
                 pValor = pValor.ToLowerSearchGraph();
@@ -10235,7 +10284,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 string idioma = null;
 
-                if (UtilCadenas.EsMultiIdioma(pValor))
+                if (EsValorMultiIdioma(pValor))
                 {
                     idioma = pValor.Substring(pValor.LastIndexOf("@"));
                     pValor = pValor.Substring(0, pValor.LastIndexOf("@"));
@@ -11858,7 +11907,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return sbQuery.ToString();
         }
 
-        private static string ObtenerParteFiltros_PorClave_FiltroPersonaOrganizacion(Dictionary<string, List<string>> pListaFiltros, string pValor, short pTipoPropiedadFaceta, string pProyectoID, string pNombreFaceta, string pKey)
+        private string ObtenerParteFiltros_PorClave_FiltroPersonaOrganizacion(Dictionary<string, List<string>> pListaFiltros, string pValor, short pTipoPropiedadFaceta, string pProyectoID, string pNombreFaceta, string pKey)
         {
             StringBuilder sbQuery = new StringBuilder();
 

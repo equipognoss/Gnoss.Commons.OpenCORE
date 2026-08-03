@@ -131,8 +131,10 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 			}
 			
 			List<Guid> gruposIdentidad = identidadCN.ObtenerGruposIDParticipaPerfil(pIdentidadID, pIdentidadMyGNOSS).Keys.ToList();
-			List<Rol> rolesTotalesUsuario = proyectoCN.ObtenerRolesDeGrupos(gruposIdentidad).Union(rolesIdentidad).ToList();
-			
+			List<Rol> rolesTotalesUsuario = proyectoCN.ObtenerRolesDeGrupos(gruposIdentidad).Union(rolesIdentidad)
+				.GroupBy(rol => rol.RolID)
+				.Select(grupoRoles => grupoRoles.First())
+				.ToList();
 
 			proyectoCN.Dispose();
 			identidadCN.Dispose();
