@@ -6,6 +6,7 @@ using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.Proyecto;
 using Es.Riam.Gnoss.Elementos.Tesauro;
 using Es.Riam.Gnoss.Logica.Identidad;
+using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Util;
@@ -37,7 +38,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         private List<Proyecto> mListaSubProyectos;
 
         /// <summary>
-        /// Indica si se han cargado los niveles de certificación
+        /// Indica si se han cargado los niveles de certificaciï¿½n
         /// </summary>
         private bool mNivelesCertificacionCargados;
 
@@ -81,7 +82,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Constructor de proyecto sin parámetros
+        /// Constructor de proyecto sin parï¿½metros
         /// </summary>
         public Proyecto(LoggingService loggingService, EntityContext entityContext)
             : base()
@@ -131,7 +132,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene o establece si se han cargado los niveles de certificación
+        /// Obtiene o establece si se han cargado los niveles de certificaciï¿½n
         /// </summary>
         public bool NivelesCertificacionCargados
         {
@@ -146,7 +147,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene o establece el índice del elemento dentro del árbol
+        /// Obtiene o establece el ï¿½ndice del elemento dentro del ï¿½rbol
         /// </summary>
         public override short Indice
         {
@@ -272,7 +273,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías del tesauro a las que pertenece el proyecto
+        /// Obtiene la lista de categorï¿½as del tesauro a las que pertenece el proyecto
         /// </summary>
         public List<CategoriaTesauro> ListaCategoriasTesauro
         {
@@ -295,7 +296,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de categorías de tesauro a las que está agregado el proyecto
+        /// Obtiene la lista de categorï¿½as de tesauro a las que estï¿½ agregado el proyecto
         /// </summary>
         public SortedList<Guid, CategoriaTesauro> CategoriasTesauro
         {
@@ -450,7 +451,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene verdad si el proyecto es público o de acceso restringido
+        /// Obtiene verdad si el proyecto es pï¿½blico o de acceso restringido
         /// </summary>
         public bool EsPublico
         {
@@ -546,7 +547,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la organización Gnoss del proyecto
+        /// Obtiene la organizaciï¿½n Gnoss del proyecto
         /// </summary>
         public OrganizacionGnoss Organizacion
         {
@@ -588,7 +589,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Número de recursos totales de una comunidad, los públicos + los privados para el usuario actual
+        /// Nï¿½mero de recursos totales de una comunidad, los pï¿½blicos + los privados para el usuario actual
         /// </summary>
         public int NumRecusosTotales
         {
@@ -599,7 +600,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene si el proyecto es un catálogo o un catalogo no social con un tipo de recurso
+        /// Obtiene si el proyecto es un catï¿½logo o un catalogo no social con un tipo de recurso
         /// </summary>
         public bool EsCatalogo
         {
@@ -610,7 +611,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Obtiene la lista de pestañas
+        /// Obtiene la lista de pestaï¿½as
         /// </summary>
         public Dictionary<Guid, ProyectoPestanyaMenu> ListaPestanyasMenu
         {
@@ -644,10 +645,10 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
 
         #endregion
 
-        #region Métodos generales
+        #region Mï¿½todos generales
 
         /// <summary>
-        /// Carga las pestañas del menu
+        /// Carga las pestaï¿½as del menu
         /// </summary>
         public void RecargarPestanyasMenu()
         {
@@ -663,15 +664,15 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// Comprueba si el elemento actual admite el parámetro como hijo
+        /// Comprueba si el elemento actual admite el parï¿½metro como hijo
         /// </summary>
-        /// <param name="pHijoCandidato">Elemento que se está moviendo</param>
+        /// <param name="pHijoCandidato">Elemento que se estï¿½ moviendo</param>
         /// <returns>TRUE si se admite como hijo</returns>
         public override bool AdmiteHijo(IElementoGnoss pHijoCandidato)
         {
             // David: Un proyecto solo admite los subproyectos que sean comunidad, 
             //        Es editable y no es MyGNOSS
-            //        El proyecto que se está moviendo es de la misma organización
+            //        El proyecto que se estï¿½ moviendo es de la misma organizaciï¿½n
 
             if (TipoAcceso.Equals(TipoAcceso.Reservado))
             {
@@ -695,55 +696,20 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         }
 
         /// <summary>
-        /// 
+        /// Comprueba si el usuario es administrador del proyecto
         /// </summary>
-        /// <param name="pUsuarioID"></param>
-        /// <returns></returns>
+        /// <param name="pUsuarioID">Identificador del usuario</param>
+        /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EsAdministradorUsuario(Guid pUsuarioID)
         {
-            bool esAdministrador = false;
-
-            if (Clave.Equals(ProyectoAD.MetaProyecto))
-            {
-                RolEcosistemaUsuario rolEcosistema = mEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(pUsuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
-                if (rolEcosistema != null)
-                {
-                    esAdministrador = true;
-                }
-			}
-			else
-            {				
-				Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.Persona persona = mEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
-                if (persona != null)
-                {
-                    Guid perfilID = mEntityContext.PerfilPersona.Where(x => x.PersonaID.Equals(persona.PersonaID)).Select(x => x.PerfilID).FirstOrDefault();
-                    Guid identidadID = mEntityContext.Identidad.Where(x => x.PerfilID.Equals(perfilID) && x.ProyectoID.Equals(Clave)).Select(x => x.IdentidadID).FirstOrDefault();
-                    RolIdentidad rolIdentidad = mEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(identidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
-                    if (rolIdentidad != null)
-                    {
-                        esAdministrador = true;
-                    }
-				}
-			}
-
-            return esAdministrador;
-            /*List<AdministradorProyecto> filasAdministrador = GestorProyectos.DataWrapperProyectos.ListaAdministradorProyecto.Where(adminProy => adminProy.UsuarioID.Equals(pusuarioID) && adminProy.ProyectoID.Equals(Clave)).ToList();
-
-            if (filasAdministrador.Count > 0 && filasAdministrador[0].Tipo == (short)TipoRolUsuario.Administrador)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }*/
+            return ProyectoAD.EsUsuarioAdministradorProyecto(mEntityContext, pUsuarioID, Clave);
         }
 
         /// <summary>
-        /// Obtiene el orden del nivel de certificación del proyecto
+        /// Obtiene el orden del nivel de certificaciï¿½n del proyecto
         /// </summary>
-        /// <param name="pNivelCertificacionId">Identificador del nivel de certificación del proyecto</param>
-        /// <returns>Short con el orden del nivel de certificación. Si no lo encuentra devuelve -1</returns>
+        /// <param name="pNivelCertificacionId">Identificador del nivel de certificaciï¿½n del proyecto</param>
+        /// <returns>Short con el orden del nivel de certificaciï¿½n. Si no lo encuentra devuelve -1</returns>
         public short ObtenerOrdenDeNivelCertificacion(Guid pNivelCertificacionId)
         {
             NivelCertificacion filaNivelCertificacion = GestorProyectos.DataWrapperProyectos.ListaNivelCertificacion.Find(nivelCertificacion => nivelCertificacion.NivelCertificacionID.Equals(pNivelCertificacionId));//;FindByNivelCertificacionID(pNivelCertificacionId);
@@ -761,7 +727,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         #region Dispose
 
         /// <summary>
-        /// Determina si está disposed
+        /// Determina si estï¿½ disposed
         /// </summary>
         private bool disposed = false;
 
@@ -777,7 +743,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se estï¿½ llamando desde el Dispose()</param>
         protected override void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -801,7 +767,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
                             this.mListaTags.Clear();
                     }
 
-                    //Libero todos los recursos nativos sin administrar que he añadido a esta clase
+                    //Libero todos los recursos nativos sin administrar que he aï¿½adido a esta clase
                     this.mListaAdministradores = null;
                     this.mListaCategoriasTesauro = null;
                     this.mListaSubProyectos = null;

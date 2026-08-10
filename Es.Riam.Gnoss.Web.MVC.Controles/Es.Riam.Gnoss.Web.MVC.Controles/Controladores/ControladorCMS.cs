@@ -398,7 +398,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     if (fichaComponente == null)
                     {
-                        mLoggingService.GuardarTraza($"No se ha encontrado el componente {pComponente.Clave} en caché, se procede a cargarlo.");
+                        mLoggingService.AgregarEntrada($"No se ha encontrado el componente {pComponente.Clave} en caché, se procede a cargarlo.");
                         if (pComponente is CMSComponenteHTML)
                         {
                             fichaComponente = ObtenerFichaHtmlLibre((CMSComponenteHTML)pComponente, pIdioma);
@@ -506,7 +506,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                         if (pComponente.TipoCaducidadComponenteCMS != TipoCaducidadComponenteCMS.NoCache && fichaComponente != null)
                         {
-                            mLoggingService.GuardarTraza($"Se agrega el componente {pComponente.Clave} a caché. {fichaComponente.ViewNameResources}");
+                            mLoggingService.AgregarEntrada($"Se agrega el componente {pComponente.Clave} a caché. {fichaComponente.ViewNameResources}");
                             CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
                             cmsCL.RefrescarComponentePorIDEnProyecto(ProyectoSeleccionado.Clave, pComponente.Clave, pIdioma, fichaComponente, pComponente.TipoCaducidadComponenteCMS);
                             cmsCL.Dispose();
@@ -1191,7 +1191,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns></returns>
         public CMSComponentResourceList ObtenerFichaListadoDinamico(CMSComponente pComponente, string pIdioma)
         {
-            mLoggingService.GuardarTraza($"Se va a cargar los datos del componente {pComponente.Nombre} - {pComponente.Clave}");
+            mLoggingService.AgregarEntrada($"Se va a cargar los datos del componente {pComponente.Nombre} - {pComponente.Clave}");
             CargadorResultados cargadorResultados = new CargadorResultados();
             cargadorResultados.Url = mConfigService.ObtenerUrlServicioResultados();
 
@@ -1272,7 +1272,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool obtenerDatosExtraIdentidades = false;
                 ObtenerDatoExtraRecursosComponente(pComponente, ref obtenerDatosExtraRecursos, ref obtenerIdentidades, ref obtenerDatosExtraIdentidades);
                 sw = LoggingService.IniciarRelojTelemetria();
-                mLoggingService.GuardarTraza($"Se llama al servicio resultados para cargar los datos de: {pComponente.Nombre} - {pComponente.Clave}. Parametros:\n\t-ProyectoID:{proyectoid}\n\t-Parametros:{parametros}\n\t-TipoBusqueda:{tipoBusqueda.Key}\n\t-UrlBusqueda:{urlBusqueda}-DatosExtraRecursos:{obtenerDatosExtraRecursos}");
+                mLoggingService.AgregarEntrada($"Se llama al servicio resultados para cargar los datos de: {pComponente.Nombre} - {pComponente.Clave}. Parametros:\n\t-ProyectoID:{proyectoid}\n\t-Parametros:{parametros}\n\t-TipoBusqueda:{tipoBusqueda.Key}\n\t-UrlBusqueda:{urlBusqueda}-DatosExtraRecursos:{obtenerDatosExtraRecursos}");
                 ResultadoModel resultadoModel = cargadorResultados.CargarResultadosGadgetJSON(proyectoid, estaEnProyecto, false, identidadID, parametros, false, pIdioma, tipoBusqueda.Key, componenteListadoDinamico.NumeroItems, urlBusqueda, mRefrescar, obtenerDatosExtraRecursos, obtenerIdentidades, obtenerDatosExtraIdentidades);
                 mLoggingService.AgregarEntradaDependencia("Llamar al servicio de resultados", false, "ObtenerFichaListadoDinamico", sw, true);
                 foreach (ObjetoBuscadorModel fichaRecurso in resultadoModel.ListaResultados)
@@ -1285,7 +1285,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     fichaComponenteListadoRecursos.URLSeeMore = ObtenerURLPaginaConFiltrosEnIdiomaActual(componenteListadoDinamico.URLVerMas, mComunidad.Tabs);
                 }
 
-                mLoggingService.GuardarTraza($"Se han obtenido los resultados del componente: {pComponente.Nombre} - {pComponente.Clave}: {string.Join(", ", fichaComponenteListadoRecursos.ResourceList.Select(item => $"'{item.Title}'").ToList())}");
+                mLoggingService.AgregarEntrada($"Se han obtenido los resultados del componente: {pComponente.Nombre} - {pComponente.Clave}: {string.Join(", ", fichaComponenteListadoRecursos.ResourceList.Select(item => $"'{item.Title}'").ToList())}");
             }
             catch (Exception ex)
             {

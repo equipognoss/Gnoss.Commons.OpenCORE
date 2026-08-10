@@ -3379,11 +3379,25 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EsUsuarioAdministradorProyecto(Guid pUsuarioID, Guid pProyectoID)
         {
+            return EsUsuarioAdministradorProyecto(mEntityContext, pUsuarioID, pProyectoID);
+        }
+
+        /// <summary>
+        /// Comprueba si el usuario es administrador del proyecto. Sobrecarga estatica que recibe el
+        /// EntityContext por parametro para poder reutilizarse desde capas que ya disponen de uno propio
+        /// sin necesidad de instanciar ProyectoAD
+        /// </summary>
+        /// <param name="pEntityContext">Contexto de acceso a datos a utilizar</param>
+        /// <param name="pUsuarioID">Identificador del usuario</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
+        public static bool EsUsuarioAdministradorProyecto(EntityContext pEntityContext, Guid pUsuarioID, Guid pProyectoID)
+        {
 			bool esAdministrador = false;
 
 			if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
 			{
-				RolEcosistemaUsuario rolEcosistema = mEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(pUsuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
+				RolEcosistemaUsuario rolEcosistema = pEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(pUsuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
 				if (rolEcosistema != null)
 				{
 					esAdministrador = true;
@@ -3391,16 +3405,16 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 			}
 			else
 			{
-				AD.EntityModel.Models.PersonaDS.Persona persona = mEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
+				AD.EntityModel.Models.PersonaDS.Persona persona = pEntityContext.Persona.Where(x => x.UsuarioID.Equals(pUsuarioID)).FirstOrDefault();
 				if (persona != null)
 				{
-                    Guid identidadID = mEntityContext.Perfil.JoinIdentidad().Where(x => x.Perfil.PersonaID.Equals(persona.PersonaID) && x.Identidad.ProyectoID.Equals(pProyectoID)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
+                    Guid identidadID = pEntityContext.Perfil.JoinIdentidad().Where(x => x.Perfil.PersonaID.Equals(persona.PersonaID) && x.Identidad.ProyectoID.Equals(pProyectoID)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
 
-                    esAdministrador = EsIdentidadAdministradorProyecto(identidadID, pProyectoID);
+                    esAdministrador = EsIdentidadAdministradorProyecto(pEntityContext, identidadID, pProyectoID);
 
                     if (!esAdministrador)
                     {
-                        esAdministrador = UsuarioPerteneceGrupoAdministrador(pUsuarioID, pProyectoID, identidadID);   
+                        esAdministrador = UsuarioPerteneceGrupoAdministrador(pEntityContext, pUsuarioID, pProyectoID, identidadID);
                     }
 				}
 			}
@@ -3418,16 +3432,21 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns> TRUE si lo es, FALSE en caso contrario</returns>
         private bool UsuarioPerteneceGrupoAdministrador(Guid pUsuarioID, Guid pProyectoID, Guid? pIdentidadID = null, Guid? pIdentidadMyGnossID = null)
         {
+            return UsuarioPerteneceGrupoAdministrador(mEntityContext, pUsuarioID, pProyectoID, pIdentidadID, pIdentidadMyGnossID);
+        }
+
+        private static bool UsuarioPerteneceGrupoAdministrador(EntityContext pEntityContext, Guid pUsuarioID, Guid pProyectoID, Guid? pIdentidadID = null, Guid? pIdentidadMyGnossID = null)
+        {
             if (!pIdentidadID.HasValue)
             {
-                pIdentidadID = mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(x => x.Usuario.UsuarioID.Equals(pUsuarioID) && x.Identidad.ProyectoID.Equals(pProyectoID)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
+                pIdentidadID = pEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(x => x.Usuario.UsuarioID.Equals(pUsuarioID) && x.Identidad.ProyectoID.Equals(pProyectoID)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
             }
             if (!pIdentidadMyGnossID.HasValue)
             {
-                pIdentidadMyGnossID = mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(x => x.Usuario.UsuarioID.Equals(pUsuarioID) && x.Identidad.ProyectoID.Equals(MetaProyecto)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
+                pIdentidadMyGnossID = pEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().Where(x => x.Usuario.UsuarioID.Equals(pUsuarioID) && x.Identidad.ProyectoID.Equals(MetaProyecto)).Select(x => x.Identidad.IdentidadID).FirstOrDefault();
             }
 
-            return mEntityContext.GrupoIdentidadesParticipacion.JoinRolGrupoIdentidades().JoinRol().Any(item => (item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID.Value) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadMyGnossID.Value)) && item.Rol.RolID.Equals(ProyectoAD.RolAdministrador));
+            return pEntityContext.GrupoIdentidadesParticipacion.JoinRolGrupoIdentidades().JoinRol().Any(item => (item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadID.Value) || item.GrupoIdentidadesParticipacion.IdentidadID.Equals(pIdentidadMyGnossID.Value)) && item.Rol.RolID.Equals(ProyectoAD.RolAdministrador));
         }
 
         /// <summary>
@@ -3439,12 +3458,26 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
         public bool EsIdentidadAdministradorProyecto(Guid pIdentidadID, Guid pProyectoID)
         {
+            return EsIdentidadAdministradorProyecto(mEntityContext, pIdentidadID, pProyectoID);
+        }
+
+        /// <summary>
+        /// Comprueba si la identidad es administrador del proyecto. Sobrecarga estatica que recibe el
+        /// EntityContext por parametro para poder reutilizarse desde capas que ya disponen de uno propio
+        /// sin necesidad de instanciar ProyectoAD
+        /// </summary>
+        /// <param name="pEntityContext">Contexto de acceso a datos a utilizar</param>
+        /// <param name="pIdentidadID">Identificador de la identidad</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>TRUE si lo es, FALSE en caso contrario</returns>
+        public static bool EsIdentidadAdministradorProyecto(EntityContext pEntityContext, Guid pIdentidadID, Guid pProyectoID)
+        {
 			bool esAdministrador = false;
 
 			if (pProyectoID.Equals(ProyectoAD.MetaProyecto))
 			{
-                Guid usuarioID = mEntityContext.ProyectoUsuarioIdentidad.Where(x => x.IdentidadID.Equals(pIdentidadID) && x.ProyectoID.Equals(pProyectoID)).Select(x => x.UsuarioID).FirstOrDefault();
-				RolEcosistemaUsuario rolEcosistema = mEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(usuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
+                Guid usuarioID = pEntityContext.ProyectoUsuarioIdentidad.Where(x => x.IdentidadID.Equals(pIdentidadID) && x.ProyectoID.Equals(pProyectoID)).Select(x => x.UsuarioID).FirstOrDefault();
+				RolEcosistemaUsuario rolEcosistema = pEntityContext.RolEcosistemaUsuario.Where(x => x.UsuarioID.Equals(usuarioID) && x.RolID.Equals(ProyectoAD.RolAdministradorEcosistema)).FirstOrDefault();
 				if (rolEcosistema != null)
 				{
 					esAdministrador = true;
@@ -3452,11 +3485,11 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 			}
 			else
 			{
-			    RolIdentidad rolIdentidad = mEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(pIdentidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
+			    RolIdentidad rolIdentidad = pEntityContext.RolIdentidad.Where(x => x.IdentidadID.Equals(pIdentidadID) && x.RolID.Equals(ProyectoAD.RolAdministrador)).FirstOrDefault();
 				if (rolIdentidad != null)
 				{
 				    esAdministrador = true;
-				}				
+				}
 			}
 
 			return esAdministrador;
