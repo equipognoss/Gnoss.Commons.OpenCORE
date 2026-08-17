@@ -972,7 +972,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         private string sqlSelectExisteProyectoFAQ;
         private string sqlSelectExisteProyectoNoticias;
-        private string sqlSelectExisteProyectoDidactalia;
         private string sqlSelectEmailsMiembrosDeEventoDeProyecto;
         private string sqlSelectTipoDocImagenPorDefecto;
         private string sqlUpdateAumentarNumeroMiembrosDelProyecto;
@@ -2355,23 +2354,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
         public bool ExisteProyectoNoticias()
         {
             DbCommand comandoExiste = ObtenerComando(this.sqlSelectExisteProyectoNoticias);
-
-            object resultado = EjecutarEscalar(comandoExiste);
-
-            if ((resultado != null) && (resultado.Equals(1)))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Comprueba si existe el proyecto Didactalia de Gnoss
-        /// </summary>
-        /// <returns>TRUE si existe el proyecto Didactalia de Gnoss</returns>
-        public bool ExisteProyectoDidactalia()
-        {
-            DbCommand comandoExiste = ObtenerComando(this.sqlSelectExisteProyectoDidactalia);
 
             object resultado = EjecutarEscalar(comandoExiste);
 
@@ -7357,8 +7339,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             sqlSelectExisteProyectoNoticias = "SELECT 1 FROM Proyecto WHERE ProyectoID = " + IBD.GuidValor(ProyectoNoticias);
 
-            sqlSelectExisteProyectoDidactalia = "SELECT 1 FROM Proyecto WHERE ProyectoID = " + IBD.GuidValor(ProyectoDidactalia);
-
             sqlSelectEmailsMiembrosDeEventoDeProyecto = "SELECT ProyectoUsuarioIdentidad.IdentidadID,Perfil.PersonaID,Persona.Nombre,Persona.Apellidos, Persona.Email FROM proyectoUsuarioIdentidad INNER JOIN Identidad ON proyectoUsuarioIdentidad.IdentidadID = Identidad.identidadID INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN Persona ON Persona.PersonaID = Perfil.PersonaID INNER JOIN ProyectoeventoParticipante on ProyectoeventoParticipante.identidadid=Identidad.identidadid WHERE ProyectoeventoParticipante.EventoID = " + IBD.GuidParamValor("eventoID") + " AND Perfil.OrganizacionID IS NULL AND Persona.Email IS NOT NULL  UNION  Select proyectoUsuarioIdentidad.IdentidadID,Perfil.PersonaID,Persona.Nombre,Persona.Apellidos, PersonaVinculoOrganizacion.EmailTrabajo as Email FROM proyectoUsuarioIdentidad INNER JOIN Identidad ON proyectoUsuarioIdentidad.IdentidadID = Identidad.IdentidadID INNER JOIN Perfil ON Perfil.PerfilID = Identidad.PerfilID INNER JOIN Persona ON Persona.personaID = Perfil.PersonaID INNER JOIN PersonaVinculoOrganizacion ON PersonaVinculoOrganizacion.PersonaID = Persona.PersonaID AND PersonaVinculoOrganizacion.OrganizacionID = Perfil.OrganizacionID INNER JOIN ProyectoeventoParticipante on ProyectoeventoParticipante.identidadid=Identidad.identidadid WHERE ProyectoeventoParticipante.EventoID = " + IBD.GuidParamValor("eventoID") + " AND Perfil.PersonaID IS NOT NULL AND Perfil.OrganizacionID IS NOT NULL AND PersonaVinculoOrganizacion.EmailTrabajo IS NOT NULL ";
 
             sqlUpdateAumentarNumeroMiembrosDelProyecto = "UPDATE Proyecto SET NumeroMiembros = NumeroMiembros + 1 WHERE ProyectoID = " + IBD.GuidParamValor("proyectoID");
@@ -7504,17 +7484,6 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             get
             {
                 return new Guid("11111111-1111-1111-1111-111111111112");
-            }
-        }
-
-        /// <summary>
-        /// Obtiene el identificador del proyecto Didactalia
-        /// </summary>
-        public static Guid ProyectoDidactalia
-        {
-            get
-            {
-                return new Guid("f22e757b-8116-4496-bec4-ae93a4792c28");
             }
         }
 

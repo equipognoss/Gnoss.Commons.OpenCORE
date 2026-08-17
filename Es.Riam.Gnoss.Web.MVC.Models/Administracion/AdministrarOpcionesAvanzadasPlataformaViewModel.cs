@@ -229,11 +229,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         public bool RecibirNewsletterDefecto { get; set; }
 
         /// <summary>
-        /// Indica si los usuarios de esta plataforma van a tener perfil personal o no
-        /// </summary>
-        public bool PerfilPersonalDisponible { get; set; }
-
-        /// <summary>
         /// Especifica si se debe cargar un input hidden en el HTML con los grupos en los que participa el usuario
         /// </summary>
         public bool MostrarGruposIDEnHtml { get; set; }

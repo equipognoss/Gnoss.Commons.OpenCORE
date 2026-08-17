@@ -126,31 +126,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             }
         }
 
-        bool? perfilPersonalDisponible = null;
-
-        /// <summary>
-        /// Obtiene si los usuarios van a tener el perfil personal disponible en este entorno
-        /// </summary>
-        private bool PerfilPersonalDisponible
-        {
-            get
-            {
-                if (!perfilPersonalDisponible.HasValue)
-                {
-                    perfilPersonalDisponible = true;
-                    //rametroAplicacionDS.ParametroAplicacionRow[] filasParametro = (ParametroAplicacionDS.ParametroAplicacionRow[])ParametroAplicacionDS.ParametroAplicacion.Select("parametro='PerfilPersonalDisponible'");
-                    List<AD.EntityModel.ParametroAplicacion> filasParametro = ParametroAplicacionDS.Where(parametro => parametro.Parametro.Equals("PerfilPersonalDisponible")).ToList();
-
-                    if (filasParametro.Count > 0 && filasParametro.First().Valor.ToLower().Equals("false"))
-                    {
-                        perfilPersonalDisponible = false;
-                    }
-                }
-
-                return perfilPersonalDisponible.Value;
-            }
-        }
-
         public void CompletarCargaIdentidad(object identidadID)
         {
             throw new NotImplementedException();
@@ -1989,64 +1964,38 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
 
-            if (PerfilPersonalDisponible)
+            perfilPersonal = gestorIdentidades.AgregarPerfilPersonal(filaPersona, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, recibirNewsletterDefectoProyectos);
+
+            objetoIdentidad = (Identidad)perfilPersonal.Hijos[0];
+            filaIdentidad = objetoIdentidad.FilaIdentidad;
+
+            if (!proyCN.ParticipaUsuarioEnProyecto(ProyectoAD.MetaProyecto, filaUsuario.UsuarioID))
             {
-                perfilPersonal = gestorIdentidades.AgregarPerfilPersonal(filaPersona, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, recibirNewsletterDefectoProyectos);
+                gestorUsuarios.AgregarUsuarioAProyecto(filaUsuario, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, filaIdentidad.IdentidadID);
+            }
 
-                objetoIdentidad = (Identidad)perfilPersonal.Hijos[0];
-                filaIdentidad = objetoIdentidad.FilaIdentidad;
+            gestorIdentidades.RecargarHijos();
 
-                if (!proyCN.ParticipaUsuarioEnProyecto(ProyectoAD.MetaProyecto, filaUsuario.UsuarioID))
-                {
-                    gestorUsuarios.AgregarUsuarioAProyecto(filaUsuario, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, filaIdentidad.IdentidadID);
-                }
+            //Invalido la cache de Mis comunidades
+            proyCL.InvalidarMisProyectos(filaIdentidad.PerfilID);
+            proyCL.Dispose();
 
-                gestorIdentidades.RecargarHijos();
+            Guid organizacionRegistroUsuario = filaSU.Solicitud.OrganizacionID;
+            Guid proyectoRegistroUsuario = filaSU.Solicitud.ProyectoID;
 
-                //Invalido la cache de Mis comunidades
-                proyCL.InvalidarMisProyectos(filaIdentidad.PerfilID);
+            RegistrosAutomaticosEnComunidades(filaSU, perfilPersonal, filaUsuario, gestorUsuarios, gestorIdentidades);
+
+            //Invalido la cache de Mis comunidades
+            DataWrapperIdentidad idenDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory).ObtenerIdentidadPorID(gestorIdentidades.ObtenerIdentidadDeProyecto(ProyectoAD.ProyectoFAQ, filaPersona.PersonaID), true);
+
+            if (idenDW.ListaIdentidad.Count > 0)
+            {
+                proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
+                proyCL.InvalidarMisProyectos(idenDW.ListaIdentidad.First().PerfilID);
                 proyCL.Dispose();
-
-                Guid organizacionRegistroUsuario = filaSU.Solicitud.OrganizacionID;
-                Guid proyectoRegistroUsuario = filaSU.Solicitud.ProyectoID;
-
-                RegistrosAutomaticosEnComunidades(filaSU, perfilPersonal, filaUsuario, gestorUsuarios, gestorIdentidades);
-
-                //Si el proyecto es Didactalia, no actualizamos la home de los usuarios registrados en gnoss y a los que se les asocia didactalia directamente.
-                if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
-                {
-                    AD.EntityModel.Models.IdentidadDS.Identidad identidad = dataWrapperIdentidad.ListaIdentidad.FirstOrDefault(ident => ident.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia));
-                    if (identidad != null)
-                    {
-                        identidad.ActualizaHome = false;
-                    }
-                }
-                else
-                {
-                    //se registra directamente en didactalia
-                    AD.EntityModel.Models.IdentidadDS.Identidad identidad = dataWrapperIdentidad.ListaIdentidad.FirstOrDefault(ident => ident.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia));
-                    if (identidad != null)
-                    {
-                        identidad.ActivoEnComunidad = true;
-                    }
-                }
-
-                //Invalido la cache de Mis comunidades
-                DataWrapperIdentidad idenDW = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory).ObtenerIdentidadPorID(gestorIdentidades.ObtenerIdentidadDeProyecto(ProyectoAD.ProyectoFAQ, filaPersona.PersonaID), true);
-
-                if (idenDW.ListaIdentidad.Count > 0)
-                {
-                    proyCL = new ProyectoCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCL>(), mLoggerFactory);
-                    proyCL.InvalidarMisProyectos(idenDW.ListaIdentidad.First().PerfilID);
-                    proyCL.Dispose();
-                }
-            }
-            else
-            {
-                gestorUsuarios.AgregarProyectoRolUsuario(filaUsuario.UsuarioID, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto);
             }
 
-            if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
+            if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias))
             {
                 ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 Elementos.ServiciosGenerales.Proyecto proyecto = new GestionProyecto(proyectoCN.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory).ListaProyectos[filaSU.Solicitud.ProyectoID];
@@ -2065,7 +2014,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                         }
                     }
 
-                    if (registroProyecto && PerfilPersonalDisponible)
+                    if (registroProyecto)
                     {
                         Guid organizacionID = filaSU.Solicitud.OrganizacionID;
                         Guid proyectoID = filaSU.Solicitud.ProyectoID;
@@ -2158,10 +2107,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             gestorUsuarios.GestorDocumental = new GestorDocumental(new DataWrapperDocumentacion(), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestorDocumental>(), mLoggerFactory);
             gestorUsuarios.CompletarUsuarioNuevo(filaUsuario, utilIdiomas.GetText("TESAURO", "RECURSOSPUBLICOS"), utilIdiomas.GetText("TESAURO", "RECURSOSPRIVADOS"));
 
-            if (PerfilPersonalDisponible)
-            {
-                GuardarDatosExtraSolicitud(dataWrapperIdentidad, filaIdentidad.PerfilID, pIdSolicitud, pSolicitudDW);
-            }
+            GuardarDatosExtraSolicitud(dataWrapperIdentidad, filaIdentidad.PerfilID, pIdSolicitud, pSolicitudDW);
 
             DataWrapperSuscripcion suscripcionDW = null;
             if (gestorIdentidades.GestorSuscripciones != null && gestorIdentidades.GestorSuscripciones.SuscripcionDW.ListaSuscripcion.Count > 0)
@@ -2174,22 +2120,19 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             NotificarEdicionPerfilEnProyectos(TipoAccionExterna.Registro, persona.Clave, string.Empty, string.Empty);
 
-            if (PerfilPersonalDisponible)
+            IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
+            Identidad identidadnuevo = new GestionIdentidades(idenCN.ObtenerIdentidadPorID(filaIdentidad.IdentidadID, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication).ListaIdentidades[filaIdentidad.IdentidadID];
+            PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
+            identidadnuevo.GestorIdentidades.GestorPersonas = new GestionPersonas(persCN.ObtenerPersonaPorID(identidadnuevo.PersonaID.Value), mLoggingService, mEntityContext);
+
+            identidadnuevo.GestorIdentidades.GestorPersonas.CargarGestor();
+
+            //Actualizo el modelo base:
+            ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+            foreach (Identidad iden in gestorIdentidades.ListaIdentidades.Values)
             {
-                IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
-                Identidad identidadnuevo = new GestionIdentidades(idenCN.ObtenerIdentidadPorID(filaIdentidad.IdentidadID, false), mLoggingService, mEntityContext, mConfigService, mServicesUtilVirtuosoAndReplication).ListaIdentidades[filaIdentidad.IdentidadID];
-                PersonaCN persCN = new PersonaCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PersonaCN>(), mLoggerFactory);
-                identidadnuevo.GestorIdentidades.GestorPersonas = new GestionPersonas(persCN.ObtenerPersonaPorID(identidadnuevo.PersonaID.Value), mLoggingService, mEntityContext);
-
-                identidadnuevo.GestorIdentidades.GestorPersonas.CargarGestor();
-
-                //Actualizo el modelo base:
-                ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
-                foreach (Identidad iden in gestorIdentidades.ListaIdentidades.Values)
-                {
-                    //controladorPersonas.ActualizarModeloBaseSimple(filaPersona.PersonaID, iden.FilaIdentidad.ProyectoID, PrioridadBase.Alta);
-                    controladorPersonas.ActualizarModeloBaseSimple(iden, iden.FilaIdentidad.ProyectoID, UrlIntragnoss);
-                }
+                //controladorPersonas.ActualizarModeloBaseSimple(filaPersona.PersonaID, iden.FilaIdentidad.ProyectoID, PrioridadBase.Alta);
+                controladorPersonas.ActualizarModeloBaseSimple(iden, iden.FilaIdentidad.ProyectoID, UrlIntragnoss);
             }
 
             #region Actualizar cola GnossLIVE
@@ -2199,21 +2142,13 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             {
                 //No se notifica al LIVE los proyectos a los que se le ha hecho miembro automáticamente
                 if (((!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoNoticias)) &&
-                    (!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoFAQ)) &&
-                    (!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))) ||
+                    (!iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoFAQ))) ||
                     (iden.FilaIdentidad.ProyectoID.Equals(filaSU.Solicitud.ProyectoID)))
                 {
                     ParametroAplicacion busqueda = mEntityContext.ParametroAplicacion.FirstOrDefault(parametro => parametro.Parametro.Equals("EcosistemaSinHomeUsuario"));
                     if (!(busqueda != null && busqueda.Valor == "true"))
                     {
-                        if (iden.FilaIdentidad.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
-                        {
-                            filasAInsertar.Add(PreprarFilaParaColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta, "didactalia"));
-                        }
-                        else
-                        {
-                            filasAInsertar.Add(PreprarFilaParaColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta));
-                        }
+                        filasAInsertar.Add(PreprarFilaParaColaRabbitMQ(iden.FilaIdentidad.ProyectoID, iden.FilaIdentidad.PerfilID, (int)AccionLive.Agregado, (int)TipoLive.Miembro, 0, DateTime.Now, false, (short)PrioridadLive.Alta));
                     }
                 }
             }
@@ -2225,7 +2160,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             #endregion
 
-            if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && pInvitacionAComunidad == null && PerfilPersonalDisponible)
+            if (!filaSU.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && pInvitacionAComunidad == null)
             {
                 ProyectoCN proyectoCN2 = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 Elementos.ServiciosGenerales.Proyecto proyecto2 = new GestionProyecto(proyectoCN2.ObtenerProyectoPorID(filaSU.Solicitud.ProyectoID), mLoggingService, mEntityContext, mLoggerFactory.CreateLogger<GestionProyecto>(), mLoggerFactory).ListaProyectos[filaSU.Solicitud.ProyectoID];
@@ -2266,11 +2201,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 }
             }
 
-            if (PerfilPersonalDisponible)
-            {
-                LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveUsuariosCL>(), mLoggerFactory);
-                liveUsuariosCL.ClonarLiveProyectoAHomeUsu(filaSU.UsuarioID, perfilPersonal.Clave, pProyectoSeleccionado.Clave);
-            }
+            LiveUsuariosCL liveUsuariosCL = new LiveUsuariosCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<LiveUsuariosCL>(), mLoggerFactory);
+            liveUsuariosCL.ClonarLiveProyectoAHomeUsu(filaSU.UsuarioID, perfilPersonal.Clave, pProyectoSeleccionado.Clave);
 
             //Iniciamos sesión automáticamente
             if (!pRegistroDesdeAdmin)

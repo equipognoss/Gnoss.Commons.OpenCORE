@@ -130,7 +130,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             bool existeFAQ = proyCN.ExisteProyectoFAQ();
             bool existeNoticias = proyCN.ExisteProyectoNoticias();
-            bool existeDidactalia = proyCN.ExisteProyectoDidactalia();
 
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
 
@@ -452,7 +451,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
             ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
             bool existeFAQ = proyCN.ExisteProyectoFAQ();
             bool existeNoticias = proyCN.ExisteProyectoNoticias();
-            bool existeDidactalia = proyCN.ExisteProyectoDidactalia();
 
             Dictionary<Guid, bool> recibirNewsletterDefectoProyectos = proyCN.ObtenerProyectosConConfiguracionNewsletterPorDefecto();
 
@@ -1076,21 +1074,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                 ProyectoCN proyCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
                 bool existeFAQ = proyCN.ExisteProyectoFAQ();
                 bool existeNoticias = proyCN.ExisteProyectoNoticias();
-                bool existeDidactalia = proyCN.ExisteProyectoDidactalia();
                 proyCN.Dispose();
 
-                //bool IncluirDidactalia = ControladorProyecto.ProyectoDebeRegistrarEnDidactalia(filaNuevoUsuario.SolicitudRow.ProyectoID);
                 Perfil perfilPersona = null;
                 Identidad objetoIdentidad = null;
                 AD.EntityModel.Models.IdentidadDS.Identidad filaIdentidad = null;
 
 
-                if (PerfilPersonalDisponible)
-                {
-                    perfilPersona = gestorIdentidades.AgregarPerfilPersonal(filaPersona, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, recibirNewsletterDefectoProyectos);
-                    objetoIdentidad = (Identidad)perfilPersona.Hijos[0];
-                    filaIdentidad = objetoIdentidad.FilaIdentidad;
-                }
+                perfilPersona = gestorIdentidades.AgregarPerfilPersonal(filaPersona, true, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, recibirNewsletterDefectoProyectos);
+                objetoIdentidad = (Identidad)perfilPersona.Hijos[0];
+                filaIdentidad = objetoIdentidad.FilaIdentidad;
 
                 List<Guid> listaProyectosParticipaUsuario = new List<Guid>();
 
@@ -1100,38 +1093,31 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                 AD.EntityModel.Models.OrganizacionDS.Organizacion filaOrganizacion = null;
                 gestorOrganizaciones = new GestionOrganizaciones(new DataWrapperOrganizacion(), mLoggingService, mEntityContext);
 
-                if (PerfilPersonalDisponible)
-                {
-                    gestorUsuarios.AgregarUsuarioAProyecto(filaUsuario, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, filaIdentidad.IdentidadID);
-                    ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
-                    controladorPersonas.ActualizarModeloBASE(objetoIdentidad.IdentidadMyGNOSS, ProyectoAD.MyGnoss, true, false, PrioridadBase.Alta, pAvailableServices);
+                gestorUsuarios.AgregarUsuarioAProyecto(filaUsuario, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto, filaIdentidad.IdentidadID);
+                ControladorPersonas controladorPersonas = new ControladorPersonas(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorPersonas>(), mLoggerFactory);
+                controladorPersonas.ActualizarModeloBASE(objetoIdentidad.IdentidadMyGNOSS, ProyectoAD.MyGnoss, true, false, PrioridadBase.Alta, pAvailableServices);
 
+
+                gestorIdentidades.RecargarHijos();
+
+                Guid organizacionRegistroUsuario = filaNuevoUsuario.Solicitud.OrganizacionID;
+                Guid proyectoRegistroUsuario = filaNuevoUsuario.Solicitud.ProyectoID;
+
+                RegistrarUsuarioEnProyectosObligatorios(organizacionRegistroUsuario, proyectoRegistroUsuario, filaPersona.PersonaID, perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
+                RegistrarUsuarioEnProyectoAutomatico(perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
+                gestorIdentidades.RecargarHijos();
+
+                if (!filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias))
+                {
+                    Guid organizacionID = filaNuevoUsuario.Solicitud.OrganizacionID;
+                    Guid proyectoID = filaNuevoUsuario.Solicitud.ProyectoID;
+                    ControladorIdentidades controladorIdentidades = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorIdentidades>(), mLoggerFactory);
+					Identidad ObjetoIdentidadProy = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersona, recibirNewsletterDefectoProyectos);
+
+                    RegistrarUsuarioEnProyectoAutomatico(perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades, proyectoID);
 
                     gestorIdentidades.RecargarHijos();
-
-                    Guid organizacionRegistroUsuario = filaNuevoUsuario.Solicitud.OrganizacionID;
-                    Guid proyectoRegistroUsuario = filaNuevoUsuario.Solicitud.ProyectoID;
-
-                    RegistrarUsuarioEnProyectosObligatorios(organizacionRegistroUsuario, proyectoRegistroUsuario, filaPersona.PersonaID, perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
-                    RegistrarUsuarioEnProyectoAutomatico(perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades);
-                    gestorIdentidades.RecargarHijos();
-
-                    if (!filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.MetaProyecto) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoFAQ) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoNoticias) && !filaNuevoUsuario.Solicitud.ProyectoID.Equals(ProyectoAD.ProyectoDidactalia))
-                    {
-                        Guid organizacionID = filaNuevoUsuario.Solicitud.OrganizacionID;
-                        Guid proyectoID = filaNuevoUsuario.Solicitud.ProyectoID;
-                        ControladorIdentidades controladorIdentidades = new ControladorIdentidades(gestorIdentidades, mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorIdentidades>(), mLoggerFactory);
-						Identidad ObjetoIdentidadProy = controladorIdentidades.AgregarIdentidadPerfilYUsuarioAProyecto(gestorIdentidades, gestorUsuarios, organizacionID, proyectoID, filaUsuario, perfilPersona, recibirNewsletterDefectoProyectos);
-
-                        RegistrarUsuarioEnProyectoAutomatico(perfilPersona, filaUsuario, gestorUsuarios, gestorIdentidades, proyectoID);
-
-                        gestorIdentidades.RecargarHijos();
-                        listaProyectosParticipaUsuario.Add(proyectoID);
-                    }
-                }
-                else
-                {
-                    gestorUsuarios.AgregarProyectoRolUsuario(filaUsuario.UsuarioID, ProyectoAD.MetaOrganizacion, ProyectoAD.MetaProyecto);
+                    listaProyectosParticipaUsuario.Add(proyectoID);
                 }
                 PeticionCN peticionCN = new PeticionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<PeticionCN>(), mLoggerFactory);
 
@@ -1752,36 +1738,6 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
 
             return esMayor;
         }
-
-
-        #region Propiedades
-
-        bool? perfilPersonalDisponible = null;
-
-        /// <summary>
-        /// Obtiene si los usuarios van a tener el perfil personal disponible en este entorno
-        /// </summary>
-        private bool PerfilPersonalDisponible
-        {
-            get
-            {
-                if (!perfilPersonalDisponible.HasValue)
-                {
-                    perfilPersonalDisponible = true;
-                    //ParametroAplicacionDS.ParametroAplicacionRow[] filasParametro = (ParametroAplicacionDS.ParametroAplicacionRow[])ParametroAplicacionDS.ParametroAplicacion.Select("parametro='PerfilPersonalDisponible'");
-                    List<AD.EntityModel.ParametroAplicacion> filasParametro = ParametroAplicacionDS.Where(parametro => parametro.Parametro.Equals("PerfilPersonalDisponible")).ToList();
-
-                    if (filasParametro.Count > 0 && filasParametro.First().Valor.ToLower().Equals("false"))
-                    {
-                        perfilPersonalDisponible = false;
-                    }
-                }
-
-                return perfilPersonalDisponible.Value;
-            }
-        }
-
-        #endregion
 
     }
 }

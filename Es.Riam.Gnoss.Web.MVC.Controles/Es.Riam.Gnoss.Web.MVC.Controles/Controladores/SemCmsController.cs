@@ -4517,12 +4517,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                                 pintarImg = (propUrlCaptura.EspecifPropiedad.TipoCampo != TipoCampoOntologia.EmbebedLink);
                             }
                         }
-
-                        if (pintarImg)
-                        {
-                            string urlImg = ControladorDocumentacion.ObtenerRutaImagenDocumento(mDocumento, mBaseURLContent, mBaseURLStatic, true, null, null, "240", ProyectoSeleccionado.Clave);
-                            pValor = $"<p class='miniatura'><a href=\"#\"><img title='{mDocumento.Titulo}' alt='{mDocumento.Titulo}' src='{urlImg}'></a></p>{pValor}";
-                        }
                     }
 
                     #endregion

@@ -577,18 +577,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                 IdentidadCN idenCN = new IdentidadCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCN>(), mLoggerFactory);
                 idenCN.ActualizaIdentidades();
                 idenCN.Dispose();
-
-                if (pIdentidad.FilaIdentidad.ProyectoID == ProyectoAD.ProyectoDidactalia && pIdentidad.Persona != null)
-                {
-                    //ActualizarModeloBaseSimple(pIdentidad.Persona.Clave, pIdentidad.FilaIdentidad.ProyectoID, PrioridadBase.Alta);
-                    ActualizarModeloBaseSimple(pIdentidad, pIdentidad.FilaIdentidad.ProyectoID, UrlIntragnoss);
-
-                    new ControladorDocumentacion(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mGnossCache, mEntityContextBASE, mVirtuosoAD, mHttpContextAccessor, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorDocumentacion>(), mLoggerFactory).ActualizarGnossLive(ProyectoSeleccionado.Clave, pIdentidad.FilaIdentidad.PerfilID, AccionLive.Agregado, (int)TipoLive.Miembro, false, PrioridadLive.Alta, pAvailableServices);
-
-                    IdentidadCL identidadCL = new IdentidadCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<IdentidadCL>(), mLoggerFactory);
-                    identidadCL.EliminarCacheGestorIdentidad(pIdentidad.Clave, pIdentidad.PersonaID.Value);
-                    identidadCL.Dispose();
-                }
             }
         }
 

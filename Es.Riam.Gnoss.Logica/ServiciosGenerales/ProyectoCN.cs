@@ -864,15 +864,6 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         }
 
         /// <summary>
-        /// Comprueba si existe el proyecto Didactalia de Gnoss
-        /// </summary>
-        /// <returns>TRUE si existe, FALSE en caso contrario</returns>
-        public bool ExisteProyectoDidactalia()
-        {
-            return ProyectoAD.ExisteProyectoDidactalia();
-        }
-
-        /// <summary>
         /// Comprueba si existe un nombre corto de proyecto pasado por parámetro
         /// </summary>
         /// <param name="pNombreCorto">Nombre corto del proyecto</param>

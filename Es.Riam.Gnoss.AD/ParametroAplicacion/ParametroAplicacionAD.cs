@@ -358,12 +358,6 @@ namespace Es.Riam.Gnoss.AD.ParametroAplicacion
         /// </summary>
         public static string UsarSoloCategoriasPrivadasEnEspacioPersonal { get { return "UsarSoloCategoriasPrivadasEnEspacioPersonal"; } }
 
-
-        /// <summary>
-        /// Indica si los usuarios de esta plataforma van a tener perfil personal o no
-        /// </summary>
-        public static string PerfilPersonalDisponible { get { return "PerfilPersonalDisponible"; } }
-
         /// <summary>
         /// Especifica si se va a generar la home del usuario conectado o no
         /// </summary>
