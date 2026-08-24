@@ -1193,7 +1193,7 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
             {
                 if (propiedad.Tipo == TipoPropiedad.ObjectProperty)
                 {
-                    if (propiedad.EspecifPropiedad.SelectorEntidad != null && propiedad.EspecifPropiedad.SelectorEntidad.Grafo != "geonames" && propiedad.ValoresUnificados.Count > 0)
+                    if (propiedad.EspecifPropiedad.SelectorEntidad != null && propiedad.ValoresUnificados.Count > 0)
                     {
                         if (propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "PersonaGnoss" || propiedad.EspecifPropiedad.SelectorEntidad.TipoSeleccion == "GruposGnoss")
                         {

@@ -416,7 +416,6 @@ SELECT OrdenEjecucion, ID, Tipo, Estado, Fecha, Prioridad, IncidenciaComparticio
               <xs:element name="Descripcion" msprop:Generator_ColumnVarNameInTable="columnDescripcion" msprop:Generator_ColumnPropNameInRow="Descripcion" msprop:Generator_ColumnPropNameInTable="DescripcionColumn" msprop:Generator_UserColumnName="Descripcion" type="xs:string" minOccurs="0" />
               <xs:element name="RutaNYT" msprop:Generator_ColumnVarNameInTable="columnRutaNYT" msprop:Generator_ColumnPropNameInRow="RutaNYT" msprop:Generator_ColumnPropNameInTable="RutaNYTColumn" msprop:Generator_UserColumnName="RutaNYT" type="xs:string" minOccurs="0" />
               <xs:element name="RutaDbpedia" msprop:Generator_ColumnVarNameInTable="columnRutaDbpedia" msprop:Generator_ColumnPropNameInRow="RutaDbpedia" msprop:Generator_ColumnPropNameInTable="RutaDbpediaColumn" msprop:Generator_UserColumnName="RutaDbpedia" type="xs:string" minOccurs="0" />
-              <xs:element name="RutaGeonames" msprop:Generator_ColumnVarNameInTable="columnRutaGeonames" msprop:Generator_ColumnPropNameInRow="RutaGeonames" msprop:Generator_ColumnPropNameInTable="RutaGeonamesColumn" msprop:Generator_UserColumnName="RutaGeonames" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

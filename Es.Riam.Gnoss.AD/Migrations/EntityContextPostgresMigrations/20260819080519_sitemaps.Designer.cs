@@ -3,6 +3,7 @@ using System;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 {
     [DbContext(typeof(EntityContextPostgres))]
-    partial class EntityContextPostgresModelSnapshot : ModelSnapshot
+    [Migration("20260819080519_sitemaps")]
+    partial class sitemaps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

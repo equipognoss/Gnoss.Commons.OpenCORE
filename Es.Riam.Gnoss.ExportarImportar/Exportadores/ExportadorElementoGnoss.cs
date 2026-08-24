@@ -1178,70 +1178,8 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
         /// <param name="pListaTags">Lista de tags</param>
         protected void AgregarRelacionTagsEntidad(ElementoOntologia pEntidad, IElementoGnoss pElementoGnoss, Propiedad pPropiedad, GestionGnoss pGestor, List<string> pListaTags)
         {
-            //Obtenemos las entidades en freebase que hacen referencia a estos tags
-            //GnossFreebaseDS pDataSet = new GnossFreebaseDS();
-            //ProyectoCN proyCN = new ProyectoCN();
-            //BaseComunidadCN baseComunidadCN = new BaseComunidadCN("base", proyCN.ObtenerTablaBaseProyectoIDProyectoPorID(Usuario.UsuarioActual.ProyectoID));
-            //proyCN.Dispose();
-            //baseComunidadCN.ObtenerEntidadFreebase(pDataSet, pListaTags);
-
-            //pEntidad.Elemento = pElementoGnoss;
-
-            //foreach (string tag in pListaTags)
-            //{
-            //    ElementoOntologia entidadTag = new ElementoOntologiaGnoss(Ontologia.GetEntidadTipo(TipoElementoGnoss.TagSioc));
-            //    entidadTag.EstablecerID(tag);
-            //    if (entidadTag.ID.Contains("+"))
-            //    {
-            //        entidadTag.ID = entidadTag.ID.Replace("+", "%20");
-            //    }
-            //    entidadTag.Descripcion = tag;
-            //    ElementoOntologia tagAuxiliar = ComprobarEntidadIncluida(entidadTag.ID);
-
-            //    //Para cada entidad equivalente en freebase, ponemos una etiqueta owl:sameAs en la entidad
-            //    DataRow[] myRows = pDataSet.GnossToFreebase.Select("Tag='" + tag.Replace("'", "''") + "'");
-            //    if (myRows.Length > 0) 
-            //    {
-            //        foreach (GnossFreebaseDS.GnossToFreebaseRow MyRow in myRows)
-            //        {
-            //            if (!string.IsNullOrEmpty(MyRow.Ruta))
-            //            { 
-            //                string rutaRDF = baseComunidadCN.GeneraFreeBaseURLParaRDF(MyRow.GUIDFreebase);
-            //                entidadTag.OWLSameAs.Add(rutaRDF);
-            //            }
-            //            if (!string.IsNullOrEmpty(MyRow.RutaNYT))
-            //            {
-            //                string rutaRDF = baseComunidadCN.GeneraNYTUrlParaRDF(MyRow.GUIDFreebase);
-            //                entidadTag.OWLSameAs.Add(rutaRDF);
-            //            }
-            //            if (!string.IsNullOrEmpty(MyRow.RutaGeonames))
-            //            {
-            //                string rutaRDF = baseComunidadCN.GeneraGeonamesUrlParaRDF(MyRow.RutaGeonames);
-            //                entidadTag.OWLSameAs.Add(rutaRDF);
-            //            }
-            //            if (!string.IsNullOrEmpty(MyRow.RutaDbpedia))
-            //            {
-            //                entidadTag.OWLSameAs.Add(MyRow.RutaDbpedia);
-            //            }
-            //        }
-            //    }
-            //    if (tagAuxiliar == null)
-            //    {
-            //        //Obtengo la entidad
-            //        AgregarEntidadRelacionada(pEntidad, pPropiedad, entidadTag);
-            //        ObtenerEntidad(entidadTag, null, true, pGestor);
-            //    }
-            //    else
-            //    {
-            //        //asigno la entidad ya creada
-            //        entidadTag = tagAuxiliar;
-            //        AgregarEntidadRelacionada(pEntidad, pPropiedad, entidadTag);
-            //    }
-            //}
-
             LinkedOpenDataCL LodCL = new LinkedOpenDataCL("lod", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mloggerFactory.CreateLogger<LinkedOpenDataCL>(), mloggerFactory);
             Dictionary<string, EntidadLOD> listaSameAs = LodCL.ObtenerListaResourcesDeListaResultados(((ElementoGnoss)pElementoGnoss).Clave);
-            //Dictionary<string, string> listaResultados = LodCL.ObtenerNombreUriDeEntidadesRelacionadasPorID(((ElementoGnoss)pElementoGnoss).Clave);
 
             pEntidad.Elemento = pElementoGnoss;
 

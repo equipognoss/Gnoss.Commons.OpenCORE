@@ -9992,11 +9992,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 proyectoID = "contactos";
             }
-            else if (proyectoID.Equals("geonames"))
-            {
-                proyectoID = "http://gnoss.com/geonames";
-            }
-
+            
             if (!proyectoID.StartsWith("http://") && !pProyectoID.StartsWith("https://"))
             {
                 return $" <{mUrlIntranet}{proyectoID}> ";
@@ -14117,7 +14113,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         public string GenerarTripletaRecogidadeVirtuosoSinConversionesAbsurdas(string pSujeto, string pPredicado, string pObjeto, string pObjetoSinMinuscula, List<string> pFecha, List<string> pNumero, List<FacetaEntidadesExternas> pEntExt, ref string pTripletasSemanticasAdiccionales, string pIdioma, string pTipo = null, bool pTextoTesauroInvariable = false)
         {
             string tripleta = "";
-            string tripletaGeonames = "";
 
             if (pSujeto.StartsWith("http"))
             {
@@ -14243,21 +14238,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             tripleta += " \n ";
 
-            if (pObjeto.Contains("geonames"))
-            {
-                tripletaGeonames = ObtieneTripletasGeonames(pObjeto);
-                return $"{tripleta}{tripletaGeonames}";
-            }
-            else
-            {
-                return tripleta;
-            }
+            return tripleta;
         }
 
         public string GenerarTripletaRecogidadeVirtuoso(string pSujeto, string pPredicado, string pObjeto, string pObjetoSinMinuscula, List<string> pFecha, List<string> pNumero, List<string> pTextoInvariable, List<FacetaEntidadesExternas> pEntExt, string pIdioma)
         {
             string tripleta = "";
-            string tripletaGeonames = "";
 
             if (pPredicado.StartsWith('<') && pPredicado.EndsWith('>'))
             {
@@ -14389,15 +14375,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
             }
 
-            if (pObjeto.Contains("geonames"))
-            {
-                tripletaGeonames = ObtieneTripletasGeonames(pObjeto);
-                return tripleta + tripletaGeonames;
-            }
-            else
-            {
-                return tripleta;
-            }
+            return tripleta;
         }
 
         /// <summary>
@@ -14414,7 +14392,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Obtiene las tripletas de otras entidades para insertarlas en el grafo de búsqueda
         /// </summary>
-        /// <param name="geonamesID">ID de geonames</param>
         public string ObtieneTripletasOtrasEntidades(string pRecursoID, string pGrafoID, List<FacetaEntidadesExternas> pEntExt)
         {
             List<string> recursosCargadosID = new List<string>();
@@ -14424,7 +14401,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Obtiene las tripletas de otras entidades para insertarlas en el grafo de búsqueda
         /// </summary>
-        /// <param name="geonamesID">ID de geonames</param>
         public string ObtieneTripletasOtrasEntidades(string pRecursoID, string pGrafoID, List<FacetaEntidadesExternas> pEntExt, List<string> pRecursosCargadosID)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
@@ -14441,7 +14417,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 if (facetadoDS.Tables["OtrasEntidades"].Rows.Count > 0)
                 {
-                    StringBuilder tripletasGeonames = new StringBuilder();
+                    StringBuilder tripletasEntidadesExternas = new StringBuilder();
                     Dictionary<string, string> entidadesHijas = new Dictionary<string, string>();
 
                     foreach (DataRow myrow in facetadoDS.Tables["OtrasEntidades"].Rows)
@@ -14474,11 +14450,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                                     objeto = "\"" + objeto + "\"";
                                 }
 
-                                tripletasGeonames.Append(GenerarTripleta($"<{sujeto}>", $"<{predicado}>", objeto));
+                                tripletasEntidadesExternas.Append(GenerarTripleta($"<{sujeto}>", $"<{predicado}>", objeto));
                             }
                             else
                             {
-                                tripletasGeonames.Append(GenerarTripleta($"<{sujeto}>", $"<{predicado}>", $"\"{objeto}\""));
+                                tripletasEntidadesExternas.Append(GenerarTripleta($"<{sujeto}>", $"<{predicado}>", $"\"{objeto}\""));
                             }
                         }
                     }
@@ -14490,12 +14466,12 @@ namespace Es.Riam.Gnoss.AD.Facetado
                         {
                             if (entidadExt.BuscarConRecursividad && entidadHija.Contains(entidadExt.EntidadID))
                             {
-                                tripletasGeonames.Append(ObtieneTripletasOtrasEntidades(entidadHija, entidadExt.ProyectoID.ToString(), pEntExt, pRecursosCargadosID));
+                                tripletasEntidadesExternas.Append(ObtieneTripletasOtrasEntidades(entidadHija, entidadExt.ProyectoID.ToString(), pEntExt, pRecursosCargadosID));
                             }
                         }
                     }
 
-                    return tripletasGeonames.ToString();
+                    return tripletasEntidadesExternas.ToString();
                 }
                 else { return ""; }
             }
@@ -14508,7 +14484,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Obtiene las tripletas de otras entidades para insertarlas en el grafo de búsqueda
         /// </summary>
-        /// <param name="geonamesID">ID de geonames</param>
         public FacetadoDS ObtieneTripletasOtrasEntidadesDS(string pRecursoID, string pGrafoID, List<FacetaEntidadesExternas> pEntExt)
         {
             List<string> recursosCargadosID = new List<string>();
@@ -14518,7 +14493,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
         /// <summary>
         /// Obtiene las tripletas de otras entidades para insertarlas en el grafo de búsqueda
         /// </summary>
-        /// <param name="geonamesID">ID de geonames</param>
         public FacetadoDS ObtieneTripletasOtrasEntidadesDS(string pRecursoID, string pGrafoID, List<FacetaEntidadesExternas> pEntExt, List<string> pRecursosCargadosID)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
@@ -14567,49 +14541,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
             return facetadoDS;
-        }
-
-        /// <summary>
-        /// Obtiene las tripletas relativas a un recurso en geonames.
-        /// </summary>
-        /// <param name="geonamesID">ID de geonames</param>
-        public string ObtieneTripletasGeonames(string geonamesID)
-        {
-            FacetadoDS facetadoDS = new FacetadoDS();
-            string query = NamespacesVirtuosoLectura;
-
-            geonamesID = geonamesID.Trim();
-            if (geonamesID.EndsWith("/>"))
-            {
-                geonamesID = geonamesID.Trim('>').Trim('/');
-            }
-
-            string geonamesIDsimple = geonamesID.Substring(geonamesID.LastIndexOf("/") + 1).Trim('>');
-            query += $" select * from <http://gnoss.com/geonames> {{?s ?p ?o. FILTER (?s=<http://geonames.org/{geonamesIDsimple}> and ?p in (<http://www.geonames.org/ontology#name>, <http://www.geonames.org/ontology#latitude>, <http://www.geonames.org/ontology#longitude>))}} ";
-
-            LeerDeVirtuoso(query, "ids", facetadoDS, "geonames");
-
-            if (facetadoDS.Tables["ids"].Rows.Count > 0)
-            {
-                StringBuilder tripletasGeonames = new StringBuilder();
-                foreach (DataRow myrow in facetadoDS.Tables["ids"].Rows)
-                {
-                    string propiedad = myrow[1].ToString();
-                    string objeto = myrow[2].ToString();
-                    float objetoFloat;
-                    if ((propiedad.Equals("http://www.geonames.org/ontology#latitude") || propiedad.Equals("http://www.geonames.org/ontology#longitude")) && float.TryParse(objeto, out objetoFloat))
-                    {
-                        objeto = $"\"{objeto.Replace(',', '.')}\"^^xsd:decimal";
-                    }
-                    else
-                    {
-                        objeto = $"\"{objeto.ToLower().Replace(",", ".")}\"";
-                    }
-                    tripletasGeonames.Append(GenerarTripleta($"<{myrow[0].ToString()}>", $"<{propiedad}>", objeto));
-                }
-                return tripletasGeonames.ToString();
-            }
-            else { return ""; }
         }
 
         /// <summary>
@@ -15669,289 +15600,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return "";
         }
 
-        #endregion
-
-        #region NewYork Times
-        /// <summary>
-        /// Obtiene la información que se va a pintar en la ficha de las personas
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtienePersonasNewYorkTIme(List<string> Tag, FacetadoDS pFacetadoDS, string baseDatos)
-        {
-            for (int i = 0; i < Tag.Count; i++)
-            {
-                if (string.IsNullOrEmpty(Tag[i]))
-                    Tag.RemoveAt(i);
-            }
-
-            for (int i = 0; i < Tag.Count; i++)
-            {
-                string untag = Tag[i].ToLower();
-                int numpalabras = 0;
-                List<string> tagbueno = AnalizadorSintactico.ObtenerTagsFrase(untag, out numpalabras);
-                Tag[i] = "";
-                for (int z = 0; z < tagbueno.Count; z++)
-                {
-                    Tag[i] += $"{tagbueno[z]} ";
-                }
-                if (!string.IsNullOrEmpty(Tag[i]))
-                {
-                    Tag[i] = Tag[i].Substring(0, Tag[i].Length - 1);
-                }
-            }
-
-            string query = $"{NamespacesVirtuosoLectura} select ?GUIDFreebase ?Tag ?Coincidencia ?RutaNYT ?RutaDbpedia ?RutaFreebase ?RutaGeonames ?Descripcion from <http://{baseDatos}.com> where {{ ?GUIDFreebase <http://www.w3.org/2004/02/skos/core#prefLabel> ?Tag. FILTER";
-
-            StringBuilder filtro = new StringBuilder("(");
-            string or = "";
-            bool hayTags = false;
-            int contador = 0;
-            foreach (string id in Tag)
-            {
-                filtro.Append(or);
-                char[] delimit = new char[] { ' ' };
-                string s10 = Tag[contador];
-                string[] palabrasTag = s10.Split(delimit);
-                if (palabrasTag.Length > 0)
-                {
-                    string separador = "(";
-                    foreach (string substr in palabrasTag)
-                    {
-                        if (!string.IsNullOrEmpty(substr))
-                        {
-                            string idmayuscula = substr.Substring(0, 1).ToUpper() + substr.Substring(1);
-                            filtro.Append($"{separador}((bif:lower(?Tag) LIKE '{idmayuscula.ToLower().Replace("'", "''")} %') or (bif:lower(?Tag) LIKE ' %{idmayuscula.ToLower()}') or (bif:lower(?Tag) LIKE ' %{idmayuscula.ToLower()}% '))");
-                            separador = " and ";
-                            hayTags = true;
-                        }
-                    }
-                    filtro.Append(")");
-                    or = " or ";
-
-                }
-                contador++;
-            }
-
-            filtro.Append(")");
-            query += $"{filtro} OPTIONAL {{?GUIDFreebase <http://data.nytimes.com/elements/topicPage> ?RutaNYT. }} OPTIONAL {{?GUIDFreebase owl:sameAs ?RutaDbpedia.  FILTER (?RutaDbpedia LIKE '%dbpedia%')}} OPTIONAL {{?GUIDFreebase owl:sameAs ?RutaFreebase.  FILTER (?RutaFreebase LIKE '%freebase%')}} OPTIONAL{{?GUIDFreebase owl:sameAs ?RutaGeonames.  FILTER (?RutaGeonames LIKE '%geonames%')}} OPTIONAL {{?GUIDFreebase skos:definition ?Descripcion. }}}}";
-
-            if (hayTags)
-            {
-                LeerDeVirtuoso(query, "PersonasNewYorkTimes", pFacetadoDS, "");
-            }
-        }
-
-        /// <summary>
-        /// Obtiene la información que se va a pintar en la ficha de las personas
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneOrganizacionNewYorkTime(List<string> Tag, FacetadoDS pFacetadoDS, string baseDatos)
-        {
-            for (int i = 0; i < Tag.Count; i++)
-            {
-                if (string.IsNullOrEmpty(Tag[i]))
-                    Tag.RemoveAt(i);
-            }
-
-            for (int i = 0; i < Tag.Count; i++)
-            {
-                string untag = Tag[i].ToLower();
-                int numpalabras = 0;
-                List<string> tagbueno = AnalizadorSintactico.ObtenerTagsFrase(untag, out numpalabras);
-                Tag[i] = "";
-                for (int z = 0; z < tagbueno.Count; z++)
-                {
-                    Tag[i] += tagbueno[z] + " ";
-                }
-                if (!string.IsNullOrEmpty(Tag[i]))
-                    Tag[i] = Tag[i].Substring(0, Tag[i].Length - 1);
-            }
-
-            string query = $"{NamespacesVirtuosoLectura} select ?GUIDFreebase ?Tag2 ?Coincidencia ?RutaNYT ?RutaDbpedia ?RutaFreebase ?RutaGeonames ?Descripcion from <http://{baseDatos}.com> where {{ ?GUIDFreebase ?p ?Tag2. ?GUIDFreebase ?p2 ?Tag. FILTER(?p=<http://www.w3.org/2004/02/skos/core#prefLabel> and ?p2=<http://www.w3.org/2004/02/skos/core#prefLabelBUSCAR>) FILTER";
-
-            int contador = 0;
-            StringBuilder filtro = new StringBuilder("(");
-            string or = "";
-
-            foreach (string id in Tag)
-            {
-                filtro.Append(or);
-                char[] delimit = new char[] { ' ' };
-                string s10 = Tag[contador];
-                string[] palabrasTag = s10.Split(delimit);
-
-                string separador = "(";
-                foreach (string substr in palabrasTag)
-                {
-                    if (!string.IsNullOrEmpty(substr))
-                    {
-                        string idmayuscula = substr.Substring(0, 1).ToUpper() + substr.Substring(1);
-                        filtro.Append($"{separador}((bif:lower(?Tag) LIKE '{idmayuscula.ToLower().Replace("'", "''")} %')or(bif:lower(?Tag) LIKE ' %{idmayuscula.ToLower()}')or(bif:lower(?Tag) LIKE ' %{idmayuscula.ToLower()}% '))");
-                        separador = " and ";
-                    }
-                }
-                filtro.Append(")");
-                or = " or ";
-                contador++;
-            }
-            filtro.Append(")");
-            query += $"{filtro} OPTIONAL {{?GUIDFreebase <http://data.nytimes.com/elements/topicPage> ?RutaNYT. }} OPTIONAL {{?GUIDFreebase owl:sameAs ?RutaDbpedia.  FILTER (?RutaDbpedia LIKE '%dbpedia%')}} OPTIONAL {{?GUIDFreebase owl:sameAs ?RutaFreebase.  FILTER (?RutaFreebase LIKE '%freebase%')}} OPTIONAL{{?GUIDFreebase owl:sameAs ?RutaGeonames.  FILTER (?RutaGeonames LIKE '%geonames%')}} OPTIONAL {{?GUIDFreebase skos:definition ?Descripcion. }}}}";
-
-            if (baseDatos.Equals("locations"))
-            {
-                LeerDeVirtuoso(query, "LugaresNewYorkTimes", pFacetadoDS, "");
-            }
-            else if (baseDatos.Equals("organizations"))
-            {
-                LeerDeVirtuoso(query, "OrganizacionesNewYorkTimes", pFacetadoDS, "");
-            }
-            else if (baseDatos.Equals("descriptors"))
-            {
-                LeerDeVirtuoso(query, "DescripcionesNewYorkTimes", pFacetadoDS, "");
-            }
-        }
-
-        /// <summary>
-        /// Obtiene la información que se va a pintar en la ficha de los lugares
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneLugaresNewYorkTime(List<string> Tag, List<string> Tags, FacetadoDS pFacetadoDS)
-        {
-            for (int i = 0; i < Tag.Count; i++)
-            {
-                string untag = Tag[i].ToLower();
-                int numpalabras = 0;
-                List<string> tagbueno = AnalizadorSintactico.ObtenerTagsFrase(untag, out numpalabras);
-                StringBuilder bld = new StringBuilder();
-                for (int z = 0; z < tagbueno.Count; z++)
-                {
-                    bld.Append(tagbueno[z] + " ");
-                }
-                Tag[i] = bld.ToString().Substring(0, bld.Length - 1);
-            }
-
-            string query = $"{NamespacesVirtuosoLectura} select distinct  ?GUIDFreebase ?Tag2 ?RutaGeonames ?RutaFreebase ?RutaDbpedia  ?RutaNYT  from <http://locations.com> where {{?GUIDFreebase ?p ?Tag2. ?GUIDFreebase ?p2 ?Tag. FILTER (?GUIDFreebase LIKE '%data.nytimes.com%')FILTER(((?p=<http://www.w3.org/2004/02/skos/core#prefLabel> and ?p2=<http://www.w3.org/2004/02/skos/core#prefLabelBUSCAR>) or ?p=<http://www.geonames.org/ontology#alternateName> ) and ";
-
-            StringBuilder filtro = new StringBuilder("(");
-            string or = "";
-            int contador = 0;
-            foreach (string id in Tag)
-            {
-                filtro.Append(or);
-                char[] delimit = new char[] { ' ' };
-                string s10 = Tag[contador];
-                string separador = "(";
-                foreach (string substr in s10.Split(delimit))
-                {
-                    string idmayuscula = substr.Substring(0, 1).ToUpper() + substr.Substring(1);
-                    filtro.Append($"{separador} (bif:lower((?Tag) = '{idmayuscula.ToLower()}')");
-                    separador = " and ";
-                }
-
-                filtro.Append(")");
-                or = " or ";
-
-                contador++;
-            }
-
-            filtro.Append(")");
-
-            query += filtro;
-            query += "and (lang(?Tag) = \"es\" or lang(?Tag) = \"eu\"  or lang(?Tag) = \"en\")) OPTIONAL {?GUIDFreebase <http://data.nytimes.com/elements/topicPage> ?RutaNYT. } OPTIONAL {?GUIDFreebase owl:sameAs ?RutaDbpedia.  FILTER (?RutaDbpedia LIKE '%dbpedia%')} OPTIONAL {?GUIDFreebase owl:sameAs ?RutaFreebase.  FILTER (?RutaFreebase LIKE '%freebase%')}OPTIONAL{?GUIDFreebase owl:sameAs ?RutaGeonames.  FILTER (?RutaGeonames LIKE '%geonames%')} }";
-
-            LeerDeVirtuoso(query, "LugaresNewYorkTimes", pFacetadoDS, "");
-        }
-
-        /// <summary>
-        /// Obtiene la información de organizaciones de dbpedia
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneOrganizacionesDBPedia(FacetadoDS pFacetadoDS)
-        {
-            string query = $"{NamespacesVirtuosoLectura} select ?o2 from <dbpedia> where {{ ?s rdf:type ?rdftype. FILTER( ?rdftype in (<http://schema.org/Organization>))  ?s rdfs:label ?o2 }} LIMIT 5000 ";
-
-            LeerDeVirtuoso(query, "org", pFacetadoDS, "");
-        }
-
-        /// <summary>
-        /// Obtiene la información de personas  de dbpedia
-        /// </summary>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtienePersonasDBPedia(FacetadoDS pFacetadoDS)
-        {
-            string query = $"{NamespacesVirtuosoLectura} select ?o2 from <dbpedia> where {{ ?s rdf:type ?rdftype. FILTER( ?rdftype in (<http://schema.org/Person>))  ?s rdfs:label ?o2 }}  LIMIT 5000";
-
-            LeerDeVirtuoso(query, "person", pFacetadoDS, "");
-        }
-
-        /// <summary>
-        /// Obtiene la información de lugares de dbpedia
-        /// </summary>        
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneLugaresDBPedia(FacetadoDS pFacetadoDS)
-        {
-            string query = $"{NamespacesVirtuosoLectura} select ?o2 from <dbpedia> where {{ ?s rdf:type ?rdftype. FILTER( ?rdftype in (<http://schema.org/Place>)) ?s rdfs:label ?o2 }} LIMIT 5000 ";
-
-            LeerDeVirtuoso(query, "place", pFacetadoDS, "");
-        }
-
-        /// <summary>
-        /// Obtiene la información de lugares, personas y organizaciones de dbpedia
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneLugaresPersonasOrganizacionesDBPedia(FacetadoDS pFacetadoDS)
-        {
-            string query = $"{NamespacesVirtuosoLectura} select ?o2 from <dbpedia> where {{ ?s rdf:type ?rdftype. FILTER(?rdftype in (<http://schema.org/Person>, <http://schema.org/Organization>,  <http://schema.org/Place>))  ?s rdfs:label ?o2 }} ";
-
-            LeerDeVirtuoso(query, "dbpedia", pFacetadoDS, "");
-        }
-
-        /// <summary>
-        /// Obtiene la información que se va a pintar en la ficha de los lugares
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public FacetadoDS ObtieneDescripcionesNewYorkTime(List<string> Tag, FacetadoDS pFacetadoDS)
-        {
-            FacetadoDS facetadoDsdevolver = new FacetadoDS();
-
-            StringBuilder query = new StringBuilder(NamespacesVirtuosoLectura);
-            query.Append("select ?Tag ?GUIDFreebase '0' as ?Coincidencia '' as ?Entidad ?Ruta '' as ?WikipediaID 'descripcion' as ?Tipos ?Descripcion from <http://descriptors.com> where {?GUIDFreebase <http://www.w3.org/2004/02/skos/core#prefLabel> ?Tag. ?GUIDFreebase skos:definition ?Descripcion. ?GUIDFreebase <http://data.nytimes.com/elements/topicPage> ?Ruta. FILTER");
-            string anadir = "(?Tag LIKE ";
-
-            foreach (string id in Tag)
-            {
-                if (!string.IsNullOrEmpty(id))
-                {
-                    string idmayuscula = id.Substring(0, 1).ToUpper() + id.Substring(1);
-                    query.Append($"{anadir}'%{id}%' or ?Tag LIKE '%{idmayuscula}%'");
-                    anadir = " or ?Tag LIKE ";
-                }
-            }
-            query.Append(" )} ");
-
-            LeerDeVirtuoso(query.ToString(), "PersonasNewYorkTimes", facetadoDsdevolver, "");
-
-            foreach (DataRow fila in facetadoDsdevolver.Tables["PersonasNewYorkTimes"].Rows)
-            {
-                DataRow newCustomersRow = pFacetadoDS.Tables["PersonasNewYorkTimes"].NewRow();
-                newCustomersRow["Tag"] = (string)fila["Tag"];
-                newCustomersRow["GUIDFreebase"] = (string)fila["GUIDFreebase"];
-                newCustomersRow["Coincidencia"] = 0;
-                newCustomersRow["Entidad"] = (string)fila["Tag"];
-                newCustomersRow["Ruta"] = (string)fila["Ruta"];
-                newCustomersRow["WikipediaID"] = (string)fila["WikipediaID"];
-                newCustomersRow["Tipos"] = (string)fila["Tipos"];
-                newCustomersRow["Descripcion"] = (string)fila["Descripcion"];
-                pFacetadoDS.Tables["DescripcionesNewYorkTimes"].Rows.Add(newCustomersRow);
-            }
-            return pFacetadoDS;
-        }
         #endregion
 
         #region migradores

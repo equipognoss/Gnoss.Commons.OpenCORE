@@ -8516,26 +8516,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.ToTable("RolOntologiaPermiso");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.Sitemaps", b =>
-                {
-                    b.Property<string>("Dominio")
-                        .HasMaxLength(255)
-                        .HasColumnType("NVARCHAR2(255)")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("SitemapIndexName")
-                        .HasColumnType("NVARCHAR2(450)")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("SitemapContent")
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnOrder(2);
-
-                    b.HasKey("Dominio", "SitemapIndexName");
-
-                    b.ToTable("Sitemaps");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", b =>
                 {
                     b.Property<string>("Dominio")
@@ -8543,13 +8523,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NVARCHAR2(255)")
                         .HasColumnOrder(0);
 
+                    b.Property<DateTime?>("GeneratedAt")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnOrder(1);
+
                     b.Property<string>("Robots")
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(2);
-
-                    b.Property<string>("Sitemap")
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnOrder(1);
 
                     b.HasKey("Dominio");
 
@@ -9394,32 +9374,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
-            {
-                b.Property<Guid>("OrganizacionID")
-                    .HasColumnType("RAW(16)");
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("RAW(16)");
 
-                b.Property<Guid>("ProyectoID")
-                    .HasColumnType("RAW(16)");
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)");
 
-                b.Property<bool>("Activo")
-                    .HasColumnType("BOOLEAN");
+                    b.Property<bool>("Activo")
+                        .HasColumnType("NUMBER(1)");
 
-                b.Property<string>("Endpoint")
-                    .HasColumnType("NVARCHAR2(2000)");
+                    b.Property<string>("Endpoint")
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                b.Property<string>("Nivel")
-                    .HasColumnType("NVARCHAR2(2000)");
+                    b.Property<string>("Nivel")
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                b.Property<string>("Prompt")
-                    .HasColumnType("NVARCHAR2(2000)");
+                    b.Property<string>("Prompt")
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                b.Property<string>("Token")
-                    .HasColumnType("NVARCHAR2(2000)");
+                    b.Property<string>("Token")
+                        .HasColumnType("NVARCHAR2(2000)");
 
-                b.HasKey("OrganizacionID", "ProyectoID");
+                    b.HasKey("OrganizacionID", "ProyectoID");
 
-                b.ToTable("TraductorProyecto");
-            });
+                    b.ToTable("TraductorProyecto");
+                });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UltimosDocumentosVisitados", b =>
                 {
@@ -12255,17 +12235,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.Navigation("Rol");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.Sitemaps", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", "SitemapIndex")
-                        .WithMany("Indexlist")
-                        .HasForeignKey("Dominio")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SitemapIndex");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaOpcionSolicitud", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.Solicitud", "Solicitud")
@@ -12559,13 +12528,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
-            {
-                b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
-                    .WithOne("TraductorProyecto")
-                    .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", "OrganizacionID", "ProyectoID");
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("TraductorProyecto")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", "OrganizacionID", "ProyectoID");
 
-                b.Navigation("Proyecto");
-            });
+                    b.Navigation("Proyecto");
+                });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorGeneral", b =>
                 {
@@ -13363,11 +13332,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistema", b =>
                 {
                     b.Navigation("RolEcosistemaUsuario");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", b =>
-                {
-                    b.Navigation("Indexlist");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.Solicitud", b =>

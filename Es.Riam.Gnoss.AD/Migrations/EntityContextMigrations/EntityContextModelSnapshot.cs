@@ -8275,26 +8275,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.ToTable("RolOntologiaPermiso");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.Sitemaps", b =>
-                {
-                    b.Property<string>("Dominio")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnOrder(0);
-
-                    b.Property<string>("SitemapIndexName")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("SitemapContent")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnOrder(2);
-
-                    b.HasKey("Dominio", "SitemapIndexName");
-
-                    b.ToTable("Sitemaps");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", b =>
                 {
                     b.Property<string>("Dominio")
@@ -8302,13 +8282,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnOrder(0);
 
+                    b.Property<DateTime?>("GeneratedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnOrder(1);
+
                     b.Property<string>("Robots")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnOrder(2);
-
-                    b.Property<string>("Sitemap")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnOrder(1);
 
                     b.HasKey("Dominio");
 
@@ -9140,6 +9120,34 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.HasIndex("UsuarioID");
 
                     b.ToTable("TesauroUsuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
+                {
+                    b.Property<Guid>("OrganizacionID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Endpoint")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nivel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Prompt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OrganizacionID", "ProyectoID");
+
+                    b.ToTable("TraductorProyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UltimosDocumentosVisitados", b =>
@@ -11970,17 +11978,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("Rol");
                 });
 
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.Sitemaps", b =>
-                {
-                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", "SitemapIndex")
-                        .WithMany("Indexlist")
-                        .HasForeignKey("Dominio")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SitemapIndex");
-                });
-
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaOpcionSolicitud", b =>
                 {
                     b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.Solicitud", "Solicitud")
@@ -12271,6 +12268,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("Tesauro");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
+                {
+                    b.HasOne("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", "Proyecto")
+                        .WithOne("TraductorProyecto")
+                        .HasForeignKey("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", "OrganizacionID", "ProyectoID");
+
+                    b.Navigation("Proyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorGeneral", b =>
@@ -12967,6 +12973,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.Navigation("Rol");
 
                     b.Navigation("TareasSegundoPlano");
+
+                    b.Navigation("TraductorProyecto");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEvento", b =>
@@ -13067,11 +13075,6 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistema", b =>
                 {
                     b.Navigation("RolEcosistemaUsuario");
-                });
-
-            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Sitemaps.SitemapsIndex", b =>
-                {
-                    b.Navigation("Indexlist");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.Solicitud", b =>

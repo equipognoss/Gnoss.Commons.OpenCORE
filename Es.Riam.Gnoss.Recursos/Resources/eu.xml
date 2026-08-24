@@ -370,12 +370,6 @@
 		<Resource tag="HERRAMIENTAS">Tresnak</Resource>
 		<Resource tag="WIDGETS">Widgetak</Resource>
 	</page>
-	<page name="FREEBASE">
-		<Resource tag="INFOSOBRE">{strong}@1@{/strong}ari/ei buruzko informazioa hemen:</Resource>
-		<Resource tag="VERENWIKIPEDIA">Ikus hemen: {a class='wikipedia' href='@1@' target='_blank'}wikipedia{/a}</Resource>
-		<Resource tag="VERENDBPEDIA">Ikus hemen: {a class='dbpedia' href='@1@' target='_blank'}dbpedia{/a}</Resource>
-		<Resource tag="VERENGEONAMES">Ikus hemen: {a class='geonames' href='@1@' target='_blank'}geonames{/a}</Resource>
-	</page>
 	<page name="VERCVSEMANTICO">
 		<Resource tag="EXPERIENCIALABORAL">Lan esperientzia</Resource>
 		<Resource tag="ESTUDIOS">Ikasketak</Resource>
@@ -1336,6 +1330,7 @@
 		<Resource tag="CREARVERSION">Bertsio bat sortu</Resource>
 		<Resource tag="ELIMINAR">Deuseztatu</Resource>
 		<Resource tag="CERTIFICARDOC">Baliabidea ziurtatu</Resource>
+		<Resource tag="NOCERTIFICADISP">Ez dago ziurtagiririk eskuragarri</Resource>
 		<Resource tag="CERTIFICAR">Ziurtatu</Resource>
 		<Resource tag="RECURSOCERTIFICADO">Ziurtatutako baliabidea</Resource>
 		<Resource tag="ENVIAR">Bidali</Resource>

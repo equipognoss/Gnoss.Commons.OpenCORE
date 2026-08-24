@@ -582,7 +582,6 @@
         public virtual DbSet<DatoExtraProyectoVirtuosoSolicitud> DatoExtraProyectoVirtuosoSolicitud { get; set; }
 
         //Sitemaps
-        public virtual DbSet<Sitemaps> Sitemaps { get; set; }
         public virtual DbSet<SitemapsIndex> SitemapsIndex { get; set; }
 
 
@@ -1103,8 +1102,6 @@
      .HasKey(c => new { c.DocumentoID, c.Idioma });
             modelBuilder.Entity<PerfilPersonaOrg>()
      .HasKey(c => new { c.PersonaID, c.OrganizacionID, c.PerfilID });
-            modelBuilder.Entity<Sitemaps>()
-     .HasKey(c => new { c.Dominio, c.SitemapIndexName });
 			modelBuilder.Entity<ConfiguracionCachesCostosas>()
      .HasKey(c => new { c.OrganizacionID, c.ProyectoID});
 
@@ -2486,14 +2483,6 @@
                .WithOne(e => e.CMSBloque)
                .IsRequired()
                .OnDelete(DeleteBehavior.Restrict);
-
-            //Sitemaps
-
-            modelBuilder.Entity<SitemapsIndex>()
-                .HasMany(e => e.Indexlist)
-                .WithOne(e => e.SitemapIndex)
-                .IsRequired()
-                .HasForeignKey(e => new { e.Dominio });
 
             //Notifiacion
 

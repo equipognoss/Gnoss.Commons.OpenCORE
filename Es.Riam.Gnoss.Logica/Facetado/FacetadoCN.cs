@@ -143,44 +143,6 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             this.mIdGrafo = pIdGrafo;
         }
 
-
-        /// <summary>
-        /// Obtiene la información de lugares, personas y organizaciones de dbpedia
-        /// </summary>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneLugaresPersonasOrganizacionesDBPedia(FacetadoDS pFacetadoDS)
-        {
-            FacetadoAD.ObtieneLugaresPersonasOrganizacionesDBPedia(pFacetadoDS);
-        }
-
-
-        /// <summary>
-        /// Obtiene la información de organizaciones de dbpedia
-        /// </summary>
-        /// <param name="Tag">Lista con los Tags</param>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneOrganizacionesDBPedia(FacetadoDS pFacetadoDS)
-        {
-            FacetadoAD.ObtieneOrganizacionesDBPedia(pFacetadoDS);
-        }
-
-        /// <summary>
-        /// Obtiene la información de personas  de dbpedia
-        /// </summary>
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtienePersonasDBPedia(FacetadoDS pFacetadoDS)
-        {
-            FacetadoAD.ObtienePersonasDBPedia(pFacetadoDS);
-        }
-
-        /// <summary>
-        /// Obtiene la información de lugares de dbpedia
-        /// </summary>        
-        /// <param name="pFacetadoDS">DataSet de facetado</param>
-        public void ObtieneLugaresDBPedia(FacetadoDS pFacetadoDS)
-        {
-            FacetadoAD.ObtieneLugaresDBPedia(pFacetadoDS);
-        }
         #endregion
 
         #region Metodos generales

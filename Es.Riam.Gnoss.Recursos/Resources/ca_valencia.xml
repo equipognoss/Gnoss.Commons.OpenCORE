@@ -1389,6 +1389,7 @@
 		<Resource tag="CREARVERSION">Crear una versió</Resource>
 		<Resource tag="ELIMINAR">Eliminar</Resource>
 		<Resource tag="CERTIFICARDOC">Certificar recurs</Resource>
+		<Resource tag="NOCERTIFICADISP">No hi ha certificacions disponibles</Resource>
 		<Resource tag="CERTIFICAR">Certificar</Resource>
 		<Resource tag="RECURSOCERTIFICADO">Recurs certificat</Resource>
 		<Resource tag="ENVIAR">Enviar</Resource>

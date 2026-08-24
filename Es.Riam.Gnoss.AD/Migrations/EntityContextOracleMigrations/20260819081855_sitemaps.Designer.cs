@@ -3,37 +3,40 @@ using System;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
+namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 {
-    [DbContext(typeof(EntityContextPostgres))]
-    partial class EntityContextPostgresModelSnapshot : ModelSnapshot
+    [DbContext(typeof(EntityContextOracle))]
+    [Migration("20260819081855_sitemaps")]
+    partial class sitemaps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.AccionesExternas", b =>
                 {
                     b.Property<short>("TipoAccion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<short>("TipoAccion"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("TipoAccion"));
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(1);
 
                     b.HasKey("TipoAccion");
@@ -45,19 +48,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
+                        .HasColumnType("NVARCHAR2(250)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ImplementationKey")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("UbicacionLogs")
-                        .HasColumnType("integer")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(2);
 
                     b.Property<int>("UbicacionTrazas")
-                        .HasColumnType("integer")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(3);
 
                     b.HasKey("Dominio");
@@ -69,42 +72,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<short>("NumConexion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<short>("NumConexion"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumConexion"));
 
                     b.Property<int?>("ConectionTimeout")
-                        .HasColumnType("integer")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(7);
 
                     b.Property<string>("Conexion")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("DatosExtra")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(4);
 
                     b.Property<bool>("EsMaster")
-                        .HasColumnType("boolean")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(5);
 
                     b.Property<bool>("LecturaPermitida")
-                        .HasColumnType("boolean")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(6);
 
                     b.Property<string>("NombreConexion")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoConexion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("NumConexion");
@@ -116,21 +121,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<short>("NumServicio"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
@@ -142,27 +147,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<short>("NumServicio"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"));
 
                     b.Property<string>("Dominio")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
@@ -174,25 +179,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<short>("NumServicio")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<short>("NumServicio"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<short>("NumServicio"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NumServicio");
@@ -204,31 +209,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("AsistenteID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("HostAsistente")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Icono")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Token")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("AsistenteID");
 
@@ -240,13 +246,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.AsistenteConfigIdentidad", b =>
                 {
                     b.Property<Guid>("AsistenteID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("AsistentePorDefecto")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("AsistenteID", "IdentidadID");
 
@@ -258,10 +265,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Asistente.RolAsistente", b =>
                 {
                     b.Property<Guid>("AsistenteID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("AsistenteID", "RolID");
 
@@ -274,74 +281,81 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("BlogID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("ArticulosPorPagina")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<int?>("ArticulosTotales")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("AutorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int?>("ComentariosTotales")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("CrearFuentesWeb")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Licencia")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<bool>("PermiteActualizarTwitter")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirComentarios")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirTrackbacks")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Seguidores")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Subtitulo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<short>("Visibilidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("VisibilidadBuscadoresWeb")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VisibilidadListadosBusquedas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("BlogID");
 
@@ -351,19 +365,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "BlogID");
 
@@ -375,19 +389,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.BlogComunidad", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Compartido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("BlogID", "ProyectoID", "OrganizacionID");
 
@@ -397,47 +412,49 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Blog.EntradaBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("AutorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Borrador")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Texto")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Titulo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<short>("Visibilidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<int>("Visitas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("BlogID", "EntradaBlogID");
 
@@ -448,28 +465,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("BloqueID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("BloquePadreID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Borrador")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Estilos")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("BloqueID");
 
@@ -481,21 +499,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponente", b =>
                 {
                     b.Property<Guid>("BloqueID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("BloqueID", "ComponenteID");
 
@@ -507,26 +525,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSBloqueComponentePropiedadComponente", b =>
                 {
                     b.Property<Guid>("BloqueID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoPropiedadComponente")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("BloqueID", "ComponenteID", "TipoPropiedadComponente");
 
@@ -537,48 +555,50 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ComponenteID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("AccesoPublico")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Estilos")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime?>("FechaUltimaActualizacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("IdiomasDisponibles")
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCortoComponente")
                         .IsRequired()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("VARCHAR2(100)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("TipoCaducidadComponente")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoComponente")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ComponenteID");
 
@@ -590,15 +610,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponentePrivadoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoComponente")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoComponente");
@@ -609,11 +629,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("ComponenteID", "GrupoID");
@@ -624,11 +644,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSComponenteRolIdentidad", b =>
                 {
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("ComponenteID", "PerfilID");
@@ -640,25 +660,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("VersionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Comentario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ModeloJSON")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("VersionAnterior")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("VersionID");
 
@@ -670,28 +690,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPagina", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Activa")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("HTMLAlternativo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("MostrarSoloCuerpo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Privacidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion");
 
@@ -701,16 +723,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSPropiedadComponente", b =>
                 {
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoPropiedadComponente")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ComponenteID", "TipoPropiedadComponente");
 
@@ -720,19 +742,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "GrupoID");
@@ -743,19 +765,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.CMS.CMSRolIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Ubicacion", "PerfilID");
@@ -766,28 +788,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Cache.ConfiguracionCachesCostosas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("CachesAnonimas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CachesDeBusquedasActivas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<long>("DuracionConsulta")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<long>("TiempoExpiracion")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<long>("TiempoExpiracionCachesDeUsuario")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<long>("TiempoRecalcularCaches")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -798,31 +822,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("CargaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1200)
-                        .HasColumnType("character varying(1200)");
+                        .HasColumnType("NVARCHAR2(1200)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("CargaID");
 
@@ -833,41 +857,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PaqueteID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("CargaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Comprimido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Error")
                         .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("RutaBusqueda")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("RutaOnto")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("RutaSQL")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PaqueteID");
 
@@ -880,23 +905,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ComentarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ComentarioSuperiorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ComentarioID");
 
@@ -908,15 +934,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.ComentarioBlog", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("ComentarioID", "BlogID", "EntradaBlogID");
@@ -927,11 +953,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.ComentarioCuestion", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CuestionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("ComentarioID", "CuestionID");
@@ -942,11 +968,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Comentario.VotoComentario", b =>
                 {
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("VotoID", "ComentarioID");
@@ -960,33 +986,35 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ComparticionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("ActualizarHome")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Eliminada")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("IdentidadPublicadoraID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<Guid>("OrganizacionDestinoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("OrganizacionOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoDestinoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ComparticionID");
 
@@ -996,24 +1024,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaMapping", b =>
                 {
                     b.Property<Guid>("ComparticionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("ReglaMapping")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<int>("GrupoMapping")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("ComparticionID", "ReglaMapping", "TesauroID", "CategoriaTesauroID");
 
@@ -1023,19 +1051,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ComparticionAutomatica.ComparticionAutomaticaReglas", b =>
                 {
                     b.Property<Guid>("ComparticionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Regla")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Navegacion")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("VARCHAR2(10)");
 
                     b.HasKey("ComparticionID", "Regla");
 
@@ -1046,44 +1074,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool?>("SSL")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("clave")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("emailsugerencias")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<short>("puerto")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("smtp")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("tipo")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("VARCHAR2(10)");
 
                     b.Property<string>("usuario")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("ProyectoID");
 
@@ -1094,27 +1123,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("CategoriaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EsCategoriaTecnica")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("CategoriaID");
 
@@ -1127,40 +1157,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("CookieID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EsEditable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("CookieID");
 
@@ -1174,30 +1205,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.AtributoFichaBibliografica", b =>
                 {
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("FichaBibliograficaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("Longitud")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("AtributoID", "FichaBibliograficaID");
 
@@ -1210,7 +1241,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("BaseRecursosID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("BaseRecursosID");
 
@@ -1220,18 +1251,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosOrganizacion", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<double?>("EspacioActualMyGnossMB")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<double?>("EspacioMaxMyGnossMB")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasKey("BaseRecursosID", "OrganizacionID");
 
@@ -1243,15 +1274,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosProyecto", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("BaseRecursosID", "OrganizacionID", "ProyectoID");
@@ -1262,18 +1293,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.BaseRecursosUsuario", b =>
                 {
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<double?>("EspacioActualMyGnossMB")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<double?>("EspacioMaxMyGnossMB")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasKey("BaseRecursosID", "UsuarioID");
 
@@ -1286,29 +1317,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<int>("ColaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("ColaID"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColaID"));
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("ID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NombreFichImport")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ColaID");
 
@@ -1319,33 +1350,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("ID"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<short>("AccionRealizada")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<long?>("EstadoCargaID")
-                        .HasColumnType("bigint");
+                        .HasColumnType("NUMBER(19)");
 
                     b.Property<DateTime>("FechaEncolado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("InfoExtra")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Prioridad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ID");
 
@@ -1356,35 +1387,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Autores")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("EnlaceOWL")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Licencia")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("OntologiasImportadas")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PathImagen")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Privado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Titulo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("UrlLicencia")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ProyectoID");
 
@@ -1395,123 +1427,131 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Autor")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Borrador")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CompartirPermitido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CreadorEsAutor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("CreadorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("ElementoVinculadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Enlace")
                         .HasMaxLength(1200)
-                        .HasColumnType("character varying(1200)");
+                        .HasColumnType("NVARCHAR2(1200)");
 
                     b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProteccion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("FichaBibliograficaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("IdentidadProteccionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Licencia")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("NombreCategoriaDoc")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreElementoVinculado")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("NumeroComentariosPublicos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroTotalConsultas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroTotalDescargas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroTotalVotos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("PrivadoEditores")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Protegido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Publico")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int?>("Rank")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<double?>("Rank_Tiempo")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoEntidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("UltimaVersion")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<double?>("Valoracion")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<int?>("VersionFotoDocumento")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Visibilidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("DocumentoID");
 
@@ -1519,9 +1559,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
 
                     b.HasIndex("EstadoID");
 
-                    b.HasIndex("Tipo", "Eliminado", "Visibilidad");
-
-                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Tipo", "Eliminado", "Visibilidad"), new[] { "ProyectoID" });
+                    b.HasIndex("Tipo", "Eliminado", "Visibilidad", "ProyectoID");
 
                     b.ToTable("Documento");
                 });
@@ -1529,19 +1567,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoAtributoBiblio", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("FichaBibliograficaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("DocumentoID", "AtributoID", "FichaBibliograficaID");
 
@@ -1553,15 +1591,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoComentario", b =>
                 {
                     b.Property<Guid>("ComentarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ComentarioID", "DocumentoID");
 
@@ -1572,13 +1610,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("FechaEdicion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID");
 
@@ -1588,23 +1626,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoEntidadGnoss", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EntidadGnossID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("CategoriaDocumentacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EntidadGnossID", "DocumentoID", "CategoriaDocumentacionID");
@@ -1615,30 +1653,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoEnvioNewsLetter", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("TIMESTAMP(7)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EnvioRealizado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnvioSolicitado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Grupos")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.HasKey("DocumentoID", "IdentidadID", "Fecha");
 
@@ -1648,15 +1688,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoGrupoUsuario", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID", "GrupoUsuarioID");
 
@@ -1666,23 +1707,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoLecturaAumentada", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("DescripcionAumentada")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("EntitiesInfo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TituloAumentado")
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("TopicsInfo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Validada")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID");
 
@@ -1692,15 +1734,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoMetaDatos", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("MetaDescripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("MetaTitulo")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("DocumentoID");
 
@@ -1711,13 +1753,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Newsletter")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NewsletterTemporal")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("DocumentoID");
 
@@ -1728,20 +1770,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("RespuestaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("NumVotos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("RespuestaID");
 
@@ -1751,15 +1793,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRespuestaVoto", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("RespuestaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID", "IdentidadID");
 
@@ -1771,15 +1813,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID", "GrupoID");
 
@@ -1789,15 +1832,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoRolIdentidad", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DocumentoID", "PerfilID");
 
@@ -1807,19 +1851,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoTipologia", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("TipologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("DocumentoID", "TipologiaID", "AtributoID");
 
@@ -1832,28 +1876,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("TokenID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NombreArchivo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TokenID");
 
@@ -1864,28 +1908,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("TokenID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NombreArchivo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TokenID");
 
@@ -1896,12 +1940,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("UrlCanonica")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.HasKey("DocumentoID");
 
@@ -1911,18 +1955,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoVincDoc", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("DocumentoVincID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID", "DocumentoVincID");
 
@@ -1934,23 +1978,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<DateTime?>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "BaseRecursosID", "DocumentoID");
 
@@ -1960,91 +2004,98 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursos", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool?>("Compartido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaCertificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaPublicacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool?>("IdentPubVisibleExt")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("IdentidadPublicacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("IndexarRecurso")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("LinkAComunidadOrigen")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("NivelCertificacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NombreCortoOrgPublicador")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreCortoPublicador")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreOrgPublicador")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombrePublicador")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<int>("NumeroComentarios")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroConsultas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroDescargas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroVotos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("PermiteComentarios")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PrivadoEditores")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("PublicadorOrgID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int?>("Rank")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<double?>("Rank_Tiempo")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<short?>("TipoIdentidadPublicador")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoPublicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("DocumentoID", "BaseRecursosID");
 
@@ -2058,21 +2109,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.DocumentoWebVinBaseRecursosExtra", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("BaseRecursosID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("NumeroConsultas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroDescargas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DocumentoID", "BaseRecursosID");
 
@@ -2083,16 +2134,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("FichaBibliograficaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.HasKey("FichaBibliograficaID");
 
@@ -2103,28 +2154,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("HistorialDocumentoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Accion")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("CategoriaTesauroID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TagNombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("HistorialDocumentoID");
 
@@ -2136,10 +2187,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.IdiomaTraduccionAutomaticaDocumento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Idioma")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.HasKey("DocumentoID", "Idioma");
 
@@ -2149,58 +2200,60 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.ResultadoSuscripcion", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("RecursoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("AutorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Enlace")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Leido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("OrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("OrigenNombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("OrigenNombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("Sincaducidad")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("TipoDocumento")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoResultado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("SuscripcionID", "RecursoID");
 
@@ -2210,33 +2263,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.Tipologia", b =>
                 {
                     b.Property<Guid>("TipologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("AtributoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("TipologiaID", "AtributoID");
 
@@ -2246,30 +2299,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VersionDocumento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("DocumentoOriginalID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("EsMejora")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("EstadoVersion")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasDefaultValue((short)2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("MejoraID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Version")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DocumentoID");
 
@@ -2281,15 +2335,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion.VotoDocumento", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("DocumentoID", "VotoID");
 
@@ -2302,12 +2356,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("Grafo")
                         .HasMaxLength(36)
-                        .HasColumnType("character varying(36)");
+                        .HasColumnType("NVARCHAR2(36)");
 
                     b.Property<string>("CadenaConexion")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("Grafo");
 
@@ -2317,42 +2371,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyChart", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ChartID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("FiltrosConsultaVirtuoso")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("JSBase")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("JSBusqueda")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ontologias")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("SelectConsultaVirtuoso")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ChartID");
 
@@ -2362,24 +2416,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyMapa", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ColorRuta")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropLatitud")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropLongitud")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PropRuta")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -2389,23 +2443,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaConfigProyRangoFecha", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("PropiedadNueva")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("PropiedadInicio")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("PropiedadFin")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PropiedadNueva", "PropiedadInicio", "PropiedadFin");
@@ -2416,28 +2470,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaEntidadesExternas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("EntidadID")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("BuscarConRecursividad")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsEntidadSecundaria")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Grafo")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EntidadID");
 
@@ -2447,16 +2503,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaExcluida", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Faceta");
@@ -2467,31 +2523,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaFiltroHome", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Filtro")
                         .IsRequired()
                         .HasMaxLength(280)
-                        .HasColumnType("character varying(280)");
+                        .HasColumnType("NVARCHAR2(280)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "Orden");
 
@@ -2501,33 +2557,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaFiltroProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Condicion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Filtro")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "Orden");
 
@@ -2537,45 +2593,46 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaHome", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("FacetaObjetoConocimientoProyectoFaceta")
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<string>("FacetaObjetoConocimientoProyectoObjetoConocimiento")
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("FacetaObjetoConocimientoProyectoOrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("FacetaObjetoConocimientoProyectoProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("MostrarVerMas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("PestanyaFaceta")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
 
@@ -2587,36 +2644,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaMultiple", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Consulta")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Filtro")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("NumeroFacetasDesplegar")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("NumeroFacetasObtener")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
 
@@ -2627,51 +2684,55 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("AlgoritmoTransformacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("Autocompletar")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ComportamientoOr")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("ElementosVisibles")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("EsPorDefecto")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsSemantica")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Mayusculas")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreFaceta")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoDisenio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("TipoPropiedad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ObjetoConocimiento", "Faceta");
 
@@ -2681,107 +2742,118 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid?>("AgrupacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("AlgoritmoTransformacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("Autocompletar")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Comportamiento")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("ComportamientoOr")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Condicion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("ElementosVisibles")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("EsSemantica")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("Excluida")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("Excluyente")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("FacetaPrivadaParaGrupoEditores")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Inmutable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Mayusculas")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("MostrarContador")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)")
                         .HasDefaultValue(true);
 
                     b.Property<bool?>("MostrarSoloCaja")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NivelSemantico")
                         .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasColumnType("NVARCHAR2(5)");
 
                     b.Property<string>("NombreFaceta")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool?>("Oculta")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OcultaEnFacetas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OcultaEnFiltros")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("PriorizarOrdenResultados")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Reciproca")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("SubTipo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("TipoDisenio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("TipoPropiedad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta");
 
@@ -2791,29 +2863,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.FacetaObjetoConocimientoProyectoPestanya", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoConocimiento")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
+                        .HasColumnType("NVARCHAR2(300)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<bool>("AutocompletarEnriquecido")
-                        .HasColumnType("boolean")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(5);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ObjetoConocimiento", "Faceta", "PestanyaID");
@@ -2827,12 +2900,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("Faceta")
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("Faceta");
 
@@ -2842,41 +2915,43 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Faceta.OntologiaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("OntologiaProyecto1")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnName("OntologiaProyecto")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("CachearDatosSemanticos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Namespace")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("NamespacesExtra")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCortoOnt")
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("NombreOnt")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SubTipos")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaProyecto1");
 
@@ -2887,25 +2962,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("EstadoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Color")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("FlujoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("PermiteMejora")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Publico")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("EstadoID");
 
@@ -2917,13 +2994,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.EstadoGrupo", b =>
                 {
                     b.Property<Guid>("EstadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("EstadoID", "GrupoID");
 
@@ -2935,13 +3013,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.EstadoIdentidad", b =>
                 {
                     b.Property<Guid>("EstadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Editor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("EstadoID", "IdentidadID");
 
@@ -2954,49 +3033,58 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("FlujoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Adjunto")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ComponenteCMS")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Debate")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Encuesta")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Link")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Nota")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("PaginaCMS")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("RecursoSemantico")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Video")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("FlujoID");
 
@@ -3008,17 +3096,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.FlujoObjetoConocimientoProyecto", b =>
                 {
                     b.Property<Guid>("FlujoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("FlujoID", "Ontologia", "OrganizacionID", "ProyectoID");
 
@@ -3032,22 +3120,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("HistorialTransicionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Comentario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("ComponenteID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("HistorialTransicionID");
 
@@ -3064,22 +3152,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("HistorialTransicionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Comentario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("HistorialTransicionID");
 
@@ -3096,25 +3184,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("HistorialTransicionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Comentario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("HistorialTransicionID");
 
@@ -3131,16 +3219,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("TransicionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("EstadoDestinoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("EstadoOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("TransicionID");
 
@@ -3155,10 +3243,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.TransicionGrupo", b =>
                 {
                     b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TransicionID", "GrupoID");
 
@@ -3170,10 +3258,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Flujos.TransicionIdentidad", b =>
                 {
                     b.Property<Guid>("TransicionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TransicionID", "IdentidadID");
 
@@ -3185,22 +3273,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.GrupoOrgParticipaProy", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("TipoPerfil")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("GrupoID", "OrganizacionID", "ProyectoID");
 
@@ -3210,18 +3298,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Amigo", b =>
                 {
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("EsFanMutuo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("IdentidadAmigoID", "IdentidadID");
 
@@ -3231,22 +3320,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.AmigoAgGrupo", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("GrupoAmigosGrupoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("GrupoID", "IdentidadID", "IdentidadAmigoID");
 
@@ -3259,49 +3348,49 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PerfilID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaVisitaComentarios")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaVisitaSuscripciones")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("NuevasInvitaciones")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NuevasSuscripciones")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NuevosComentarios")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentBlog")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentContribuciones")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentMisRec")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentarios")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumComentariosSinLeer")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumInvitacionesSinLeer")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumMensajesSinLeer")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumNuevosMensajes")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumSuscripcionesSinLeer")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PerfilID");
 
@@ -3311,15 +3400,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraEcosistemaOpcionPerfil", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("DatoExtraID", "OpcionID", "PerfilID");
@@ -3332,17 +3421,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraEcosistemaVirtuosoPerfil", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("DatoExtraID", "PerfilID");
 
@@ -3352,25 +3441,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.DatoExtraProyectoVirtuosoIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "IdentidadID");
 
@@ -3383,24 +3472,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("GrupoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Automatico")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("GrupoID");
 
@@ -3411,35 +3501,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("GrupoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<bool>("PermitirEnviarMensajes")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Publico")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GrupoID");
 
@@ -3449,11 +3541,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesOrganizacion", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("GrupoID", "OrganizacionID");
@@ -3464,18 +3556,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesParticipacion", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("GrupoID", "IdentidadID");
 
@@ -3487,15 +3579,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.GrupoIdentidadesProyecto", b =>
                 {
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("GrupoID", "OrganizacionID", "ProyectoID");
@@ -3507,64 +3599,68 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("IdentidadID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("ActivoEnComunidad")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ActualizaHome")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("CurriculumID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("DiasUltActualizacion")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("FechaAlta")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaExpulsion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Foto")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<bool>("MostrarBienvenida")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreCortoIdentidad")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<int>("NumConnexiones")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<double?>("Rank")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<bool>("RecibirNewsLetter")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<double>("ValorAbsoluto")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasKey("IdentidadID");
 
@@ -3576,13 +3672,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.IdentidadContadores", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("NumeroDescargas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroVisitas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdentidadID");
 
@@ -3592,26 +3688,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.IdentidadContadoresRecursos", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("NombreSem")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(2);
 
                     b.Property<int>("Comentarios")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Compartidos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Publicados")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdentidadID", "Tipo", "NombreSem");
 
@@ -3622,44 +3718,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("OrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Asignatura")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("Centro")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("Curso")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("CursoAcademico")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("Grupo")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreCortoAsig")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("NombreCortoCentro")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<short>("TipoClase")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID");
 
@@ -3670,57 +3766,59 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PerfilID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("CaducidadResSusc")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("CurriculumID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CurriculumPerfilID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreCortoOrg")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreCortoUsu")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombreOrganizacion")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombrePerfil")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.Property<Guid?>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("TieneTwitter")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("TokenSecretoTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("TokenTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("UsuarioTwitter")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.HasKey("PerfilID");
 
@@ -3732,24 +3830,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilGadget", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Contenido")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("PerfilID", "GadgetID");
 
@@ -3759,11 +3857,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilOrganizacion", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.HasKey("PerfilID", "OrganizacionID");
@@ -3774,10 +3872,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilPersona", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PerfilID");
 
@@ -3787,15 +3885,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilPersonaOrg", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("PersonaID", "OrganizacionID", "PerfilID");
@@ -3808,24 +3906,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PerfilRedesSociales", b =>
                 {
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("NombreRedSocial")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Token")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TokenSecreto")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Usuario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("urlUsuario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PerfilID", "NombreRedSocial");
 
@@ -3835,15 +3933,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PermisoAmigoOrg", b =>
                 {
                     b.Property<Guid>("IdentidadOrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadUsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadAmigoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("IdentidadOrganizacionID", "IdentidadUsuarioID", "IdentidadAmigoID");
@@ -3854,19 +3952,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PermisoGrupoAmigoOrg", b =>
                 {
                     b.Property<Guid>("IdentidadOrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadUsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("PermisoEdicion")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("IdentidadOrganizacionID", "IdentidadUsuarioID", "GrupoID");
 
@@ -3876,15 +3975,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.PersonaVisibleEnOrg", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PersonaID", "OrganizacionID");
 
@@ -3894,26 +3993,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS.Profesor", b =>
                 {
                     b.Property<Guid>("ProfesorID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AreaEstudios")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CentroEstudios")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("ProfesorID", "PerfilID");
 
@@ -3925,37 +4024,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.IntegracionContinuaPropiedad", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoObjeto")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("ObjetoPropiedad")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
+                        .HasColumnType("NVARCHAR2(250)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("TipoPropiedad")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MismoValor")
-                        .HasColumnType("boolean")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(6);
 
                     b.Property<bool>("Revisada")
-                        .HasColumnType("boolean")
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)")
                         .HasColumnOrder(7);
 
                     b.Property<string>("ValorPropiedad")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("ValorPropiedadDestino")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(5);
 
                     b.HasKey("ProyectoID", "TipoObjeto", "ObjetoPropiedad", "TipoPropiedad");
@@ -3967,30 +4068,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("CorreoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Asunto")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("Autor")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ConversacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Cuerpo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnPapelera")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("CorreoID");
 
@@ -4001,41 +4104,41 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<int>("ColaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("ColaID"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColaID"));
 
                     b.Property<string>("ConsumerKey")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("ConsumerSecret")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Enlace")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Mensaje")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<short>("NumIntentos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TokenSecretoTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("TokenTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.HasKey("ColaID");
 
@@ -4046,7 +4149,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("Email")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.HasKey("Email");
 
@@ -4057,31 +4160,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("InvitacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ElementoVinculadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("FechaInvitacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadDestinoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("TipoInvitacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("InvitacionID");
 
@@ -4094,26 +4197,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("NotificacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaFin")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaNotificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<short>("MensajeID")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("NotificacionID");
 
@@ -4123,15 +4226,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionAlertaPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime?>("FechaLectura")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("NotificacionID", "PersonaID");
 
@@ -4141,28 +4244,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionCorreoPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("EmailEnvio")
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("EnviadoRabbit")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("EstadoEnvio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaEnvio")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid?>("OrganizacionPersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("NotificacionID", "EmailEnvio");
 
@@ -4172,20 +4276,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionEnvioMasivo", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Destinatarios")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("EstadoEnvio")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaEnvio")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("Prioridad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("NotificacionID");
 
@@ -4195,15 +4299,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionParametro", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("ParametroID")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("NotificacionID", "ParametroID");
 
@@ -4213,20 +4317,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionParametroPersona", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("ParametroID")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("NotificacionID", "ParametroID", "PersonaID");
 
@@ -4236,19 +4340,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionSolicitud", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("NotificacionID", "SolicitudID", "OrganizacionID", "ProyectoID");
@@ -4261,11 +4365,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion.NotificacionSuscripcion", b =>
                 {
                     b.Property<Guid>("NotificacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("NotificacionID", "SuscripcionID");
@@ -4276,16 +4380,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.ConfiguracionGnossOrg", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("VerRecursos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerRecursosExterno")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("VisibilidadContactos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4296,89 +4402,93 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("OrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Alias")
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("NVARCHAR2(80)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("CoordenadasLogo")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("Direccion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("Eliminada")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscableExternos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Fax")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<string>("Localidad")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<byte[]>("Logotipo")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<bool>("ModoPersonal")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("OrganizacionPadreID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PaisID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Provincia")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("TablaBaseOrganizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("TablaBaseOrganizacionID"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TablaBaseOrganizacionID"));
 
                     b.Property<string>("Telefono")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<int?>("VersionLogo")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Web")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4390,23 +4500,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionEmpresa", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CIF")
                         .HasMaxLength(9)
-                        .HasColumnType("character varying(9)");
+                        .HasColumnType("NVARCHAR2(9)");
 
                     b.Property<int?>("Empleados")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime?>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("SectorOrganizacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoOrganizacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4416,7 +4526,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionGnoss", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("OrganizacionID");
 
@@ -4426,28 +4536,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.OrganizacionParticipaProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EstaBloqueada")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("RegistroAutomatico")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "OrganizacionProyectoID", "ProyectoID");
 
@@ -4459,36 +4570,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaOcupacionFigura", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EstructuraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ElementoEstructuraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<int>("Dedicacion")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("EsPropietarioFigura")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("OrganizacionPersonalID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EstructuraID", "ElementoEstructuraID", "PersonaID");
 
@@ -4498,33 +4610,33 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaOcupacionFormaSec", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("EstructuraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ElementoEstructuraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<int>("Dedicacion")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("OrganizacionPersonalID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "EstructuraID", "ElementoEstructuraID", "PersonaID");
 
@@ -4534,79 +4646,80 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.OrganizacionDS.PersonaVinculoOrganizacion", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("CPTrabajo")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("Cargo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("CategoriaProfesionalID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CoordenadasFoto")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("DireccionTrabajo")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("EmailTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Extension")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<DateTime?>("FechaAnadidaFoto")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaVinculacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<byte[]>("Foto")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<string>("LocalidadTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("PaisTrabajoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ProvinciaTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaTrabajoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TelefonoMovilTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<string>("TelefonoTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<Guid?>("TipoContratoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("UsarFotoPersonal")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int?>("VersionFoto")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PersonaID", "OrganizacionID");
 
@@ -4619,12 +4732,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PaisID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("PaisID");
 
@@ -4635,19 +4748,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ProvinciaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasColumnType("NVARCHAR2(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("PaisID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ProvinciaID");
 
@@ -4659,28 +4772,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ConfiguracionAmbitoBusqueda", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("DefectoHome")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("NVARCHAR2(150)");
 
                     b.Property<bool>("Metabusqueda")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreAmbitoTodaComunidad")
                         .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("NVARCHAR2(150)");
 
                     b.Property<bool>("TodoGnoss")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -4690,431 +4805,485 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ParametroGeneral", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AlgoritmoPersonasRecomendadas")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("AvisoCookie")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("AvisoLegal")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("BaseRecursosDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("BiosCortas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("BlogsDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("BrightcoveDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("BrightcoveFTP")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveFTPPass")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveFTPUser")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcovePublisherID")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveReproductorID")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveTokenRead")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("BrightcoveTokenWrite")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<bool>("CMSDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CargasMasivasDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ChatDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ClausulasRegistro")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CodigoGoogleAnalytics")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<bool>("ComentariosDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("CompartirRecursosPermitido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ComunidadGNOSS")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CoordenadasHome")
                         .HasMaxLength(30)
-                        .HasColumnType("character(30)")
+                        .HasColumnType("NCHAR(30)")
                         .IsFixedLength();
 
                     b.Property<string>("CoordenadasMosaico")
                         .HasMaxLength(30)
-                        .HasColumnType("character(30)")
+                        .HasColumnType("NCHAR(30)")
                         .IsFixedLength();
 
                     b.Property<string>("CoordenadasSup")
                         .HasMaxLength(30)
-                        .HasColumnType("character(30)")
+                        .HasColumnType("NCHAR(30)")
                         .IsFixedLength();
 
                     b.Property<string>("Copyright")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<bool>("DafoDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("DebatesDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<float?>("DesviacionAdmitidaEnEvalua")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<bool>("EncuestasDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("EnlaceContactoPiePagina")
                         .HasMaxLength(45)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(45)");
+                        .HasColumnType("VARCHAR2(45)");
 
                     b.Property<bool>("EntidadRevisadaObligatoria")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnvioMensajesPermitido")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBeta")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EventosDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("FechaNacimientoObligatoria")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ForosDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("GadgetsCabeceraDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("GadgetsPieDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("HomeVisible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("IdiomasDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<byte[]>("ImagenHome")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<byte[]>("ImagenHomeGrande")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<byte[]>("ImagenPersonalizadaPeque")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<bool>("ImagenRelacionadosMini")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionesDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionesPorContactoDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("LicenciaPorDefecto")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<byte[]>("LogoProyecto")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<string>("MensajeBienvenida")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("MensajeLicenciaPorDefecto")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short?>("MetaAutomatPropietarioPro")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("MostrarAccionesEnListados")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarPersonasEnCatalogo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreAmenazaDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreAmenazaDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreAmenazaDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreDebilidadDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreDebilidadDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreDebilidadDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreFortalezaDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreFortalezaDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreFortalezaDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreImagenPeque")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreOportunidadDafoGF")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreOportunidadDafoObj")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreOportunidadDafoProc")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<short>("NumeroRecursosRelacionados")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("OcultarPersonalizacion")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PalcoActivado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirCertificacionRec")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRecursosPrivados")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualComp")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualGF")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualObj")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirRevisionManualPro")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirUsuNoLoginDescargDoc")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PermitirVotacionesNegativas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PestanyaRecursosVisible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PestanyasDocSemanticos")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("PlantillaDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("PlataformaVideoDisponible")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("PoliticaCertificacion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("PreguntasDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PrivacidadObligatoria")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PropsMapaPerYOrg")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("RdfDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("RegDidactalia")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("RssDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("RutaImagenesTema")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("RutaTema")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("ScriptBusqueda")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ScriptGoogleAnalytics")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("ServicioSuscripcionDisp")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("SolicitarCoockieLogin")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("SupervisoresAdminGrupos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("TOPFTPPass")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPFTPUser")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPIDCuenta")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPIDPlayer")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TOPPublisherID")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("TieneSitemapComunidad")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("TipoCabecera")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("TipoFichaRecurso")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<float?>("UmbralDetPropietariosGF")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<float?>("UmbralDetPropietariosObj")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<float?>("UmbralDetPropietariosProc")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<float?>("UmbralSuficienciaEnMejora")
-                        .HasColumnType("real");
+                        .HasColumnType("BINARY_FLOAT");
 
                     b.Property<string>("UrlMappingCategorias")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("UrlServicioFichas")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<bool>("VerVotaciones")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int?>("VersionCSS")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short?>("VersionCSSAdmin")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<int?>("VersionCSSWidget")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenFondo")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenHomeGrande")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenMosaicoGrande")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionFotoImagenSupGrande")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("VersionJS")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short?>("VersionJSAdmin")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("VotacionesDisponibles")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("WikiDisponible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -5124,20 +5293,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ParametroProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Parametro")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Parametro");
 
@@ -5147,19 +5316,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHTMLRol", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("ElementoHeadID")
-                        .HasColumnType("integer")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID", "GrupoID");
@@ -5170,37 +5339,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoElementoHtml", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("ElementoHeadID")
-                        .HasColumnType("integer")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Atributos")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("CargarSinAceptarCookies")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Contenido")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Etiqueta")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("Privado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "ElementoHeadID");
 
@@ -5210,20 +5381,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoMetaRobots", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Content")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Tipo");
 
@@ -5233,20 +5404,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.ProyectoRDFType", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoDocumento")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("RdfType")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoDocumento");
 
@@ -5256,27 +5427,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.TextosPersonalizadosPersonalizacion", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Texto")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PersonalizacionID", "TextoID", "Language");
 
@@ -5286,25 +5457,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS.TextosPersonalizadosProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Language")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Texto")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TextoID", "Language");
 
@@ -5314,19 +5485,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PermisosPaginasUsuarios", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Pagina")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("UsuarioID", "OrganizacionID", "ProyectoID", "Pagina");
@@ -5337,40 +5508,50 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("BoletinSuscripcion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("ComentariosRecursos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarEnlaces")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionComunidad")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("InvitacionOrganizacion")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MensajesGnoss")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("SolicitudesContacto")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerAmigos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerAmigosExterno")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerRecursos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VerRecursosExterno")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("PersonaID");
 
@@ -5381,29 +5562,31 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("CurriculumID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime?>("FechaPublicacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("Publicado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("TipoVisibilidad")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Titulo")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<bool>("UsaDatosPersonalesPerfil")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("CurriculumID");
 
@@ -5413,45 +5596,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.PersonaDS.DatosTrabajoPersonaLibre", b =>
                 {
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CPTrabajo")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("DireccionTrabajo")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("EmailTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("LocalidadTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("PaisTrabajoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Profesion")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("ProvinciaTrabajo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaTrabajoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("TelefonoMovilTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<string>("TelefonoTrabajo")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.HasKey("PersonaID");
 
@@ -5462,111 +5645,114 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PersonaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Apellidos")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CPPersonal")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("CoordenadasFoto")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("DireccionPersonal")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("Eliminado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("EmailTutor")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscableExternos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("EstadoCivilID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("EstadoCorreccion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaAnadidaFoto")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaNotificacionCorreccion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<byte[]>("Foto")
-                        .HasColumnType("bytea");
+                        .HasColumnType("RAW(2000)");
 
                     b.Property<short?>("Hijos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<string>("LocalidadPersonal")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("PaisPersonalID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ProvinciaPersonal")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaPersonalID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Sexo")
                         .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("character(1)")
+                        .HasColumnType("CHAR(1)")
                         .IsFixedLength();
 
                     b.Property<string>("TelefonoPersonal")
                         .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasColumnType("NVARCHAR2(13)");
 
                     b.Property<short?>("TipoDocumentoAcreditativo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("TitulacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ValorDocumentoAcreditativo")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<int?>("VersionFoto")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("PersonaID");
 
@@ -5579,22 +5765,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PeticionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime>("FechaPeticion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5604,10 +5790,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitaContacto", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5617,17 +5803,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionComunidad", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NingID")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5637,17 +5823,17 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionInvitacionGrupo", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("GruposID")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5657,32 +5843,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionNuevoProyecto", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ComunidadPrivadaPadreID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("PerfilCreadorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("PeticionID");
 
@@ -5692,18 +5878,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Peticion.PeticionOrgInvitaPers", b =>
                 {
                     b.Property<Guid>("PeticionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Cargo")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PeticionID");
 
@@ -5713,20 +5899,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AccionesExternasProyecto", b =>
                 {
                     b.Property<short>("TipoAccion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("URL")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("TipoAccion", "OrganizacionID", "ProyectoID");
 
@@ -5736,15 +5922,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AdministradorGrupoProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GrupoID");
@@ -5755,19 +5941,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.AdministradorProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "UsuarioID", "Tipo");
@@ -5778,19 +5964,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.CamposRegistroProyectoGenericos", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Orden");
 
@@ -5800,24 +5986,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ConfigAutocompletarProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Clave")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid?>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Valor")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Clave");
 
@@ -5829,21 +6015,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ConfigSearchProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Clave")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Valor")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Clave");
 
@@ -5854,26 +6040,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DatoExtraID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("DatoExtraID");
 
@@ -5883,20 +6071,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraEcosistemaOpcion", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DatoExtraID", "OpcionID");
 
@@ -5907,58 +6095,61 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DatoExtraID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ConexionBD")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("EstructuraHTMLFicha")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputID")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputsSuperiores")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("NombreCampo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("QueryVirtuoso")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("VisibilidadFichaPerfil")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("DatoExtraID");
 
@@ -5968,41 +6159,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("NombreCorto")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("VisiblePerfil")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -6012,28 +6206,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoOpcion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID");
 
@@ -6043,23 +6237,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoOpcionIdentidad", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID", "IdentidadID");
@@ -6072,67 +6266,70 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.DatoExtraProyectoVirtuoso", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ConexionBD")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("EstructuraHTMLFicha")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputID")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("InputsSuperiores")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("NombreCampo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Paso1Registro")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PredicadoRDF")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("QueryVirtuoso")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("VisibilidadFichaPerfil")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID");
 
@@ -6144,18 +6341,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("NombreServicio")
                         .HasMaxLength(150)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("VARCHAR2(150)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("UrlServicio")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("NombreServicio");
 
@@ -6166,20 +6363,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("NivelCertificacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("NivelCertificacionID");
 
@@ -6191,23 +6388,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PreferenciaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TesauroID", "CategoriaTesauroID");
 
@@ -6217,36 +6414,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionListadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MostrarEnAutocompletar")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6256,36 +6454,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionMapaSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MostrarEnAutocompletar")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6295,36 +6494,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionMosaicoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<bool>("MostrarEnAutocompletar")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6334,36 +6534,36 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPersonalizadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("ID")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Select")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Where")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "Orden");
 
@@ -6373,39 +6573,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaListadoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PestanyaID", "OntologiaID", "Orden");
 
@@ -6417,39 +6617,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaMapaSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PestanyaID", "OntologiaID", "Orden");
 
@@ -6461,39 +6661,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.PresentacionPestanyaMosaicoSemantico", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PestanyaID", "OntologiaID", "Orden");
 
@@ -6505,15 +6705,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyTipoRecNoActivReciente", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoRecurso")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("OntologiasID")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ProyectoID", "TipoRecurso");
 
@@ -6523,127 +6723,135 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EnviarTwitterComentario")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevaCat")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevaPolitCert")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevoAdmin")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EnviarTwitterNuevoTipoDoc")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsProyectoDestacado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaFin")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime?>("FechaInicio")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("NombrePresentacion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int?>("NumeroArticulos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroDafos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroDebates")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroForos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroMiembros")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroOrgRegistradas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroPreguntas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("NumeroRecursos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("ProcesoVinculadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoSuperiorID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("TablaBaseProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("TablaBaseProyectoID"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TablaBaseProyectoID"));
 
                     b.Property<string>("TagTwitter")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("TagTwitterGnoss")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("TieneTwitter")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("TipoAcceso")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoProyecto")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("TokenSecretoTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("TokenTwitter")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("URLPropia")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("UsuarioTwitter")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -6655,19 +6863,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoAgCatTesauro", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TesauroID", "CategoriaTesauroID");
@@ -6678,23 +6886,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerradoTmp", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaReapertura")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Motivo")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -6704,18 +6912,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoCerrandose", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCierre")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("PeriodoDeGracia")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -6725,38 +6933,39 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoConfigExtraSem", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("UrlOntologia")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("SourceTesSem")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Editable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idiomas")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("PrefijoTesSem")
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ProyectoID", "UrlOntologia", "SourceTesSem");
 
@@ -6767,43 +6976,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("EventoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("ComponenteID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Grupo")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("InfoExtra")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Interno")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("TipoEvento")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("UrlRedirect")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("EventoID");
 
@@ -6813,20 +7024,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEventoAccion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Evento")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("AccionJS")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Evento");
 
@@ -6836,15 +7047,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoEventoParticipante", b =>
                 {
                     b.Property<Guid>("EventoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("EventoID", "IdentidadID");
 
@@ -6854,66 +7065,69 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadget", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("CargarPorAjax")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Clases")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("ComunidadDestinoFiltros")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Contenido")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<bool>("MultiIdioma")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid?>("PersonalizacionComponenteID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("TipoUbicacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ubicacion")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GadgetID");
 
@@ -6923,70 +7137,74 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetContexto", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ComunidadDestinoFiltros")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ComunidadOrigen")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ComunidadOrigenFiltros")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("FiltrosOrigenDestino")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Imagen")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("ItemsBusqueda")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("MostrarEnlaceOriginal")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NamespacesExtra")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCorto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("NuevaPestanya")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("NumRecursos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("ObtenerPrivados")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OcultarVerMas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("OrdenContexto")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("ProyectoOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ResultadosEliminar")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("ServicioResultados")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID");
 
@@ -6996,20 +7214,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetContextoHTMLplano", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ComunidadDestinoFiltros")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID");
 
@@ -7022,25 +7240,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGadgetIdioma", b =>
                 {
                     b.Property<Guid>("GadgetID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Contenido")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("GadgetID", "OrganizacionID", "ProyectoID", "Idioma");
 
@@ -7050,27 +7268,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoGrafoFichaRec", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrafoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Extra")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int?>("NodosLimiteNivel")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("PropEnlace")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "GrafoID");
 
@@ -7080,16 +7298,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoLoginConfiguracion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Mensaje")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -7099,21 +7317,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPaginaHtml", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
+                        .HasColumnType("NVARCHAR2(150)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Html")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Idioma")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.HasKey("ProyectoID", "Nombre");
 
@@ -7123,20 +7341,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPalabrasInapropiadas", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Tag")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("NVARCHAR2(200)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Rombos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Tag");
 
@@ -7146,23 +7364,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPasoRegistro", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("Obligatorio")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PasoRegistro")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ProyectoID", "OrganizacionID", "Orden");
 
@@ -7174,15 +7393,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPerfilNumElem", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<int>("NumRecursos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("ProyectoID", "PerfilID");
 
@@ -7192,83 +7411,92 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanya", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("CMS")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CampoFiltro")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("EsRutaInterna")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsSemantica")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("GruposConfiguracion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool>("GruposPorTipo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("HTMLAlternativo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("MostrarCajaBusqueda")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarFacetas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("NombrePestanyaPadre")
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<bool>("NuevaPestanya")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short?>("NumeroRecursos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("OcultarResultadosSinFiltros")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("Privacidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid?>("ProyectoOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Ruta")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<string>("TextoBusquedaSinResultado")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("VistaDisponible")
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("VARCHAR2(10)");
 
                     b.Property<string>("posicionCentralMapa")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ProyectoID", "Nombre");
 
@@ -7278,64 +7506,71 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusqueda", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("CampoFiltro")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("GruposConfiguracion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("GruposPorTipo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("IgnorarPrivacidadEnBusqueda")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarCajaBusqueda")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarEnComboBusqueda")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("MostrarFacetas")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("NumeroRecursos")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("OcultarResultadosSinFiltros")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("OmitirCargaInicialFacetasResultados")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("PosicionCentralMapa")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("ProyectoOrigenID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("RelacionMandatory")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("SearchPersonalizado")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TextoBusquedaSinResultados")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("TextoDefectoBuscador")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("TipoAutocompletar")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("VistaDisponible")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.HasKey("PestanyaID");
 
@@ -7346,25 +7581,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ExportacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("FormatosExportacion")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("NVARCHAR2(10)");
 
                     b.Property<string>("GruposExportadores")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreExportacion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ExportacionID");
 
@@ -7376,14 +7611,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaExportacionExterna", b =>
                 {
                     b.Property<Guid>("ExportacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("UrlServicioExterno")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ExportacionID");
 
@@ -7393,30 +7628,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaExportacionPropiedad", b =>
                 {
                     b.Property<Guid>("ExportacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("DatosExtraPropiedad")
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<string>("NombrePropiedad")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Ontologia")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid?>("OntologiaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("ExportacionID", "Orden");
 
@@ -7426,25 +7661,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaBusquedaPesoOC", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("OntologiaProyecto1")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnName("OntologiaProyecto");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Tipo")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<short>("Peso")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaProyecto1", "PestanyaID", "Tipo");
 
@@ -7456,15 +7691,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaCMS", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Ubicacion")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("EstadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PestanyaID", "Ubicacion");
 
@@ -7477,38 +7712,40 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("AsisID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Labels")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("PropExtra")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Select")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Tamanyo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("Titulo")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Where")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("AsisID");
 
@@ -7521,23 +7758,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("DatasetID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("AsisID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Color")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Datos")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("DatasetID");
 
@@ -7550,23 +7787,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ExportacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("NombreExportacion")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<string>("NombrePestanya")
                         .IsRequired()
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)");
+                        .HasColumnType("NVARCHAR2(400)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("ExportacionID");
 
@@ -7576,26 +7813,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaFiltroOrdenRecursos", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Consulta")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("FiltroOrden")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreFiltro")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("OrderBy")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("PestanyaID", "Orden");
 
@@ -7606,74 +7843,78 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PestanyaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Activa")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("CSSBodyClass")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HtmlAlternativo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("IdiomasDisponibles")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("MetaDescription")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("NombreCortoPestanya")
                         .IsRequired()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("VARCHAR2(100)");
 
                     b.Property<bool>("NuevaPestanya")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PestanyaPadreID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Privacidad")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Ruta")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("TipoPestanya")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Titulo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("UltimoEditor")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("Visible")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("VisibleSinAcceso")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("PestanyaID");
 
@@ -7687,11 +7928,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "GrupoID");
@@ -7702,11 +7943,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenuRolIdentidad", b =>
                 {
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("PestanyaID", "PerfilID");
@@ -7718,25 +7959,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("VersionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Comentario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ModeloJSON")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("VersionAnterior")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("VersionID");
 
@@ -7750,16 +7991,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("ProyectoID", "Nombre", "GrupoID");
@@ -7770,16 +8011,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaRolIdentidad", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(400)
-                        .HasColumnType("character varying(400)")
+                        .HasColumnType("NVARCHAR2(400)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("ProyectoID", "Nombre", "PerfilID");
@@ -7791,25 +8032,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("VersionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Comentario")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ModeloJSON")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("PestanyaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("VersionAnterior")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("VersionID");
 
@@ -7821,23 +8062,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoRelacionado", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionRelacionadaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoRelacionadoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionRelacionadaID", "ProyectoRelacionadoID");
 
@@ -7849,29 +8090,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoSearchPersonalizado", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("NombreFiltro")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("OmitirRdfType")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("OrderBySPARQL")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("WhereFacetasSPARQL")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("WhereSPARQL")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "NombreFiltro");
 
@@ -7881,29 +8123,29 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectoServicioExterno", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("NombreServicio")
                         .HasMaxLength(150)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(150)")
+                        .HasColumnType("VARCHAR2(150)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("UrlServicio")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "NombreServicio");
 
@@ -7913,23 +8155,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.ProyectosMasActivos", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("NumeroConsultas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Peso")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -7939,37 +8181,37 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.RecursosRelacionadosPresentacion", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Imagen")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Ontologia")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Propiedad")
                         .IsRequired()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "Orden", "OntologiaID");
 
@@ -7979,44 +8221,44 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.SeccionProyCatalogo", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionBusquedaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoBusquedaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(4);
 
                     b.Property<string>("Faceta")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("NVARCHAR2(100)");
 
                     b.Property<string>("Filtro")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(550)
-                        .HasColumnType("character varying(550)");
+                        .HasColumnType("NVARCHAR2(550)");
 
                     b.Property<short>("NumeroResultados")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionBusquedaID", "ProyectoBusquedaID", "Orden");
 
@@ -8026,19 +8268,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoDocDispRolUsuarioProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoDocumento")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("RolUsuario")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TipoDocumento", "RolUsuario");
@@ -8049,21 +8291,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoDocImagenPorDefecto", b =>
                 {
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoRecurso")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("UrlImagen")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasColumnType("NVARCHAR2(300)");
 
                     b.HasKey("ProyectoID", "TipoRecurso", "OntologiaID");
 
@@ -8073,19 +8315,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.TipoOntoDispRolUsuarioProy", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OntologiaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("RolUsuario")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OntologiaID", "RolUsuario");
@@ -8097,23 +8339,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("RedireccionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Dominio")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("NombreParametro")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("NVARCHAR2(250)");
 
                     b.Property<string>("UrlOrigen")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("RedireccionID");
 
@@ -8123,23 +8365,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.RedireccionValorParametro", b =>
                 {
                     b.Property<Guid>("RedireccionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("ValorParametro")
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)")
+                        .HasColumnType("NVARCHAR2(250)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("MantenerFiltros")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("OrdenPresentacion")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("UrlRedireccion")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("RedireccionID", "ValorParametro");
 
@@ -8150,37 +8393,38 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("RolID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<bool>("EsRolUsuario")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<decimal>("PermisosAdministracion")
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("NUMBER(20)");
 
                     b.Property<decimal>("PermisosContenidos")
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("NUMBER(20)");
 
                     b.Property<decimal>("PermisosRecursos")
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("NUMBER(20)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("RolID");
 
@@ -8193,19 +8437,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("RolID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<decimal>("Permisos")
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("NUMBER(20)");
 
                     b.HasKey("RolID");
 
@@ -8215,10 +8459,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolEcosistemaUsuario", b =>
                 {
                     b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("RolID", "UsuarioID");
 
@@ -8230,10 +8474,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolGrupoIdentidades", b =>
                 {
                     b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("RolID", "GrupoID");
 
@@ -8245,10 +8489,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolIdentidad", b =>
                 {
                     b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("RolID", "IdentidadID");
 
@@ -8260,13 +8504,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Roles.RolOntologiaPermiso", b =>
                 {
                     b.Property<Guid>("DocumentoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("RolID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<decimal>("Permisos")
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("NUMBER(20)");
 
                     b.HasKey("DocumentoID", "RolID");
 
@@ -8279,15 +8523,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("Dominio")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnOrder(0);
 
                     b.Property<DateTime?>("GeneratedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("TIMESTAMP(7)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Robots")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(2);
 
                     b.HasKey("Dominio");
@@ -8298,15 +8542,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaOpcionSolicitud", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("DatoExtraID", "OpcionID", "SolicitudID");
@@ -8319,15 +8563,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraEcosistemaVirtuosoSolicitud", b =>
                 {
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Opcion")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("DatoExtraID", "Opcion", "SolicitudID");
@@ -8340,23 +8584,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraProyectoOpcionSolicitud", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("OpcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "OpcionID", "SolicitudID");
@@ -8369,25 +8613,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.DatoExtraProyectoVirtuosoSolicitud", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("DatoExtraID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Opcion")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("NVARCHAR2(500)");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "DatoExtraID", "SolicitudID");
 
@@ -8398,22 +8642,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("SolicitudID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<DateTime?>("FechaProcesado")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaSolicitud")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SolicitudID");
 
@@ -8423,15 +8667,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudGrupo", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("SolicitudID", "GrupoID", "IdentidadID");
@@ -8442,28 +8686,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrgEmp", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioAdminID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("CIF")
                         .HasMaxLength(9)
-                        .HasColumnType("character varying(9)");
+                        .HasColumnType("NVARCHAR2(9)");
 
                     b.Property<int>("Empleados")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime?>("FechaFundacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<short>("Sector")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("SolicitudID", "UsuarioAdminID");
 
@@ -8473,75 +8717,78 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevaOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioAdminID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("Alias")
                         .HasMaxLength(80)
-                        .HasColumnType("character varying(80)");
+                        .HasColumnType("NVARCHAR2(80)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<string>("CargoContactoPrincipal")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Direccion")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("EmailContactoPrincipal")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool?>("EsBuscable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool?>("EsBuscableExternos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("ModoPersonal")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Nombre")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("PaginaWeb")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid>("PaisID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Poblacion")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Provincia")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("URLFoto")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("SolicitudID", "UsuarioAdminID");
 
@@ -8551,26 +8798,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoProfesor", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AreaEstudios")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CentroEstudios")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("SolicitudID", "UsuarioID");
 
@@ -8580,100 +8827,105 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudNuevoUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Apellidos")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("CP")
                         .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasColumnType("NVARCHAR2(15)");
 
                     b.Property<bool>("CambioPassword")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("ClausulasAdicionales")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<bool?>("CrearClase")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Direccion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("EmailTutor")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<bool>("EsBuscable")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("EsBuscableExterno")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("FaltanDatos")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Idioma")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<Guid?>("PaisID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Poblacion")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<string>("Provincia")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.Property<Guid?>("ProvinciaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("ProyectosAutoAcceso")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Sexo")
                         .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("character(1)")
+                        .HasColumnType("CHAR(1)")
                         .IsFixedLength();
 
                     b.Property<short>("TipoRegistro")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("URLFoto")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("UsuarioID", "SolicitudID");
 
@@ -8685,11 +8937,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudOrganizacion", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("SolicitudID", "OrganizacionID");
@@ -8700,23 +8952,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Solicitud.SolicitudUsuario", b =>
                 {
                     b.Property<Guid>("SolicitudID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("ClausulasAdicionales")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<Guid>("PerfilID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SolicitudID", "UsuarioID", "PersonaID");
 
@@ -8726,15 +8978,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.CategoriaTesVinSuscrip", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("SuscripcionID", "TesauroID", "CategoriaTesauroID");
@@ -8746,25 +8998,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("SuscripcionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Bloqueada")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaSuscripcion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Periodicidad")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int?>("ScoreUltimoEnvio")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("UltimoEnvio")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8774,11 +9027,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.HasKey("BlogID", "SuscripcionID");
@@ -8791,18 +9044,18 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionIdentidadProyecto", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("IdentidadID", "SuscripcionID");
 
@@ -8814,13 +9067,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionTesauroOrganizacion", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8830,16 +9083,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionTesauroProyecto", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8849,13 +9102,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion.SuscripcionTesauroUsuario", b =>
                 {
                     b.Property<Guid>("SuscripcionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SuscripcionID");
 
@@ -8865,19 +9118,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroAgCatTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaSuperiorID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaInferiorID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("TesauroID", "CategoriaSuperiorID", "CategoriaInferiorID");
 
@@ -8889,22 +9142,22 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroCompartida", b =>
                 {
                     b.Property<Guid>("TesauroOrigenID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaOrigenID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("TesauroDestinoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid?>("CategoriaSupDestinoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("TesauroOrigenID", "CategoriaOrigenID", "TesauroDestinoID");
 
@@ -8916,19 +9169,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CatTesauroPermiteTipoRec", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("TipoRecurso")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("OntologiasID")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID", "TipoRecurso");
 
@@ -8938,41 +9191,42 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauro", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Estructurante")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<int>("NumeroDafos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroDebates")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroPreguntas")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NumeroRecursos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<short>("Orden")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<bool>("TieneFoto")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("VersionFoto")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID");
 
@@ -8982,15 +9236,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.CategoriaTesauroPropiedades", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("CategoriaTesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Obligatoria")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("TesauroID", "CategoriaTesauroID");
 
@@ -9001,30 +9255,30 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("SugerenciaID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroAceptadaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPadreID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Estado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<Guid?>("TesauroCatPadreID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("TesauroSugerenciaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("SugerenciaID");
 
@@ -9039,7 +9293,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("TesauroID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TesauroID");
 
@@ -9049,21 +9303,21 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroOrganizacion", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("CategoriaTesauroFavoritosID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPrivadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPublicoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TesauroID", "OrganizacionID");
 
@@ -9073,20 +9327,20 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroProyecto", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("IdiomaDefecto")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("TesauroID", "OrganizacionID", "ProyectoID");
 
@@ -9096,24 +9350,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro.TesauroUsuario", b =>
                 {
                     b.Property<Guid>("TesauroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid?>("CategoriaTesauroMisImagenesID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroMisVideosID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPrivadoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("CategoriaTesauroPublicoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("TesauroID", "UsuarioID");
 
@@ -9125,25 +9379,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Traductor.TraductorProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("boolean");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Endpoint")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Nivel")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Prompt")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("Token")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -9154,13 +9408,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("ProyectoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Documentos")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("ProyectoID");
 
@@ -9170,7 +9424,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorGeneral", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("UsuarioID");
 
@@ -9180,15 +9434,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.AdministradorOrganizacion", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("UsuarioID", "OrganizacionID", "Tipo");
@@ -9201,32 +9455,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ClausulaRegistro", b =>
                 {
                     b.Property<Guid>("ClausulaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("Orden")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Texto")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("ClausulaID", "OrganizacionID", "ProyectoID");
 
@@ -9237,19 +9491,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("GrupoUsuarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("GrupoUsuarioID");
@@ -9260,19 +9514,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.GeneralRolUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("UsuarioID");
@@ -9284,16 +9538,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("GrupoUsuarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("NVARCHAR2(1000)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("GrupoUsuarioID");
 
@@ -9303,11 +9557,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.GrupoUsuarioUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.HasKey("UsuarioID", "GrupoUsuarioID");
@@ -9318,27 +9572,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.HistoricoProyectoUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<DateTime>("FechaEntrada")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("TIMESTAMP(7)")
                         .HasColumnOrder(4);
 
                     b.Property<DateTime?>("FechaSalida")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("UsuarioID", "OrganizacionGnossID", "ProyectoID", "IdentidadID", "FechaEntrada");
 
@@ -9348,16 +9602,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.InicioSesion", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("OrganizacionGnossID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("PersonaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid?>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("UsuarioID");
 
@@ -9367,24 +9621,24 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.OrganizacionRolUsuario", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("UsuarioID", "OrganizacionID");
@@ -9395,27 +9649,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyRolUsuClausulaReg", b =>
                 {
                     b.Property<Guid>("ClausulaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.Property<bool>("Valor")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("ClausulaID", "OrganizacionID", "OrganizacionGnossID", "ProyectoID", "UsuarioID");
 
@@ -9429,28 +9684,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolGrupoUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("GrupoUsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("OrganizacionGnossID", "ProyectoID", "GrupoUsuarioID");
@@ -9461,31 +9716,32 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoRolUsuario", b =>
                 {
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<bool>("EstaBloqueado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("RolDenegado")
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.Property<string>("RolPermitido")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("character(16)")
+                        .HasColumnType("CHAR(16)")
                         .IsFixedLength();
 
                     b.HasKey("OrganizacionGnossID", "ProyectoID", "UsuarioID");
@@ -9498,26 +9754,26 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.ProyectoUsuarioIdentidad", b =>
                 {
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionGnossID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<DateTime?>("FechaEntrada")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int?>("Reputacion")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("IdentidadID", "UsuarioID", "OrganizacionGnossID", "ProyectoID");
 
@@ -9532,36 +9788,38 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("UsuarioID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool?>("EstaBloqueado")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<DateTime?>("FechaCambioPassword")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(12)
-                        .HasColumnType("character varying(12)");
+                        .HasColumnType("NVARCHAR2(12)");
 
                     b.Property<string>("NombreCorto")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.Property<bool>("TwoFactorAuthentication")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<short>("Validado")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<short?>("Version")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.HasKey("UsuarioID");
 
@@ -9571,13 +9829,13 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioContadores", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaUltimaVisita")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<int>("NumeroAccesos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("UsuarioID");
 
@@ -9587,12 +9845,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioRedirect", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("UrlRedirect")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.HasKey("UsuarioID");
 
@@ -9602,16 +9860,16 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.UsuarioDS.UsuarioVinculadoLoginRedesSociales", b =>
                 {
                     b.Property<Guid>("UsuarioID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<short>("TipoRedSocial")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("IDenRedSocial")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("UsuarioID", "TipoRedSocial");
 
@@ -9621,19 +9879,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtual", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("TipoPagina")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -9647,27 +9905,27 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualCMS", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("TipoComponente")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonalizacionComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("DatosExtra")
                         .IsUnicode(false)
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR2(4000)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -9676,7 +9934,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("PersonalizacionID", "TipoComponente", "PersonalizacionComponenteID");
 
@@ -9686,10 +9944,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualDominio", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Dominio")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(450)");
 
                     b.HasKey("PersonalizacionID", "Dominio");
 
@@ -9699,11 +9957,11 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualGadgetRecursos", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("PersonalizacionComponenteID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("HTML")
@@ -9713,7 +9971,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasKey("PersonalizacionID", "PersonalizacionComponenteID");
 
@@ -9724,7 +9982,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("PersonalizacionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.HasKey("PersonalizacionID");
 
@@ -9734,15 +9992,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "PersonalizacionID");
@@ -9755,19 +10013,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS.VistaVirtualRecursos", b =>
                 {
                     b.Property<Guid>("PersonalizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("RdfType")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasColumnType("NVARCHAR2(50)")
                         .HasColumnOrder(1);
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<DateTime>("FechaModificacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("HTML")
                         .IsRequired()
@@ -9782,25 +10040,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("VotoID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ElementoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime?>("FechaVotacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<Guid>("IdentidadID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("IdentidadVotadaID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<short>("Tipo")
-                        .HasColumnType("smallint");
+                        .HasColumnType("NUMBER(5)");
 
                     b.Property<double>("Voto1")
-                        .HasColumnType("double precision")
+                        .HasColumnType("BINARY_DOUBLE")
                         .HasColumnName("Voto");
 
                     b.HasKey("VotoID");
@@ -9811,15 +10069,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Voto.VotoEntradaBlog", b =>
                 {
                     b.Property<Guid>("BlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("EntradaBlogID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.HasKey("BlogID", "EntradaBlogID", "VotoID");
@@ -9832,23 +10090,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Voto.VotoMensajeForo", b =>
                 {
                     b.Property<Guid>("VotoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ForoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("CategoriaForoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("TemaID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.Property<Guid>("MensajeForoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(4);
 
                     b.HasKey("VotoID", "ForoID", "CategoriaForoID", "TemaID", "MensajeForoID");
@@ -9860,12 +10118,12 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<string>("Parametro")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(0);
 
                     b.Property<string>("Valor")
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
+                        .HasColumnType("NVARCHAR2(1000)")
                         .HasColumnOrder(1);
 
                     b.HasKey("Parametro");
@@ -9876,15 +10134,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.ProyectoRegistroObligatorio", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<short>("VisibilidadUsuariosActivos")
-                        .HasColumnType("smallint")
+                        .HasColumnType("NUMBER(5)")
                         .HasColumnOrder(2);
 
                     b.HasKey("OrganizacionID", "ProyectoID");
@@ -9895,19 +10153,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.ProyectoSinRegistroObligatorio", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<Guid>("OrganizacionSinRegistroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(2);
 
                     b.Property<Guid>("ProyectoSinRegistroID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "OrganizacionSinRegistroID", "ProyectoSinRegistroID");
@@ -9920,25 +10178,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.TextosPersonalizadosPlataforma", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("TextoID")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("NVARCHAR2(100)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Language")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                        .HasColumnType("NVARCHAR2(10)")
                         .HasColumnOrder(3);
 
                     b.Property<string>("Texto")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(4);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "TextoID", "Language");
@@ -9950,15 +10208,15 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("Token")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("NVARCHAR2(255)");
 
                     b.HasKey("Token");
 
@@ -9969,28 +10227,28 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<int>("Estado")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("EventosTotales")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<string>("Tipo")
-                        .HasColumnType("text");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.HasKey("Id");
 
@@ -10002,21 +10260,23 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.Elementos.ParametroGeneralDSName.ConfiguracionAmbitoBusquedaProyecto", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<bool>("Metabusqueda")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<Guid?>("PestanyaDefectoID")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("TodoGnoss")
-                        .HasColumnType("boolean");
+                        .HasPrecision(1)
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("OrganizacionID", "ProyectoID");
 
@@ -10026,19 +10286,19 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
             modelBuilder.Entity("Es.Riam.Gnoss.Web.MVC.Models.ProyectoServicioWeb", b =>
                 {
                     b.Property<Guid>("OrganizacionID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(0);
 
                     b.Property<Guid>("ProyectoID")
-                        .HasColumnType("uuid")
+                        .HasColumnType("RAW(16)")
                         .HasColumnOrder(1);
 
                     b.Property<string>("AplicacionWeb")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(450)")
                         .HasColumnOrder(2);
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("text")
+                        .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnOrder(3);
 
                     b.HasKey("OrganizacionID", "ProyectoID", "AplicacionWeb");
@@ -12177,8 +12437,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextPostgresMigrations
                         .WithMany("CatTesauroAgCatTesauroSuperior")
                         .HasForeignKey("TesauroID", "CategoriaSuperiorID")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_CatTesauroAgCatTesauro_CategoriaTesauro_TesauroID_Categori~1");
+                        .IsRequired();
 
                     b.Navigation("CategoriaTesauro");
 

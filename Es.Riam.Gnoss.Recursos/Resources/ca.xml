@@ -365,12 +365,6 @@
 		<Resource tag="HERRAMIENTAS">Eines</Resource>
 		<Resource tag="WIDGETS">Widgets</Resource>
 	</page>
-	<page name="FREEBASE">
-		<Resource tag="INFOSOBRE">Informació sobre {strong}@1@{/strong} a:</Resource>
-		<Resource tag="VERENWIKIPEDIA">Veure a {a class='wikipedia' href='@1@' target='_blank'}wikipedia{/a}</Resource>
-		<Resource tag="VERENDBPEDIA">Veure a {a class='dbpedia' href='@1@' target='_blank'}dbpedia{/a}</Resource>
-		<Resource tag="VERENGEONAMES">Veure a {a class='geonames' href='@1@' target='_blank'}geonames{/a}</Resource>
-	</page>
 	<page name="VERCVSEMANTICO">
 		<Resource tag="EXPERIENCIALABORAL">Experiència laboral</Resource>
 		<Resource tag="ESTUDIOS">Estudis</Resource>
@@ -1330,6 +1324,7 @@
 		<Resource tag="CREARVERSION">Crear una versió</Resource>
 		<Resource tag="ELIMINAR">Eliminar</Resource>
 		<Resource tag="CERTIFICARDOC">Certificar recurs</Resource>
+		<Resource tag="NOCERTIFICADISP">No hi ha certificacions disponibles</Resource>
 		<Resource tag="CERTIFICAR">Certificar</Resource>
 		<Resource tag="RECURSOCERTIFICADO">Recurs certificat</Resource>
 		<Resource tag="ENVIAR">Enviar</Resource>

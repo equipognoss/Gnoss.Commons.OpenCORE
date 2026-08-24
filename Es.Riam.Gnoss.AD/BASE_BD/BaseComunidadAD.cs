@@ -259,11 +259,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         MetaBuscador,
 
         /// <summary>
-        /// Freebase
-        /// </summary>
-        Freebase,
-
-        /// <summary>
         /// Nube de tags de los blogs de una comunidad y sus entradas
         /// </summary>
         BlogsYEntradasBlogDeComunidad,
@@ -420,11 +415,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         private Guid mIdentidadUsuarioConectado;
 
         /// <summary>
-        /// Identificador de la tabla freebase
-        /// </summary>
-        protected string mNomberTablaFreebase;
-
-        /// <summary>
         /// Nombre real de la tabla que deberemos consultar para los tags de los recursos de una coomunidad pubñica en funcion del identificador numerico del proyecto
         /// </summary>
         protected string mNombreTablaCOMUNIDADES;
@@ -509,11 +499,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             mEntityContextBASE = entityContextBASE;
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-            mNomberTablaFreebase = "GnossToFreebase";
-            if (mTablaBaseProyectoID > -1)
-            {
-                mNomberTablaFreebase = "GnossToFreebase0000000000000" + mTablaBaseProyectoID;
-            }
             this.CargarConsultasYDataAdapters();
         }
 
@@ -530,12 +515,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             mlogger = logger;
             mLoggerFactory = loggerFactory;
             mTablaBaseProyectoID = pTablaBaseProyectoID;
-            mNomberTablaFreebase = "GnossToFreebase";
-            if (mTablaBaseProyectoID > -1)
-            {
-                mNomberTablaFreebase = "GnossToFreebase0000000000000" + mTablaBaseProyectoID;
-            }
-            this.CargarConsultasYDataAdapters(IBD);
+            CargarConsultasYDataAdapters(IBD);
         }
 
 
@@ -543,23 +523,14 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
 
         #region Consultas
 
-        private string sqlSelectGnossToFreebase;
         private string sqlColaComparticionAutomaticaInsert;
         private string sqlColaModificacionSearchInsert;
-        //private string sqlSelectColaCorreo;
-        private string sqlSelectColaCorreoDestinatario;
 
         #endregion
 
         #region DataAdapter
 
         #region Metodos generales
-
-        #region GnossToFreebase
-        private string sqlGnossToFreebaseInsert;
-        private string sqlGnossToFreebaseDelete;
-        private string sqlGnossToFreebaseModify;
-        #endregion
 
         #region ColaCorreo
         private string sqlColaCorreoInsert;
@@ -619,47 +590,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         public virtual void ActualizarBD(DataSet pDataSet, bool pUsarRabbitSiEstaConfigurado = false)
         {
             mUsarRabbitSiEstaConfigurado = pUsarRabbitSiEstaConfigurado;
-
-            EliminarBorrados(pDataSet);
             GuardarActualizaciones(pDataSet);
-        }
-        public virtual void EliminarBorrados(DataSet pDataSet)
-        {
-            try
-            {
-
-                DataSet deletedDataSet;
-                deletedDataSet = pDataSet.GetChanges(DataRowState.Deleted);
-                if (deletedDataSet != null)
-                {
-
-                    #region Deleted
-                    #region Eliminar tabla GnossToFreebase
-                    DbCommand DeleteGnossToFreebaseCommand = ObtenerComando(sqlGnossToFreebaseDelete);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_Tag"), DbType.String, "Tag", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_GUIDFreebase"), DbType.String, "GUIDFreebase", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_Coincidencia"), DbType.Int64, "Coincidencia", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_Entidad"), DbType.String, "Entidad", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_Ruta"), DbType.String, "Ruta", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_WikipediaID"), DbType.String, "WikipediaID", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_Tipos"), DbType.String, "Tipos", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_Descripcion"), DbType.String, "Descripcion", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_RutaNYT"), DbType.String, "RutaNYT", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_RutaDbpedia"), DbType.String, "RutaDbpedia", DataRowVersion.Original);
-                    AgregarParametro(DeleteGnossToFreebaseCommand, IBD.ToParam("Original_RutaGeonames"), DbType.String, "RutaGeonames", DataRowVersion.Original);
-                    ActualizarBaseDeDatos(deletedDataSet, "GnossToFreebase", null, null, DeleteGnossToFreebaseCommand, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
-
-                    #endregion
-
-                    #endregion
-
-                    deletedDataSet.Dispose();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         public virtual void GuardarActualizaciones(DataSet pDataSet)
@@ -684,23 +615,19 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                     AgregarParametro(InsertColaComparticionAutomaticaCommand, IBD.ToParam("Prioridad"), IBD.TipoGuidToObject(DbType.Int16), "Prioridad", DataRowVersion.Current);
                     AgregarParametro(InsertColaComparticionAutomaticaCommand, IBD.ToParam("IncidenciaComparticion"), IBD.TipoGuidToObject(DbType.String), "IncidenciaComparticion", DataRowVersion.Current);
 
-					InsertarFilasEnRabbit("ColaComparticionAutomatica", addedAndModifiedDataSet);              
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "ColaComparticionAutomatica", InsertColaComparticionAutomaticaCommand, null, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
+                    InsertarFilasEnRabbit("ColaComparticionAutomatica", addedAndModifiedDataSet);
 
                     #endregion Actualizar Tabla ColaComparticionAutomatica
 
                     #region Actualizar Tabla ColaModificacionSearch
 
                     DbCommand InsertColaModificacionSearchCommand = ObtenerComando(sqlColaModificacionSearchInsert);
-                    //AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("OrdenEjecucion"), DbType.Int32, "OrdenEjecucion", DataRowVersion.Current);
                     AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("ProyectoID"), IBD.TipoGuidToObject(DbType.Guid), "ProyectoID", DataRowVersion.Current);
                     AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("Tipo"), DbType.Int16, "Tipo", DataRowVersion.Current);
                     AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("Estado"), DbType.Int16, "Estado", DataRowVersion.Current);
                     AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("Prioridad"), DbType.Int16, "Prioridad", DataRowVersion.Current);
                     AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("FechaPuestaEnCola"), DbType.DateTime, "FechaPuestaEnCola", DataRowVersion.Current);
                     AgregarParametro(InsertColaModificacionSearchCommand, IBD.ToParam("FechaProcesado"), DbType.DateTime, "FechaProcesado", DataRowVersion.Current);
-
-                    //ActualizarBaseDeDatos(addedAndModifiedDataSet, "ColaModificacionSearch", InsertColaModificacionSearchCommand, null, null, Microsoft.Practices.EnterpriseLibrary.Data.UpdateBehavior.Transactional);
 
                     #endregion Tabla ColaModificacionSearch
 
@@ -729,25 +656,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         /// <param name="pIBD">Objecto IBaseDatos para el archivo pasado al constructor del AD</param>
         private void CargarConsultasYDataAdapters(IBaseDatos pIBD)
         {
-            //TODO: poner consultas comunes
-            #region Consultas
-
-            this.sqlSelectGnossToFreebase = "SELECT " + mNomberTablaFreebase + ".Tag, " + mNomberTablaFreebase + ".GUIDFreebase, " + mNomberTablaFreebase + ".Coincidencia, " + mNomberTablaFreebase + ".Entidad, " + mNomberTablaFreebase + ".Ruta, " + mNomberTablaFreebase + ".WikipediaID, " + mNomberTablaFreebase + ".Tipos, " + mNomberTablaFreebase + ".Descripcion, " + mNomberTablaFreebase + ".RutaNYT, " + mNomberTablaFreebase + ".RutaDbpedia, " + mNomberTablaFreebase + ".RutaGeonames FROM " + mNomberTablaFreebase + " ";
-
-            /*            this.sqlSelectColaCorreo = "SELECT CorreoID, Remitente, Asunto, HtmlTexto, EsHtml, Prioridad, FechaPuestaEnCola, MascaraRemitente, DireccionRespuesta, MascaraDireccionRespuesta, SMTP, Usuario, Password, Puerto, EsSeguro, tipo FROM ColaCorreo "*/
-            ;
-
-            sqlSelectColaCorreoDestinatario = "SELECT CorreoID, Email, MascaraDestinatario, Estado, FechaProcesado FROM ColaCorreoDestinatario ";
-
-            #endregion
-
             #region DataAdapter
-
-            #region GnossToFreebase
-            this.sqlGnossToFreebaseInsert = IBD.ReplaceParam("INSERT INTO " + mNomberTablaFreebase + " (Tag, GUIDFreebase, Coincidencia, Entidad, Ruta, WikipediaID, Tipos, Descripcion, RutaNYT, RutaDbpedia, RutaGeonames) VALUES (@Tag, @GUIDFreebase, @Coincidencia, @Entidad, @Ruta, @WikipediaID, @Tipos, @Descripcion, @RutaNYT, @RutaDbpedia, @RutaGeonames)");
-            this.sqlGnossToFreebaseDelete = IBD.ReplaceParam("DELETE FROM " + mNomberTablaFreebase + " WHERE (Tag = @Original_Tag OR @Original_Tag IS NULL AND Tag IS NULL) AND (GUIDFreebase = @Original_GUIDFreebase OR @Original_GUIDFreebase IS NULL AND GUIDFreebase IS NULL) AND (Coincidencia = @Original_Coincidencia OR @Original_Coincidencia IS NULL AND Coincidencia IS NULL) AND (Entidad = @Original_Entidad OR @Original_Entidad IS NULL AND Entidad IS NULL) AND (Ruta = @Original_Ruta OR @Original_Ruta IS NULL AND Ruta IS NULL) AND (WikipediaID = @Original_WikipediaID OR @Original_WikipediaID IS NULL AND WikipediaID IS NULL) AND (Tipos = @Original_Tipos OR @Original_Tipos IS NULL AND Tipos IS NULL) AND (Descripcion = @Original_Descripcion OR @Original_Descripcion IS NULL AND Descripcion IS NULL) AND (RutaNYT = @Original_RutaNYT OR @Original_RutaNYT IS NULL AND RutaNYT IS NULL) AND (RutaDbpedia = @Original_RutaDbpedia OR @Original_RutaDbpedia IS NULL AND RutaDbpedia IS NULL) AND (RutaGeonames = @Original_RutaGeonames OR @Original_RutaGeonames IS NULL AND RutaGeonames IS NULL)");
-            this.sqlGnossToFreebaseModify = IBD.ReplaceParam("UPDATE " + mNomberTablaFreebase + " SET Tag = @Tag, GUIDFreebase = @GUIDFreebase, Coincidencia = @Coincidencia, Entidad = @Entidad, Ruta = @Ruta, WikipediaID = @WikipediaID, Tipos = @Tipos, Descripcion = @Descripcion, RutaNYT = @RutaNYT, RutaDbpedia = @RutaDbpedia, RutaGeonames = @RutaGeonames WHERE (Tag = @Original_Tag OR @Original_Tag IS NULL AND Tag IS NULL) AND (GUIDFreebase = @Original_GUIDFreebase OR @Original_GUIDFreebase IS NULL AND GUIDFreebase IS NULL) AND (Coincidencia = @Original_Coincidencia OR @Original_Coincidencia IS NULL AND Coincidencia IS NULL) AND (Entidad = @Original_Entidad OR @Original_Entidad IS NULL AND Entidad IS NULL) AND (Ruta = @Original_Ruta OR @Original_Ruta IS NULL AND Ruta IS NULL) AND (WikipediaID = @Original_WikipediaID OR @Original_WikipediaID IS NULL AND WikipediaID IS NULL) AND (Tipos = @Original_Tipos OR @Original_Tipos IS NULL AND Tipos IS NULL) AND (Descripcion = @Original_Descripcion OR @Original_Descripcion IS NULL AND Descripcion IS NULL) AND (RutaNYT = @Original_RutaNYT OR @Original_RutaNYT IS NULL AND RutaNYT IS NULL) AND (RutaDbpedia = @Original_RutaDbpedia OR @Original_RutaDbpedia IS NULL AND RutaDbpedia IS NULL) AND (RutaGeonames = @Original_RutaGeonames OR @Original_RutaGeonames IS NULL AND RutaGeonames IS NULL)");
-            #endregion
 
             #region ColaComparticionAutomatica
 
@@ -796,7 +705,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             {
                 foreach (DataTable tabla in pDataSet.Tables)
                 {
-                    string nombreTabla = ObtenerNombreCorrectoTabla(tabla.TableName);
                     if (tabla.Rows.Count > 0)
                     {
                         foreach (DataRow fila in tabla.Rows)
@@ -812,7 +720,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                                 if (fila.RowState.Equals(DataRowState.Added))
                                 {
                                     //genero insert
-                                    comandoInsert.CommandText += System.Environment.NewLine + "INSERT INTO " + nombreTabla + " ";
+                                    comandoInsert.CommandText += System.Environment.NewLine + "INSERT INTO " + tabla.TableName + " ";
                                     string columnas = "(";
                                     string coma = "";
                                     string valores = " VALUES (";
@@ -844,7 +752,7 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
                                 else if (fila.RowState.Equals(DataRowState.Modified))
                                 {
                                     //genero update
-                                    comandoUpdate.CommandText += System.Environment.NewLine + "UPDATE " + nombreTabla + System.Environment.NewLine;
+                                    comandoUpdate.CommandText += System.Environment.NewLine + "UPDATE " + tabla.TableName + System.Environment.NewLine;
                                     string where = " WHERE ";
                                     string coma = "";
                                     string and = "";
@@ -933,23 +841,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             return DbType.Int32;
         }
 
-        /// <summary>
-        /// Obtiene el nombre correcto de la tabla en la base de datos
-        /// </summary>
-        /// <param name="pNombreTabla">Nombre de la tabla en el DataSet</param>
-        /// <returns></returns>
-        protected virtual string ObtenerNombreCorrectoTabla(string pNombreTabla)
-        {
-            if (pNombreTabla.Equals("GnossToFreebase"))
-            {
-                if (mTablaBaseProyectoID > -1)
-                {
-                    return "GnossToFreebase0000000000000" + mTablaBaseProyectoID;
-                }
-            }
-            return pNombreTabla;
-        }
-
         #endregion
 
         #region Metodos de consultas
@@ -958,20 +849,9 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         {
             string strSQL = "Select tag2, COUNT(tag1) as similitud from " + mNombreTablaCOMUNIDADES + " where Tag1 in (select tag1 from " + mNombreTablaCOMUNIDADES + " where Tag2 = " + IBD.ToParam("Recurso") + " and (tipo = 10000 or Tipo = 10038)) and (tipo = 10000 or Tipo = 10038) group by tag2, Tipo ";
 
-            //string strSQL = "select tag1 from " + mNombreTablaCOMUNIDADES +" where Tag2 = " + IBD.ToParam("Recurso") + " and (tipo = 10000 or Tipo = 10038)";
-
-
             DbCommand cmdObtenerGrafoTagsCom = ObtenerComando(strSQL);
             AgregarParametro(cmdObtenerGrafoTagsCom, IBD.ToParam("Recurso"), DbType.String, Recurso);
-            // IDataReader iDataReader=EjecutarReader(cmdObtenerGrafoTagsCom);
-            // while (iDataReader.NextResult) {
-            //     iDataReader.GetString(0);
-            // }
-
-            // CargarDataSet(cmdObtenerGrafoTagsCom, pDataSet, "GnossToFreebase");
             return PaginarDataSet(cmdObtenerGrafoTagsCom, "order by similitud desc", pDataSet, inicio, final, "Tabla1");
-            //return PaginarDataSet(cmdObtenerGrafoTagsCom, "order by tag1 desc", pDataSet, inicio, final, "Tabla1");
-            //if (pDataSet.Tables["Tabla1"].Rows.Count < 15) { }
         }
 
 
@@ -1653,169 +1533,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
             return proyectos;
         }
 
-
-        public void ObtenerTagsRelacionadosFreebase(DataSet pDataSet, List<string> pListaTags)
-        {
-            if (pListaTags.Count > 0)
-            {
-                string strSQL = "Select * from " + mNomberTablaFreebase + " where (Ruta is not null or WikipediaID is not null)";
-
-                DbCommand cmdObtenerGrafoTagsCom = ObtenerComando(strSQL);
-
-                int contador = 0;
-                string where = " AND Entidad IN (";
-                string coma = "";
-
-                foreach (string tag in pListaTags)
-                {
-                    where += coma + IBD.ToParam("Tag" + contador);
-
-                    AgregarParametro(cmdObtenerGrafoTagsCom, IBD.ToParam("Tag" + contador), DbType.String, tag);
-
-                    coma = ", ";
-                    contador++;
-                }
-                where += ")";
-                cmdObtenerGrafoTagsCom.CommandText += where;
-
-                CargarDataSet(cmdObtenerGrafoTagsCom, pDataSet, "GnossToFreebase");
-            }
-        }
-
-        /// <summary>
-        /// Comprueba de una lista de Guids de Freebase, cuáles NO estan ya en la tabla de Freebase de un proyecto
-        /// </summary>
-        /// <param name="pListaGuidFreebase">Lista de Guids de freebase que se quieren añadir</param>
-        /// <returns>Lista de Guids de Freebase que NO estan ya agregados a la tabla de freebase</returns>
-        public List<string> ComprobarSiGuidFreebaseEstaEnProyecto(List<string> pListaGuidFreebase)
-        {
-            List<string> listaGuidsValidos = new List<string>(pListaGuidFreebase);
-            if (pListaGuidFreebase.Count > 0)
-            {
-                string strSQL = "SELECT GUIDFreebase FROM " + mNomberTablaFreebase + " where GUIDFreebase IN (";
-                string coma = "";
-                foreach (string guid in pListaGuidFreebase)
-                {
-                    strSQL += coma + "'" + guid + "'";
-                    coma = ", ";
-                }
-                strSQL += ")";
-
-                DbCommand cmdObtenerGrafoTagsCom = ObtenerComando(strSQL);
-                IDataReader reader = null;
-                try
-                {
-                    reader = EjecutarReader(cmdObtenerGrafoTagsCom);
-                    while (reader.Read())
-                    {
-                        listaGuidsValidos.Remove(reader.GetString(0));
-                    }
-                }
-                finally
-                {
-                    if (reader != null)
-                    {
-                        reader.Close();
-                        reader.Dispose();
-                    }
-                }
-            }
-            return listaGuidsValidos;
-        }
-
-        public void ObtenerEntidadFreebase(DataSet pDataSet, List<string> LTag)
-        {
-            if (LTag.Count > 0)
-            {
-                DbCommand cmdObtenerGrafoTagsCom = ObtenerComando("select *");
-                int contador = 0;
-                string whereIdentidad = "";
-                whereIdentidad = " WHERE Tag IN (";
-                string coma = "";
-
-                foreach (string tag in LTag)
-                {
-                    whereIdentidad += coma + IBD.ToParam("Tag" + contador);
-                    AgregarParametro(cmdObtenerGrafoTagsCom, IBD.ToParam("Tag" + contador), DbType.String, tag);
-                    coma = ", ";
-                    contador++;
-                }
-                whereIdentidad += ")";
-
-                string strSQL = "Select distinct * from " + mNomberTablaFreebase + whereIdentidad + " order by coincidencia desc";
-
-                cmdObtenerGrafoTagsCom.CommandText = ObtenerComando(strSQL).CommandText;
-
-                try
-                {
-                    CargarDataSet(cmdObtenerGrafoTagsCom, pDataSet, "GnossToFreebase");
-                }
-                catch (Exception e)
-                {
-                    mLoggingService.GuardarLogError(e, mlogger);
-                }
-            }
-        }
-
-        ///// <summary>
-        ///// Se inserta la query en la cola de replicación por defecto.
-        ///// </summary>
-        ///// <param name="pQuery">Query que se va a ejecutar</param>
-        ///// <param name="pPrioridad">Prioridad que tiene la query</param>
-        ///// <param name="pInfoExtra">Información extra para el procesado por el base.</param>
-        //public void InsertarConsultaEnColaReplicacion(string pQuery, int pPrioridad, bool pUsarHttpPost = true, string pInfoExtra = null)
-        //{
-        //    InsertarConsultaEnColaReplicacion(pQuery, pPrioridad, "ColaReplicacionMaster", pInfoExtra, pUsarHttpPost);
-        //}
-
-        ///// <summary>
-        ///// Se inserta la query en la cola de replicación pasada como parámetro
-        ///// </summary>
-        ///// <param name="pQuery">Query que se va a ejecutar</param>
-        ///// <param name="pPrioridad">Prioridad que tiene la query</param>
-        ///// <param name="pTablaReplicacion">Tabla donde se va a replicar la query.</param>
-        ///// <param name="pInfoExtra">Información extra para el procesado por el base.</param>
-        //public void InsertarConsultaEnColaReplicacion(string pQuery, int pPrioridad, string pTablaReplicacion, string pInfoExtra, bool pUsarHttpPost = true)
-        //{
-        //    try
-        //    {
-        //        DbCommand cmdInsertReplica = ObtenerComando("INSERT INTO " + pTablaReplicacion + " (Consulta, Estado, Prioridad, FechaPuestaEnCola, InfoExtra, UsarHttpPost) VALUES (" + IBD.ToParam("consulta") + ", 0, " + pPrioridad + ", getdate(), '" + pInfoExtra + "', " + Convert.ToInt32(pUsarHttpPost) + ")");
-        //        AgregarParametro(cmdInsertReplica, IBD.ToParam("consulta"), DbType.String, pQuery);
-        //        ActualizarBaseDeDatos(cmdInsertReplica);
-        //    }
-        //    catch
-        //    {
-        //        string jsonObject = "{ \"replicacion\": { " +
-        //            "\"Query\": \"" + pQuery.Replace("\"", "\\\"") + "\",  " +
-        //            "\"Prioridad\": \"" + pPrioridad + "\",  " +
-        //            "\"TablaReplicacion\": \"" + pTablaReplicacion + "\",  " +
-        //            "\"InfoExtra\": \"" + pInfoExtra + "\" " +
-        //       " }}, ";
-
-        //        AgregarColaReplicacionFichero(jsonObject);
-        //    }
-        //}
-
-        /// <summary>
-        /// Se inserta la query en la cola de replicación pasada como parámetro
-        /// </summary>
-        /// <param name="pQuery">Query que se va a ejecutar</param>
-        /// <param name="pPrioridad">Prioridad que tiene la query</param>
-        /// <param name="pTablaReplicacion">Tabla donde se va a replicar la query.</param>
-        /// <param name="pInfoExtra">Información extra para el procesado por el base.</param>
-        public void InsertarLogConsultaCostosa(string pConsulta, int pTiempo, string pServidor, string pError)
-        {
-            DbCommand cmdInsertReplica = ObtenerComando(string.Format("INSERT INTO LogConsultasVirtuoso (Fecha, Milisegundos, Servidor, Consulta, Error) VALUES (getdate(), {0}, {1}, {2}, {3})", IBD.ToParam("milisegundos"), IBD.ToParam("servidor"), IBD.ToParam("consulta"), IBD.ToParam("error")));
-
-            AgregarParametro(cmdInsertReplica, IBD.ToParam("milisegundos"), DbType.Int32, pTiempo);
-            AgregarParametro(cmdInsertReplica, IBD.ToParam("servidor"), DbType.String, pServidor);
-            AgregarParametro(cmdInsertReplica, IBD.ToParam("consulta"), DbType.String, pConsulta);
-
-            AgregarParametro(cmdInsertReplica, IBD.ToParam("error"), DbType.String, pError);
-
-            ActualizarBaseDeDatos(cmdInsertReplica);
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -2025,19 +1742,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         }
 
         /// <summary>
-        /// Crea una tabla en función de un tipo de conuslta
-        /// <param name="pTipoConsulta">Tipo de consulta</param>
-        /// </summary>
-        protected virtual void CrearTabla(TiposConsultaObtenerTags pTipoConsulta)
-        {
-
-            if (pTipoConsulta.Equals(TiposConsultaObtenerTags.Freebase))
-            {
-                CrearTabla("CREATE TABLE [dbo]." + mNomberTablaFreebase + "(	[Tag] [nvarchar](1000) NOT NULL,	[GUIDFreebase] [nvarchar](4000) NOT NULL,	[Coincidencia] [int] NOT NULL,	[Entidad] [nvarchar](4000) NOT NULL,	[Ruta] [nvarchar](4000) NULL,	[WikipediaID] [nvarchar](4000) NULL,	[Tipos] [nvarchar](4000) NULL,	[Descripcion] [nvarchar](4000) NULL,	[RutaNYT] [nvarchar](4000) NULL,	[RutaDBPedia] [nvarchar](4000) NULL,	[RutaGeonames] [nvarchar](4000) NULL, PRIMARY KEY (GUIDFreebase));");
-            }
-        }
-
-        /// <summary>
         /// Comprueba si existen las tablas sobre las que está configurado este AD. Si no existen las crea. 
         /// </summary>
         /// <returns>Verdad si la tabla existe (o ha sido recién creada).</returns>
@@ -2122,61 +1826,6 @@ namespace Es.Riam.Gnoss.AD.BASE_BD
         public virtual int ObtenerNumeroElementosEnXHoras(int pHoras, EstadosColaTags pEstadoInferior, EstadosColaTags pEstadoSuperior)
         {
             return 0;
-        }
-
-        /// <summary>
-        /// Elimina de la cola los elementos que han sido procesado exitósamente hace una semana
-        /// </summary>
-        public void EliminarElementosColaProcesadosViejos(string pNombreTablaCola)
-        {
-            DbCommand cmdEliminarElementosColaPendientesComunidades = ObtenerComando("DELETE FROM " + pNombreTablaCola + " WHERE ((Estado = " + (short)EstadosColaTags.Procesado + " AND Tipo != 0) OR Estado = " + (short)EstadosColaTags.ProcesadoFreebase + ") AND FechaProcesado < " + IBD.ToParam("fecha"));
-
-            AgregarParametro(cmdEliminarElementosColaPendientesComunidades, IBD.ToParam("fecha"), DbType.DateTime, DateTime.Now.AddDays(-7));
-
-            ActualizarBaseDeDatos(cmdEliminarElementosColaPendientesComunidades);
-        }
-
-        /// <summary>
-        /// Elimina de la cola los elementos que han sido procesado exitósamente hace una semana
-        /// Si es la cola maestra, copia el contenido en la tabla de histórico
-        /// </summary>
-        /// <param name="pEsMaster">Verdad si es la cola maestra</param>
-        /// <param name="pNombreTablaCola">Nombre de la tabla de cola</param>
-        /// <param name="pFechaLimiteEliminacion">Fecha límite hasta la cuál se eliminaran los elementos en cola</param>
-        public void EliminarElementosColaReplicaProcesados(string pNombreTablaCola, bool pEsMaster, DateTime pFechaLimiteEliminacion)
-        {
-            //if (pEsMaster)
-            //{
-            //    DbCommand cmdCopiarElementosColaProcesados = ObtenerComando("INSERT INTO ColaReplicacionHistorico SELECT * FROM " + pNombreTablaCola + " WHERE Estado = " + (short)EstadosColaTags.Procesado + " AND FechaProcesado < " + IBD.ToParam("fecha") + " AND OrdenEjecucion > (SELECT ISNULL(MAX(OrdenEjecucion), 0) FROM ColaReplicacionHistorico)");
-            //    cmdCopiarElementosColaProcesados.CommandTimeout = 300;
-
-            //    AgregarParametro(cmdCopiarElementosColaProcesados, IBD.ToParam("fecha"), DbType.DateTime, pFechaLimiteEliminacion);
-
-            //    ActualizarBaseDeDatos(cmdCopiarElementosColaProcesados);
-            //}
-
-            DbCommand cmdEliminarElementosColaProcesados = ObtenerComando("DELETE FROM " + pNombreTablaCola + " WHERE Estado = " + (short)EstadosColaTags.Procesado + " AND FechaProcesado < " + IBD.ToParam("fecha"));
-            cmdEliminarElementosColaProcesados.CommandTimeout = 1800; // 1800 segundos = 30 minutos
-
-            AgregarParametro(cmdEliminarElementosColaProcesados, IBD.ToParam("fecha"), DbType.DateTime, pFechaLimiteEliminacion);
-
-            ActualizarBaseDeDatos(cmdEliminarElementosColaProcesados);
-        }
-
-        /// <summary>
-        /// Comprueba si existe la tabla de comunidades. Si no existe la crea 
-        /// </summary>
-        /// <param name="pCrearTablaSiNoExiste">Verdad si se debe crear la tabla en caso de que no exista</param>
-        /// <param name="pTipoConsulta">Tipo de consulta que se va a realizar</param>
-        /// <returns>Verdad si la tabla existe (o ha sido recién creada).</returns>
-        public virtual bool VerificarExisteTabla(TiposConsultaObtenerTags pTipoConsulta, bool pCrearTablaSiNoExiste)
-        {
-            bool existeTabla = false;
-            if (pTipoConsulta.Equals(TiposConsultaObtenerTags.Freebase))
-            {
-                existeTabla = VerificarExisteTabla(mNomberTablaFreebase);
-            }
-            return existeTabla;
         }
 
         #endregion

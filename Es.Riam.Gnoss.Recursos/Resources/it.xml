@@ -372,12 +372,6 @@
 		<Resource tag="HERRAMIENTAS">Strumenti</Resource>
 		<Resource tag="WIDGETS">Widgets</Resource>
 	</page>
-	<page name="FREEBASE">
-		<Resource tag="INFOSOBRE">Informazioni {strong}@1@{/strong} su:</Resource>
-		<Resource tag="VERENWIKIPEDIA">Vedi su {a class='wikipedia' href='@1@' target='_blank'}wikipedia{/a}</Resource>
-		<Resource tag="VERENDBPEDIA">Vedi su {a class='dbpedia' href='@1@' target='_blank'}dbpedia{/a}</Resource>
-		<Resource tag="VERENGEONAMES">Vedi su {a class='geonames' href='@1@' target='_blank'}geonames{/a}</Resource>
-	</page>
 	<page name="VERCVSEMANTICO">
 		<Resource tag="EXPERIENCIALABORAL">Esperienza lavorativa</Resource>
 		<Resource tag="ESTUDIOS">Titoli di studio</Resource>
@@ -1346,6 +1340,7 @@
 		<Resource tag="CREARVERSION">Crea una versione</Resource>
 		<Resource tag="ELIMINAR">Elimina</Resource>
 		<Resource tag="CERTIFICARDOC">Certifica risorsa</Resource>
+		<Resource tag="NOCERTIFICADISP">Nessuna certificazione disponibile</Resource>
 		<Resource tag="CERTIFICAR">Certifica</Resource>
 		<Resource tag="RECURSOCERTIFICADO">Risorsa certificata</Resource>
 		<Resource tag="ENVIAR">Invia</Resource>
