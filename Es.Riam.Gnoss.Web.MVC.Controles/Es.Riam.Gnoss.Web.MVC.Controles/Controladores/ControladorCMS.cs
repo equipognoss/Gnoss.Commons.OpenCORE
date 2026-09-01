@@ -2617,6 +2617,33 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         }
 
         /// <summary>
+        /// Quita el alias "www." del host de una URL absoluta (si lo tiene), para poder comparar URLs que apuntan
+        /// al mismo sitio aunque una use el dominio "desnudo" y otra el subdominio "www." 
+        /// (p.ej. peticiones internas que no pasan por la CDN/balanceador frente al tráfico real de usuarios).
+        /// </summary>
+        private static string RemoveWwwFromHost(string pUrl)
+        {
+            if (string.IsNullOrEmpty(pUrl))
+            {
+                return pUrl;
+            }
+
+            int schemePos = pUrl.IndexOf("://", StringComparison.Ordinal);
+            if (schemePos < 0)
+            {
+                return pUrl;
+            }
+
+            int hostPos = schemePos + 3;
+            if (pUrl.Length >= hostPos + 4 && pUrl.Substring(hostPos, 4).Equals("www.", StringComparison.OrdinalIgnoreCase))
+            {
+                return pUrl.Remove(hostPos, 4);
+            }
+
+            return pUrl;
+        }
+
+        /// <summary>
         /// Obtiene el tipo de búsqueda
         /// </summary>
         public KeyValuePair<TipoBusqueda, Guid> ObtenerTipoBusqueda(string pUrl)
@@ -2679,13 +2706,20 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
 
                 string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasUrlOriginal, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
-                if (!pUrlAux.ToLower().StartsWith(urlComunidad.ToLower()))
+
+                // pUrlAux se construye a partir de "mControlador.BaseURL", que refleja el Host literal de ESTA petición (puede ser el dominio "desnudo", p.ej. accesos internos que no pasan por la CDN/balanceador y no normalizan a "www.").
+                // urlComunidad se construye siempre a partir de la URL base configurada para el proyecto ("BaseURLIdioma"/"UrlPrincipal"), que es fija.
+                // Si ambas difieren solo en el alias "www." siguen siendo el mismo sitio: no debe tratarse como una URL inválida, así que se compara ignorando ese alias.
+                string pUrlAuxNoWww = RemoveWwwFromHost(pUrlAux);
+                string communityUrlNoWww = RemoveWwwFromHost(urlComunidad);
+
+                if (!pUrlAuxNoWww.ToLower().StartsWith(communityUrlNoWww.ToLower()))
                 {
                     throw new Exception($"No es correcta la URL {pUrlAux}, debe comenzar con {urlComunidad}");
                 }
                 else
                 {
-                    pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
+                    pUrlAux = pUrlAuxNoWww.Replace(communityUrlNoWww + "/", "");
                 }
 
                 ProyectoPestanyaMenu pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(p => string.Equals(p.Ruta, pUrlAux, StringComparison.InvariantCultureIgnoreCase) && !p.TipoPestanya.Equals(TipoPestanyaMenu.EnlaceInterno));
@@ -2810,13 +2844,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pUrlAux = pUrl;
                 }
                 string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
-                if (!pUrlAux.StartsWith(urlComunidad))
+                string pUrlAuxNoWww = RemoveWwwFromHost(pUrlAux);
+                string communityUrlNoWww = RemoveWwwFromHost(urlComunidad);
+                if (!pUrlAuxNoWww.StartsWith(communityUrlNoWww))
                 {
                     return null;
                 }
                 else
                 {
-                    pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
+                    pUrlAux = pUrlAuxNoWww.Replace(communityUrlNoWww + "/", "");
                 }
 
                 foreach (Guid idPestanya in mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Keys)
@@ -2956,13 +2992,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pUrlAux = pUrl;
                 }
                 string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
-                if (!pUrlAux.StartsWith(urlComunidad))
+                string pUrlAuxNoWww = RemoveWwwFromHost(pUrlAux);
+                string communityUrlNoWww = RemoveWwwFromHost(urlComunidad);
+                if (!pUrlAuxNoWww.StartsWith(communityUrlNoWww))
                 {
                     throw new Exception("No es correcta la URL");
                 }
                 else
                 {
-                    pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
+                    pUrlAux = pUrlAuxNoWww.Replace(communityUrlNoWww + "/", "");
                 }
 
                 foreach (Guid idPestanya in mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Keys)
