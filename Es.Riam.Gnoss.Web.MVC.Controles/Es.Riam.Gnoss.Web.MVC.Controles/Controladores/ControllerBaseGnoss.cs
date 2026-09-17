@@ -6,6 +6,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Identidad;
+using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
@@ -17,7 +18,6 @@ using Es.Riam.Gnoss.CL.ParametrosAplicacion;
 using Es.Riam.Gnoss.CL.ParametrosProyecto;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.CL.Tesauro;
-using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.Elementos.Identidad;
 using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
 using Es.Riam.Gnoss.Elementos.Tesauro;
@@ -47,13 +47,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 {
@@ -142,14 +142,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         protected ICompositeViewEngine mViewEngine;
         protected IUtilServicioIntegracionContinua mUtilServicioIntegracionContinua;
         protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-        protected IHostingEnvironment mEnv;
+        protected IWebHostEnvironment mEnv;
         protected IAvailableServices mAvailableServices;
 
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
         #endregion
 
-        public ControllerBaseGnoss(IHttpContextAccessor httpContextAccessor, EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IHostingEnvironment env, EntityContextBASE pEntityContextBASE, IAvailableServices pAvailableServices, ILogger<ControllerBaseGnoss> logger, ILoggerFactory loggerFactory)
+        public ControllerBaseGnoss(IHttpContextAccessor httpContextAccessor, EntityContext entityContext, LoggingService loggingService, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IWebHostEnvironment env, EntityContextBASE pEntityContextBASE, IAvailableServices pAvailableServices, ILogger<ControllerBaseGnoss> logger, ILoggerFactory loggerFactory)
         {
             mHttpContextAccessor = httpContextAccessor;
             mLoggingService = loggingService;
@@ -313,8 +313,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             string versionJSEcosistema = ParametrosAplicacionDS.Where(item => item.Parametro.Equals(TiposParametrosAplicacion.VersionJSEcosistema)).Select(item => item.Valor).FirstOrDefault();
             string versionCSSEcosistema = ParametrosAplicacionDS.Where(item => item.Parametro.Equals(TiposParametrosAplicacion.VersionCSSEcosistema)).Select(item => item.Valor).FirstOrDefault();
 
-            comunidad.VersionJSEcosistema = !string.IsNullOrEmpty(versionJSEcosistema) ? int.Parse(versionJSEcosistema) : null;
-            comunidad.VersionCSSEcosistema = !string.IsNullOrEmpty(versionCSSEcosistema) ? int.Parse(versionCSSEcosistema) : null;
+            comunidad.VersionJSEcosistema = !string.IsNullOrEmpty(versionJSEcosistema) ? int.Parse(versionJSEcosistema) : comunidad.VersionJS;
+            comunidad.VersionCSSEcosistema = !string.IsNullOrEmpty(versionCSSEcosistema) ? int.Parse(versionCSSEcosistema) : comunidad.VersionCSS;
 
             //Este parametro debe estar fuera de la cache
             comunidad.MetaProyect = ProyectoSeleccionado.Clave.Equals(ProyectoAD.MetaProyecto);
@@ -462,6 +462,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             ViewBag.VistasActivadas = ProyectoSeleccionado.PersonalizacionID != Guid.Empty;
 
             proyCL.Dispose();
+
+            ProyectoCN proyectoCN = new ProyectoCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ProyectoCN>(), mLoggerFactory);
+
+            comunidad.TranslatorAvailable = proyectoCN.ExisteTraductorDeProyecto(ProyectoSeleccionado.Clave);
 
             return comunidad;
         }
@@ -644,7 +648,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         protected void InsertarMetaEtiquetasXMLOntologiasViewBag()
         {
             Dictionary<string, List<MetaKeyword>> metaKeywords = ObtenerMetaEtiquetasXMLOntologias();
-            string json = JsonConvert.SerializeObject(metaKeywords);
+            string json = JsonSerializer.Serialize(metaKeywords);
             ViewBag.MetaEtiquetasXMLOntologias = json;
         }
 
@@ -712,6 +716,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
 
             ViewBag.Comunidad = Comunidad;
+
+            if (ParametroProyecto.ContainsKey(ParametroAD.CaputurasImgSize) && !string.IsNullOrEmpty(ParametroProyecto[ParametroAD.CaputurasImgSize]))
+            {
+                string[] tamCapturas = ParametroProyecto[ParametroAD.CaputurasImgSize].Split(',');
+                ViewBag.CapturasImgSizeAncho = tamCapturas[0];
+                ViewBag.CapturasImgSizeAlto = tamCapturas.Length > 1 ? tamCapturas[1] : tamCapturas[0];
+            }
 
             ViewBag.ListaCategoriaCookie = ListaPersonalizacionCategoriaCookieModel;
         }

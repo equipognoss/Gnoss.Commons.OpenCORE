@@ -8,11 +8,9 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE.Models
     [Table("ColaCorreoDestinatario")]
     public partial class ColaCorreoDestinatario
     {
-        [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CorreoID { get; set; }
 
-        [Column(Order = 1)]
         [StringLength(400)]
         public string Email { get; set; }
 

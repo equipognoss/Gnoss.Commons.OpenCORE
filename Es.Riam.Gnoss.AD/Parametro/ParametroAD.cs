@@ -189,6 +189,16 @@ namespace Es.Riam.Gnoss.AD.Parametro
         public const string NumeroCaracteresDescripcion = "NumeroCaracteresDescripcionSuscripcion";
 
         /// <summary>
+        /// Indica el número máximo de versiones a conservar por recurso (sin configurar = valor por defecto <see cref="NumeroMaximoVersionesRecursoPorDefecto"/>)
+        /// </summary>
+        public const string NumeroMaximoVersionesRecurso = "NumeroMaximoVersionesRecurso";
+
+        /// <summary>
+        /// Número máximo de versiones a conservar por recurso cuando el proyecto no tiene configurado explícitamente <see cref="NumeroMaximoVersionesRecurso"/>
+        /// </summary>
+        public const int NumeroMaximoVersionesRecursoPorDefecto = 100;
+
+        /// <summary>
         /// Indica si la identidad invitada puede descargar el documento
         /// </summary>
         public const string PermitirDescargaIdentidadInvitada = "PermitirDescargaIdentidadInvitada";
@@ -278,8 +288,8 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public ParametroAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAD> logger,ILoggerFactory loggerFactory)
-            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+        public ParametroAD(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAD> logger, ILoggerFactory loggerFactory)
+            : base(loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mlogger = logger;
@@ -292,7 +302,7 @@ namespace Es.Riam.Gnoss.AD.Parametro
         /// <param name="pFicheroConfiguracionBD"></param>
         /// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         public ParametroAD(string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ParametroAD> logger, ILoggerFactory loggerFactory)
-            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
+            : base(pFicheroConfiguracionBD, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
         {
             mEntityContext = entityContext;
             mlogger = logger;
@@ -341,26 +351,26 @@ namespace Es.Riam.Gnoss.AD.Parametro
             return parametros;
         }
 
-		/// <summary>
-		/// Obtiene los eventos configurados para la publicación de eventos externos
-		/// </summary>
-		/// <param name="pProyectoID">ID del proyecto</param>
-		/// <returns></returns>
-		public string ObtenerEventosConfigurados(Guid pProyectoID, bool pEsEcosistema)
-		{
+        /// <summary>
+        /// Obtiene los eventos configurados para la publicación de eventos externos
+        /// </summary>
+        /// <param name="pProyectoID">ID del proyecto</param>
+        /// <returns></returns>
+        public string ObtenerEventosConfigurados(Guid pProyectoID, bool pEsEcosistema)
+        {
             string parametro = "EventosConfigurados";
             if (pEsEcosistema) parametro = "EventosConfiguradosEcosistema";
             string eventosConfigurados = mEntityContext.ParametroProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Parametro.Equals(parametro)).Select(item => item.Valor).FirstOrDefault();
-			return eventosConfigurados;
-		}
+            return eventosConfigurados;
+        }
 
-		/// <summary>
-		/// Obtiene el parámetro proyecto indicado si existe
-		/// </summary>
-		/// <param name="pNombreParametro">Nombre del parametro a obtener</param>
-		/// <param name="pProyectoID">Identificador del proyecto donde queremos obtener el parámetro</param>
-		/// <returns></returns>
-		public ParametroProyecto ObtenerParametroDeProyecto(string pNombreParametro, Guid pProyectoID)
+        /// <summary>
+        /// Obtiene el parámetro proyecto indicado si existe
+        /// </summary>
+        /// <param name="pNombreParametro">Nombre del parametro a obtener</param>
+        /// <param name="pProyectoID">Identificador del proyecto donde queremos obtener el parámetro</param>
+        /// <returns></returns>
+        public ParametroProyecto ObtenerParametroDeProyecto(string pNombreParametro, Guid pProyectoID)
         {
             return mEntityContext.ParametroProyecto.Where(item => item.ProyectoID.Equals(pProyectoID) && item.Parametro.Equals(pNombreParametro)).FirstOrDefault();
         }
@@ -476,14 +486,14 @@ namespace Es.Riam.Gnoss.AD.Parametro
             }
             else if (!string.IsNullOrEmpty(valor) && listaConfigAutocompletarProyProyecto.Count == 0)
             {
-				ConfigAutocompletarProy confAuto = new ConfigAutocompletarProy();
-				confAuto.OrganizacionID = ProyectoAD.MetaOrganizacion;
-				confAuto.ProyectoID = pProyectoID;
-				confAuto.Clave = "FacetasCom";
-				confAuto.Valor = valor;
-				confAuto.PestanyaID = null;
-				mEntityContext.ConfigAutocompletarProy.Add(confAuto);
-			}
+                ConfigAutocompletarProy confAuto = new ConfigAutocompletarProy();
+                confAuto.OrganizacionID = ProyectoAD.MetaOrganizacion;
+                confAuto.ProyectoID = pProyectoID;
+                confAuto.Clave = "FacetasCom";
+                confAuto.Valor = valor;
+                confAuto.PestanyaID = null;
+                mEntityContext.ConfigAutocompletarProy.Add(confAuto);
+            }
 
             ActualizarBaseDeDatosEntityContext();
         }

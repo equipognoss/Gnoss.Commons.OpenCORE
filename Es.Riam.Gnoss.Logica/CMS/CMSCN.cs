@@ -4,17 +4,14 @@ using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.CMS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+using Microsoft.Data.SqlClient;
 
 namespace Es.Riam.Gnoss.Logica.CMS
 {
@@ -23,9 +20,9 @@ namespace Es.Riam.Gnoss.Logica.CMS
     /// </summary>
     public class CMSCN : BaseCN, IDisposable
     {
-        private LoggingService mLoggingService;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly LoggingService mLoggingService;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
@@ -315,7 +312,7 @@ namespace Es.Riam.Gnoss.Logica.CMS
             catch (SqlException ex)
             {
                 TerminarTransaccion(false);
-                //MessageBox.Show("No se puede eliminar el proyecto ya que existen elementos vinculados a él. (" + e.Message + ")", "Error en la eliminacion del proyecto", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 //Error interno de la aplicación
                 throw ex;
             }
@@ -367,7 +364,7 @@ namespace Es.Riam.Gnoss.Logica.CMS
             catch (SqlException ex)
             {
                 TerminarTransaccion(false);
-                //MessageBox.Show("No se puede eliminar el proyecto ya que existen elementos vinculados a él. (" + e.Message + ")", "Error en la eliminacion del proyecto", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                mLoggingService.GuardarLogError(ex, mlogger);
                 //Error interno de la aplicación
                 throw ex;
             }
@@ -546,13 +543,10 @@ namespace Es.Riam.Gnoss.Logica.CMS
             {
                 mDisposed = true;
 
-                if (pDisposing)
+                if (pDisposing && this.CMSAD != null)
                 {
                     //Libero todos los recursos administrados que he añadido a esta clase
-                    if (this.CMSAD != null)
-                    {
-                        CMSAD.Dispose();
-                    }
+                    CMSAD.Dispose();
                 }
                 CMSAD = null;
             }

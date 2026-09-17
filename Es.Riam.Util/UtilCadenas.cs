@@ -362,8 +362,10 @@ namespace Es.Riam.Util
             s = s.Replace("\\", "\\\\");
             s = s.Replace("'", "\\'");
             s = s.Replace("\"\"", "");
-            s = s.Replace("--", "");
             s = s.Replace("\"", "\\\"");
+            s = s.Replace("\r", "\\r");
+            s = s.Replace("\n", "\\n");
+            s = s.Replace("\t", "\\t");
 
             return s;
         }
@@ -1863,26 +1865,29 @@ namespace Es.Riam.Util
         /// <returns>Devuelve el texto introducido pero limpio</returns>
         public static string LimpiarInyeccionCodigo(string pTexto, HtmlSanitizer pSanitizer, bool pDecodificar = false)
         {
-            //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
-            pSanitizer.AllowDataAttributes = true;
-            pSanitizer.AllowedAttributes.Add("class");
-            pSanitizer.AllowedAttributes.Add("crossorigin");
-            pSanitizer.AllowedAttributes.Add("controls");
-            pSanitizer.AllowedAttributes.Add("kind");
-            pSanitizer.AllowedAttributes.Add("srclang");
-            pSanitizer.AllowedAttributes.Add("default");
-            pSanitizer.AllowedTags.Add("iframe");            
-            pSanitizer.AllowedTags.Add("video");
-            pSanitizer.AllowedTags.Add("audio");
-            pSanitizer.AllowedTags.Add("source");
-            pSanitizer.AllowedTags.Add("track");
-            pSanitizer.AllowedTags.Remove("form");
-            
-            pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);
-            pTexto = pSanitizer.Sanitize(pTexto);
-            if (pDecodificar)
+            if (pTexto != null)
             {
-                pTexto = HttpUtility.HtmlDecode(pTexto);
+                //Decodificar el texto para evitar que con varias codificaciones url se pase el filtro
+                pSanitizer.AllowDataAttributes = true;
+                pSanitizer.AllowedAttributes.Add("class");
+                pSanitizer.AllowedAttributes.Add("crossorigin");
+                pSanitizer.AllowedAttributes.Add("controls");
+                pSanitizer.AllowedAttributes.Add("kind");
+                pSanitizer.AllowedAttributes.Add("srclang");
+                pSanitizer.AllowedAttributes.Add("default");
+                pSanitizer.AllowedTags.Add("iframe");
+                pSanitizer.AllowedTags.Add("video");
+                pSanitizer.AllowedTags.Add("audio");
+                pSanitizer.AllowedTags.Add("source");
+                pSanitizer.AllowedTags.Add("track");
+                pSanitizer.AllowedTags.Remove("form");
+
+                pTexto = DecodificarTextoCodificadoMultiplesVeces(pTexto);
+                pTexto = pSanitizer.Sanitize(pTexto);
+                if (pDecodificar)
+                {
+                    pTexto = HttpUtility.HtmlDecode(pTexto);
+                }
             }
             return pTexto;
         }
@@ -1895,10 +1900,20 @@ namespace Es.Riam.Util
         private static string DecodificarTextoCodificadoMultiplesVeces(string pTexto)
         {
             string textoDecodificado = HttpUtility.UrlDecode(pTexto);
-
+            textoDecodificado = HttpUtility.HtmlDecode(textoDecodificado);
             //Si la longitud es la misma es que el texto ya estaba decodificado. Se devuelve el texto original.
             if (pTexto.Length == textoDecodificado.Length)
             {
+                pTexto = pTexto
+                .Replace("\u00A0", " ")   // &nbsp; → espacio normal
+                .Replace("\u200B", "")    // Zero width space
+                .Replace("\u200C", "")    // Zero width non-joiner
+                .Replace("\u200D", "")    // Zero width joiner
+                .Replace("\uFEFF", "")    // BOM / Zero width no-break space
+                .Replace("\u00AD", "")    // Soft hyphen
+                .Replace("\0", "")        // Null byte
+                .Replace("\t", "")        // Tabulador
+                .Replace("\r", "");        // CR
                 return pTexto;
             }
 

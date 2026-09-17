@@ -294,7 +294,7 @@
 		<Resource tag="NAVEGACION">Nabigazioa</Resource>
 		<Resource tag="MIS_IDENTIDADES">NIRE IDENTITATEAK</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Arrastatu eta jaregin argazki bat zure profilerako puntu puntudun eremuan</Resource>
-		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Irudiak .PNG edo .JPG formatuan</Resource>
+		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Irudiak .PNG, .JPG edo .WEBP formatuan</Resource>
 		<Resource tag="PESO_MAXIMO_250KB">Irudiaren gehienezko pisua 250 kb</Resource>
 		<Resource tag="X_HAN_COMENTADO_EN">komentatu du</Resource>
 		<Resource tag="X_HA_COMENTADO_EN">-k komentatu du</Resource>
@@ -307,6 +307,9 @@
 		<Resource tag="ARRASTRAYSUELTAENZONAPUNTEADA">Arrastatu eta jaregin fitxategi bat puntudun eremura</Resource>
 		<Resource tag="IRALAWEB">Joan webgunera</Resource>
 		<Resource tag="CONFIRMARELIMINAR">Hautatutako elementua ezabatu nahi al duzu?</Resource>
+		<Resource tag="ENLACEEXTERNO">Kanpoko esteka</Resource>
+		<Resource tag="WARNINGENLACEEXTERNO">Kontuz! Kontrolatu gabeko kanpoko esteka batera sartzear zaude</Resource>
+		<Resource tag="ACCEDER">Sartu</Resource>
 	</page>
 	<page name="METADESCRIPTION">
 		<Resource tag="INDICE">@1@ren edukiaren aurkibidea, nabigatu bere kategorietan zehar eta ezagutu bere @2@ baliabideak</Resource>
@@ -871,6 +874,7 @@
 		<Resource tag="SEGUIDOR">Jarraitzailea</Resource>
 		<Resource tag="SEGUIDORES">Jarraitzaileak</Resource>
 		<Resource tag="PERFILENWEB">Webaren profila</Resource>
+		<Resource tag="CONFIGURARNOTIFICACIONES">Jakinarazpenak konfiguratu</Resource>
 		<Resource tag="EDITARPREFERENCIAS">Lehentasunak editatu</Resource>
 		<Resource tag="GUARDARPREFERENCIAS">Lehentasunak gorde</Resource>
 		<Resource tag="USUARIOSINACTIVIDAD">Erabiltzaile honek berriki ez du jarduerarik izan</Resource>
@@ -1318,9 +1322,10 @@
 		<Resource tag="DESEAELIMINARVERSION">Resursuaren bertsio hau ezabatu nahi duzu?</Resource>
 		<Resource tag="ABREVENTANANUEVA">Leiho berri batean irekitzen da</Resource>
 		<Resource tag="LECCCIONESDE">Honen ikasgaiak:</Resource>
-		<Resource tag="FORMATONOVALIDO">Inportatu nahi duzun irudiaren formatuak ez du balio (.jpg, .png, .jpeg, .gif)</Resource>
+		<Resource tag="FORMATONOVALIDO">Inportatu nahi duzun irudiaren formatuak ez du balio (.jpg, .png, .jpeg, .gif, .webp)</Resource>
 	</page>
 	<page name="PERFILBASERECURSOSFICHA">
+		<Resource tag="TRADUCIR">Itzuli</Resource>
 		<Resource tag="AGREGARCATEGORIA">Gehitu baliabidea kategoriari</Resource>
 		<Resource tag="AGREGARPREGUNTAACATEGORIA">Gehitu galdera kategoriari</Resource>
 		<Resource tag="AGREGARDEBATEACATEGORIA">Gehitu eztabaida kategoriari</Resource>
@@ -2256,7 +2261,10 @@
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Kontaktuen eta lagun izateko eskariak</Resource>
+		<Resource tag="MENSAJESGNOSS">Komunitatean jasotako mezuak</Resource>
+		<Resource tag="INTRONOTIFICACIONES">Aukeratu zeren berri jaso nahi duzu zure posta elektronikoan.</Resource>
 		<Resource tag="COMENTARIOSRECURSOS">Oharrak nire baliabideei</Resource>
+		<Resource tag="NUEVOSSEGUIDORES">Nire profilaren jarraitzaile berriak</Resource>
 		<Resource tag="INVITACIONCOMUNIDAD">Komunitateko kide izateko gonbidapenak</Resource>
 		<Resource tag="INVITACIONORGANIZACION">Erakunde bat ordezkatzeko gonbidapenak</Resource>
 		<Resource tag="BOLETINESSUSCRIPCIONES">Posta elektronikoan harpidetzen buletina jaso</Resource>
@@ -3923,6 +3931,9 @@
 		<Resource tag="NOTIFICACIONESPERSO">ohiko-jakinarazpenak</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">kudeatu-lan-fluxuak</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">laguntzaileak-kudeatu</Resource>
+		<Resource tag="TRADUCIRRECURSOS">baliabideak-itzuli</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVAECOSISTEMA">ekosistema-karga-masiboa-kudeatu</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVA">karga-masiboa-kudeatu</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Jakinarazpenen zerrenda</Resource>
@@ -3960,6 +3971,51 @@
 		<Resource tag="ADMINISTRARFLUJOS">Lan-fluxuak</Resource>
 		<Resource tag="ADMINISTRARTRADUCTOR">Itzultzailea konfiguratu</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">Laguntzaileak kudeatu</Resource>
+		<Resource tag="TRADUCIRRECURSOS">Baliabideak itzuli</Resource>
+	</page>
+	<page name="COMADMINREDIRECCIONES">
+		<Resource tag="TITULO">Birbideratzeak konfiguratu</Resource>
+		<Resource tag="REDIRECCIONES">Birbideratzeak</Resource>
+		<Resource tag="INFOTITULO">Konfiguratu domeinuko URLen birbideratzeak</Resource>
+		<Resource tag="FILTRAR">Iragazi birbideratzeak jatorrizko URLaren arabera</Resource>
+		<Resource tag="INFOADDREDIRECCION">Gehitu birbideratze berri bat</Resource>
+		<Resource tag="REDIRECCIONNUEVA">Birbideratze berria</Resource>
+		<Resource tag="ELIGETIPOREDIRECCION">Aukeratu birbideratze mota</Resource>
+		<Resource tag="URLORIGEN">Jatorrizko URLa</Resource>
+		<Resource tag="URLDESTINO">Helburuko URLa</Resource>
+		<Resource tag="MANTENERFILTROSORIGEN">Mantendu jatorrizko URLaren iragazkiak</Resource>
+		<Resource tag="NOMBREPARAMETRO">Parametroaren izena</Resource>
+		<Resource tag="VALORPARAMETRO">Parametroaren balioa</Resource>
+		<Resource tag="ORDENPARAMETRO">Parametroaren hurrenkera</Resource>
+		<Resource tag="REDIRECCIONDIRECTA">Birbideratze zuzena</Resource>
+		<Resource tag="REDIRECCIONPARAMETRIZADA">Birbideratze parametrizatua</Resource>
+		<Resource tag="GUARDARCAMBIOS">Gorde aldaketak</Resource>
+		<Resource tag="ADDREDIRECCION">Gehitu birbideratzea</Resource>
+		<Resource tag="ADDPARAMETRO">Gehitu parametroa</Resource>
+		<Resource tag="ELIMINARPARAMETRO">Ezabatu parametroa</Resource>
+		<Resource tag="GUARDAROK">Aldaketak behar bezala gorde dira</Resource>
+		<Resource tag="GUARDARERROR">Erroreak gertatu dira birbideratzeak gordetzean. Mesedez, egiaztatu markatutako erroreak.</Resource>
+		<Resource tag="ERRORSINCAMBIOS">Ez dago gordetzeko aldaketarik birbideratzeetan</Resource>
+		<Resource tag="ERRORURLORIGENVACIA">Jatorrizko URLa ezin da hutsik egon</Resource>
+		<Resource tag="ERRORURLORIGENNOVALIDA">Jatorrizko URLa ez da baliozkoa</Resource>
+		<Resource tag="ERRORSINTIPOREDIRECCION">Ez da birbideratze mota hautatu</Resource>
+		<Resource tag="ERRORURLDESTINOVACIA">Helburuko URLa ezin da hutsik egon</Resource>
+		<Resource tag="ERRORURLDESTINONOVALIDA">Helburuko URLa ez da baliozkoa</Resource>
+		<Resource tag="ERRORNOMPARAMETROVACIO">Parametroaren izena ezin da hutsik egon</Resource>
+		<Resource tag="ERRORSINPARAMETROS">Birbideratze parametrizatuek gutxienez parametro bat izan behar dute, eremu guztiak beteta dituela</Resource>
+		<Resource tag="ERRORCAMPOPARAMETROSVACIO">Parametro guztiek eremu guztiak beteta izan behar dituzte</Resource>
+		<Resource tag="ERRORCAMPOPARAMETROSNOVALIDO">Parametroaren helburuko URLa ez da baliozkoa</Resource>
+		<Resource tag="ERRORRECALCULANDORUTAS">Errore bat gertatu da ibilbideak berriz kalkulatzean</Resource>
+		<Resource tag="ERRORGUARDARBD">Errore bat gertatu da birbideratzea gordetzen saiatzean. Jarri harremanetan administratzailearekin</Resource>
+		<Resource tag="RUTAORIGEN">URLak bide erlatibo bat izan behar du</Resource>
+	</page>
+	<page name="ADMINCARGAMASIVA">
+		<Resource tag="CARGAMASIVA">Karga masiboa</Resource>
+		<Resource tag="LISTABLANCA">Zerrenda zuria</Resource>
+		<Resource tag="DESCCOMUNIDAD">Komunitateko karga masiboko zerbitzuaren zerrenda zuriaren konfigurazioa</Resource>
+		<Resource tag="DESCECOSISTEMA">Ekosistemako karga masiboko zerbitzuaren zerrenda zuriaren konfigurazioa</Resource>
+		<Resource tag="INTRODUCEURL">Sartu karga masiboko zerbitzuari deitu ahal izango dion baliozko URL oso bat</Resource>
+		<Resource tag="DESEAELIMINARDOMINIO">Hautatutako URLa ezabatu nahi duzu?</Resource>
 	</page>
 	<page name="DEVTOOLS">
 		<Resource tag="FECHA">Data</Resource>
@@ -3996,7 +4052,7 @@
 		<Resource tag="IDIOMAORIGINAL">Sartutako testuaren jatorrizko hizkuntza</Resource>
 		<Resource tag="TEXTOTRADUCIDO">Itzulpenaren emaitza</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Arrastatu eta utzi fitxategi multimedia puntuaturiko eremuan igotzeko</Resource>
-		<Resource tag="IMAGENESENFORMATOPNGOJPG">Irudiak .PNG edo .JPG formatuan</Resource>
+		<Resource tag="IMAGENESENFORMATOPNGOJPG">Irudiak .PNG, .JPG edo .WEBP formatuan</Resource>
 		<Resource tag="HAYRECURSOSQUEESTANUTILIZANDOLACATEGORIAQUESEDESEAELIMINAR">Kategoriaren erabilera duten baliabideak daude, ezabatu nahi dena.</Resource>
 		<Resource tag="PARAPODERELIMINARLACORRECTAMENTE,SELECCIONAUNANUEVACATEGORIA">Korrektuki ezabatzeko, hautatu helmuga kategoria berri bat.</Resource>
 		<Resource tag="QUEDESEASHACERCONLOSRECURSOSQUEESTANENOTRASCATEGORIAS">Zer egin nahi duzu beste kategorietan dauden baliabideekin?</Resource>
@@ -4110,6 +4166,18 @@
 	</page>
   <page name="DEVTOOLS">
     <!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+	<Resource tag="TRADUCIRPROPIEDAD">Propietatea itzuli</Resource>
+	<Resource tag="AVISOECURSOENPROCESODETRADUCCION">Baliabide hau itzultzen ari da eta funtzio batzuk ez daude eskuragarri.</Resource>
+	<Resource tag="ERRORRECURSOENPROCESODETRADUCCION">Ezin duzu itzultzen ari den baliabide bat itzultzera bidali.</Resource>
+	<Resource tag="INFOTRADUCCION">Itzulpena arrakastaz bidali da eta minutu batzuen buruan eskuragarri egongo da.</Resource>
+	<Resource tag="ERRORSUBIRFICHEROCMSMULTIMEDIA">Errore bat gertatu da fitxategia igotzean. Egiaztatu fitxategiaren egoera zuzena dela edo ez dagoela izen bereko beste fitxategirik</Resource>
+	<Resource tag="SELECCIONAUNIDIOMA">-- Hautatu hizkuntza bat --</Resource>
+	<Resource tag="TRADUCIRRECURSO">Baliabidea itzuli</Resource>
+	<Resource tag="INFOTRADUCIRRECURSO">Aukeratu baliabidea itzuli nahi dituzun hizkuntzak</Resource>
+	<Resource tag="INFOTRADUCIRPROPIEDAD">Aukeratu propietatea itzuli nahi dituzun hizkuntzak</Resource>
+	<Resource tag="ERRORIDIOMAORIGENINVALIDO">Hautatutako jatorrizko hizkuntza ez da baliozkoa.</Resource>
+	<Resource tag="ERRORIDIOMADESTINOINVALIDO">Hautatutako helburuko hizkuntza bat ez da baliozkoa.</Resource>
+	<Resource tag="ERRORIDIOMASNOSOPORTADOS">Aukeratutako hizkuntzak ez daude plataformak onartuta.</Resource>
 	<Resource tag="ROLES">Rolak</Resource>
 	<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">CMS osagaia egoera pribatuan dago; beraz, bere profilak eta/edo taldeak fluxuen administrazio orritik konfiguratu behar dira</Resource>
 	<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Osatu konponentearen ikusle izan daitezkeen pertsonak eta/edo taldeak hautatu</Resource>
@@ -4118,6 +4186,25 @@
 	<Resource tag="CANCELAR">Ezeztatu</Resource>
 	<Resource tag="ERRORCARGARFORMULARIO">Arazo bat sortu da inprimakia kargatzean</Resource>
 	<Resource tag="TIPOS">Motak</Resource>
+	<Resource tag="SELECCIONIDIOMADESTINO">-- Hautatu hizkuntza bat --</Resource>
+	<Resource tag="INFOTRADUCIRRECURSOS">Baliabideen itzulpena denbora luzea har dezake, aurrerapena {a href="@1@"}hemen{/a} ikus daiteke</Resource>
+	<Resource tag="TRADUCIRSELECCIONADOS">Itzuli</Resource>
+	<Resource tag="NOHAYRECURSOSPARATRADUCIR">Ez da itzultzeko baliabiderik aurkitu</Resource>
+	<Resource tag="TRADUCCIONMASIVAVAEXISTENTE">Baliabide guztiak jadanik itzultzera bidali dira, ezin da itzulpen masibo berririk egin ezta mota zehatz batena ere, hau amaitu arte</Resource>
+	<Resource tag="TRADUCCIONTIPOEXISTENTE1">Motako baliabideak jadanik itzultzera bidali dira</Resource>
+	<Resource tag="TRADUCCIONTIPOEXISTENTE2">eta ontologia</Resource>
+	<Resource tag="ERROROBTENERIDIOMAS">Errore bat gertatu da eskuragarri dauden hizkuntzen informazioa lortzean</Resource>
+	<Resource tag="TRADUCCIONENCURSO">Itzulpen bat abian da dagoeneko</Resource>
+	<Resource tag="RECURSOSTRADUCIDOS">Baliabideak itzultzen ari dira</Resource>
+	<Resource tag="ERRORTIPORECURSONORECONOCIDO">Baliabide mota ez da ezagutzen</Resource>
+	<Resource tag="ERRORTRADUCIRRECURSOS">Errore bat gertatu da baliabideak itzultzean</Resource>
+	<Resource tag="NOHAYTRADUCTORCONFIGURADO">Ez dago itzulpen-zerbitzurik proiektu honetarako konfiguratuta. Hemen {a href="@1@"}konfigura{/a} dezakezu</Resource>
+	<Resource tag="TIPOSRECURSO">Itzuli nahi den baliabide mota</Resource>
+	<Resource tag="TRADUCIRTODO">Dena itzuli</Resource>
+	<Resource tag="IDIOMAORIGINALRECURSOS">Baliabideen jatorrizko hizkuntza</Resource>
+	<Resource tag="IDIOMADESTINORECURSOS">Baliabideak itzuliko diren hizkuntza</Resource>
+	<Resource tag="IDIOMAORIGINALPROPIEDAD">Propietatearen jatorrizko hizkuntza</Resource>
+	<Resource tag="IDIOMADESTINOPROPIEDAD">Propietatea itzuliko den hizkuntza</Resource>
 	<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Plataformako hizkuntza pertsonalizatuen zerrenda.</Resource>
 	<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Hizkuntza gehitu</Resource>
 	<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Hizkuntzaren gakoa</Resource>
@@ -4421,7 +4508,7 @@
     <Resource tag="COPYRIGHT(EJ:RIAMI+LLAB)">Copyright (Ej: RIAM I+L lab) </Resource>
     <Resource tag="ENLACEQUEVAAAPARECERENELPIEDEPAGINACOMOCONTACTO.EJ:HTTP://WW">Enlace que va a aparecer en el pie de página como contacto. Ej: http://www.gnoss.com/sobre-la-empresa </Resource>
     <Resource tag="NUMERODERECURSOSRELACIONADOS">Número de recursos relacionados </Resource>
-    <Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Tamaño al que deben hacerse las capturas de las miniaturas de las imágenes (por defecto 180x160)</Resource>
+    <Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Baliabideen zerrendetako iruditxoak bistaratzen diren edukiontziaren tamaina. Zabalerak sortutako iruditxoaren tamaina ere mugatzen du; altuerak bistaratzean bakarrik du eragina (lehenetsia 180x160)</Resource>
     <Resource tag="ALTO(EJ280):">Alto (ej 280): </Resource>
     <Resource tag="ANCHO(EJ280):">Ancho (ej 280): </Resource>
     <Resource tag="CARGARLOSEDITORESYLECTORESDELOSRECURSOSENLASPAGINASDEBUSQUED">Cargar los editores y lectores de los recursos en las páginas de búsqueda (Afecta al rendimiento de las búsquedas, no marcar si no es imprescindible)</Resource>
@@ -4460,6 +4547,7 @@
     <Resource tag="MANTENERTEXTOTESAUROSEMANTICOINVARIABLE">Mantener texto tesauro semántico invariable</Resource>
     <Resource tag="NUMERODEFACETASQUESEPINTANENLAPRIMERAPETICIONDEFACETAS">Número de facetas que se pintan en la primera petición de facetas </Resource>
     <Resource tag="NUMERODEFACETASQUESEPINTANENLASEGUNDAPETICIONDEFACETAS">Número de facetas que se pintan en la segunda petición de facetas </Resource>
+    <Resource tag="NUMEROMAXIMODEVERSIONESACONSERVARPORRECURSO">Baliabide bakoitzeko gorde beharreko gehieneko bertsio kopurua</Resource>
     <Resource tag="PROPIEDADESQUESEDESEANUSARENELALGORITMODEPERSONASRECOMENDADA">Propiedades que se desean usar en el algoritmo de personas recomendadas. Cada propiedad lleva asociado su peso en el algoritmo</Resource>
     <Resource tag="EJ:HTTP://WWW.W3.ORG/2006/VCARD/NS#LOCALITY=4|||HTTP://WWW.W">Ej: http://www.w3.org/2006/vcard/ns#locality=4|||http://www.w3.org/2006/vcard/ns#country-name=3</Resource>
     <Resource tag="LISTADEFACETASLENTASQUESEVANAOBTENERDEMANERAASINCRONAPARAQUE">Lista de facetas lentas que se van a obtener de manera asíncrona para que la tercera petición de facetas llegue antes</Resource>
@@ -4919,7 +5007,7 @@
     <Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipos de contenido / Permisos</Resource>
     <Resource tag="INTERACCIONSOCIAL">Interacción social</Resource>
     <Resource tag="NIVELESDECERTIFICACION">Niveles de certificación</Resource>
-    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Hautatutako rola ezabatu nahi duzu?</Resource>
+    <Resource tag="DESEAELIMINARELROLSELECCIONADO">Hautatutako rola ezabatu nahi duzu?{br}Gaur egun rol hori esleituta duten erabiltzaileek eta taldeek lotutako baimenak galduko dituzte eta Komunitateko erabiltzailea rola izango dute.</Resource>
     <Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Rol hau laguntzaile bati edo gehiagori esleituta dago.{br} Ezabatzen baduzu, rol hori izateari utziko diote eta haien portaera alda daiteke.{br}Ziur zaude jarraitu nahi duzula?</Resource>
     <Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
     <Resource tag="ESTRUCTURA">Estructura</Resource>
@@ -5155,12 +5243,12 @@
     <Resource tag="AÑADIRRECURSOMULTIMEDIA">Añadir recurso multimedia</Resource>
     <Resource tag="RECURSOMULTIMEDIA">Recurso multimedia</Resource>
     <Resource tag="IMAGENCATEGORIA">Imagen de la categoría</Resource>
-    <Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, la imagen debe estar en formato .PNG o .JPG</Resource>
+    <Resource tag="ERRORFORMATOIMAGENCATEGORIA">Errorea, irudia .PNG, .JPG edo .WEBP formatuan egon behar da</Resource>
     <Resource tag="ERRORGENERICOIMAGENCATEGORIA">Error, la imagen no ha podido subirse correctamente.</Resource>
     <Resource tag="ERRORPESOIMAGENCATEGORIA">Error, la imagen supera el tamaño máximo permitido: </Resource>
     <Resource tag="ERRORELIMINARIMAGENCATEGORIA">Error, la imagen de la categoría no ha podido eliminarse correctamente</Resource>
     <Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Arrastra y suelta en la zona punteada archivo multimedia para subir</Resource>
-    <Resource tag="IMAGENESENFORMATOPNGOJPG">Imágenes en formato .PNG o .JPG</Resource>
+    <Resource tag="IMAGENESENFORMATOPNGOJPG">Irudiak .PNG, .JPG edo .WEBP formatuan</Resource>
     <Resource tag="ARCHIVOSENFORMATODOC,DOCX,TXTOPDF">Archivos en formato .DOC, .DOCX, .TXT o .PDF</Resource>
     <Resource tag="DESEAELIMINARELELEMENTOMULTIMEDIA">¿Desea eliminar el elemento multimedia?</Resource>
     <Resource tag="URLDOMINIO">URL dominio</Resource>
@@ -5289,6 +5377,8 @@
     <Resource tag="INTRODUCEUNIDENTIFICADORUNICOPARALATRADUCCIONACREAR">Introduce un identificador único para la traducción a crear.</Resource>
     <Resource tag="IDDELATRADUCCION">Id de la traducción</Resource>
     <Resource tag="AÑADEACONTINUACIONLASTRADUCCIONESPERSONALIZADASPARALOSDIFERE">Añade a continuación las traducciones personalizadas para los diferentes idiomas disponibles en la comunidad.</Resource>
+	<Resource tag="ERRORCARACTERESINVALIDOSTEXTID">Itzulpenaren identifikatzailea ezin da karaktere hauekin hasi: =, +, -, @, |, lerro-jauzia, tabulazioa edo orga-itzulera</Resource>
+	<Resource tag="ERRORCARACTERESINVALIDOSTRADUCCION">@1@ hizkuntzako itzulpena ezin da karaktere hauekin hasi: =, +, -, @, |, lerro-jauzia, tabulazioa edo orga-itzulera</Resource>
     <Resource tag="TRADUCCION">Traducción</Resource>
     <Resource tag="CLAUSULAS">Cláusulas</Resource>
     <Resource tag="CONTENIDO">Contenido</Resource>
@@ -5307,6 +5397,32 @@
     <Resource tag="INTRODUCEELUSUARIO">Introduce el usuario</Resource>
     <Resource tag="INTRODUCELACONTRASEÑA">Introduce la contraseña</Resource>
     <Resource tag="INTRODUCEELEMAILPARASUGERENCIAS">Introduce el email para sugerencias</Resource>
+    <Resource tag="CORREOBUZONOBLIGATORIO">El correo electrónico de la comunidad es obligatorio.</Resource>
+    <Resource tag="CORREOBUZONNOVALIDO">El correo electrónico de la comunidad no tiene un formato válido.</Resource>
+    <Resource tag="SMTPOBLIGATORIO">El servidor SMTP es obligatorio.</Resource>
+    <Resource tag="PUERTOOBLIGATORIO">El puerto del servidor SMTP es obligatorio.</Resource>
+    <Resource tag="PUERTONOVALIDO">El puerto del servidor SMTP debe ser un número entero entre 1 y 32767.</Resource>
+    <Resource tag="USUARIOCORREOOBLIGATORIO">El usuario de la cuenta de correo es obligatorio.</Resource>
+    <Resource tag="CONTRASENYACORREOOBLIGATORIA">La contraseña de la cuenta de correo es obligatoria.</Resource>
+    <Resource tag="TIPOSERVIDOROBLIGATORIO">El tipo de servidor de envío es obligatorio.</Resource>
+    <Resource tag="EMAILSUGERENCIASOBLIGATORIO">El email de sugerencias es obligatorio.</Resource>
+    <Resource tag="EMAILSUGERENCIASNOVALIDO">El email de sugerencias no tiene un formato válido.</Resource>
+    <Resource tag="EMAILPRUEBAOBLIGATORIO">Indica el correo electrónico al que se enviará el email de prueba.</Resource>
+    <Resource tag="EMAILPRUEBANOVALIDO">El correo electrónico al que se enviará el email de prueba no tiene un formato válido.</Resource>
+    <Resource tag="ASUNTOCORREOPRUEBA">Correo de prueba de la configuración del buzón</Resource>
+    <Resource tag="CUERPOCORREOPRUEBA">El correo electrónico configurado funciona correctamente.</Resource>
+    <Resource tag="CORREOCONFIGURADOCONEXITO">El correo electrónico se ha configurado con éxito.</Resource>
+    <Resource tag="ERRORSMTPCONEXION">No se ha podido conectar con el servidor SMTP '@1@' en el puerto @2@. Revisa el nombre del servidor, el puerto y si el servidor requiere una conexión segura (SSL). Detalle: @3@</Resource>
+    <Resource tag="ERRORSMTPAUTENTICACION">El servidor SMTP '@1@' ha rechazado las credenciales del usuario '@2@'. Revisa el usuario y la contraseña de la cuenta de correo. Detalle: @3@</Resource>
+    <Resource tag="ERRORSMTPSSL">El servidor SMTP '@1@' requiere una conexión segura. Activa la opción 'Usar servidor seguro' o utiliza un puerto seguro (465 o 587). Detalle: @2@</Resource>
+    <Resource tag="ERRORSMTPREMITENTE">El servidor SMTP ha rechazado el remitente '@1@'. Revisa que la cuenta '@2@' esté autorizada para enviar correos desde esa dirección. Detalle: @3@</Resource>
+    <Resource tag="ERRORSMTPDESTINATARIO">El servidor SMTP ha rechazado el destinatario '@1@'. Detalle: @2@</Resource>
+    <Resource tag="ERRORSMTPDIRECCIONNOVALIDA">Alguna de las direcciones de correo indicadas no tiene un formato válido. Detalle: @1@</Resource>
+    <Resource tag="ERRORSMTPSERVICIONODISPONIBLE">El servidor SMTP '@1@' no está disponible en este momento. Inténtalo de nuevo más tarde. Detalle: @2@</Resource>
+    <Resource tag="ERRORENVIOCORREOPRUEBA">No se ha podido enviar el correo de prueba. Detalle: @1@</Resource>
+    <Resource tag="ERRORGUARDARCONFIGURACIONCORREO">El correo de prueba se ha enviado correctamente, pero no se ha podido guardar la configuración del buzón. Inténtalo de nuevo o contacta con el administrador de la plataforma.</Resource>
+    <Resource tag="TODOSLOSCAMPOSDELBUZONSONOBLIGATORIOS">Todos los campos son obligatorios. Al guardar se enviará un correo de prueba para comprobar que la configuración funciona.</Resource>
+    <Resource tag="LACONTRASENYANOSEMUESTRA">Por seguridad la contraseña no se muestra. Vuelve a introducirla para poder validar y guardar la configuración.</Resource>
     <Resource tag="OPCIONESDELMETAADMINISTRADOR">Opciones del meta-administrador</Resource>
     <Resource tag="PERMITIRADMINISTRACIONSEMANTICA">Permitir administración semántica</Resource>
     <Resource tag="PERMITIRADMINISTRACIONDEVISTAS">Permitir administración de vistas</Resource>
@@ -6276,7 +6392,7 @@
 		<Resource tag="NUEVOICONO">Hautatu eransteko ikono bat</Resource>
 		<Resource tag="ERRORSUBIRICONO">Errorea gertatu da ikonoa igotzerakoan, saiatu berriro geroago.</Resource>
 		<Resource tag="SELECCIONARROL">-- Hautatu rol bat --</Resource>
-		<Resource tag="FORMATOIMAGENPERMITIDO">Irudiak .JPG, .JPEG, .PNG edo .GIF formatuan</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Irudiak .JPG, .JPEG, .PNG, .GIF edo .WEBP formatuan</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Egin klik edo arrastatu irudi bat hona</Resource>
 		<Resource tag="ERRORPESOICONO">Ikonoak ezin du 2 MB baino gehiago pisatu</Resource>
 		<Resource tag="ERRORICONOVACIO">Fitxategi hutsa</Resource>

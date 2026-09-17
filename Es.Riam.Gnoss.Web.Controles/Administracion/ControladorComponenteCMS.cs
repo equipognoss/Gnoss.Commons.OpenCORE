@@ -3,13 +3,11 @@ using Es.Riam.Gnoss.AD.CMS;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
-using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModel.Models.VistaVirtualDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Flujos;
 using Es.Riam.Gnoss.AD.Parametro;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -32,17 +30,16 @@ using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
-using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
@@ -1205,7 +1202,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                         string nombreFichero = UtilCadenas.RemoveAccentsWithRegEx(fichero[0]);
                         string base64Image = fichero[1];
 
-                        List<string> listaExtensiones = new List<string>() { "jpg", "jpeg", "png", "gif" };
+                        List<string> listaExtensiones = new List<string>() { "jpg", "jpeg", "png", "gif", "webp" };
 
                         string extensionFichero = nombreFichero.Substring(nombreFichero.LastIndexOf('.'));
 
@@ -1372,7 +1369,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 filaCMSComponenteVersion.IdentidadID = IdentidadActual.Clave;
                 filaCMSComponenteVersion.Fecha = DateTime.Now;
                 filaCMSComponenteVersion.Comentario = "";
-                filaCMSComponenteVersion.ModeloJSON = JsonConvert.SerializeObject(pComponente);
+                filaCMSComponenteVersion.ModeloJSON = JsonSerializer.Serialize(pComponente);
 
                 if (listaCMSComponenteVersiones.Count > 0)
                 {
@@ -1466,7 +1463,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             try
             {
                 string peticion = $"{UrlApiDesplieguesEntornoSiguiente}/PropiedadesIntegracion?nombreProy={ProyectoSeleccionado.NombreCorto}&UsuarioID={pUsuariID}";
-                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua, "");
+                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua);
             }
             catch
             {

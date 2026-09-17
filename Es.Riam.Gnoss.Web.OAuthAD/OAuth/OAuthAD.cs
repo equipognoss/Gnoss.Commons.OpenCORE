@@ -174,11 +174,9 @@ namespace Es.Riam.Gnoss.OAuthAD.OAuth
                 Usuario = usuario
             }).Where(item => item.OAuthToken.Token.Equals(pTokenKey)).Select(item => item.Usuario).ToList();
 
-
             resultado.OAuthConsumer = mEntityContextOauth.OAuthToken.Join(mEntityContextOauth.OAuthConsumer, oAuthToken => oAuthToken.ConsumerId, oAuthConsumer => oAuthConsumer.ConsumerId, (oAuthToken, oAuthConsumer) => new { OAuthToken = oAuthToken, OAuthConsumer = oAuthConsumer }).Where(item => item.OAuthToken.Token.Equals(pTokenKey)).Select(item => item.OAuthConsumer).ToList();
 
             resultado.PinToken = mEntityContextOauth.OAuthToken.Join(mEntityContextOauth.PinToken, oauthToken => oauthToken.TokenId, pinToken => pinToken.TokenId, (oauthToken, pinToken) => new { OAuthToken = oauthToken, PinToken = pinToken }).Where(item => item.OAuthToken.Token.Equals(pTokenKey)).Select(item => item.PinToken).ToList();
-
 
             resultado.ConsumerData = mEntityContextOauth.OAuthToken.Join(mEntityContextOauth.ConsumerData, oauthToken => oauthToken.ConsumerId, consumerData => consumerData.ConsumerId, (oauthToken, consumerData) => new { OAuthToken = oauthToken, ConsumerData = consumerData }).Where(item => item.OAuthToken.Token.Equals(pTokenKey)).Select(item => item.ConsumerData).ToList();
 

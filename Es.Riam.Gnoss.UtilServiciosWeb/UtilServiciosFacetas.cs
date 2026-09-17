@@ -516,30 +516,12 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public List<string> ObtenerPropiedadesRango(GestionFacetas pGestorFacetas)
         {
             List<string> propiedadesRango = new List<string>();
-
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             List<Faceta> lista = pGestorFacetas.ListaFacetas.Where(faceta => faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.Numero)).ToList();
 
             foreach (Faceta fac in lista)
             {
                 propiedadesRango.Add(fac.ClaveFaceta.Substring(fac.ClaveFaceta.LastIndexOf(":") + 1));
-            }
-
-            //TablasDeConfiguracionCL tablasDeConfiguracionCL = new TablasDeConfiguracionCL();            
-            //ConfiguracionFacetadoDS tConfiguracion = tablasDeConfiguracionCL.ObtenerConfiguracionOrdenFacetado();
-
-            //DataRow[] filas = tConfiguracion.ConfiguracionOrdenFacetado.Select("IDComunidad = '" + pProyectoID + "'");
-
-            //foreach (DataRow myrow in filas)
-            //{
-
-            //    if (myrow["TipoPropiedad"].ToString().Equals("Numero"))
-            //    {
-            //        string numeroAux = myrow["Faceta"].ToString();
-            //        propiedadesRango.Add(numeroAux.Substring(numeroAux.LastIndexOf(":") + 1));
-            //    }
-
-            //}                               
+            }                         
 
             return propiedadesRango;
         }
@@ -554,7 +536,6 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         {
             List<string> propiedadesFecha = new List<string>();
 
-            FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             List<Faceta> lista = pGestorFacetas.ListaFacetas.Where(faceta => faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.Fecha) || faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.Calendario) || faceta.TipoPropiedad.Equals(TipoPropiedadFaceta.CalendarioConRangos)).ToList();
 
             foreach (Faceta fac in lista)

@@ -66,7 +66,6 @@ namespace Es.Riam.Gnoss.Util.General
         /// Almacena el tiempo minimo de la peticion para que se guarde la traza
         /// </summary>
         private static int mTiempoMinPeticion = 0;
-        public static UtilTelemetry.UbicacionLogsYTrazas UBICACIONTRAZA = UtilTelemetry.UbicacionLogsYTrazas.Archivo;
 
 
         #endregion
@@ -608,7 +607,7 @@ namespace Es.Riam.Gnoss.Util.General
             return loggerConfiguration;
         }
 
-        public static void ConfigurarSeguimientoFicheros(HostBuilderContext pHostContext, IConfigurationBuilder pConfig, Serilog.ILogger pLooger)
+        public static void ConfigurarSeguimientoFicheros(HostBuilderContext pHostContext,IConfigurationBuilder pConfig, Serilog.ILogger pLooger)
         {
             pConfig.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             pConfig.AddJsonFile($"appsettings.{pHostContext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
@@ -630,20 +629,20 @@ namespace Es.Riam.Gnoss.Util.General
             }
             else
             {
-                pLooger.Warning("No se ha encontrado la carpeta /app/logging-config");
+                pLooger?.Warning("No se ha encontrado la carpeta /app/logging-config");
             }
         }
 
         public static void SuscribirCambios(HostBuilderContext pHostContext, Serilog.ILogger pLooger)
         {
-            var token = pHostContext.Configuration.GetReloadToken();
-            pLooger.Debug("Token CanChange: {CanChange}", token.ActiveChangeCallbacks);
-            token.RegisterChangeCallback(_ =>
-            {
-                pLooger.Debug("ChangeToken disparado");
-                ActualizarNivelLog(pHostContext.Configuration);
-                SuscribirCambios(pHostContext, pLooger); // se resuscribe para el siguiente cambio
-            }, null);
+            pLooger.Debug("Token CanChange: {CanChange}", pHostContext.Configuration.GetReloadToken().ActiveChangeCallbacks);
+            ChangeToken.OnChange(
+                () => pHostContext.Configuration.GetReloadToken(),
+                () =>
+                {
+                    pLooger.Debug("ChangeToken disparado");
+                    ActualizarNivelLog(pHostContext.Configuration);
+                });
         }
 
         public static void ActualizarNivelLog(IConfiguration pConfiguration)

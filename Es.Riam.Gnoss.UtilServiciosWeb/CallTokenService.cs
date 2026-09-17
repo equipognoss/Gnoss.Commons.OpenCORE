@@ -1,21 +1,19 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Util;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.UtilServiciosWeb
 {
     public class CallTokenService
     {
+        private static readonly HttpClient mClient = new HttpClient(new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+        });
+
         private ConfigService mConfigService;
 
         public CallTokenService(ConfigService configService)
@@ -50,13 +48,11 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             HttpResponseMessage response = null;
             try
             {
-                HttpClient client = new HttpClient();
-                client.Timeout = TimeSpan.FromDays(1);
                 string authority = mConfigService.GetAuthority() + "/connect/token";
-                response = client.PostAsync($"{authority}", contentData).Result;
+                response = mClient.PostAsync($"{authority}", contentData).Result;
                 response.EnsureSuccessStatusCode();
                 string result = response.Content.ReadAsStringAsync().Result;
-                TokenBearer token = JsonConvert.DeserializeObject<TokenBearer>(result);
+                TokenBearer token = JsonSerializer.Deserialize<TokenBearer>(result);
                 return token;
             }
             catch (HttpRequestException)

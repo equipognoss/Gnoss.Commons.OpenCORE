@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net8.0</TargetFramework>
+	  <TargetFramework>net10.0</TargetFramework>
 	  <SonarQubeExclude>false</SonarQubeExclude>
   </PropertyGroup>
 
@@ -61,32 +61,21 @@
     <Compile Remove="Suscripcion\ResultadoSuscripcionAD.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="Aspose.Zip" Version="24.10.0" />
-	  <PackageReference Include="Azure.Identity" Version="1.17.1" />
-	  <PackageReference Include="EnterpriseLibrary.Data.NetCore" Version="6.3.2" />
-	  <PackageReference Include="LumenWorksCsvReader" Version="4.0.0" />
-	  <PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
-	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-	  <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.1.2" />
-	  <PackageReference Include="Npgsql" Version="8.0.5" />
-	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
-	  <PackageReference Include="Oracle.EntityFrameworkCore" Version="8.23.60" />
-	  <PackageReference Include="Semiodesk.Trinity.Virtuoso" Version="1.0.3.77" />
-	  <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-	  <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
-	  <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
-	  <PackageReference Include="System.Net.Http" Version="4.3.4" />
-	  <PackageReference Include="System.Text.Json" Version="8.0.5" />
-	  <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="EnterpriseLibrary.Data.NetCore" Version="6.3.2" />
+		<PackageReference Include="LumenWorksCsvReader" Version="4.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Npgsql" Version="10.0.2" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+		<PackageReference Include="Oracle.EntityFrameworkCore" Version="10.23.26200" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+	</ItemGroup>
 
   <ItemGroup>
     <Compile Update="AutoCompetarEtiquetas\Model\TagsAutoDS.Designer.cs">

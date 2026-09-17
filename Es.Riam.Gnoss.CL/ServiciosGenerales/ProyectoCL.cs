@@ -1,3 +1,4 @@
+using BeetleX.Redis.Commands;
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
@@ -23,6 +24,7 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -39,15 +41,18 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         public static string CLAVE_CACHE_LISTA_RUTAPESTANYAS_REGISTRAR = "ListaRutaPestanyasRegistrar_";
         public static string CLAVE_CACHE_CONTADOR_PERSONAS_ORGANIZACIONES_COMUNIDAD = "ContadorPersonasOrganizaciones_";
         public static string CLAVE_CACHE_CONTADOR_RECURSOS_COMUNIDAD = "ContadorRecursos_";
+		public static string CLAVE_CACHE_TRADUCIR_RECURSOS = "TraducirRecursos_";
+		public static string CLAVE_CACHE_CONTADOR_TRADUCIR_RECURSOS = "ContadorTraducirRecursos_";
+		public static string CLAVE_CACHE_TRADUCIR_TODOS_RECURSOS = "TraducirTodosLosRecursos_";
 
-        #endregion
+		#endregion
 
-        #region Miembros
+		#region Miembros
 
-        /// <summary>
-        /// Clase de negocio
-        /// </summary>
-        private ProyectoCN mProyectoCN = null;
+		/// <summary>
+		/// Clase de negocio
+		/// </summary>
+		private ProyectoCN mProyectoCN = null;
 
         /// <summary>
         /// Clave MAESTRA de la cache
@@ -66,7 +71,10 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
         private ConfigService mConfigService;
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
-
+        private string mRedisIP;
+        private int mRedisDB;
+        private ConnectionMultiplexer mConexion;
+        private IDatabase mDB;
         #endregion
 
         #region Constructores
@@ -84,7 +92,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mRedisCacheWrapper = redisCacheWrapper;
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-        }
+			mRedisIP = mConfigService.ObtenerConexionRedisIPMaster("recursos");
+			mRedisDB = mConfigService.ObtenerConexionRedisBD("recursos");
+			mConexion = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB);
+			mDB = mConexion.GetDatabase();
+		}
 
         /// <summary>
         /// Constructor a partir del fichero de configuración de base de datos
@@ -101,7 +113,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mRedisCacheWrapper = redisCacheWrapper;
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-        }
+			mRedisIP = mConfigService.ObtenerConexionRedisIPMaster("recursos");
+			mRedisDB = mConfigService.ObtenerConexionRedisBD("recursos");
+			mConexion = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB);
+			mDB = mConexion.GetDatabase();
+		}
 
         /// <summary>
         /// Constructor a partir del fichero de configuración de base de datos
@@ -119,7 +135,11 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
             mRedisCacheWrapper = redisCacheWrapper;
             mlogger = logger;
             mLoggerFactory = loggerFactory;
-        }
+			mRedisIP = mConfigService.ObtenerConexionRedisIPMaster("recursos");
+			mRedisDB = mConfigService.ObtenerConexionRedisBD("recursos");
+			mConexion = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB);
+			mDB = mConexion.GetDatabase();
+		}
 
         #endregion
 
@@ -870,15 +890,107 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
 			string rawkey = string.Concat(NombresCL.CONTADORTAREA, "_", pTareaID);
             InvalidarCache(rawkey);
 		}
-        //-----------------------------------------------------------------------------
+
+        public void InsertarClaveContadorTraducirRecursos(Guid pTareaID, int pNumeroElementos)
+        {
+            string clave = $"{CLAVE_CACHE_CONTADOR_TRADUCIR_RECURSOS}{pTareaID}";
+            mDB.StringSet(clave, pNumeroElementos);
+		}
+
+		public void InsertarClaveTraducirTodosLosRecursos(Guid pTareaID)
+		{			
+			string clave = $"{CLAVE_CACHE_TRADUCIR_TODOS_RECURSOS}{pTareaID}";
+			mDB.StringSet(clave, 1);
+		}
+
+		public void InsertarClaveTraducirTipoDeRecurso(Guid pTareaID, short pTipo, Guid? pOntologiaID = null)
+		{
+			string clave = $"{CLAVE_CACHE_TRADUCIR_RECURSOS}{pTareaID}_{pTipo}";
+            if (pOntologiaID.HasValue)
+            {
+                clave = $"{clave}_{pOntologiaID.Value}";
+            }
+			mDB.StringSet(clave, 1);
+		}
+
+        public void EliminarClavesProcesoTraduccion(Guid pTareaID)
+        {
+            string patron = $"*{pTareaID}*";
+            var clavesPorTarea = mConexion.GetServer(mRedisIP).Keys(database: mRedisDB, pattern: patron);
+			if (clavesPorTarea.Any())
+			{
+                List<string> claves = clavesPorTarea.Select(k => k.ToString()).ToList();
+                foreach (string clave in claves)
+                {
+					mDB.KeyDelete(clave);
+				}				
+			}
+		}
+
+        public int ObtenerNumeroDeRecursosSiendoTraducidos(Guid pTareaID)
+        {
+            string clave = $"{CLAVE_CACHE_CONTADOR_TRADUCIR_RECURSOS}{pTareaID}";
+            string valorCache = mDB.StringGet(clave);
+
+            if (!string.IsNullOrEmpty(valorCache))
+            {
+                 return Convert.ToInt32(valorCache);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        public bool ComprobarSiSeEstanTraduciendoTodosLosRecursos(Guid pTareaID)
+        {
+			string clave = $"{CLAVE_CACHE_TRADUCIR_TODOS_RECURSOS}{pTareaID}";
+			string valorCache = mDB.StringGet(clave);
+            if (!string.IsNullOrEmpty(valorCache))
+            {
+                return true;
+            }
+
+            return false;
+		}
+
+        public bool ComprobarSiSeEstaTraduciendoUnTipoDeRecurso(Guid pTareaID, TiposDocumentacion pTipo, Guid? pOntologia = null)
+        {
+            string clave = $"{CLAVE_CACHE_TRADUCIR_RECURSOS}{pTareaID}_{(short)pTipo}";
+            if (pOntologia.HasValue && !pOntologia.Value.Equals(Guid.Empty))
+            {
+                clave = $"{clave}_{pOntologia.Value}";
+            }
+            string valorCache = mDB.StringGet(clave);
+            if (!string.IsNullOrEmpty(valorCache))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool ComprobarSiSeEstaTraduciendoAlgunTipoDeRecurso(Guid pTareaID)
+        {
+			string patron = $"*{pTareaID}*";
+			var clavesPorTarea = mConexion.GetServer(mRedisIP).Keys(database: mRedisDB, pattern: patron);
+			if (clavesPorTarea.Any())
+			{
+                return true;
+			}
+
+            return false;
+		}
+
+		//-----------------------------------------------------------------------------
 
 
-        /// <summary>
-        /// Agrega a la cache un gestor de identidades con los administradores del proyecto
-        /// </summary>
-        /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <param name="pGestorIdentidades">Gestor de identidades con los administradores del proyecto</param>
-        public void InvalidarHTMLAdministradoresProyecto(Guid pProyectoID)
+		/// <summary>
+		/// Agrega a la cache un gestor de identidades con los administradores del proyecto
+		/// </summary>
+		/// <param name="pProyectoID">Identificador del proyecto</param>
+		/// <param name="pGestorIdentidades">Gestor de identidades con los administradores del proyecto</param>
+		public void InvalidarHTMLAdministradoresProyecto(Guid pProyectoID)
         {
             string rawKey = string.Concat(NombresCL.HTMLADMINISTRADORESPROYECTO, "_", pProyectoID);
             InvalidarCache(rawKey);
@@ -2736,6 +2848,8 @@ namespace Es.Riam.Gnoss.CL.ServiciosGenerales
                 {
                     if (disposing)
                     {
+                        // mConexion proviene de RedisMultiplexerPool (compartido para toda la vida
+                        // del proceso): no se dispone aquí.
                     }
                 }
                 catch (Exception e)

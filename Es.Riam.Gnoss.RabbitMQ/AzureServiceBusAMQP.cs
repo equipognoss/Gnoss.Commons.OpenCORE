@@ -91,12 +91,16 @@ namespace Es.Riam.Gnoss.RabbitMQ
                 mLoggingService.GuardarLogError(exception, $"No se pudo replicar en {mGestorRabbit?.QueueName}: {message}",mlogger);
             }
         }
-        public void AgregarElementoAColaConReintentosExchange(string message)
+        public void AgregarElementoAColaConReintentosExchange(string message, byte priority = 1)
         {
             AgregarElementoACola(message);
 		}
+        public IList<string> AgregarElementosAColaConReintentosExchange(IEnumerable<string> messages, byte priority = 1)
+        {
+            return AgregarElementosACola(messages);
+        }
 
-		public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
         {            
             try
             {

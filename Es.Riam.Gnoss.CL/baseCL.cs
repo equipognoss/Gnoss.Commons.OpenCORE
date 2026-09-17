@@ -28,6 +28,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.CL
 {
@@ -1723,7 +1724,6 @@ namespace Es.Riam.Gnoss.CL
                 //TODO Revisar el HOST
                 //if (mNumCaidasConsecutivas <= 3 && !mServidoresRedisCaidos.ContainsKey(clienteRedis.Host))
                 {
-                    Thread t = null;
                     if (!UsarHilos)
                     {
                         lock (mBloqueoCache)
@@ -1740,10 +1740,12 @@ namespace Es.Riam.Gnoss.CL
                             finHilo = DateTime.Now;
                         };
 
-                        //Usar hilo normal, si no termina se hace un abort.
-                        t = new Thread(new ThreadStart(wrappedAction));
-                        t.Start();
-                        t.Join(mDecimasSegundoEsperaRedis * 100);
+                        // Vía ThreadPool en vez de un hilo con stack propio (~1 MB) por acceso a Redis.
+                        // Si no termina en plazo, "terminado" queda false y se traza; la tarea sigue
+                        // ejecutándose en el ThreadPool sin bloquear un stack dedicado (en .NET Core no
+                        // existe abort, así que antes tampoco se cancelaba realmente).
+                        Task tarea = Task.Run(wrappedAction);
+                        tarea.Wait(TimeSpan.FromMilliseconds(mDecimasSegundoEsperaRedis * 100));
                     }
 
                     if (!terminado)
@@ -2503,7 +2505,7 @@ namespace Es.Riam.Gnoss.CL
                         }
                     }
 
-                    if (!mClienteRedisLectura.DB.Equals(nodoDB))
+                    if (mClienteRedisLectura != null && !mClienteRedisLectura.DB.Equals(nodoDB))
                     {
                         mClienteRedisLectura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);
                         var result = mClienteRedisLectura.Execute(new SETNAME(), typeof(string));
@@ -2647,9 +2649,10 @@ namespace Es.Riam.Gnoss.CL
                     {
                         mPoolName = "redis";
                     }
-
-                    // Se saca fuera para que no se compruebe siempre el nodoDB de la petici�n antes de devolverla
-                    string poolNameEscritura = mPoolName.Replace("acid", "redis");
+                    // Misma normalizaci�n que ClienteRedisLectura (baseCL.cs:2378-2379): debe usar la misma clave
+                    // de diccionario/configuraci�n independientemente de qu� getter se invoque primero.
+                    mPoolName = mPoolName.Replace("acid", "redis");
+                    mPoolName = mPoolName.Replace("_Master", "");
 
                     string nodoIPMaster = _configService.ObtenerConexionRedisIPMaster(mPoolName);
                     int nodoDB = _configService.ObtenerConexionRedisBD(mPoolName);
@@ -2693,10 +2696,10 @@ namespace Es.Riam.Gnoss.CL
                         }
                     }
 
-                    if (!mClienteRedisEscritura.DB.Equals(nodoDB))
+                    if (mClienteRedisEscritura != null && !mClienteRedisEscritura.DB.Equals(nodoDB))
                     {
                         mClienteRedisEscritura = ObtenerClienteRedisParaIP(nodoIPMaster, nodoDB);
-                        var result = mClienteRedisLectura.Execute(new SETNAME(), typeof(string));
+                        var result = mClienteRedisEscritura.Execute(new SETNAME(), typeof(string));
                         result.Wait();
                         _redisCacheWrapper.AddRedisEscritura(mPoolName, mClienteRedisEscritura);
                     }
@@ -2884,10 +2887,8 @@ namespace Es.Riam.Gnoss.CL
                 {
                     if (pDisposing)
                     {
-                        //_redisCacheWrapper.CerrarConexionesEscritura();
-                        //_redisCacheWrapper.CerrarConexionesLectura();
-                        //ClienteRedisLectura.Dispose();
-                        //ClienteRedisEscritura.Dispose();
+                        // El ciclo de vida de las conexiones Redis pertenece a RedisCacheWrapper (Singleton);
+                        // disponerlas aqu� afectar�a a todas las CL que comparten el wrapper.
                     }
                 }
                 catch (Exception ex)

@@ -1,4 +1,4 @@
-using Es.Riam.Gnoss.AD.BASE_BD;
+﻿using Es.Riam.Gnoss.AD.BASE_BD;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
@@ -14,7 +14,6 @@ using Es.Riam.Util;
 using Es.Riam.Util.AnalisisSintactico;
 using LumenWorks.Framework.IO.Csv;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using OpenLink.Data.Virtuoso;
 using System;
 using System.Collections.Generic;
@@ -32,18 +31,14 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.AbstractsOpen;
 using System.Collections.Concurrent;
 using Es.Riam.Semantica.Plantillas;
-using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Documentacion;
 using Es.Riam.Semantica.OWL;
 using System.Xml;
 using Es.Riam.Gnoss.Util.Seguridad;
-using Microsoft.Exchange.WebServices.Data;
 using System.Net.Http;
 using Es.Riam.Gnoss.Web.MVC.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.AD.Facetado
 {
@@ -1435,7 +1430,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
 
-            NameValueCollection parametros = GenerarParametrosParaQuery(pQuery);
+            Dictionary<string, string> parametros = GenerarParametrosParaQuery(pQuery);
 
             AgregarEntradaTraza("Leo de virtuoso " + virtuosoConnectionData.Ip + ". " + pQuery);
 
@@ -1475,9 +1470,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return numReplicacionesPendientes;
         }
 
-        private NameValueCollection GenerarParametrosParaQuery(string pQuery)
+        private Dictionary<string, string> GenerarParametrosParaQuery(string pQuery)
         {
-            NameValueCollection parametros = new NameValueCollection();
+            Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("query", pQuery);
             parametros.Add("timeout", TimeOutVirtuoso.ToString());
             parametros.Add("format", "text/csv");
@@ -1495,7 +1490,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         {
             FacetadoDS facetadoDS = new FacetadoDS();
 
-            NameValueCollection parametros = GenerarParametrosParaQuery(pQuery);
+            Dictionary<string, string> parametros = GenerarParametrosParaQuery(pQuery);
 
             LeerDeVirtuoso_WebClient(pVirtuosoConnectionData, pNombreTabla, facetadoDS, pQuery, parametros);
 
@@ -1541,7 +1536,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 pQuery = $"{EvaluarFiltrosFacetasEnOrden} {pQuery}";
             }
 
-            NameValueCollection parametros = new NameValueCollection();
+            Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("query", pQuery);
             parametros.Add("timeout", TimeOutVirtuoso.ToString());
             parametros.Add("format", "application/sparql-results+json");
@@ -1570,23 +1565,21 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 pQuery = $"{EvaluarFiltrosFacetasEnOrden} {pQuery}";
             }
 
-            NameValueCollection parametros = null;
-
             AgregarEntradaTraza($"Leo de virtuoso {virtuosoConnectionData.Ip}. \n {pQuery}");
 
-            string csv = LeerDeVirtuoso_WebClientCSV(virtuosoConnectionData, pNombreTabla, pQuery, parametros);
+            string csv = LeerDeVirtuoso_WebClientCSV(virtuosoConnectionData, pNombreTabla, pQuery);
 
             AgregarEntradaTraza($"Leído de virtuoso: {virtuosoConnectionData.Ip}. \n{pQuery}");
 
             return csv;
         }
 
-        public string LeerDeVirtuoso_WebClientCSV(VirtuosoConnectionData pVirtuosoConnectionData, string pNombreTabla, string pQuery, NameValueCollection pParametros = null)
+        public string LeerDeVirtuoso_WebClientCSV(VirtuosoConnectionData pVirtuosoConnectionData, string pNombreTabla, string pQuery, Dictionary<string, string> pParametros = null)
         {
             string responseCSV = "";
             if (pParametros == null)
             {
-                pParametros = new NameValueCollection();
+                pParametros = new Dictionary<string, string>();
                 pParametros.Add("query", pQuery);
                 pParametros.Add("timeout", TimeOutVirtuoso.ToString());
                 pParametros.Add("format", "text/csv");
@@ -1594,12 +1587,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             AgregarEntradaTraza("LecturaWebClient: Inicio");
 
-            //Creamos un método para que si hay algún error devuelva el error, no un DS vacio.
-            //Esto se necesita para el método ServidorOperativo (Base, Base Usuarios, RefrescoCacheMensajes...)
-
-            WebClient webClient = new RiamWebClient(600);
-            webClient.Encoding = Encoding.UTF8;
-            webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 
             string url = pVirtuosoConnectionData.SparqlEndpoint;
 
@@ -1608,28 +1595,22 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 throw new Exception($"La conexión {pVirtuosoConnectionData.Name} con IP {pVirtuosoConnectionData.Ip} NO es de lectura {pVirtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
             }
 
-            if (!pVirtuosoConnectionData.ReadUser.Equals("dba"))
-            {
-                url = pVirtuosoConnectionData.AuthSparqlEndpoint;
-                var credentialCache = new CredentialCache();
-                credentialCache.Add(
-                new Uri(url), // request url
-                  "Digest", // authentication type
-                  new NetworkCredential(pVirtuosoConnectionData.ReadUser, pVirtuosoConnectionData.ReadUserPassword) // credentials
-                );
 
-                webClient.Credentials = credentialCache;
-            }
-
-            WebException webExceptionAuxiliar = null;
 
             DateTime horaInicio = DateTime.Now;
-            int milisegundos = 0;
-            string error = null;
 
             try
             {
-                byte[] responseArray = webClient.UploadValues(url, "POST", pParametros);
+                byte[] responseArray = null;
+                if (!pVirtuosoConnectionData.ReadUser.Equals("dba"))
+                {
+                    url = pVirtuosoConnectionData.AuthSparqlEndpoint;
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, pVirtuosoConnectionData.ReadUser, pVirtuosoConnectionData.ReadUserPassword, 600);
+                }
+                else
+                {
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, "", "", TimeOutVirtuoso);
+                }
 
                 responseCSV = Encoding.UTF8.GetString(responseArray);
 
@@ -1684,24 +1665,17 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
 
         }
-        public void LeerDeVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pNombreTabla, FacetadoDS pFacetadoDS, string pQuery, NameValueCollection pParametros = null)
+        public void LeerDeVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pNombreTabla, FacetadoDS pFacetadoDS, string pQuery, Dictionary<string, string> pParametros = null)
         {
             if (pParametros == null)
             {
-                pParametros = new NameValueCollection();
+                pParametros = new Dictionary<string, string>();
                 pParametros.Add("query", pQuery);
                 pParametros.Add("timeout", TimeOutVirtuoso.ToString());
                 pParametros.Add("format", "text/csv");
             }
 
             AgregarEntradaTraza("LecturaWebClient: Inicio");
-
-            //Creamos un método para que si hay algún error devuelva el error, no un DS vacio.
-            //Esto se necesita para el método ServidorOperativo (Base, Base Usuarios, RefrescoCacheMensajes...)
-
-            WebClient webClient = new RiamWebClient(600);
-            webClient.Encoding = Encoding.UTF8;
-            webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 
             string url = pVirtuosoConnectionData.SparqlEndpoint;
 
@@ -1710,24 +1684,20 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 throw new ExcepcionConectionFailVirtuoso($"La conexión {pVirtuosoConnectionData.Name} con IP {pVirtuosoConnectionData.Ip} NO es de lectura {pVirtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
             }
 
-            if (!pVirtuosoConnectionData.ReadUser.Equals("dba"))
-            {
-                url = pVirtuosoConnectionData.AuthSparqlEndpoint;
-                var credentialCache = new CredentialCache();
-                credentialCache.Add(
-                new Uri(url), // request url
-                  "Digest", // authentication type
-                  new NetworkCredential(pVirtuosoConnectionData.ReadUser, pVirtuosoConnectionData.ReadUserPassword) // credentials
-                );
-
-                webClient.Credentials = credentialCache;
-            }
-
             WebException webExceptionAuxiliar = null;
 
             try
             {
-                byte[] responseArray = webClient.UploadValues(url, "POST", pParametros);
+                byte[] responseArray = null;
+                if (!pVirtuosoConnectionData.ReadUser.Equals("dba"))
+                {
+                    url = pVirtuosoConnectionData.AuthSparqlEndpoint;
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, pVirtuosoConnectionData.ReadUser, pVirtuosoConnectionData.ReadUserPassword, 600);
+                }
+                else
+                {
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, "", "", TimeOutVirtuoso);
+                }
 
                 string respuesta = Encoding.UTF8.GetString(responseArray);
 
@@ -1806,8 +1776,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 {
                     //Si falla al cerrar el stream no rompemos el proceso
                 }
-
-                webClient.Dispose();
             }
 
             AgregarEntradaTraza("LecturaWebClient: Fin");
@@ -1821,84 +1789,76 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 virtuosoConnectionData = mConfigService.ObtenerVirtuosoConnectionStringHome();
             }
 
-            NameValueCollection parametros = new NameValueCollection();
+            Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("query", pQuery);
             parametros.Add("timeout", TimeOutVirtuoso.ToString());
             parametros.Add("format", format);
             string respuesta = string.Empty;
             AgregarEntradaTraza("LecturaWebClient: Inicio");
-            using (WebClient webClient = new RiamWebClient(600))
+
+            string url = virtuosoConnectionData.SparqlEndpoint;
+
+            if (string.IsNullOrEmpty(virtuosoConnectionData.ReadUser))
             {
-                webClient.Encoding = Encoding.UTF8;
-                webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+                throw new ExcepcionConectionFailVirtuoso($"La conexión {virtuosoConnectionData.Name} con IP {virtuosoConnectionData.Ip} NO es de lectura {virtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
+            }
 
-                string url = virtuosoConnectionData.SparqlEndpoint;
+            try
+            {
 
-                if (string.IsNullOrEmpty(virtuosoConnectionData.ReadUser))
-                {
-                    throw new ExcepcionConectionFailVirtuoso($"La conexión {virtuosoConnectionData.Name} con IP {virtuosoConnectionData.Ip} NO es de lectura {virtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
-                }
-
+                byte[] responseArray = null;
                 if (!virtuosoConnectionData.ReadUser.Equals("dba"))
                 {
                     url = virtuosoConnectionData.AuthSparqlEndpoint;
-                    var credentialCache = new CredentialCache();
-                    credentialCache.Add(
-                    new Uri(url), // request url
-                      "Digest", // authentication type
-                      new NetworkCredential(virtuosoConnectionData.ReadUser, virtuosoConnectionData.ReadUserPassword) // credentials
-                    );
-
-                    webClient.Credentials = credentialCache;
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, parametros, virtuosoConnectionData.ReadUser, virtuosoConnectionData.ReadUserPassword, 600);
                 }
+                else
+                {
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, parametros, "", "", TimeOutVirtuoso);
+                }
+                respuesta = Encoding.UTF8.GetString(responseArray);
+
+            }
+            catch (WebException webException)
+            {
+                HttpStatusCode status = ((HttpWebResponse)webException.Response).StatusCode;
+                string errorString = string.Empty;
 
                 try
                 {
-                    byte[] responseArray = webClient.UploadValues(url, "POST", parametros);
-                    respuesta = Encoding.UTF8.GetString(responseArray);
-
+                    if (webException.Response != null)
+                    {
+                        //Intento recuperar información del error
+                        StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
+                        errorString = dataStream.ReadToEnd();
+                        webException.Response.Close();
+                    }
                 }
-                catch (WebException webException)
+                catch
                 {
-                    HttpStatusCode status = ((HttpWebResponse)webException.Response).StatusCode;
-                    string errorString = string.Empty;
-
-                    try
-                    {
-                        if (webException.Response != null)
-                        {
-                            //Intento recuperar información del error
-                            StreamReader dataStream = new StreamReader(webException.Response.GetResponseStream());
-                            errorString = dataStream.ReadToEnd();
-                            webException.Response.Close();
-                        }
-                    }
-                    catch
-                    {
-                        //Si falla la lectura no rompemos el proceso
-                    }
-
-                    mLoggingService.GuardarLogError(webException, errorString, mlogger);
-
-                    if ((webException.Status.Equals(WebExceptionStatus.ProtocolError) && !status.Equals(HttpStatusCode.BadRequest)) || webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && status.Equals(HttpStatusCode.NotFound)))
-                    {
-                        // Es un error de checkpoint o de que virtuoso se ha caído, si hay más servidores, reintentamos la consulta
-                        throw new ExcepcionCheckpointVirtuoso();
-                    }
-                    else if (webException.Status.Equals(WebExceptionStatus.ConnectFailure))
-                    {
-                        throw new ExcepcionConectionFailVirtuoso();
-                    }
-                    else
-                    {
-                        throw new ExcepcionDeBaseDeDatos(pQuery, errorString, webException);
-                    }
+                    //Si falla la lectura no rompemos el proceso
                 }
-                catch (Exception ex)
+
+                mLoggingService.GuardarLogError(webException, errorString, mlogger);
+
+                if ((webException.Status.Equals(WebExceptionStatus.ProtocolError) && !status.Equals(HttpStatusCode.BadRequest)) || webException.Message.Contains("(503)") || webException.Message.Contains("(404)") || (webException.Response != null && status.Equals(HttpStatusCode.NotFound)))
                 {
-                    mLoggingService.GuardarLogError(ex, $"\n\nQuery: {pQuery}\n\nUrl: {virtuosoConnectionData.SparqlEndpoint}", mlogger);
-                    throw new ExcepcionDeBaseDeDatos(pQuery, ex);
+                    // Es un error de checkpoint o de que virtuoso se ha caído, si hay más servidores, reintentamos la consulta
+                    throw new ExcepcionCheckpointVirtuoso();
                 }
+                else if (webException.Status.Equals(WebExceptionStatus.ConnectFailure))
+                {
+                    throw new ExcepcionConectionFailVirtuoso();
+                }
+                else
+                {
+                    throw new ExcepcionDeBaseDeDatos(pQuery, errorString, webException);
+                }
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, $"\n\nQuery: {pQuery}\n\nUrl: {virtuosoConnectionData.SparqlEndpoint}", mlogger);
+                throw new ExcepcionDeBaseDeDatos(pQuery, ex);
             }
             AgregarEntradaTraza("LecturaWebClient: Fin");
             return respuesta;
@@ -1992,18 +1952,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
             }
         }
 
-        private string LeerDeVirtuoso_WebClientJSON(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, NameValueCollection pParametros)
+        private string LeerDeVirtuoso_WebClientJSON(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, Dictionary<string, string> pParametros)
         {
             string JSON = "";
 
             AgregarEntradaTraza("LecturaWebClientJSON: Inicio");
-
-            //Creamos un método para que si hay algún error devuelva el error, no un DS vacio.
-            //Esto se necesita para el método ServidorOperativo (Base, Base Usuarios, RefrescoCacheMensajes...)
-
-            WebClient webClient = new RiamWebClient(600);
-            webClient.Encoding = Encoding.UTF8;
-            webClient.Headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
 
             string url = pVirtuosoConnectionData.SparqlEndpoint;
 
@@ -2012,24 +1965,21 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 throw new ExcepcionConectionFailVirtuoso($"La conexión {pVirtuosoConnectionData.Name} con IP {pVirtuosoConnectionData.Ip} NO es de lectura {pVirtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
             }
 
-            if (!pVirtuosoConnectionData.ReadUser.Equals("dba"))
-            {
-                url = pVirtuosoConnectionData.AuthSparqlEndpoint;
-                var credentialCache = new CredentialCache();
-                credentialCache.Add(
-                new Uri(url), // request url
-                  "Digest", // authentication type
-                  new NetworkCredential(pVirtuosoConnectionData.ReadUser, pVirtuosoConnectionData.ReadUserPassword) // credentials
-                );
-
-                webClient.Credentials = credentialCache;
-            }
 
             string error = null;
 
             try
             {
-                byte[] responseArray = webClient.UploadValues(url, "POST", pParametros);
+                byte[] responseArray = null;
+                if (!pVirtuosoConnectionData.ReadUser.Equals("dba"))
+                {
+                    url = pVirtuosoConnectionData.AuthSparqlEndpoint;
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, pVirtuosoConnectionData.ReadUser, pVirtuosoConnectionData.ReadUserPassword, 600);
+                }
+                else
+                {
+                    responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, "", "", TimeOutVirtuoso);
+                }
 
                 JSON = Encoding.UTF8.GetString(responseArray);
 
@@ -2080,10 +2030,6 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                 mLoggingService.GuardarLogError(ex, "\n\nQuery: " + pQuery + "\n\nUrl: " + url, mlogger);
                 throw new ExcepcionDeBaseDeDatos(pQuery, ex);
-            }
-            finally
-            {
-                webClient.Dispose();
             }
 
             AgregarEntradaTraza("LecturaWebClientJSON: Fin");
@@ -10583,7 +10529,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                                         StringBuilder queryAuxFin = new StringBuilder();
                                         int i = 0;
-                                        foreach (string palabra in filtroEspacios)
+                                        foreach (string palabra in filtroEspacios.Select(item => item.Replace("'", "''")))
                                         {
                                             i++;
                                             if (i == filtroEspacios.Length)
@@ -10620,9 +10566,9 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                                         StringBuilder queryAuxFin = new StringBuilder();
                                         int i = 0;
-                                        foreach (string palabra in palabrasFiltro)
+                                        foreach (string palabra in palabrasFiltro.Select(item => item.Replace("'", "''")))
                                         {
-                                            string palabraLimpia = RemoverSignosSearch(palabra).Replace("'", "\\'");
+                                            string palabraLimpia = RemoverSignosSearch(palabra);
 
                                             i++;
                                             if (i == palabrasFiltro.Count)
@@ -11225,7 +11171,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
                                             StringBuilder queryAuxFin = new StringBuilder();
                                             int i = 0;
-                                            foreach (string palabra in filtroEspacios)
+                                            foreach (string palabra in filtroEspacios.Select(item => item.Replace("'", "''")))
                                             {
                                                 i++;
                                                 if (i == filtroEspacios.Length)
@@ -11630,7 +11576,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
         private static StringBuilder ObtenerParteFiltros_PorClave_NOIN_Coordenadas(ref string pValor, StringBuilder sbQuery)
         {
             sbQuery.Append(" FILTER ( bif:st_intersects ( bif: st_geomfromtext ( ?p ),");
-            double[,] puntos = JsonConvert.DeserializeObject<double[,]>(pValor);
+            double[,] puntos = Newtonsoft.Json.JsonConvert.DeserializeObject<double[,]>(pValor);
             //Si es un punto ponemos el filtro del punto
             if (puntos.Length == 1)
             {
@@ -11712,9 +11658,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
             {
                 sbQuery.Append(ObtenerParteFiltros_PorClave_FiltroSiglo(pValor, pTipoAlgoritmoTransformacion, pKeySinPrefijo));
             }
-            else if (pKey.Equals("gnoss:hastipodoc") || pKey.Equals("gnoss:hastipodocExt"))
+            else if (pKey.Equals("gnoss:hastipodoc"))
             {
                 sbQuery.Append($" = '{pValor}'). ");
+            }
+            else if (pKey.Equals("gnoss:hastipodocExt"))
+            {
+                sbQuery.Append($" = {pValor}). ");
             }
             //Si es el caso de una persona de una organizacion (no administrador)
             else if (pKey.Equals("gnoss:hasSpaceIDPublicador"))
@@ -15000,7 +14950,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         private DataSet ObtenerGrafo(string pRecursoID)
         {
-            string query = $"{NamespacesVirtuosoLectura} select distinct ?g WHERE {{graph ?g {{?documento ?hasEntidad ?s.  FILTER (?documento = <{mUrlIntranet}{pRecursoID.ToLower()}>) ?s ?p ?o }}}}";
+            string query = $"{NamespacesVirtuosoLectura} select distinct ?g WHERE {{graph ?g {{ <{mUrlIntranet}{pRecursoID.ToLower()}> gnoss:hasEntidad ?s. }}}}";
 
             return LeerDeVirtuoso(query, "Grafo", null);
         }
@@ -15117,6 +15067,25 @@ namespace Es.Riam.Gnoss.AD.Facetado
             facetadoDS.AcceptChanges();
 
             return nobreontologia;
+        }
+
+        public List<string> ObtenerIdiomasTriplesDeRecurso(FacetadoDS pFacetadoDS, string pDocumentoId)
+        {
+            string nombreOntologia = mEntityContext.Documento.JoinDocumentoVinc().Where(x => x.DocumentoVinc.DocumentoID.Equals(Guid.Parse(pDocumentoId))).Select(x => x.Documento.Enlace).FirstOrDefault();
+
+            string query = $"{NamespacesVirtuosoLectura} select DISTINCT (lang(?o) AS ?idioma) {ObtenerFrom(nombreOntologia.ToLower())} WHERE {{ ?documento ?hasEntidad ?s. FILTER (?documento = <{mUrlIntranet}{pDocumentoId.ToLower()}>) ?s ?p ?o. FILTER (lang(?o) != \"\") }} ";
+
+            LeerDeVirtuoso(query, "IdiomasTriplesRecurso", pFacetadoDS, nombreOntologia);
+
+            DataTable tabla = new DataTable("IdiomasTriplesRecurso");
+            tabla.Columns.Add("idioma");
+            pFacetadoDS.Tables.Add(tabla);
+            List<string> idiomasRecurso = new List<string>();
+            foreach(DataRow fila in pFacetadoDS.Tables[0].Rows)
+            {
+                idiomasRecurso.Add((string)fila[0]);
+            }
+            return idiomasRecurso;
         }
 
         public void ObtieneTripletasFormulariosviejo(ref string mTripletas, ref string mTripletasGnoss, DataWrapperFacetas pFacetaDW, FacetadoDS facetadoDS, string pOrganizacionID, string idproyecto, string iddoc)
@@ -15907,7 +15876,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 mLoggingService.AgregarEntrada("INICIO Peticion ObtenerOntologia");
                 string result = CallWebMethods.CallGetApiToken(mServicioArchivosUrl, $"ObtenerOntologia?pOntologiaID={pOntologiaID}", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion ObtenerOntologia");
-                byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
+                byte[] buffer = JsonSerializer.Deserialize<byte[]>(result);
                 return buffer;
             }
 
@@ -15916,7 +15885,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 mLoggingService.AgregarEntrada("INICIO Peticion ObtenerXmlOntologia");
                 string result = CallWebMethods.CallGetApiToken(mServicioArchivosUrl, $"ObtenerXmlOntologia?pOntologiaID={pOntologiaID}", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion ObtenerXmlOntologia");
-                byte[] buffer = JsonConvert.DeserializeObject<byte[]>(result);
+                byte[] buffer = JsonSerializer.Deserialize<byte[]>(result);
                 return buffer;
             }
         }
@@ -15950,6 +15919,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         protected class CallTokenService
         {
+            private static readonly HttpClient mClient = new HttpClient(new SocketsHttpHandler
+            {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+            });
+
             private readonly ConfigService mConfigService;
 
             public CallTokenService(ConfigService configService)
@@ -15974,13 +15948,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 HttpResponseMessage response = null;
                 try
                 {
-                    HttpClient client = new HttpClient();
-                    client.Timeout = TimeSpan.FromDays(1);
                     string authority = mConfigService.GetAuthority() + "/connect/token";
-                    response = client.PostAsync($"{authority}", contentData).Result;
+                    response = mClient.PostAsync($"{authority}", contentData).Result;
                     response.EnsureSuccessStatusCode();
                     string result = response.Content.ReadAsStringAsync().Result;
-                    TokenBearer token = JsonConvert.DeserializeObject<TokenBearer>(result);
+                    TokenBearer token = JsonSerializer.Deserialize<TokenBearer>(result);
                     return token;
                 }
                 catch (HttpRequestException)
@@ -16003,6 +15975,11 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
         protected class CallWebMethods
         {
+            private static readonly HttpClient mClient = new HttpClient(new SocketsHttpHandler
+            {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+            });
+
             /// <summary>
             /// Hace una petición get
             /// </summary>
@@ -16019,13 +15996,13 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 }
                 try
                 {
-                    HttpClient client = new HttpClient();
-                    client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                    using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{urlBase}{urlMethod}");
+                    request.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
                     if (pToken != null)
                     {
-                        client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
+                        request.Headers.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
                     }
-                    response = client.GetAsync($"{urlBase}{urlMethod}").Result;
+                    response = mClient.SendAsync(request).Result;
                     response.EnsureSuccessStatusCode();
                     result = response.Content.ReadAsStringAsync().Result;
                 }

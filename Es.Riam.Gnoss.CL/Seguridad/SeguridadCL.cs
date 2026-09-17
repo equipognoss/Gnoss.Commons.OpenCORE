@@ -21,6 +21,8 @@ namespace Es.Riam.Gnoss.CL.Seguridad
         private readonly string[] mMasterCacheKeyArray = { "Seguridad" };
         private const string CLAVE_CACHE_BLOQUEO_IP = "Lokut_TooManyRequest_";
         private const string CLAVE_CACHE_PETICION = "Lokut_Request_";
+        private const string CLAVE_CACHE_BLOQUEO_IP_ADMINISTRACION = "Administracion_TooManyRequest_";
+        private const string CLAVE_CACHE_PETICION_ADMINISTRACION = "Administracion_Request_";
         private LoggingService mLoggingService;
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
@@ -152,10 +154,9 @@ namespace Es.Riam.Gnoss.CL.Seguridad
             try
             {
                 bool puedeHacerPeticion = false;
-                ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
-                IDatabase db = conexion.GetDatabase();
+                IDatabase db = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB).GetDatabase();
                 string claveBloqueo = GenerarClaveParaLimitadorDePeticiones(CLAVE_CACHE_BLOQUEO_IP, pAsistenteID, pIP);
-                
+
                 if (ComprobarSiYaSuperoElLimiteDePeticiones(db, claveBloqueo))
                 {
                     puedeHacerPeticion = false;
@@ -175,8 +176,6 @@ namespace Es.Riam.Gnoss.CL.Seguridad
                     }
                 }
 
-                conexion.Close();   
-
                 return puedeHacerPeticion;
             }
             catch (Exception ex)
@@ -184,6 +183,45 @@ namespace Es.Riam.Gnoss.CL.Seguridad
                 mLoggingService.GuardarLogError(ex, $"Error al comprobar el limite de peticiones de la IP '{pIP}' y el asistente '{pAsistenteID}'. Los límites configurados son: Ventana de tiempo -> {pVentanaTiempo}, Número máximo de peticiones -> {pMaxPeticiones}, Tiempo de bloqueo -> {pTiempoBloqueado}", mlogger);
                 return false;
             }   
+        }
+
+        public bool ComprobarSiSeSuperaLimiteDePeticionesAdministracion(int pMaxPeticiones, int pVentanaTiempo, int pTiempoBloqueado, string pIP, Guid pIdentidad)
+        {
+            try
+            {
+                bool puedeHacerPeticion = false;
+                ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
+                IDatabase db = conexion.GetDatabase();
+                string claveBloqueo = GenerarClaveParaLimitadorDePeticiones(CLAVE_CACHE_BLOQUEO_IP_ADMINISTRACION, pIdentidad, pIP);
+
+                if (ComprobarSiYaSuperoElLimiteDePeticiones(db, claveBloqueo))
+                {
+                    puedeHacerPeticion = false;
+                }
+                else
+                {
+                    string clavePeticion = GenerarClaveParaLimitadorDePeticiones(CLAVE_CACHE_PETICION_ADMINISTRACION, pIdentidad, pIP);
+                    bool estaLimitado = ((int)db.ScriptEvaluate(SlidingRateLimiterScript, new { key = clavePeticion, window = pVentanaTiempo, max_requests = pMaxPeticiones })) == 1;
+                    if (estaLimitado)
+                    {
+                        db.StringSet($"{claveBloqueo}", "Bloqueado", TimeSpan.FromMinutes(pTiempoBloqueado));
+                        puedeHacerPeticion = false;
+                    }
+                    else
+                    {
+                        puedeHacerPeticion = true;
+                    }
+                }
+
+                conexion.Close();
+
+                return puedeHacerPeticion;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, $"Error al comprobar el limite de peticiones de la IP '{pIP}' y la identidad '{pIdentidad}'. Los límites configurados son: Ventana de tiempo -> {pVentanaTiempo}, Número máximo de peticiones -> {pMaxPeticiones}, Tiempo de bloqueo -> {pTiempoBloqueado}", mlogger);
+                return false;
+            }
         }
 
         public string GenerarClaveParaLimitadorDePeticiones(string pClavePrincipal, Guid pAsistenteID, string pIP)

@@ -1,11 +1,9 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
 {
@@ -54,9 +52,9 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <summary>
         /// Manejador de tokens.
         /// </summary>
-        private TokenGnoss mTokenGnoss;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly TokenGnoss mTokenGnoss;
+        private readonly ILogger _Logger;
+        private readonly ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructor
@@ -70,11 +68,10 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             mMethod = pMethod;
             mTimespan = pTimespan;
             mSignature = pSignature;
-            mlogger = logger;
+            _Logger = logger;
             mLoggerFactory = loggerFactory;
 
             ControladorTokens tokenControler = new ControladorTokens(entityContextOauth, loggingService, entityContext, configService, servicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ControladorTokens>(), mLoggerFactory);
-            //OAuthBase oauthbase = new OAuthBase();
             mTokenGnoss = tokenControler.ObtenerToken(mToken);
         }
 
@@ -206,7 +203,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             get
             {
                 return mTokenGnoss.FilaToken.OAuthConsumer.ConsumerSecret;
-                //return mTokenGnoss.FilaToken.OAuthConsumerRow.ConsumerSecret;
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
 {
     /// <summary>
@@ -12,9 +12,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
         private string urlTriplesOntologia;
         private string urlTriplesBusqueda;
         private string urlDatosAcido;
+        private string urlImagenesManifest;
         private byte[] bytesTriplesOntologia;
         private byte[] bytesTriplesBusqueda;
         private byte[] bytesDatosAcido;
+        private byte[] bytesImagenesManifest;
         /// <summary>
         /// Id de la carga
         /// </summary>
@@ -74,6 +76,19 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
             set { bytesTriplesBusqueda = value; }
         }
 
+        public string UrlImagenesManifest
+        {
+            get
+            { return urlImagenesManifest; }
+            set
+            { urlImagenesManifest = value; }
+        }
+        public byte[] BytesImagenesManifest
+        {
+            get { return bytesImagenesManifest; }
+            set { bytesImagenesManifest = value; }
+        }
+
         public void Dispose()
         {
             bytesDatosAcido = null;
@@ -91,4 +106,35 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
         }
 
     }
+    public class ImageManifestEntry
+    {
+        /// <summary>
+        /// Identificador del documento al que pertenecen las imágenes
+        /// </summary>
+        public string DocumentoID { get; set; }
+
+        /// <summary>
+        /// Lista de nombres de fichero con formato {documentoId}_{nombreOriginal}
+        /// </summary>
+        public List<string> ImagePaths { get; set; }
+    }
+
+    public class DatosRabbitImagenes
+    {
+        public string RutaManifest { get; set; }
+        public string UrlBaseImagenes { get; set; }
+        public Guid ProyectoId { get; set; }
+        public Guid OntologiaId { get; set; }
+        public Guid PaqueteId { get; set; }
+        public Guid CargaId { get; set; }
+    }
+
+    public class ImageSizeConfig
+    {
+        public int Ancho { get; set; }
+        public int Alto { get; set; }
+        public bool EsRecorteCuadrado { get; set; }  // true si Tipo="RecorteCuadrado"
+    }
 }
+
+

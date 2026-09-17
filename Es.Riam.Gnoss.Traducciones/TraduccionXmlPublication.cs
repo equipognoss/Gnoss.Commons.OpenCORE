@@ -18,7 +18,6 @@ namespace Es.Riam.Gnoss.Traducciones
         {
             faltaID = false;
             Dictionary<string, Dictionary<string, string>> mDiccionario = new Dictionary<string, Dictionary<string, string>>();
-            List<string> mListaClaves = new List<string>();
 
             XmlDocument doc = new XmlDocument();
             doc.Load(stream);
@@ -26,7 +25,7 @@ namespace Es.Riam.Gnoss.Traducciones
             addPropiedades(mDiccionario, doc);
             addEntidades(mDiccionario, doc);
 		
-			if (faltaID == false) 
+			if (!faltaID) 
             {
                 UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, configService);
             }

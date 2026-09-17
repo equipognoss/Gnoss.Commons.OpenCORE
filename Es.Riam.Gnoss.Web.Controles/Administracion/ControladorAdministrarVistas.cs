@@ -1,7 +1,6 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -13,13 +12,11 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
-using Es.Riam.Gnoss.UtilServiciosWeb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -61,13 +58,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
             CargadorFacetas cargadorFacetas = new CargadorFacetas();
             cargadorFacetas.Url = mConfigService.ObtenerUrlServicioFacetas();
-            cargadorFacetas.InvalidarVistas(UsuarioActual.IdentidadID);        
+            cargadorFacetas.InvalidarVistas(UsuarioActual.IdentidadID, ProyectoSeleccionado.Clave);        
         }
 
         public string CrearXMLVistasCMS()
         {
             Dictionary<Guid, Tuple<string, string>> listaVistasCMS = ObtenerDiccionarioCMSBD();
-            return JsonConvert.SerializeObject(listaVistasCMS, Newtonsoft.Json.Formatting.Indented);
+            JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
+            jsonSerializerOptions.WriteIndented = true;
+            return JsonSerializer.Serialize(listaVistasCMS, jsonSerializerOptions);
         }
 
         public void LimpiarCacheVistasRedis(bool pEsAdministracionEcosistema, string pFicheroConfiguracion, string pUrlIntragnoss, string pVistaActualizada = null)

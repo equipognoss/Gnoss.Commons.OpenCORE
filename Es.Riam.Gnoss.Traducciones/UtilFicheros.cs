@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Es.Riam.Gnoss.Util.Configuracion;
 using ExcelDataReader;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -10,6 +11,28 @@ namespace Es.Riam.Gnoss.Traducciones
 {
     public class UtilFicheros
     {
+        private static readonly char[] CaracteresPeligrososFormulaExcel = { '=', '+', '-', '@', '|', '\t', '\r', '\n' };
+
+        /// <summary>
+        /// Indica si un valor empieza por un caracter que Excel/Calc puede interpretar como inicio de fórmula.
+        /// </summary>
+        public static bool EmpiezaPorCaracterFormulaPeligroso(string valor)
+        {
+            return !string.IsNullOrEmpty(valor) && Array.IndexOf(CaracteresPeligrososFormulaExcel, valor[0]) >= 0;
+        }
+
+        /// <summary>
+        /// Agregamos una comilla simple a los valores que empiezan por un caracter de fórmula para evitar ataques de tipo formula injection al exportar a Excel.
+        /// </summary>
+        public static string SanitizarCelda(string valor)
+        {
+            if (EmpiezaPorCaracterFormulaPeligroso(valor))
+            {
+                return "'" + valor;
+            }
+
+            return valor;
+        }
 
         public static DataSet LeerExcelDeRutaADataSet(Stream stream)
         {
@@ -48,12 +71,12 @@ namespace Es.Riam.Gnoss.Traducciones
             List<object> listaAux = new List<object>();
             foreach (Dictionary<string, string> entrada in mDiccionario.Values)
             {
-                listaAux.Add(listaClavesAux[contador]);                
+                listaAux.Add(SanitizarCelda(listaClavesAux[contador]));
                 foreach (string idiomaDisponible in mListaIdiomas)
                 {
                     if (entrada.ContainsKey(idiomaDisponible))
                     {
-                        listaAux.Add(HttpUtility.HtmlDecode(entrada[idiomaDisponible]));
+                        listaAux.Add(SanitizarCelda(HttpUtility.HtmlDecode(entrada[idiomaDisponible])));
                     }
                     else
                     {
@@ -67,21 +90,5 @@ namespace Es.Riam.Gnoss.Traducciones
 
             mExcel.Worksheets.Add(ds);
         }
-
-       /* private static int BuscarColumnaIdioma(string pIdioma, DataSet dsBuscar)
-        {
-            int numeroColumnaIdioma = 1;
-            bool encontrado = false;
-            while (!encontrado)
-            {
-                numeroColumnaIdioma++;
-                if (string.IsNullOrEmpty(dsBuscar.Cells[1, numeroColumnaIdioma].Value as string) || dsBuscar.Cells[1, numeroColumnaIdioma].Value.Equals(pIdioma))
-                {
-                    dsBuscar.Cells[1, numeroColumnaIdioma].Value = pIdioma;
-                    encontrado = true;
-                }
-            }
-            return numeroColumnaIdioma;
-        }*/
     }
 }

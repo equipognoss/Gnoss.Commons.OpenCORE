@@ -41,6 +41,9 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
                 .Property(e => e.EnviadoRabbit)
                 .HasPrecision(1)
                 .HasColumnType("NUMBER(1)");
+            modelBuilder.Entity<ColaCorreo>()
+                .Property(e => e.HtmlTexto)
+                .HasColumnType("NCLOB");
         }
     }
 }

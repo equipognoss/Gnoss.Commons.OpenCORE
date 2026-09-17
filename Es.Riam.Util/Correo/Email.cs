@@ -1,7 +1,7 @@
 ﻿using Es.Riam.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 namespace Es.Riam.Util.Correo
 {
     public class Email : IEmail

@@ -1,11 +1,8 @@
-﻿
-using AngleSharp.Io;
-using Es.Riam.Gnoss.RabbitMQ;
+﻿using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using OpenLink.Data.Virtuoso;
 using System;
 using System.Collections.Generic;
@@ -14,14 +11,13 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Es.Riam.AbstractsOpen
 {
@@ -51,8 +47,8 @@ namespace Es.Riam.AbstractsOpen
         public DateTime? InicioPeticionVirtuoso { get; set; }
         public virtual string ConexionAfinidadVirtuoso { get; }
         public DateTime FechaFinAfinidad { get; set; }
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         public bool NoConfirmarTransacciones
         {
             get
@@ -71,7 +67,7 @@ namespace Es.Riam.AbstractsOpen
         }
 
 
-        public IServicesUtilVirtuosoAndReplication(ConfigService configService, LoggingService loggingService, ILogger<IServicesUtilVirtuosoAndReplication> logger, ILoggerFactory loggerFactory)
+        protected IServicesUtilVirtuosoAndReplication(ConfigService configService, LoggingService loggingService, ILogger<IServicesUtilVirtuosoAndReplication> logger, ILoggerFactory loggerFactory)
         {
             mConfigService = configService;
             mLoggingService = loggingService;
@@ -229,7 +225,7 @@ namespace Es.Riam.AbstractsOpen
                         {
                             pQuery = pQuery.Trim().Substring(6);
                         }
-                        NameValueCollection parametros = new NameValueCollection();
+                        Dictionary<string, string> parametros = new Dictionary<string, string>();
                         parametros.Add("query", pQuery);
 
                         resultado = ActualizarVirtuoso_WebClient(virtuosoConnectionData, pQuery, parametros);
@@ -379,11 +375,9 @@ namespace Es.Riam.AbstractsOpen
         }
 
         public abstract bool ControlarErrorVirtuosoConection();
-        public int ActualizarVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, NameValueCollection pParametros)
+        public int ActualizarVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, Dictionary<string,string> pParametros)
         {
             mLoggingService.AgregarEntrada("EscrituraWebClient: Inicio");
-            RiamWebClient webClient = new RiamWebClient(TimeOutVirtuoso);
-            webClient.Encoding = Encoding.UTF8;
 
             string url = pVirtuosoConnectionData.SparqlEndpoint;
 
@@ -391,18 +385,15 @@ namespace Es.Riam.AbstractsOpen
             {
                 throw new Exception($"La conexión {pVirtuosoConnectionData.Name} con IP {pVirtuosoConnectionData.Ip} NO es de escritura {pVirtuosoConnectionData.VirtuosoConnectionType} y no puede ejecutar la consulta: {Environment.NewLine}{pQuery}");
             }
-
+            byte[] responseArray = null;
             if (!pVirtuosoConnectionData.WriteUser.Equals("dba"))
             {
                 url = pVirtuosoConnectionData.AuthSparqlEndpoint;
-                var credentialCache = new CredentialCache();
-                credentialCache.Add(
-                new Uri(url), // request url
-                  "Digest", // authentication type
-                  new NetworkCredential(pVirtuosoConnectionData.WriteUser, pVirtuosoConnectionData.WriteUserPassword) // credentials
-                );
-
-                webClient.Credentials = credentialCache;
+                responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, pVirtuosoConnectionData.WriteUser, pVirtuosoConnectionData.WriteUserPassword, TimeOutVirtuoso);
+            }
+            else
+            {
+                responseArray = UtilWeb.WebRequestCredenciales("POST", url, pParametros, "", "", TimeOutVirtuoso);
             }
 
             //no se necesita la cabecera
@@ -415,14 +406,13 @@ namespace Es.Riam.AbstractsOpen
 
             try
             {
-                byte[] responseArray = webClient.UploadValues(url, "POST", pParametros);
                 milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
                 string respuesta = Encoding.UTF8.GetString(responseArray);
 
                 resultado = ObtenerResultadoRespuesta(respuesta);
                 mLoggingService.AgregarEntrada("EscrituraWebClient: Respuesta obtenida de virtuoso");
             }
-            catch (System.Net.WebException webException)
+            catch (WebException webException)
             {
                 milisegundos = (int)DateTime.Now.Subtract(horaInicio).TotalMilliseconds;
                 string respuesta = "";
@@ -468,11 +458,8 @@ namespace Es.Riam.AbstractsOpen
             }
             finally
             {
-                webClient.Dispose();
-
                 if (milisegundos > 700)
                 {
-                    //mLoggingService.GuardarLogConsultaCostosa(string.Format("Consulta: {0} \r\nTiempo transcurrido:\r\n{1} \r\nUrl:\r\n{2} \r\nError:\r\n{3}", pQuery, milisegundos, url, error));
                 }
             }
 
@@ -800,43 +787,7 @@ namespace Es.Riam.AbstractsOpen
 
         public string obtenerNombreConexionReplicaHAProxy(string pNombreConexion)
         {
-            //string haProxi = mConfigService.ObtenerVirtuosoConnectionString();
-            //if (FicheroConfiguracionMaster.ToLower().Contains("home"))
-            //{
-            //    haProxi = mConfigService.ObtenerVirtuosoConnectionStringHome();
-            //}
-            //string conexionHAProxy = "";
-            //if (!string.IsNullOrEmpty(haProxi))
-            //{
-            //    KeyValuePair<string, string> ip_puerto = ObtenerIpVirtuosoDeCadenaConexion(haProxi);
-            //    string ipVirtuoso = ip_puerto.Key;
-            //    string puertoVirtuoso = ip_puerto.Value;
-            //    string url = "http://" + ipVirtuoso + ":" + puertoVirtuoso + "/sparql";
-
-            //    WebClient webClient = new WebClient();
-            //    webClient.Encoding = Encoding.UTF8;
-            //    webClient.DownloadString(url);
-            //    //Al actualizar datos en virtuoso, guardamos los datos del servidor en el que hemos guardado para acceder a él.
-            //    string[] cabeceraServidor = webClient.ResponseHeaders.GetValues("X-App-Server");
-            //    if (cabeceraServidor == null || cabeceraServidor.Length == 0)
-            //    {
-            //        cabeceraServidor = webClient.ResponseHeaders.GetValues("Server");
-            //    }
-            //    webClient.Dispose();
-            //    if (cabeceraServidor != null && cabeceraServidor.Length > 0)
-            //    {
-            //        conexionHAProxy = $"{cabeceraServidor.FirstOrDefault()}";
-            //        return conexionHAProxy;
-            //    }
-
-            //}
-
-            //if (string.IsNullOrEmpty(conexionHAProxy))
-            //{
             return ConexionAfinidad;
-            //}
-
-            //return null;
         }
         /// <summary>
         /// Verdad si existe el fichero bd.config con el elemento acidMaster, falso en caso contrario
@@ -1100,8 +1051,12 @@ namespace Es.Riam.AbstractsOpen
 
                     using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pTablaReplicacion, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange))
                     {
-                        rMQ.AgregarElementoACola(JsonConvert.SerializeObject(datosReplicacion));
+                        rMQ.AgregarElementoACola(JsonSerializer.Serialize(datosReplicacion));
                     }
+                }
+                else
+                {
+                    mLoggingService.GuardarLogError($"No se ha podido replicar hacia '{pTablaReplicacion}': el servicio no tiene configurada la variable de entorno RabbitMQ__{rabbitBD}.", mlogger);
                 }
             }
             catch (Exception ex)
@@ -1234,41 +1189,50 @@ namespace Es.Riam.AbstractsOpen
             }
         }
 
+        // El usuario/contraseña de lectura de Virtuoso son fijos para toda la vida de la aplicación
+        // (una única instancia siempre resuelve las mismas credenciales, aunque ObtenerVirtuosoEscritura()
+        // elija al azar entre varias réplicas de escritura); por eso el cliente se puede compartir de
+        // forma estática en vez de crear uno por llamada. Se usa NetworkCredential (no CredentialCache,
+        // que ata las credenciales a una única URI) para que sirvan sin importar qué réplica se resuelva
+        // en cada llamada.
+        private static HttpClient mServidorOperativoClient;
+        private static readonly object mServidorOperativoLock = new object();
+
         protected bool ServidorOperativo()
         {
             VirtuosoConnectionData virtuosoConnectionData = mConfigService.ObtenerVirtuosoEscritura().Value;
             try
             {
-                HttpClient client;
-                HttpResponseMessage response = null;
-                HttpClientHandler handler = new HttpClientHandler();
-                string url = virtuosoConnectionData.SparqlEndpoint;
-
                 if (string.IsNullOrEmpty(virtuosoConnectionData.ReadUser))
                 {
                     throw new Exception($"La conexión {virtuosoConnectionData.Name} con IP {virtuosoConnectionData.Ip} NO es de lectura {virtuosoConnectionData.VirtuosoConnectionType} y no puede comprobar el servidor operativo");
                 }
 
-                if (!virtuosoConnectionData.ReadUser.Equals("dba"))
-                {
-                    url = virtuosoConnectionData.AuthSparqlEndpoint;
-                    var credentialCache = new CredentialCache();
-                    credentialCache.Add(
-                    new Uri(url), // request url
-                      "Digest", // authentication type
-                      new NetworkCredential(virtuosoConnectionData.ReadUser, virtuosoConnectionData.ReadUserPassword) // credentials
-                    );
+                bool esDba = virtuosoConnectionData.ReadUser.Equals("dba");
+                string url = esDba ? virtuosoConnectionData.SparqlEndpoint : virtuosoConnectionData.AuthSparqlEndpoint;
 
-                    handler.Credentials = credentialCache;
-                    client = new HttpClient(handler);
-                }
-                else
+                if (mServidorOperativoClient == null)
                 {
-                    client = new HttpClient();
+                    lock (mServidorOperativoLock)
+                    {
+                        if (mServidorOperativoClient == null)
+                        {
+                            var handler = new SocketsHttpHandler
+                            {
+                                PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+                            };
+                            if (!esDba)
+                            {
+                                handler.Credentials = new NetworkCredential(virtuosoConnectionData.ReadUser, virtuosoConnectionData.ReadUserPassword);
+                            }
+                            HttpClient nuevoClient = new HttpClient(handler);
+                            nuevoClient.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                            mServidorOperativoClient = nuevoClient;
+                        }
+                    }
                 }
 
-                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
-                response = client.GetAsync($"{url}").Result;
+                HttpResponseMessage response = mServidorOperativoClient.GetAsync(url).Result;
                 response.EnsureSuccessStatusCode();
                 HttpStatusCode code = response.StatusCode;
                 if (code.Equals(HttpStatusCode.OK))

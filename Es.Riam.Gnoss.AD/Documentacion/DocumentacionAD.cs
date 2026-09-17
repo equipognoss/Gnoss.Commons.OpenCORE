@@ -13,17 +13,14 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.Facetado.Model;
 using Es.Riam.Gnoss.AD.Identidad;
 using Es.Riam.Gnoss.AD.Parametro;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
-using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -33,10 +30,8 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
-using static Es.Riam.Gnoss.Util.Seguridad.Capacidad;
-using static Microsoft.Azure.Amqp.Serialization.SerializableType;
-
 
 namespace Es.Riam.Gnoss.AD.Documentacion
 {
@@ -6075,11 +6070,67 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// </summary>
         /// <param name="pOntologiaID">Identificador de la ontología</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>Lista de identificadores de los documentos cuyo elemento vinculado es la ontología</return s>
+        /// <returns>Lista de identificadores de los documentos cuyo elemento vinculado es la ontología</return>
         public List<Guid> ObtenerDocumentosIDVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
         {
             return mEntityContext.Documento.Where(doc => doc.ProyectoID.Value.Equals(pProyectoID) && doc.ElementoVinculadoID.Value.Equals(pOntologiaID)).Select(doc => doc.DocumentoID).Distinct().ToList();
         }
+
+        /// <summary>
+        /// Obtiene una lista de los documentos cuya última versión pertenece a una ontología y un proyecto concretos
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>Lista de documentos cuyo elemento vinculado es la ontología</return>
+        public List<DocumentoConOriginalID> ObtenerUltimaVersionDocumentosVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
+        {
+            return mEntityContext.Documento.Where(doc => doc.ProyectoID.Value.Equals(pProyectoID) && doc.ElementoVinculadoID.Value.Equals(pOntologiaID) && doc.UltimaVersion && !doc.Eliminado).GroupJoin(
+                    mEntityContext.VersionDocumento,
+                    doc => doc.DocumentoID,
+                    ver => ver.DocumentoID,
+                    (doc, versions) => new { doc, versions }
+                )
+                .SelectMany(
+                    x => x.versions.DefaultIfEmpty(),
+                    (x, version) => new DocumentoConOriginalID
+                    {
+                        Documento = x.doc,
+                        DocumentoOriginalID = version != null && version.DocumentoOriginalID != Guid.Empty
+                            ? version.DocumentoOriginalID
+                            : x.doc.DocumentoID
+                    }
+                )
+                .ToList();
+        }
+
+        /// <summary>
+        /// Obtiene una lista de los documentos cuya última versión pertenece a un tipo de recurso y un proyecto concretos
+        /// </summary>
+        /// <param name="pTipoDocumentacion">Tipo de recurso</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>Lista de documentos de un determinado tipo</return>
+        public List<DocumentoConOriginalID> ObtenerRecursosUltimaVersionPorTipoDocumento(short pTipoDocumentacion, Guid pProyectoID)
+        {
+            return mEntityContext.Documento.Where(doc => doc.ProyectoID.Value.Equals(pProyectoID) && doc.Tipo.Equals(pTipoDocumentacion) && doc.UltimaVersion && !doc.Eliminado).GroupJoin(
+                    mEntityContext.VersionDocumento,
+                    doc => doc.DocumentoID,
+                    ver => ver.DocumentoID,
+                    (doc, versions) => new { doc, versions }
+                )
+                .SelectMany(
+                    x => x.versions.DefaultIfEmpty(),
+                    (x, version) => new DocumentoConOriginalID
+                    {
+                        Documento = x.doc,
+                        DocumentoOriginalID = version != null && version.DocumentoOriginalID != Guid.Empty
+                            ? version.DocumentoOriginalID
+                            : x.doc.DocumentoID
+                    }
+                )
+                .ToList();
+        }
+
+
 
         /// <summary>
         /// Obtiene si existen documentos cuyo elemento vinculado es el ID de la ontología
@@ -8119,11 +8170,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <returns>Diccionario clave valor cuya clave es la ultima versión del documento y el valor el documento original</returns>
         public Dictionary<Guid, Guid> ObtenerUltimaVersionPorDocumentosId(IEnumerable<Guid> pDocumentosId)
         {
-            Dictionary<Guid, Guid> documentosOriginales = mEntityContext.VersionDocumento.Where(version => pDocumentosId.Contains(version.DocumentoID) || pDocumentosId.Contains(version.DocumentoOriginalID)).GroupBy(item => item.DocumentoOriginalID).ToDictionary(group => group.OrderByDescending(item => item.Version).Select(item => item.DocumentoID).FirstOrDefault(), group => group.Key);
+            Dictionary<Guid, Guid> documentosOriginales = mEntityContext.VersionDocumento.Where(version => (pDocumentosId.Contains(version.DocumentoID) || pDocumentosId.Contains(version.DocumentoOriginalID)) && !version.EsMejora).GroupBy(item => item.DocumentoOriginalID).ToDictionary(group => group.OrderByDescending(item => item.Version).Select(item => item.DocumentoID).FirstOrDefault(), group => group.Key);
 
             foreach (var documentoId in pDocumentosId)
             {
-                if (!documentosOriginales.ContainsValue(documentoId))
+                if (!documentosOriginales.ContainsValue(documentoId) && !documentosOriginales.ContainsKey(documentoId))
                 {
                     documentosOriginales.Add(documentoId, documentoId);
                 }
@@ -8933,7 +8984,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
 
                 //Se agega aunque sea -1
                 colaDocumento.EstadoCargaID = pEstadoCargaID;
-                elementosAInsertar.Add(JsonConvert.SerializeObject(colaDocumento));
+                elementosAInsertar.Add(JsonSerializer.Serialize(colaDocumento));
             }
 
             InsertarFilasEnColaMiniatura(elementosAInsertar);
@@ -8947,7 +8998,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_MINIATURA, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_MINIATURA))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pColaDocumento));
+                    rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(pColaDocumento));
                 }
             }
             else
@@ -8968,7 +9019,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
                     {
                         foreach (string mensajeFallido in mensajesFallidos)
                         {
-                            ColaDocumento colaDocumento = JsonConvert.DeserializeObject<ColaDocumento>(mensajeFallido);
+                            ColaDocumento colaDocumento = JsonSerializer.Deserialize<ColaDocumento>(mensajeFallido);
                             mLoggingService.GuardarLogError($"Fallo al insertar en Rabbit:\n Cola Documento ID {colaDocumento.ID}, Documento ID {colaDocumento.DocumentoID}\n insertamos en la base de datos, tabla ColaDocumento", mlogger);
                             mEntityContext.ColaDocumento.Add(colaDocumento);
                             ActualizarBaseDeDatosEntityContext();
@@ -8980,7 +9031,7 @@ namespace Es.Riam.Gnoss.AD.Documentacion
             {
                 foreach (string filaDocumento in pFilasDocumento)
                 {
-                    mEntityContext.ColaDocumento.Add(JsonConvert.DeserializeObject<ColaDocumento>(filaDocumento));
+                    mEntityContext.ColaDocumento.Add(JsonSerializer.Deserialize<ColaDocumento>(filaDocumento));
                 }
                 ActualizarBaseDeDatosEntityContext();
             }
@@ -9346,8 +9397,37 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         {
             IdiomaTraduccionAutomaticaDocumento idiomaTraduccionAutomaticaDocumento = mEntityContext.IdiomaTraduccionAutomaticaDocumento.FirstOrDefault(x => x.DocumentoID.Equals(pDocumentoID) && x.Idioma.Equals(pLanguageCode));
             return idiomaTraduccionAutomaticaDocumento != null;
-        }
+		}
+
+        public List<DocumentoConOriginalID> ObtenerTodosLosDocumentosDeProyecto(Guid pProyectoID)
+        {
+			return mEntityContext.Documento
+                .Where(x => x.ProyectoID.Equals(pProyectoID) 
+                         && !x.Eliminado 
+                         && x.UltimaVersion 
+                         && x.Tipo != (short)TiposDocumentacion.Ontologia 
+                         && x.Tipo != (short)TiposDocumentacion.OntologiaSecundaria)
+                .GroupJoin(
+                    mEntityContext.VersionDocumento,
+                    doc => doc.DocumentoID,
+                    ver => ver.DocumentoID,
+                    (doc, versions) => new { doc, versions }
+                )
+                .SelectMany(
+                    x => x.versions.DefaultIfEmpty(),
+                    (x, version) => new DocumentoConOriginalID
+                    {
+                        Documento = x.doc,
+                        DocumentoOriginalID = version != null && version.DocumentoOriginalID != Guid.Empty
+                            ? version.DocumentoOriginalID
+                            : x.doc.DocumentoID
+                    }
+                )
+                .ToList();
+		}
+
         #region Estados        
+        
         public void CambiarEstadoDocumento(Guid pDocumentoID, Guid pEstadoID)
         {
             Documento filaDoc = ObtenerDocumentoPorIdentificador(pDocumentoID);
@@ -10024,10 +10104,16 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         public const string CV_Acreditacion = "CVAcreditacion";
     }
 
-    /// <summary>
-    /// Clase que contiene constantes con los texto de las entidades vinculadas.
-    /// </summary>
-    public static class TipoDocumentoTexto
+	public class DocumentoConOriginalID
+	{
+		public Documento Documento { get; set; }
+		public Guid DocumentoOriginalID { get; set; }
+	}
+
+	/// <summary>
+	/// Clase que contiene constantes con los texto de las entidades vinculadas.
+	/// </summary>
+	public static class TipoDocumentoTexto
     {
         /// <summary>
         /// Contien la cadena de texto para FicheroServidor.

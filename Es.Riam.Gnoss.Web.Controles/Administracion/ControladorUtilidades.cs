@@ -497,6 +497,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 documentoWebVinBaseRecursos.NivelCertificacion = null;
                 documentoWebVinBaseRecursos.NivelCertificacionID = null;
+
+                DocumentacionCL docCL = new DocumentacionCL("acid", "recursos", mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
+                docCL.InvalidarFichaRecursoMVC(documentoWebVinBaseRecursos.DocumentoID, ProyectoSeleccionado.Clave);
+                docCL.InvalidarEventosRecursoMVC(documentoWebVinBaseRecursos.DocumentoID, ProyectoSeleccionado.Clave);
+                docCL.Dispose();
             }
 
             DataWrapperProyecto.ListaNivelCertificacion.Remove(pNivelCertificacion);

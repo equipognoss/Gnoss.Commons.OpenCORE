@@ -2,6 +2,11 @@ using System;
 using System.Collections;
 using System.IO;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
+
+
+
 
 #if !DOTNET2
 using VariableSet = System.Collections.Hashtable;
@@ -171,15 +176,11 @@ namespace SemWeb {
 
 		#if !SILVERLIGHT
 		public static RdfReader LoadFromUri(Uri webresource) {
-			// TODO: Add Accept header for HTTP resources.
-			
-			System.Net.WebRequest rq = System.Net.WebRequest.Create(webresource);
-			rq.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
 
-			System.Net.WebResponse resp = rq.GetResponse();
-			
-			string mimetype = resp.ContentType;
-			if (mimetype.IndexOf(';') > -1)
+			HttpResponseMessage httpResponseMessage = UtilWeb.HacerPeticionGetDevolviendoHttpResponseMessage(webresource);
+			Stream stream = httpResponseMessage.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
+			string mimetype = httpResponseMessage.Content.Headers.ContentType?.ToString();
+            if (mimetype.IndexOf(';') > -1)
 				mimetype = mimetype.Substring(0, mimetype.IndexOf(';'));
 				
 			mimetype = NormalizeMimeType(mimetype.Trim());
@@ -187,23 +188,23 @@ namespace SemWeb {
 			RdfReader reader;
 			
 			if (mimetype == "xml" || mimetype == "application/rss+xml")
-				reader = new RdfXmlReader(resp.GetResponseStream());
+				reader = new RdfXmlReader(stream);
 					
 			else if (mimetype == "n3" || mimetype == "turtle")
-				reader = new N3Reader(new StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8));
+				reader = new N3Reader(new StreamReader(stream, System.Text.Encoding.UTF8));
 			
 			else if (webresource.LocalPath.EndsWith(".rdf") || webresource.LocalPath.EndsWith(".xml") || webresource.LocalPath.EndsWith(".rss"))
-				reader = new RdfXmlReader(resp.GetResponseStream());
+				reader = new RdfXmlReader(stream);
 			
 			else if (webresource.LocalPath.EndsWith(".n3") || webresource.LocalPath.EndsWith(".ttl") || webresource.LocalPath.EndsWith(".nt"))
-				reader = new N3Reader(new StreamReader(resp.GetResponseStream(), System.Text.Encoding.UTF8));
+				reader = new N3Reader(new StreamReader(stream, System.Text.Encoding.UTF8));
 
 			else
 				throw new InvalidOperationException("Could not determine the RDF format of the resource.");
 				
-			reader.BaseUri = resp.ResponseUri.ToString();
-			
-			return reader;
+			reader.BaseUri = httpResponseMessage.RequestMessage?.RequestUri.ToString();
+
+            return reader;
 		}
 		#endif
 		

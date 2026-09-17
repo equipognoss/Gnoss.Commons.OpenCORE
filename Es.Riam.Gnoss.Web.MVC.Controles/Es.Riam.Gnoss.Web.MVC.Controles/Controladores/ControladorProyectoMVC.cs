@@ -2576,7 +2576,9 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 			pRecurso.ListActions.UrlLoadActionStartImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-start-improvement";
             pRecurso.ListActions.UrlLoadActionApplyImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-apply-improvement";
             pRecurso.ListActions.UrlLoadActionCancelImprovement = pRecurso.CompletCardLink + "/load-action/load-modal-cancel-improvement";
-			pRecurso.ListActions.UrlImprovement = pRecurso.ImprovementCardLink;
+            pRecurso.ListActions.UrlImprovement = pRecurso.ImprovementCardLink;
+            pRecurso.ListActions.UrlLoadActionTranslate = pRecurso.CompleteOriginalCardLink + "/load-action/load-modal-translate";
+            pRecurso.ListActions.UrlTranslate = pRecurso.CompletCardLink + "/translate-resource";
         }
 
         public Dictionary<Guid, List<ResourceEventModel>> ObtenerEventosDeRecursosPorID(List<Guid> pListaRecursosID)

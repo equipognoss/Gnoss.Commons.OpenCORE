@@ -218,8 +218,6 @@ namespace Es.Riam.Gnoss.Web.Controles
         /// </summary>
         Dictionary<string, List<string>> mInformacionOntologias;
 
-        private string mVersion = string.Empty;
-
         /// <summary>
         /// Url de intragnoss de servicios.
         /// </summary>
@@ -2659,35 +2657,6 @@ namespace Es.Riam.Gnoss.Web.Controles
             get
             {
                 return (PuedeVerTodasLasPersonas && (!string.IsNullOrEmpty(RequestParams("admin"))));
-            }
-        }
-
-        /// <summary>
-        /// Obtiene la versión de la aplicación
-        /// </summary>
-        public string Version
-        {
-            get
-            {
-                if (mVersion == string.Empty)
-                {
-                    try
-                    {
-                        //mVersion = Conexion.ObtenerParametro("configBD/bd.config", "version", true);
-
-                        string ficheroVersion = "Config/version.txt";
-
-                        System.IO.StreamReader sr = new System.IO.StreamReader(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + ficheroVersion);
-                        mVersion = sr.ReadToEnd();
-                        sr.Close();
-
-                    }
-                    catch
-                    {
-                        mVersion = "1.0.0.0";
-                    }
-                }
-                return mVersion;
             }
         }
 

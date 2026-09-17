@@ -97,7 +97,7 @@ namespace Es.Riam.Gnoss.Web.UtilDownloadOntologyDlls
 					}
 					catch (Exception ex)
 					{
-						//throw new Exception($"En la ontologia {UtilCadenas.ObtenerTextoDeIdioma(ontologiaPrincipal.Name, IdiomaUsuario, IdiomaPorDefecto)}, {ex.Message}", ex);
+						mLoggingService.GuardarLogWarning($"En la ontologia {ontologiaPrincipal.OntologyName}, {ex.Message}",mlogger);
 					}
 				}
 				foreach (var ontologiaSecundaria in mPlantillaOntologica.DescargaClasesModel.SecondaryTemplates)

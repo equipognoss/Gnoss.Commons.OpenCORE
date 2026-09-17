@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Es.Riam.Util;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
@@ -19,7 +20,7 @@ namespace Es.Riam.Web.Util
             parametros.Add("debug", "on");
             try
             {
-                respuesta = UtilHttpWeb.HacerPeticionPost(mUrlServicio, parametros);
+                respuesta = UtilWeb.HacerPeticionPost(mUrlServicio, parametros);
             }
             catch(Exception)
             {

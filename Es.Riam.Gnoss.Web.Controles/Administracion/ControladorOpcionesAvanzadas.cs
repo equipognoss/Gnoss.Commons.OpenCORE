@@ -482,6 +482,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             pOpcionesAvanzadasModel.CompartirRecursoPermitido = FilaParametrosGenerales.CompartirRecursosPermitido;
         }
 
+        public static List<string> ObtenerIdiomasPlataforma()
+        {
+            return LISTA_IDIOMAS.ToList();
+        }
+
         private Dictionary<Guid, string> CargarGruposVisibilidadAbierto()
         {
             string gruposVisibilidadAbierto = ControladorProyecto.ObtenerParametroString(ParametroProyecto, "GruposPermitidosSeleccionarPrivacidadRecursoAbierto");

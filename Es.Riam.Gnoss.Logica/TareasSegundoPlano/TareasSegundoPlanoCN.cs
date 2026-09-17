@@ -53,14 +53,22 @@ namespace Es.Riam.Gnoss.Logica.TareasSegundoPlano
             TareasSegundoPlanoAD.VaciarTablaDeProyecto(pProyectoId);
         }
 
+        public AD.TareasSegundoPlano.TareasSegundoPlano ObtenerTareaPorID(Guid pTareaID)
+        {
+            return TareasSegundoPlanoAD.ObtenerTareaPorID(pTareaID);
+        }
 
+        public List<AD.TareasSegundoPlano.TareasSegundoPlano> ObtenerTareasActivasDeProyectoPorTipo(Guid pProyectoID, string pTipo)
+        {
+            return TareasSegundoPlanoAD.ObtenerTareasActivasDeProyectoPorTipo(pProyectoID, pTipo);
+        }
 
-        #region Dispose
+		#region Dispose
 
-        /// <summary>
-        /// Determina si está disposed
-        /// </summary>
-        private bool disposed = false;
+		/// <summary>
+		/// Determina si está disposed
+		/// </summary>
+		private bool disposed = false;
 
         /// <summary>
         /// Destructor

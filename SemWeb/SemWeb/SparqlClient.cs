@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Xml;
 using Es.Riam.Util;
@@ -224,41 +225,21 @@ namespace SemWeb.Remote {
 			
 			string method = "POST";
 			
-			System.Net.ServicePointManager.Expect100Continue = false;
-			System.Net.WebRequest rq;
 			
 			if (Debug) {
 				Console.Error.WriteLine("> " + url);
 				Console.Error.WriteLine(query);
 			}
-			
-			if (method == "GET") {
-				string qurl = url + "?" + qstr;
-				rq = System.Net.WebRequest.Create(qurl);
-			} else {
-				Encoding encoding = new UTF8Encoding(); // ?
-				byte[] data = encoding.GetBytes(qstr);
-
-				rq = System.Net.WebRequest.Create(url);
-				rq.Method = "POST";
-				rq.ContentType="application/x-www-form-urlencoded";
-				rq.ContentLength = data.Length;
-				
-				using (Stream stream = rq.GetRequestStream())
-					stream.Write(data, 0, data.Length);
-			}
-
-			rq.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
-
-			System.Net.HttpWebResponse resp = (System.Net.HttpWebResponse)rq.GetResponse();
+			Encoding encoding = new UTF8Encoding(); // ?
+			byte[] data = encoding.GetBytes(qstr);
+			HttpResponseMessage httpResponseMessage = UtilWeb.HacerPeticionPostDevolviendoHttpResponseMessage(url, data);
 			try {
-				string mimetype = resp.ContentType;
+				string mimetype = httpResponseMessage.Content.Headers.ContentType?.ToString();
 				if (mimetype.IndexOf(';') > -1)
 					mimetype = mimetype.Substring(0, mimetype.IndexOf(';'));
 					
-				ProcessResponse(mimetype, resp.GetResponseStream(), outputObj);
+				ProcessResponse(mimetype, httpResponseMessage.Content.ReadAsStreamAsync().GetAwaiter().GetResult(), outputObj);
 			} finally {
-				resp.Close();
 				if (Debug) {
 					Console.Error.WriteLine();
 				}

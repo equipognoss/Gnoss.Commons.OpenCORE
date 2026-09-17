@@ -1,12 +1,9 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.BASE_BD.Model;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
-using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;

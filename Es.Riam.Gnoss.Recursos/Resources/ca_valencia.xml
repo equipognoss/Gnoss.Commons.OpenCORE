@@ -313,7 +313,7 @@
 		<Resource tag="NAVEGACION">Navegació</Resource>
 		<Resource tag="MIS_IDENTIDADES">Les meues identitats</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Arrossega i deixa anar una foto per al teu perfil</Resource>
-		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Imatges en format .PNG o .JPG</Resource>
+		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Imatges en format .PNG, .JPG o .WEBP</Resource>
 		<Resource tag="PESO_MAXIMO_250KB">Pes màxim de les imatges 250kb</Resource>
 		<Resource tag="X_HA_COMENTADO_EN">ha comentat en</Resource>
 		<Resource tag="X_HAN_COMENTADO_EN">han comentat en</Resource>
@@ -329,6 +329,9 @@
 		<Resource tag="DESCARGARSHAREPOINT">Descarregar versió dia</Resource>
 		<Resource tag="DEJARDECOMPARTIR">Deixar de compartir seleccionats</Resource>
 		<Resource tag="CONFIRMARELIMINAR">¿Vol eliminar l'element seleccionat?</Resource>
+		<Resource tag="ENLACEEXTERNO">Enllaç extern</Resource>
+		<Resource tag="WARNINGENLACEEXTERNO">Atenció! Esteu a punt d'accedir a un enllaç extern no controlat</Resource>
+		<Resource tag="ACCEDER">Accedir</Resource>
 	</page>
 	<page name="METADESCRIPTION">
 		<Resource tag="INDICE">Índex de contingut de @1@, navega per les seues categories i descobrix els @2@ recursos</Resource>
@@ -912,6 +915,7 @@
 		<Resource tag="SEGUIDOR">Seguidor</Resource>
 		<Resource tag="SEGUIDORES">Seguidors</Resource>
 		<Resource tag="PERFILENWEB">Perfil en la web</Resource>
+		<Resource tag="CONFIGURARNOTIFICACIONES">Configurar notificacions</Resource>
 		<Resource tag="EDITARPREFERENCIAS">Editar preferències</Resource>
 		<Resource tag="GUARDARPREFERENCIAS">Guardar preferències</Resource>
 		<Resource tag="USUARIOSINACTIVIDAD">Este usuari no té activitat recent</Resource>
@@ -1375,10 +1379,11 @@
 		<Resource tag="ABREVENTANANUEVA">S'obri en una finestra nova</Resource>
 		<Resource tag="LECCCIONESDE">Lliçons de:</Resource>
 		<Resource tag="CONFIRMACIONELIMINAR">¿Estàs segur que vols eliminar els recursos seleccionats?</Resource>
-		<Resource tag="FORMATONOVALIDO">El format de la imatge que intenta importar no és vàlid (.jpg, .png, .jpeg, .gif)</Resource>
+		<Resource tag="FORMATONOVALIDO">El format de la imatge que intenta importar no és vàlid (.jpg, .png, .jpeg, .gif, .webp)</Resource>
 		<Resource tag="FORMATOURIINCORRECTO">'@1@' no té el format correcte per a ser una URL.</Resource>
 	</page>
 	<page name="PERFILBASERECURSOSFICHA">
+		<Resource tag="TRADUCIR">Traduir</Resource>
 		<Resource tag="AGREGARCATEGORIA">Afegir recurs a categoria</Resource>
 		<Resource tag="AGREGARPREGUNTAACATEGORIA">Afegir pregunta a categoria</Resource>
 		<Resource tag="AGREGARDEBATEACATEGORIA">Afegir debat a categoria</Resource>
@@ -2344,7 +2349,10 @@
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Sol·licituds de contactes i amics</Resource>
+		<Resource tag="MENSAJESGNOSS">Missatges rebuts en la comunitat</Resource>
+		<Resource tag="INTRONOTIFICACIONES">Tria de què vols rebre avís en el teu correu electrònic.</Resource>
 		<Resource tag="COMENTARIOSRECURSOS">Comentaris als meus recursos</Resource>
+		<Resource tag="NUEVOSSEGUIDORES">Nous seguidors del meu perfil</Resource>
 		<Resource tag="INVITACIONCOMUNIDAD">Invitacions per a ser membre d'una comunitat</Resource>
 		<Resource tag="INVITACIONORGANIZACION">Invitacions per a representar a una organització</Resource>
 		<Resource tag="BOLETINESSUSCRIPCIONES">Rebre butlletí de subscripcions en el correu electrònic</Resource>
@@ -4192,6 +4200,9 @@
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-pes-cerca</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-fluxos</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">administrar-assistents</Resource>
+		<Resource tag="TRADUCIRRECURSOS">traduir-recursos</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVAECOSISTEMA">administrar-carrega-massiva-ecosistema</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVA">administrar-carrega-massiva</Resource>
 	</page>
 	<page name="COMADMINCOMUNIDAD">
 		<Resource tag="TITULO">Llistat de pàgines d'administració de la comunitat</Resource>
@@ -4253,6 +4264,7 @@
 		<Resource tag="ADMINISTRARFLUJOS">Administrar fluxos</Resource>
 		<Resource tag="ADMINISTRARTRADUCTOR">Configurar traductor</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">Administrar assistents</Resource>
+		<Resource tag="TRADUCIRRECURSOS">Traduir recursos</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Arxiu pujat correctament</Resource>
@@ -4709,13 +4721,17 @@
 		<Resource tag="GUARDARERROR">Hi ha hagut errors en el guardat de les redireccions, revisa els errors marcats</Resource>
 		<Resource tag="ERRORSINCAMBIOS">No existixen canvis en les redireccions que guardar</Resource>
 		<Resource tag="ERRORURLORIGENVACIA">La url d'origen no pot estar buida</Resource>
+		<Resource tag="ERRORURLORIGENNOVALIDA">L'URL d'origen no és vàlida</Resource>
 		<Resource tag="ERRORSINTIPOREDIRECCION">No s'ha seleccionat el tipus de redirecció</Resource>
 		<Resource tag="ERRORURLDESTINOVACIA">La url de destí no pot estar buida</Resource>
+		<Resource tag="ERRORURLDESTINONOVALIDA">L'URL de destinació no és vàlida</Resource>
 		<Resource tag="ERRORNOMPARAMETROVACIO">El nom del paràmetre no pot estar buit</Resource>
 		<Resource tag="ERRORSINPARAMETROS">Les redireccions parametritzades han de tindre, almenys, un paràmetre amb tots els seus camps emplenats</Resource>
 		<Resource tag="ERRORCAMPOPARAMETROSVACIO">Els paràmetres han de tindre tots els seus camps emplenats</Resource>
+		<Resource tag="ERRORCAMPOPARAMETROSNOVALIDO">L'URL de destinació del paràmetre no és vàlida</Resource>
 		<Resource tag="ERRORRECALCULANDORUTAS">Hi ha hagut un error recalculant les rutes</Resource>
-		<Resource tag="ERRORGUARDARBD">Hi ha hagut un error intern en guardar les redireccions</Resource>
+		<Resource tag="ERRORGUARDARBD">S'ha produït un error en intentar guardar la redirecció. Per favor, contacta amb l'administrador</Resource>
+		<Resource tag="RUTAORIGEN">La URL ha de ser una ruta relativa</Resource>
 	</page>
 	<page name="COMADMINDINTEGRACIONCONTINUA">
 		<Resource tag="ERRORINTEGRACIONCONTINUA">Error en la petició d'integració contínua</Resource>
@@ -4745,10 +4761,48 @@
 		<Resource tag="GUARDARERROR">Hi ha hagut errors en el guardat dels servicis, revisa els errors marcats</Resource>
 		<Resource tag="ERRORRUTAVACIA">La Ruta del servici Web no pot estar buida</Resource>
 	</page>
+	<page name="ADMINCARGAMASIVA">
+		<Resource tag="CARGAMASIVA">Càrrega massiva</Resource>
+		<Resource tag="LISTABLANCA">Llista blanca</Resource>
+		<Resource tag="DESCCOMUNIDAD">Configuració de la llista blanca del servici de càrrega massiva de la comunitat</Resource>
+		<Resource tag="DESCECOSISTEMA">Configuració de la llista blanca del servici de càrrega massiva de l'ecosistema</Resource>
+		<Resource tag="INTRODUCEURL">Introduïx una URL completa vàlida que podrà cridar el servici de càrrega massiva</Resource>
+		<Resource tag="DESEAELIMINARDOMINIO">Voleu eliminar l'URL seleccionada?</Resource>
+	</page>
 	<!-- Traducciones para DevTools -->
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="TRADUCIRPROPIEDAD">Traduir propietat</Resource>
+		<Resource tag="AVISOECURSOENPROCESODETRADUCCION">Aquest recurs s'està traduint i algunes funcions no estaran disponibles.</Resource>
+		<Resource tag="ERRORRECURSOENPROCESODETRADUCCION">No pots enviar a traduir un recurs que ja s'està traduint.</Resource>
+		<Resource tag="INFOTRADUCCION">La traducció s'ha enviat amb èxit i estarà disponible en uns minuts.</Resource>
+		<Resource tag="SELECCIONAUNIDIOMA">-- Selecciona un idioma --</Resource>
+		<Resource tag="TRADUCIRRECURSO">Traduir recurs</Resource>
+		<Resource tag="INFOTRADUCIRRECURSO">Trieu els idiomes als quals voleu traduir el recurs</Resource>
+		<Resource tag="INFOTRADUCIRPROPIEDAD">Trieu els idiomes als quals voleu traduir la propietat</Resource>
+		<Resource tag="ERRORIDIOMAORIGENINVALIDO">L'idioma d'origen seleccionat no és vàlid.</Resource>
+		<Resource tag="ERRORIDIOMADESTINOINVALIDO">Algun idioma de destinació seleccionat no és vàlid.</Resource>
+		<Resource tag="ERRORIDIOMASNOSOPORTADOS">Els idiomes triats no estan suportats per la plataforma.</Resource>
 		<Resource tag="ROLES">Rols</Resource>
+		<Resource tag="SELECCIONIDIOMADESTINO">-- Selecciona un idioma --</Resource>
+		<Resource tag="INFOTRADUCIRRECURSOS">La traducció de recursos pot durar molt de temps, podeu veure el progrés {a href="@1@"}ací{/a}</Resource>
+		<Resource tag="TRADUCIRSELECCIONADOS">Traduir</Resource>
+		<Resource tag="ERROROBTENERIDIOMAS">Error en obtindre els idiomes disponibles</Resource>
+		<Resource tag="RECURSOSTRADUCIDOS">Els recursos s'estan traduint</Resource>
+		<Resource tag="ERRORTIPORECURSONORECONOCIDO">Tipus de recurs no reconegut</Resource>
+		<Resource tag="ERRORTRADUCIRRECURSOS">S'ha produït un error en traduir els recursos</Resource>
+		<Resource tag="NOHAYTRADUCTORCONFIGURADO">No hi ha cap servei de traducció configurat per a aquest projecte. Podeu configurar-lo {a href="@1@"}ací{/a}</Resource>
+		<Resource tag="TIPOSRECURSO">Tipus de recurs que es vol traduir</Resource>
+		<Resource tag="TRADUCIRTODO">Traduir tot</Resource>
+		<Resource tag="NOHAYRECURSOSPARATRADUCIR">No s'han trobat recursos per a traduir</Resource>
+		<Resource tag="TRADUCCIONMASIVAEXISTENTE">Tots els recursos ja han estat enviats per traduir, no és possible fer una nova traducció massiva ni d'un tipus concret fins que aquesta finalitze</Resource>
+		<Resource tag="TRADUCCIONTIPOEXISTENTE1">Els recursos de tipus ja han estat enviats per traduir</Resource>
+		<Resource tag="TRADUCCIONTIPOEXISTENTE2">i ontologia</Resource>
+		<Resource tag="IDIOMAORIGINALRECURSOS">Idioma original dels recursos</Resource>
+		<Resource tag="TRADUCCIONENCURSO">Ja hi ha una traducció en curs</Resource>
+		<Resource tag="IDIOMADESTINORECURSOS">Idioma al qual es traduiran els recursos</Resource>
+		<Resource tag="IDIOMAORIGINALPROPIEDAD">Idioma original de la propietat</Resource>
+		<Resource tag="IDIOMADESTINOPROPIEDAD">Idioma al qual es traduirà la propietat</Resource>
 		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Llista d'idiomes personalitzats en la plataforma.</Resource>
 		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Afegir idioma</Resource>
 		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clau de l'idioma</Resource>
@@ -5085,7 +5139,7 @@
 		<Resource tag="COPYRIGHT(EJ:RIAMI+LLAB)">Copyright (Ex: RIAM I+L lab) </Resource>
 		<Resource tag="ENLACEQUEVAAAPARECERENELPIEDEPAGINACOMOCONTACTO.EJ:HTTP://WW">Enllaç que va a aparéixer en el peu de pàgina com a contacte. Ex: http://www.gnoss.com/sobre-la-empresa </Resource>
 		<Resource tag="NUMERODERECURSOSRELACIONADOS">Nombre de recursos relacionats </Resource>
-		<Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Grandària a la qual han de fer-se les captures de les miniatures de les imatges (per defecte 180x160)</Resource>
+		<Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Mida del contenidor on es mostren les miniatures en els llistats de recursos. L’amplària també limita la mida de la miniatura generada; l’alçària només afecta la visualització (per defecte 180x160)</Resource>
 		<Resource tag="ALTO(EJ280):">Alt (ex 280): </Resource>
 		<Resource tag="ANCHO(EJ280):">Ample (ex 280): </Resource>
 		<Resource tag="CARGARLOSEDITORESYLECTORESDELOSRECURSOSENLASPAGINASDEBUSQUED">Carregar els editors i lectors dels recursos en les pàgines de cerca (Afecta al rendiment de les cerques, no marcar si no és imprescindible)</Resource>
@@ -5575,7 +5629,7 @@
 		<Resource tag="TIPOSDECONTENIDO/PERMISOS">Tipus de contingut / Permisos</Resource>
 		<Resource tag="INTERACCIONSOCIAL">Interacció social</Resource>
 		<Resource tag="NIVELESDECERTIFICACION">Nivells de certificació</Resource>
-		<Resource tag="DESEAELIMINARELROLSELECCIONADO">Voleu eliminar el rol seleccionat?</Resource>
+		<Resource tag="DESEAELIMINARELROLSELECCIONADO">Voleu eliminar el rol seleccionat?{br}Els usuaris i grups que actualment tinguen assignat aquest rol perdran els permisos associats i passaran a tindre el rol d'Usuari de la comunitat.</Resource>
 		<Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Aquest rol està assignat a un o més assistents.{br} Si l'elimineu, deixaran de tindre aquest rol i podria canviar el seu comportament.{br}Esteu segur que voleu continuar?</Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integració amb xarxes socials</Resource>
 		<Resource tag="ESTRUCTURA">Estructura</Resource>
@@ -5812,12 +5866,12 @@
 		<Resource tag="AÑADIRRECURSOMULTIMEDIA">Afegir recurs multimèdia</Resource>
 		<Resource tag="RECURSOMULTIMEDIA">Recurs multimèdia</Resource>
 		<Resource tag="IMAGENCATEGORIA">Imatge de la categoria</Resource>
-		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, la imatge ha d'estar en format .PNG o .JPG</Resource>
+		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, la imatge ha d'estar en format .PNG, .JPG o .WEBP</Resource>
 		<Resource tag="ERRORGENERICOIMAGENCATEGORIA">Error, la imatge no ha pogut pujar-se correctament.</Resource>
 		<Resource tag="ERRORPESOIMAGENCATEGORIA">Error, la imatge supera la grandària màxima permesa: </Resource>
 		<Resource tag="ERRORELIMINARIMAGENCATEGORIA">Error, la imatge de la categoria no ha pogut eliminar-se correctament</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Arrossega i deixa anar en la zona puntejada arxiu multimèdia per a pujar</Resource>
-		<Resource tag="IMAGENESENFORMATOPNGOJPG">Imatges en format .PNG o .JPG</Resource>
+		<Resource tag="IMAGENESENFORMATOPNGOJPG">Imatges en format .PNG, .JPG o .WEBP</Resource>
 		<Resource tag="ARCHIVOSENFORMATODOC,DOCX,TXTOPDF">Arxius en format .DOC, .DOCX, .TXT o .PDF</Resource>
 		<Resource tag="DESEAELIMINARELELEMENTOMULTIMEDIA">Desitja eliminar l'element multimèdia?</Resource>
 		<Resource tag="URLDOMINIO">URL domini</Resource>
@@ -5930,6 +5984,8 @@
 		<Resource tag="INTRODUCEUNIDENTIFICADORUNICOPARALATRADUCCIONACREAR">Introdueix un identificador únic per a la traducció a crear.</Resource>
 		<Resource tag="IDDELATRADUCCION">Id de la traducció</Resource>
 		<Resource tag="AÑADEACONTINUACIONLASTRADUCCIONESPERSONALIZADASPARALOSDIFERE">Afig a continuació les traduccions personalitzades per als diferents idiomes disponibles en la comunitat.</Resource>
+		<Resource tag="ERRORCARACTERESINVALIDOSTEXTID">L'identificador de la traducció no pot començar pels caràcters: =, +, -, @, |, salt de línia, tabulació o retorn de carro</Resource>
+		<Resource tag="ERRORCARACTERESINVALIDOSTRADUCCION">La traducció en l'idioma @1@ no pot començar pels caràcters: =, +, -, @, |, salt de línia, tabulació o retorn de carro</Resource>
 		<Resource tag="TRADUCCION">Traducció</Resource>
 		<Resource tag="CLAUSULAS">Clàusules</Resource>
 		<Resource tag="CONTENIDO">Contingut</Resource>
@@ -5948,6 +6004,32 @@
 		<Resource tag="INTRODUCEELUSUARIO">Introdueix l'usuari</Resource>
 		<Resource tag="INTRODUCELACONTRASEÑA">Introdueix la contrasenya</Resource>
 		<Resource tag="INTRODUCEELEMAILPARASUGERENCIAS">Introdueix l'email per a suggeriments</Resource>
+		<Resource tag="CORREOBUZONOBLIGATORIO">El correo electrónico de la comunidad es obligatorio.</Resource>
+		<Resource tag="CORREOBUZONNOVALIDO">El correo electrónico de la comunidad no tiene un formato válido.</Resource>
+		<Resource tag="SMTPOBLIGATORIO">El servidor SMTP es obligatorio.</Resource>
+		<Resource tag="PUERTOOBLIGATORIO">El puerto del servidor SMTP es obligatorio.</Resource>
+		<Resource tag="PUERTONOVALIDO">El puerto del servidor SMTP debe ser un número entero entre 1 y 32767.</Resource>
+		<Resource tag="USUARIOCORREOOBLIGATORIO">El usuario de la cuenta de correo es obligatorio.</Resource>
+		<Resource tag="CONTRASENYACORREOOBLIGATORIA">La contraseña de la cuenta de correo es obligatoria.</Resource>
+		<Resource tag="TIPOSERVIDOROBLIGATORIO">El tipo de servidor de envío es obligatorio.</Resource>
+		<Resource tag="EMAILSUGERENCIASOBLIGATORIO">El email de sugerencias es obligatorio.</Resource>
+		<Resource tag="EMAILSUGERENCIASNOVALIDO">El email de sugerencias no tiene un formato válido.</Resource>
+		<Resource tag="EMAILPRUEBAOBLIGATORIO">Indica el correo electrónico al que se enviará el email de prueba.</Resource>
+		<Resource tag="EMAILPRUEBANOVALIDO">El correo electrónico al que se enviará el email de prueba no tiene un formato válido.</Resource>
+		<Resource tag="ASUNTOCORREOPRUEBA">Correo de prueba de la configuración del buzón</Resource>
+		<Resource tag="CUERPOCORREOPRUEBA">El correo electrónico configurado funciona correctamente.</Resource>
+		<Resource tag="CORREOCONFIGURADOCONEXITO">El correo electrónico se ha configurado con éxito.</Resource>
+		<Resource tag="ERRORSMTPCONEXION">No se ha podido conectar con el servidor SMTP '@1@' en el puerto @2@. Revisa el nombre del servidor, el puerto y si el servidor requiere una conexión segura (SSL). Detalle: @3@</Resource>
+		<Resource tag="ERRORSMTPAUTENTICACION">El servidor SMTP '@1@' ha rechazado las credenciales del usuario '@2@'. Revisa el usuario y la contraseña de la cuenta de correo. Detalle: @3@</Resource>
+		<Resource tag="ERRORSMTPSSL">El servidor SMTP '@1@' requiere una conexión segura. Activa la opción 'Usar servidor seguro' o utiliza un puerto seguro (465 o 587). Detalle: @2@</Resource>
+		<Resource tag="ERRORSMTPREMITENTE">El servidor SMTP ha rechazado el remitente '@1@'. Revisa que la cuenta '@2@' esté autorizada para enviar correos desde esa dirección. Detalle: @3@</Resource>
+		<Resource tag="ERRORSMTPDESTINATARIO">El servidor SMTP ha rechazado el destinatario '@1@'. Detalle: @2@</Resource>
+		<Resource tag="ERRORSMTPDIRECCIONNOVALIDA">Alguna de las direcciones de correo indicadas no tiene un formato válido. Detalle: @1@</Resource>
+		<Resource tag="ERRORSMTPSERVICIONODISPONIBLE">El servidor SMTP '@1@' no está disponible en este momento. Inténtalo de nuevo más tarde. Detalle: @2@</Resource>
+		<Resource tag="ERRORENVIOCORREOPRUEBA">No se ha podido enviar el correo de prueba. Detalle: @1@</Resource>
+		<Resource tag="ERRORGUARDARCONFIGURACIONCORREO">El correo de prueba se ha enviado correctamente, pero no se ha podido guardar la configuración del buzón. Inténtalo de nuevo o contacta con el administrador de la plataforma.</Resource>
+		<Resource tag="TODOSLOSCAMPOSDELBUZONSONOBLIGATORIOS">Todos los campos son obligatorios. Al guardar se enviará un correo de prueba para comprobar que la configuración funciona.</Resource>
+		<Resource tag="LACONTRASENYANOSEMUESTRA">Por seguridad la contraseña no se muestra. Vuelve a introducirla para poder validar y guardar la configuración.</Resource>
 		<Resource tag="OPCIONESDELMETAADMINISTRADOR">Opcions del meta-administrador</Resource>
 		<Resource tag="PERMITIRADMINISTRACIONSEMANTICA">Permetre administració semàntica</Resource>
 		<Resource tag="PERMITIRADMINISTRACIONDEVISTAS">Permetre administració de vistes</Resource>
@@ -6993,7 +7075,7 @@
 		<Resource tag="NUEVOICONO">Selecciona un icono para adjuntar</Resource>
 		<Resource tag="ERRORSUBIRICONO">Se produjo un error al subir el icono, inténtelo de nuevo más tarde.</Resource>
 		<Resource tag="SELECCIONARROL">-- Selecciona un rol --</Resource>
-		<Resource tag="FORMATOIMAGENPERMITIDO">Imágenes en formato .JPG, .JPEG, .PNG o .GIF</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Imatges en format .JPG, .JPEG, .PNG, .GIF o .WEBP</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Clic o arrastra una imagen aquí</Resource>
 		<Resource tag="ERRORPESOICONO">El icono no puede pesar mas de 2 MB</Resource>
 		<Resource tag="ERRORICONOVACIO">Archivo vacio</Resource>

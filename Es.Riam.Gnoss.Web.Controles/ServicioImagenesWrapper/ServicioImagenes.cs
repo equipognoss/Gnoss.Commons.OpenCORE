@@ -4,24 +4,26 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper.Model;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
 using System.Net.Http;
-using System.Reflection;
 using Es.Riam.Util;
-using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
 {
 
     public class ServicioImagenes
     {
+        private static readonly HttpClient mClient = new HttpClient(new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(5)
+        });
+
         private LoggingService mLoggingService;
         private CallTokenService mCallTokenService;
         private TokenBearer mToken;
@@ -57,13 +59,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
         }
 
-        public bool AgregarFichero(byte[] pFichero, string pNombre, string pExtension, string pRuta)
+        public bool AgregarFichero(byte[] pFichero, string pNombre, string pExtension, string pRuta, bool pErrorSiYaExiste = false)
         {
             GnossFile ficheroEnviar = new GnossFile();
             ficheroEnviar.path = pRuta;
             ficheroEnviar.name = pNombre;
             ficheroEnviar.extension = pExtension;
             ficheroEnviar.file = pFichero;
+            ficheroEnviar.error_if_exists = pErrorSiYaExiste;
 
             try
             {
@@ -183,7 +186,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         public List<FileInfoModel> ObtenerDatosFicherosDeCarpeta(string pDirectorio)
         {
             string respuesta = PeticionWebRequest("GET", $"get-files-data-from-directory?relative_path={HttpUtility.UrlEncode(pDirectorio)}");
-            return JsonConvert.DeserializeObject<List<FileInfoModel>>(respuesta);
+            if (string.IsNullOrWhiteSpace(respuesta))
+            {
+                return new List<FileInfoModel>();
+            }
+            return JsonSerializer.Deserialize<List<FileInfoModel>>(respuesta);
         }
 
         public bool MoverImagenesRecursoAlmacenamientoTemporal(string pDirectorio, Guid pDocumentoID, string pNombre)
@@ -391,11 +398,11 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
 
         /// <summary>
         /// Llama al serviicio interno para copiar la imagen indicada de un documento a otro. Si la imagen no tiene
-        /// extensión se copia la imagen y todos sus recortes.
+        /// extensiï¿½n se copia la imagen y todos sus recortes.
         /// </summary>
         /// <param name="pDocumentoIDOrigen">Identificador del documento original que contiene la imagen</param>
         /// <param name="pDocumentoIDDestino">Identificador del documento al que se quiere copiar la imagen</param>
-        /// <param name="pNombreImagen">Nombre de la imagen a copiar. Si no se define la extensión se copiará la imagen y sus recortes</param>
+        /// <param name="pNombreImagen">Nombre de la imagen a copiar. Si no se define la extensiï¿½n se copiarï¿½ la imagen y sus recortes</param>
         /// <returns></returns>
         public bool CopiarImagenSemantica(Guid pDocumentoIDOrigen, Guid pDocumentoIDDestino, string pNombreImagen)
         {
@@ -431,19 +438,19 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
         public string[] ObtenerIDsImagenesPorNombreImagen(string pDirectorio, string pNombreImagen)
         {
             string respuesta = PeticionWebRequest("GET", $"get-image-ids-from-image-name?relative_path={HttpUtility.UrlEncode(pDirectorio)}&image_name={HttpUtility.UrlEncode(pNombreImagen)}");
-            return JsonConvert.DeserializeObject<string[]>(respuesta);
+            return JsonSerializer.Deserialize<string[]>(respuesta);
         }
 
         public double ObtenerEspacioImagenDocumentoPersonal(string pNombre, string pExtension, Guid pPersonaID)
         {
             string respuesta = PeticionWebRequest("GET", $"get-space-for-personal-document-image?name={HttpUtility.UrlEncode(pNombre)}&extension={pExtension}&person_id={pPersonaID}");
-            return JsonConvert.DeserializeObject<double>(respuesta);
+            return JsonSerializer.Deserialize<double>(respuesta);
         }
 
         public double ObtenerEspacioImagenDocumentoOrganizacion(string pNombre, string pExtension, Guid pOrganizacionID)
         {
             string respuesta = PeticionWebRequest("GET", $"get-space-for-organization-document-image?name={HttpUtility.UrlEncode(pNombre)}&extension={pExtension}&organization_id={pOrganizacionID}");
-            return JsonConvert.DeserializeObject<double>(respuesta);
+            return JsonSerializer.Deserialize<double>(respuesta);
         }
 
         /// <summary>
@@ -463,12 +470,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             HttpResponseMessage response = null;
             try
             {
-                HttpClient client = new HttpClient();
-                if (mToken != null)
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
-                }
-
                 if (httpMethod == "POST")
                 {
                     if (byteData == null) { byteData = new byte[0]; }
@@ -476,7 +477,12 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
                     ByteArrayContent bytes = new ByteArrayContent(byteData);
                     contentData.Add(bytes, "file", "file");
                 }
-                response = client.PostAsync($"{url}", contentData).Result;
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url) { Content = contentData };
+                if (mToken != null)
+                {
+                    request.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
+                }
+                response = mClient.SendAsync(request).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsByteArrayAsync().Result;
                 return result;
@@ -498,145 +504,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
             }
         }
 
-        /// <summary>
-        /// Request an url with an oauth sign
-        /// </summary>
-        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
-        /// <param name="url">Url to make the request</param>
-        /// <param name="postData">(Optional) Post data to send in the body request</param>
-        /// <param name="contentType">(Optional) Content type of the postData</param>
-        /// <param name="acceptHeader">(Optional) Accept header</param>
-        /// <returns>Response of the server</returns>
-        //public byte[] WebRequestToken(string httpMethod, string url, byte[] byteData = null)
-        //{
-        //    HttpWebRequest webRequest = null;
-        //    byte[] responseData = null;
-        //    MultipartFormDataContent contentData = contentData = new MultipartFormDataContent();
-
-        //    webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
-        //    webRequest.Method = httpMethod;
-        //    webRequest.ServicePoint.Expect100Continue = false;
-        //    webRequest.Timeout = 60000000;
-        //    //webRequest.ContentType = "multipart/form-data";
-        //    webRequest.ContentType = "multipart/form-data; boundary=----WebKitFormBoundaryzXudJMTgAv0kZde2";
-        //    //webRequest.ContentType = "application/x-www-form-urlencoded";
-        //    webRequest.AutomaticDecompression = DecompressionMethods.GZip;
-        //    if (mToken != null)
-        //    {
-        //        webRequest.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
-        //    }
-
-        //    if (httpMethod == "POST")
-        //    {
-        //        if (byteData == null) { byteData = new byte[0]; }
-
-        //        webRequest.ContentLength = byteData.Length;
-
-        //        Stream dataStream = webRequest.GetRequestStream();
-        //        dataStream.Write(byteData, 0, byteData.Length);
-        //        dataStream.Flush();
-        //    }
-        //    try
-        //    {
-        //        WebResponse webResponse = webRequest.GetResponse();
-        //        Stream response = webResponse.GetResponseStream();
-        //        BinaryReader sr = new BinaryReader(response);
-        //        responseData = sr.ReadBytes((int)webResponse.ContentLength);
-        //    }
-        //    catch (WebException ex)
-        //    {
-        //        string message = null;
-        //        try
-        //        {
-        //            StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-        //            message = sr.ReadToEnd();
-        //            mLoggingService.GuardarLogError(message);
-        //        }
-        //        catch
-        //        {
-        //            mLoggingService.GuardarLogError(ex);
-        //        }
-
-        //        // Error reading the error response, throw the original exception
-        //        throw;
-        //    }
-
-        //    webRequest = null;
-
-        //    return responseData;
-        //}
-
-
-        //public byte[] PeticionWebRequestTokenEstilos(string pMethod, string pAccion, byte[] pObjeto = null, string controlador = "Estilos")
-        //{
-        //    HttpWebRequest webRequest = null;
-        //    byte[] responseData = null;
-        //    if (!Url.EndsWith("/"))
-        //    {
-        //        Url += "/";
-        //    }
-        //    string urlPeticion = $"{Url}{controlador}/{pAccion}";
-        //    webRequest = WebRequest.Create(urlPeticion) as HttpWebRequest;
-        //    webRequest.Method = pMethod;
-        //    webRequest.ServicePoint.Expect100Continue = false;
-        //    webRequest.Timeout = 3600000;
-
-        //    if (mToken != null)
-        //    {
-        //        webRequest.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
-        //    }
-        //    if (pObjeto != null)
-        //    {
-        //        webRequest.ContentType = "application/x-www-form-urlencoded";
-        //        if (pObjeto == null) { pObjeto = new byte[0]; }
-
-        //        webRequest.ContentLength = pObjeto.Length;
-
-        //        Stream dataStream = webRequest.GetRequestStream();
-        //        dataStream.Write(pObjeto, 0, pObjeto.Length);
-        //        dataStream.Flush();
-        //    }
-        //    else if (!pMethod.Equals("GET"))
-        //    {
-        //        webRequest.ContentLength = 0;
-        //    }
-
-        //    try
-        //    {
-
-        //        WebResponse webResponse = webRequest.GetResponse();
-        //        Stream response = webResponse.GetResponseStream();
-        //        BinaryReader sr = new BinaryReader(response);
-        //        responseData = sr.ReadBytes((int)webResponse.ContentLength);
-
-        //        return responseData;
-        //    }
-        //    catch (WebException ex)
-        //    {
-        //        if (ex.Response != null)
-        //        {
-        //            //Leer respuesta
-        //            StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-        //            string respuesta = sr.ReadToEnd();
-        //            sr.Close();
-
-        //            string cabeceras = "";
-        //            try
-        //            {
-        //                foreach (string key in ex.Response.Headers.Keys)
-        //                {
-        //                    cabeceras += $"{Environment.NewLine}{key}: {ex.Response.Headers[key]}";
-        //                }
-        //            }
-        //            catch { }
-
-        //            throw new Exception($"Error al enviar la peticion a {urlPeticion}:{System.Environment.NewLine}{cabeceras} {System.Environment.NewLine}{respuesta}", ex);
-        //        }
-        //        throw;
-        //    }
-        //}
-
-
         private string PeticionWebRequest(string pMethod, string pAccion, object pObjeto = null, string controlador = "image-service")
         {
             if (!Url.EndsWith("/"))
@@ -644,69 +511,49 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper
                 Url += "/";
             }
             string urlPeticion = $"{Url}{controlador}/{pAccion}";
-            HttpWebRequest webRequest = WebRequest.Create(urlPeticion) as HttpWebRequest;
-            webRequest.Method = pMethod;
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 3600000;
-            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
-
-            if (mToken != null)
+            if (pMethod.Equals("GET"))
             {
-                webRequest.Headers.Add("Authorization", $"{mToken.token_type} {mToken.access_token}");
-            }
-            if (pObjeto != null)
-            {
-                webRequest.ContentType = "application/json";
-                string json = JsonConvert.SerializeObject(pObjeto);
-
-                StreamWriter requestWriter = new StreamWriter(webRequest.GetRequestStream());
+                HttpResponseMessage httpResponseMessage = UtilWeb.HacerPeticionDevolviendoHttpResponseMessage(pMethod, urlPeticion, new Dictionary<string, string>(), mToken.access_token);
+                Stream stream = httpResponseMessage.Content.ReadAsStreamAsync().GetAwaiter().GetResult();
                 try
                 {
-                    requestWriter.Write(json);
-                }
-                finally
-                {
-                    requestWriter.Close();
-                    requestWriter = null;
-                }
-            }
-            else if (!pMethod.Equals("GET"))
-            {
-                webRequest.ContentLength = 0;
-            }
-
-            try
-            {
-                mLoggingService.AgregarEntrada($"INICIO peticion servicio interno a la accion {pAccion}");
-                WebResponse response = webRequest.GetResponse();
-                StreamReader sr = new StreamReader(response.GetResponseStream());
-                string respuesta = sr.ReadToEnd();
-                sr.Close();
-                mLoggingService.AgregarEntrada($"FIN peticion servicio interno a la accion {pAccion}");
-                return respuesta;
-            }
-            catch (WebException ex)
-            {
-                if (ex.Response != null)
-                {
-                    //Leer respuesta
-                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
+                    mLoggingService.AgregarEntrada($"INICIO peticion servicio interno a la accion {pAccion}");
+                    StreamReader sr = new StreamReader(stream);
                     string respuesta = sr.ReadToEnd();
                     sr.Close();
-
-                    string cabeceras = "";
-                    try
-                    {
-                        foreach (string key in ex.Response.Headers.Keys)
-                        {
-                            cabeceras += $"{Environment.NewLine}{key}: {ex.Response.Headers[key]}";
-                        }
-                    }
-                    catch { }
-
-                    throw new Exception($"Error al enviar la peticion a {urlPeticion}:{System.Environment.NewLine}{cabeceras} {System.Environment.NewLine}{respuesta}", ex);
+                    mLoggingService.AgregarEntrada($"FIN peticion servicio interno a la accion {pAccion}");
+                    return respuesta;
                 }
-                throw;
+                catch (WebException ex)
+                {
+                    if (ex.Response != null)
+                    {
+                        //Leer respuesta
+                        StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
+                        string respuesta = sr.ReadToEnd();
+                        sr.Close();
+
+                        string cabeceras = "";
+                        try
+                        {
+                            foreach (string key in ex.Response.Headers.Keys)
+                            {
+                                cabeceras += $"{Environment.NewLine}{key}: {ex.Response.Headers[key]}";
+                            }
+                        }
+                        catch { }
+
+                        throw new Exception($"Error al enviar la peticion a {urlPeticion}:{System.Environment.NewLine}{cabeceras} {System.Environment.NewLine}{respuesta}", ex);
+                    }
+                    throw;
+                }
+            }
+            else
+            {
+                mLoggingService.AgregarEntrada($"INICIO peticion servicio interno a la accion {pAccion}");
+                string respuesta = UtilWeb.WebRequestPostWithJsonObject(urlPeticion, pObjeto, mToken.access_token);
+                mLoggingService.AgregarEntrada($"FIN peticion servicio interno a la accion {pAccion}");
+                return respuesta;
             }
 
         }

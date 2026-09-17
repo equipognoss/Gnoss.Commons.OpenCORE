@@ -17,7 +17,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -827,6 +827,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                     b.HasKey("CargaID");
 
                     b.ToTable("Carga");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaMasivaConfiguracion", b =>
+                {
+                    b.Property<Guid>("ProyectoID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("FechaModificacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProyectoID");
+
+                    b.ToTable("CargaMasivaConfiguracion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaMasivaDominioPermitido", b =>
+                {
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("Dominio")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProyectoID", "Dominio");
+
+                    b.ToTable("CargaMasivaDominioPermitido");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
@@ -5355,6 +5394,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextMigrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("MensajesGnoss")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NuevosSeguidores")
                         .HasColumnType("bit");
 
                     b.Property<bool>("SolicitudesContacto")

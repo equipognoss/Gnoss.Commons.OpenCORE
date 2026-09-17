@@ -20,6 +20,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public ActividadReciente(bool pEsPaginaSuscripciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IAvailableServices availableServices, ILogger<ActividadReciente> logger, ILoggerFactory loggerFactory)
+        public ActividadReciente(bool pEsPaginaSuscripciones, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IWebHostEnvironment env, IAvailableServices availableServices, ILogger<ActividadReciente> logger, ILoggerFactory loggerFactory)
                : this(loggingService, entityContext, configService, httpContextAccessor, redisCacheWrapper, virtuosoAD, gnossCache, entityContextBASE, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication, env, availableServices,logger,loggerFactory)
         {
             mEsPaginaSuscripciones = pEsPaginaSuscripciones;
@@ -51,7 +52,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public ActividadReciente(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IAvailableServices availableServices, ILogger<ActividadReciente> logger, ILoggerFactory loggerFactory)
+        public ActividadReciente(LoggingService loggingService, EntityContext entityContext, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, GnossCache gnossCache, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IWebHostEnvironment env, IAvailableServices availableServices, ILogger<ActividadReciente> logger, ILoggerFactory loggerFactory)
             : base(httpContextAccessor, entityContext, loggingService, configService, redisCacheWrapper, virtuosoAD, gnossCache, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication, env, entityContextBASE, availableServices,logger,loggerFactory)
         {
             mVirtuosoAD = virtuosoAD;

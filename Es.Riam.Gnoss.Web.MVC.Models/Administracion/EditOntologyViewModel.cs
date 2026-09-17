@@ -1,7 +1,5 @@
-﻿
-
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
 using System;
 
 namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion

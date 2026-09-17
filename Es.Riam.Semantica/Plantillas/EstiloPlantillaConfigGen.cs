@@ -94,6 +94,7 @@ namespace Es.Riam.Semantica.Plantillas
             mPropiedadDescripcion = (KeyValuePair<string, string>)info.GetValue("PropiedadDescripcion", typeof(KeyValuePair<string, string>));
             mPropiedadesOntologia = (Dictionary<string, string>)info.GetValue("PropiedadesOntologia", typeof(Dictionary<string, string>));
             mPropiedadesOpenSeaDragon = (List<KeyValuePair<string, string>>)info.GetValue("PropiedadesOpenSeaDragon", typeof(List<KeyValuePair<string, string>>));
+            mPropiedadesOpenSeaDragonTiles = (List<string>)info.GetValue("PropiedadesOpenSeaDragonTiles", typeof(string));
             mPropiedadesTesSem = (List<KeyValuePair<string, string>>)info.GetValue("PropiedadesTesSem", typeof(List<KeyValuePair<string, string>>));
             mPropiedadesTitulo = (Dictionary<string, string>)info.GetValue("PropiedadesTitulo", typeof(Dictionary<string, string>));
             mPropiedadImagenFromURL = (List<KeyValuePair<string, string>>)info.GetValue("PropiedadImagenFromURL", typeof(List<KeyValuePair<string, string>>));
@@ -159,6 +160,13 @@ namespace Es.Riam.Semantica.Plantillas
         /// Nombre de las propiedades que contendrán imágenes para realizar el procesado OpenSeaDragon.
         /// </summary>
         private List<KeyValuePair<string, string>> mPropiedadesOpenSeaDragon;
+
+        /// <summary>
+        /// Modo de visualización para el visor OpenSeaDragon con tiles DZ.
+        /// NULL si la propiedad no usa el visor extendido.
+        /// </summary>
+        private List<string> mPropiedadesOpenSeaDragonTiles;
+
 
         /// <summary>
         /// Ontología.
@@ -668,6 +676,15 @@ namespace Es.Riam.Semantica.Plantillas
             }
         }
 
+        /// <summary>
+        /// Modo de visualización para el visor OpenSeaDragon con tiles DZ.
+        /// NULL si la propiedad no usa el visor extendido.
+        /// </summary>
+        public List<string> PropiedadesOpenSeaDragonTiles
+        {
+            get { return mPropiedadesOpenSeaDragonTiles; }
+            set { mPropiedadesOpenSeaDragonTiles = value; }
+        }
         /// <summary>
         /// Ontología.
         /// </summary>
@@ -1948,6 +1965,7 @@ namespace Es.Riam.Semantica.Plantillas
             info.AddValue("PropiedadDescripcion", mPropiedadDescripcion);
             info.AddValue("PropiedadesOntologia", mPropiedadesOntologia);
             info.AddValue("PropiedadesOpenSeaDragon", mPropiedadesOpenSeaDragon);
+            info.AddValue("PropiedadesOpenSeaDragonTiles", mPropiedadesOpenSeaDragonTiles);
             info.AddValue("PropiedadesTesSem", mPropiedadesTesSem);
             info.AddValue("PropiedadesTitulo", mPropiedadesTitulo);
             info.AddValue("PropiedadImagenFromURL", mPropiedadImagenFromURL);

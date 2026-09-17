@@ -48,7 +48,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextBASEOracleMigrations
 
                     b.Property<string>("HtmlTexto")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("MascaraDireccionRespuesta")
                         .HasMaxLength(250)

@@ -36,17 +36,17 @@ namespace Es.Riam.Gnoss.Traducciones
         private const string ontologiaPrincipal = "tabla_";
         private readonly Elementos.ServiciosGenerales.Proyecto mProyectoSeleccionado;
 
-        private EntityContext mEntityContext;
-        private VirtuosoAD mVirtuosoAD;
-        private ConfigService mConfigService;
-        private LoggingService mLoggingService;
-        private RedisCacheWrapper mRedisCacheWrapper;
-        private IHttpContextAccessor mHttpContextAccessor;
-        private GnossCache mGnossCache;
-        private EntityContextBASE mEntityContextBASE;
-        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-        private ILogger mlogger;
-        private ILoggerFactory mloggerFactory;
+        private readonly EntityContext mEntityContext;
+        private readonly VirtuosoAD mVirtuosoAD;
+        private readonly ConfigService mConfigService;
+        private readonly LoggingService mLoggingService;
+        private readonly RedisCacheWrapper mRedisCacheWrapper;
+        private readonly IHttpContextAccessor mHttpContextAccessor;
+        private readonly GnossCache mGnossCache;
+        private readonly EntityContextBASE mEntityContextBASE;
+        private readonly IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory mloggerFactory;
         public BaseDeDatos(Elementos.ServiciosGenerales.Proyecto pProyectoSeleccionado, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, RedisCacheWrapper redisCacheWrapper, IHttpContextAccessor httpContextAccessor, GnossCache gnossCache, EntityContextBASE entityContextBASE, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseDeDatos> logger, ILoggerFactory loggerFactory)
         {
             mGnossCache = gnossCache;
@@ -59,14 +59,14 @@ namespace Es.Riam.Gnoss.Traducciones
             mVirtuosoAD = virtuosoAD;
             mProyectoSeleccionado = pProyectoSeleccionado;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            mlogger = logger;
+            _logger = logger;
             mloggerFactory = loggerFactory;
         }
 
         /// <summary>
         /// Escribe el excel de la tabla 
         /// </summary>
-        private void EscribirExcelPorTabla(Dictionary<string, Dictionary<string, string>> mDiccionario, string clave, Dictionary<string, string> idiomasTextos)
+        private static void EscribirExcelPorTabla(Dictionary<string, Dictionary<string, string>> mDiccionario, string clave, Dictionary<string, string> idiomasTextos)
         {
             foreach (string idioma in idiomasTextos.Keys)
             {
@@ -127,11 +127,7 @@ namespace Es.Riam.Gnoss.Traducciones
             foreach (DataRow fila in tabla.Rows)
             {
                 string claveFila = fila[0].ToString();
-                //string valorColumna = "";
 
-                //var filaPersonalizada = filas.FirstOrDefault(componente => componente.TextoID.Equals(claveFila));
-                //if (filaPersonalizada != null)
-                //{
                 for (int i = 1; i < tabla.Columns.Count; i++)
                 {
                     if (!fila.IsNull(i) && !string.IsNullOrEmpty((string)fila[i])/* && !valorColumna.Equals(fila[i])*/)
@@ -147,8 +143,6 @@ namespace Es.Riam.Gnoss.Traducciones
                         filaPersonalizada.Texto = fila[i] as string;
                     }
                 }
-
-                //}
             }
             mEntityContext.SaveChanges();
         }
@@ -168,20 +162,17 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (ProyectoPestanyaMenu fila in filas)
+                foreach (ProyectoPestanyaMenu fila in filas.Where(fila => !string.IsNullOrEmpty(fila.Nombre)))
                 {
-                    if (!string.IsNullOrEmpty(fila.Nombre))
+                    Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.Nombre);
+
+                    if (!idiomasTextos.ContainsKey("es"))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.Nombre);
-
-                        if (!idiomasTextos.ContainsKey("es"))
-                        {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.Nombre, "es", "es"));
-                        }
-                        string clave = fila.PestanyaID.ToString();
-
-                        EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
+                        idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.Nombre, "es", "es"));
                     }
+                    string clave = fila.PestanyaID.ToString();
+
+                    EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                 }
             }
             UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
@@ -203,22 +194,6 @@ namespace Es.Riam.Gnoss.Traducciones
                     var filaPestanya = filas.FirstOrDefault(pestanya => pestanya.PestanyaID.Equals(pestanyaID));
                     if (filaPestanya != null)
                     {
-                        //----------------------------------PRUEBA-----------------------------------
-                        //idiomas y textos de sql, tienes que comprobar que sean iguales que los textos en idiomas de tu tabla excel
-                        //Dictionary<string, string> textosIdiomasTabla = UtilCadenas.ObtenerTextoPorIdiomas(filaPestanya.Nombre);
-
-                        //for (int i = 1; i < tabla.Columns.Count; i++)
-                        //{
-                        //    if (!string.IsNullOrEmpty(fila[i].ToString()))
-                        //    {
-                        //        //sacar texto de idioma de excel fila[i] texto idioma columna
-                        //    }
-                        //}
-
-
-
-
-                        //---------------------------------------------------------------------------
                         string textoComparar = filaPestanya.Nombre;
 
                         for (int i = 1; i < tabla.Columns.Count; i++)
@@ -260,18 +235,18 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (var fila in filas)
+                foreach (var cmsPropiedadComponente in filas.Select(fila => fila.CMSPropiedadComponente))
                 {
-                    string componenteID = fila.CMSPropiedadComponente.ComponenteID.ToString();
-                    string tipoPropiedadComponente = fila.CMSPropiedadComponente.TipoPropiedadComponente.ToString();
+                    string componenteID = cmsPropiedadComponente.ComponenteID.ToString();
+                    string tipoPropiedadComponente = cmsPropiedadComponente.TipoPropiedadComponente.ToString();
 
                     if (!string.IsNullOrEmpty(componenteID) && !string.IsNullOrEmpty(tipoPropiedadComponente))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.CMSPropiedadComponente.ValorPropiedad);
+                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(cmsPropiedadComponente.ValorPropiedad);
 
                         if (!idiomasTextos.ContainsKey("es"))
                         {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.CMSPropiedadComponente.ValorPropiedad, "es", "es"));
+                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(cmsPropiedadComponente.ValorPropiedad, "es", "es"));
                         }
 
                         string clave = $"{componenteID}_{tipoPropiedadComponente}";
@@ -338,21 +313,18 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (var fila in filas)
+                foreach (var fila in filas.Where(fila => !string.IsNullOrEmpty(fila.Faceta) && !string.IsNullOrEmpty(fila.ObjetoConocimiento.ToString())))
                 {
-                    if (!string.IsNullOrEmpty(fila.Faceta) && !string.IsNullOrEmpty(fila.ObjetoConocimiento.ToString()))
+                    Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.NombreFaceta);
+
+                    if (!idiomasTextos.ContainsKey("es"))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.NombreFaceta);
-
-                        if (!idiomasTextos.ContainsKey("es"))
-                        {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.NombreFaceta, "es", "es"));
-                        }
-
-                        string clave = fila.ObjetoConocimiento.ToString() + "_" + fila.Faceta.ToString();
-
-                        EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
+                        idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.NombreFaceta, "es", "es"));
                     }
+
+                    string clave = fila.ObjetoConocimiento.ToString() + "_" + fila.Faceta.ToString();
+
+                    EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                 }
             }
             UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
@@ -404,21 +376,18 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (var fila in filas)
+                foreach (var categoriaTesauro in filas.Where(fila => !string.IsNullOrEmpty(fila.CategoriaTesauro.Nombre)).Select(fila => fila.CategoriaTesauro))
                 {
-                    if (!string.IsNullOrEmpty(fila.CategoriaTesauro.Nombre))
+                    Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(categoriaTesauro.Nombre);
+
+                    if (!idiomasTextos.ContainsKey("es"))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.CategoriaTesauro.Nombre);
-
-                        if (!idiomasTextos.ContainsKey("es"))
-                        {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.CategoriaTesauro.Nombre, "es", "es"));
-                        }
-
-                        string clave = fila.CategoriaTesauro.CategoriaTesauroID.ToString();
-
-                        EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
+                        idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(categoriaTesauro.Nombre, "es", "es"));
                     }
+
+                    string clave = categoriaTesauro.CategoriaTesauroID.ToString();
+
+                    EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                 }
             }
 
@@ -473,21 +442,18 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (var fila in filas)
+                foreach (var fila in filas.Where(fila => !string.IsNullOrEmpty(fila.Texto)))
                 {
-                    if (!string.IsNullOrEmpty(fila.Texto))
+                    Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.Texto);
+
+                    if (!idiomasTextos.ContainsKey("es"))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.Texto);
-
-                        if (!idiomasTextos.ContainsKey("es"))
-                        {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.Texto, "es", "es"));
-                        }
-
-                        string clave = fila.ClausulaID.ToString();
-
-                        EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
+                        idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.Texto, "es", "es"));
                     }
+
+                    string clave = fila.ClausulaID.ToString();
+
+                    EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                 }
             }
             UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
@@ -540,21 +506,18 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (var fila in filas)
+                foreach (var fila in filas.Where(fila => !string.IsNullOrEmpty(fila.Titulo)))
                 {
-                    if (!string.IsNullOrEmpty(fila.Titulo))
+                    Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.Titulo);
+
+                    if (!idiomasTextos.ContainsKey("es"))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.Titulo);
-
-                        if (!idiomasTextos.ContainsKey("es"))
-                        {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.Titulo, "es", "es"));
-                        }
-
-                        string clave = fila.GadgetID.ToString();
-
-                        EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
+                        idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.Titulo, "es", "es"));
                     }
+
+                    string clave = fila.GadgetID.ToString();
+
+                    EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                 }
             }
             UtilFicheros.ConstruirExcel(mExcel, nombreHoja, mDiccionario, mConfigService);
@@ -606,21 +569,18 @@ namespace Es.Riam.Gnoss.Traducciones
 
             if (filas.Count > 0)
             {
-                foreach (var fila in filas)
+                foreach (var fila in filas.Where(fila => !string.IsNullOrEmpty(fila.NombreOnt)))
                 {
-                    if (!string.IsNullOrEmpty(fila.NombreOnt))
+                    Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.NombreOnt);
+
+                    if (!idiomasTextos.ContainsKey("es"))
                     {
-                        Dictionary<string, string> idiomasTextos = UtilCadenas.ObtenerTextoPorIdiomas(fila.NombreOnt);
-
-                        if (!idiomasTextos.ContainsKey("es"))
-                        {
-                            idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.NombreOnt, "es", "es"));
-                        }
-
-                        string clave = fila.OntologiaProyecto1.ToString();
-
-                        EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
+                        idiomasTextos.Add("es", UtilCadenas.ObtenerTextoDeIdioma(fila.NombreOnt, "es", "es"));
                     }
+
+                    string clave = fila.OntologiaProyecto1.ToString();
+
+                    EscribirExcelPorTabla(mDiccionario, clave, idiomasTextos);
                 }
             }
 
@@ -659,8 +619,6 @@ namespace Es.Riam.Gnoss.Traducciones
 
         public void OntologiaProyectoToExcelVirtuosoPorFecha(Guid mProyectoID, string grafo, DateTime? fechaMax, DateTime? fechaMin, XLWorkbook mExcel, string UrlIntragnoss)
         {
-            string nombreHoja = grafo.Substring(0, grafo.IndexOf(".owl"));
-
             if (fechaMax == null || fechaMax.Equals(DateTime.MinValue))
             {
                 fechaMax = DateTime.MaxValue;
@@ -676,23 +634,19 @@ namespace Es.Riam.Gnoss.Traducciones
             if (dataSet.Tables.Contains(grafo))
             {
                 DataTable dtOtntologia = dataSet.Tables[grafo];
-                DataTable decodedDataTable = decodeDataTable(dtOtntologia);
-				//ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"PrimaryOnto_{nombreHoja}");
-				//ws.Cells.LoadFromDataTable(dtOtntologia, true);
-
+                DataTable decodedDataTable = DecodeDataTable(dtOtntologia);
 				mExcel.Worksheets.Add(decodedDataTable);
-                
             }
             dataSet.Dispose();
         }
 
-        public DataTable decodeDataTable(DataTable dTable)
+        public static DataTable DecodeDataTable(DataTable dTable)
         {
 			foreach (DataRow drow in dTable.Rows)
 			{
 				for (int i = 0; i < drow.ItemArray.Length; i++)
-					if (drow[i].GetType() == typeof(string))
-						drow[i] = System.Web.HttpUtility.HtmlDecode(drow[i].ToString());
+					if (drow[i] is string)
+						drow[i] = UtilFicheros.SanitizarCelda(System.Web.HttpUtility.HtmlDecode(drow[i].ToString()));
 			}
 			dTable.AcceptChanges();
 			return dTable;
@@ -871,11 +825,6 @@ namespace Es.Riam.Gnoss.Traducciones
 
             while (recorrerLista)
             {
-                //List<Documento> filas2 = mEntityContext.Documento.Join(mEntityContext.Documento, docOnto => new { DocumentoID = docOnto.DocumentoID }, doc2 => new { DocumentoID = doc2.ElementoVinculadoID.Value }, (docOnto, doc2) => new { DocumentoOntologia = docOnto, Documento2 = doc2 }).Where(item => item.Documento2.ElementoVinculadoID.HasValue && item.DocumentoOntologia.ProyectoID.HasValue && item.DocumentoOntologia.ProyectoID.Value.Equals(mProyectoID) && item.DocumentoOntologia.Enlace.Equals(ontologia)).Select(item => item.Documento2).OrderBy(item => item.DocumentoID).Skip(i).Take(numRecursosRecorrer).ToList();
-
-
-
-
                 List<Documento> filas = mEntityContext.Documento.Join(mEntityContext.Documento, docOnto => new { DocumentoID = docOnto.DocumentoID }, doc2 => new { DocumentoID = doc2.ElementoVinculadoID.Value }, (docOnto, doc2) => new { DocumentoOntologia = docOnto, Documento2 = doc2 }).Join(mEntityContext.DocumentoWebVinBaseRecursos, item => item.Documento2.DocumentoID, docWebVin => docWebVin.DocumentoID, (item, docWebVin) => new
                 {
                     DocumentoOntologia = item.DocumentoOntologia,
@@ -953,7 +902,7 @@ namespace Es.Riam.Gnoss.Traducciones
                 }
                 catch(Exception ex)
                 {
-                    mLoggingService.GuardarLogError(ex, mlogger);
+                    mLoggingService.GuardarLogError(ex, _logger);
                 }
                 //Procesamos el recurso por el base
                 controladorDocumentacion.AgregarRecursoModeloBaseSimple(recursoID, mProyectoSeleccionado.Clave, 5, AD.BASE_BD.PrioridadBase.Alta, pAvailableServices);
@@ -1080,12 +1029,9 @@ namespace Es.Riam.Gnoss.Traducciones
 
             var filas = mEntityContext.Documento.Where(item => item.ProyectoID.HasValue && item.ProyectoID.Value.Equals(mProyectoID) && item.Tipo.Equals((short)23)).ToList();
 
-            foreach (var fila in filas)
+            foreach (string enlace in filas.Where(fila => fila.Enlace != null && !fila.Enlace.Equals("taxonomy.owl", StringComparison.InvariantCultureIgnoreCase)).Select(fila => fila.Enlace))
             {
-                if (fila.Enlace != null && !fila.Enlace.Equals("taxonomy.owl", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    ontologias.Add($"{fila.Enlace.ToLower()}");
-                }
+                ontologias.Add($"{enlace.ToLower()}");
             }
 
             if (ontologias.Any())
@@ -1098,10 +1044,8 @@ namespace Es.Riam.Gnoss.Traducciones
                     DataTable dtOtntologia = dataSet.Tables[grafo];
                     if (dtOtntologia != null)
                     {
-						DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+						DataTable decodedDataTable = DecodeDataTable(dtOtntologia);
 						mExcel.Worksheets.Add(decodedDataTable);
-                        //ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"SecondaryOnto_{ontologia}");
-                        //ws.Cells.LoadFromDataTable(dtOtntologia, true);
                         dataSet.Dispose();
                     }
                 }
@@ -1110,17 +1054,14 @@ namespace Es.Riam.Gnoss.Traducciones
 
         public void OntologiaSecundariaToExcelSeleccionados(Guid mProyectoID, string pOntologia, XLWorkbook mExcel, string urlIntragnoss)
         {
-            string nombreHoja = pOntologia;
             string grafo = urlIntragnoss + pOntologia;
             DataSet dataSet = CrearExcelOntologiasVirtuoso(pOntologia, urlIntragnoss);
             if (dataSet.Tables.Contains(grafo))
             {
                 DataTable dtOtntologia = dataSet.Tables[grafo];
-				DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+				DataTable decodedDataTable = DecodeDataTable(dtOtntologia);
 
 				mExcel.Worksheets.Add(decodedDataTable);
-                //ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"SecondaryOnto_{nombreHoja}");
-                //ws.Cells.LoadFromDataTable(dtOtntologia, true);
             }
             dataSet.Dispose();
         }
@@ -1130,30 +1071,24 @@ namespace Es.Riam.Gnoss.Traducciones
             List<string> ontologias = new List<string>();
             var filas = mEntityContext.Documento.Where(item => item.ProyectoID.HasValue && item.ProyectoID.Value.Equals(mProyectoID) && item.Tipo.Equals((short)23)).ToList();
 
-            foreach (var fila in filas)
+            foreach (string enlace in filas.Where(fila => fila.Enlace != null && !fila.Enlace.Equals("taxonomy.owl", StringComparison.InvariantCultureIgnoreCase)).Select(fila => fila.Enlace))
             {
-                if (fila.Enlace != null && fila.Enlace.Equals("taxonomy.owl", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    ontologias.Add($"{fila.Enlace.ToLower()}");
-                }
+                ontologias.Add($"{enlace.ToLower()}");
             }
 
             if (ontologias.Any())
             {
                 foreach (string ontologia in ontologias)
                 {
-
                     string grafo = urlIntragnoss + ontologia;
                     DataSet dataSet = CrearExcelOntologiasVirtuoso(ontologia, urlIntragnoss);
                     DataTable dtOtntologia = dataSet.Tables[grafo];
                    
                     if (dtOtntologia != null)
                     {
-						DataTable decodedDataTable = decodeDataTable(dtOtntologia);
+						DataTable decodedDataTable = DecodeDataTable(dtOtntologia);
 
 						mExcel.Worksheets.Add(decodedDataTable);
-                        //ExcelWorksheet ws = mExcel.Workbook.Worksheets.Add($"taxonomy_{ontologia}");
-                        //ws.Cells.LoadFromDataTable(dtOtntologia, true);
                     }
 
                     dataSet.Dispose();
@@ -1205,10 +1140,6 @@ namespace Es.Riam.Gnoss.Traducciones
 
             while (recorrerLista)
             {
-                //List<Documento> filas = mEntityContext.Documento.Join(mEntityContext.Documento, doc1 => new { DocumentoID = doc1.DocumentoID }, doc2 => new { DocumentoID = doc2.ElementoVinculadoID.Value }, (doc1, doc2) => new { Documento1 = doc1, Documento2 = doc2 }).Where(item => item.Documento2.ElementoVinculadoID.HasValue && item.Documento1.ProyectoID.HasValue && item.Documento1.ProyectoID.Value.Equals(mProyectoID) && item.Documento1.Enlace.Equals(pOntologia) && (item.Documento2.FechaCreacion > fechaInicio) && (item.Documento2.FechaCreacion < fechaFin)).Select(item => item.Documento2).OrderBy(item => item.DocumentoID).Skip(i).Take(numRecursosRecorrer).ToList();
-
-
-
                 List<Documento> filas = mEntityContext.Documento.Join(mEntityContext.Documento, docOnto => new { DocumentoID = docOnto.DocumentoID }, doc2 => new { DocumentoID = doc2.ElementoVinculadoID.Value }, (docOnto, doc2) => new { DocumentoOntologia = docOnto, Documento2 = doc2 }).Join(mEntityContext.DocumentoWebVinBaseRecursos, item => item.Documento2.DocumentoID, docWebVin => docWebVin.DocumentoID, (item, docWebVin) => new
                 {
                     DocumentoOntologia = item.DocumentoOntologia,

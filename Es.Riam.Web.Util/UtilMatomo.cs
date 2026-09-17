@@ -1,8 +1,8 @@
 ﻿using Es.Riam.Util;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace Es.Riam.Web.Util
 {
@@ -26,7 +26,7 @@ namespace Es.Riam.Web.Util
 
             try
             {
-                List<MatomoUserModel> response = JsonConvert.DeserializeObject<List<MatomoUserModel>>(UtilWeb.HacerPeticionPost(url, contentRequest));
+                List<MatomoUserModel> response = JsonSerializer.Deserialize<List<MatomoUserModel>>(UtilWeb.HacerPeticionPost(url, contentRequest));
 
                 return response;
             }
@@ -42,7 +42,7 @@ namespace Es.Riam.Web.Util
             Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["userLogin"] = pUserLogin };
             try
             {
-                MatomoUserModel response = JsonConvert.DeserializeObject<MatomoUserModel>(UtilWeb.HacerPeticionPost(pUrl, contentRequest));
+                MatomoUserModel response = JsonSerializer.Deserialize<MatomoUserModel>(UtilWeb.HacerPeticionPost(pUrl, contentRequest));
 
                 return response;
             }
@@ -58,7 +58,7 @@ namespace Es.Riam.Web.Util
 
             Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["userLogin"] = pUserLogin, ["password"] = pPassword, ["email"] = pEmail, ["initialIdSite"] = pInicitalIDSite };
 
-            StandarMatomoResponseModel response = JsonConvert.DeserializeObject<StandarMatomoResponseModel>(UtilWeb.HacerPeticionPost(url, contentRequest));
+            StandarMatomoResponseModel response = JsonSerializer.Deserialize<StandarMatomoResponseModel>(UtilWeb.HacerPeticionPost(url, contentRequest));
 
             return response.result.Equals("success");
         }
@@ -69,7 +69,7 @@ namespace Es.Riam.Web.Util
 
             Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["userLogin"] = pUserLogin, ["passwordConfirmation"] = pPassword, ["hasSuperUserAccess"] = pSupperUsserAccess.ToString() };
 
-            StandarMatomoResponseModel response = JsonConvert.DeserializeObject<StandarMatomoResponseModel>(UtilWeb.HacerPeticionPost(url, contentRequest));
+            StandarMatomoResponseModel response = JsonSerializer.Deserialize<StandarMatomoResponseModel>(UtilWeb.HacerPeticionPost(url, contentRequest));
 
             return response.result.Equals("success");
         }
@@ -80,7 +80,7 @@ namespace Es.Riam.Web.Util
 
             Dictionary<string, string> contentRequest = new Dictionary<string, string>() { ["token_auth"] = mOAuth, ["userLogin"] = pUserLogin, ["password"] = pNewPassword, ["passwordConfirmation"] = pOldPassword };
 
-            StandarMatomoResponseModel response = JsonConvert.DeserializeObject<StandarMatomoResponseModel>(UtilWeb.HacerPeticionPost(url, contentRequest));
+            StandarMatomoResponseModel response = JsonSerializer.Deserialize<StandarMatomoResponseModel>(UtilWeb.HacerPeticionPost(url, contentRequest));
 
             return response.result.Equals("success");
         }
@@ -91,15 +91,15 @@ namespace Es.Riam.Web.Util
         public string GetWidget(MatomoWidgetViewModel pWidgetModel)
         {
             string url = $"{mUrlMatomo}?module=Widgetize&action=iframe&containerId=VisitOverviewWithGraph&disableLink=1&widget=1&token_auth=9338f0eb2f2523212b83305a11c5ecb8&moduleToWidgetize=CoreHome&actionToWidgetize={pWidgetModel.actionToWidgetize}&idSite=1&period={pWidgetModel.period}&date={pWidgetModel.date}&segment=pageUrl=@https://testing.gnoss.com/comunidad/testing-publica";
-            string content = UtilWeb.WebRequest("GET", url);
+            string content = UtilWeb.WebRequest("GET", url, null);
 
             return content;
         }
 
-        public WebResponse MatomoRequest(string pPage, string pQueryString)
+        public HttpResponseMessage MatomoRequest(string pPage, string pQueryString)
         {
             string url = $"{mUrlMatomo}/{pPage}{pQueryString}";
-            return UtilWeb.HacerPeticionGetDevolviendoWebResponse(url);
+            return UtilWeb.HacerPeticionGetDevolviendoHttpResponseMessage(url);
         }
 
 

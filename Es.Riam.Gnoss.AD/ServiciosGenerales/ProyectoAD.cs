@@ -2548,6 +2548,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
             dataWrapperProyecto.ListaConfigAutocompletarProy = mEntityContext.ConfigAutocompletarProy.Where(config => config.ProyectoID.Equals(pProyectoID)).ToList();
             dataWrapperProyecto.ListaProyectoPestanyaBusquedaPesoOC = mEntityContext.ProyectoPestanyaBusquedaPesoOC.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
+            dataWrapperProyecto.ListaProyectoGrafoFichaRec = mEntityContext.ProyectoGrafoFichaRec.Where(item => item.ProyectoID.Equals(pProyectoID)).ToList();
             return dataWrapperProyecto;
         }
 
@@ -7204,19 +7205,20 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 			return listaRoles;
 		}
 
-        public TraductorProyecto ObtenerTraductorDeProyecto(Guid pProyectoID)
+        public TraductorProyecto ObtenerTraductorDeProyecto(Guid pProyectoID, bool pSoloProyecto)
         {
             TraductorProyecto traductorProyecto = mEntityContext.TraductorProyecto.FirstOrDefault(x => x.ProyectoID.Equals(pProyectoID));
-            if (traductorProyecto == null)
+            if (traductorProyecto == null && !pSoloProyecto)
             {
                 traductorProyecto = mEntityContext.TraductorProyecto.FirstOrDefault(x => x.ProyectoID.Equals(MetaProyecto));
             }
+
             return traductorProyecto;
         }
 
         public void GuardarTraductorProyecto(Guid pProyectoID, string pToken, string pEndpoint, string pPrompt, bool pActivo, string pModelo)
         {            
-            TraductorProyecto filaTraductorProyecto = ObtenerTraductorDeProyecto(pProyectoID);
+            TraductorProyecto filaTraductorProyecto = ObtenerTraductorDeProyecto(pProyectoID, true);
             if (filaTraductorProyecto != null)
             {
                 filaTraductorProyecto.Token = pToken;
@@ -7245,7 +7247,7 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
 
         public void EliminarTraductorProyecto(Guid pProyectoID)
         {
-            TraductorProyecto traductorProyecto = ObtenerTraductorDeProyecto(pProyectoID);
+            TraductorProyecto traductorProyecto = ObtenerTraductorDeProyecto(pProyectoID, true);
             if (traductorProyecto != null)
             {
                 mEntityContext.EliminarElemento(traductorProyecto);
@@ -7253,7 +7255,19 @@ namespace Es.Riam.Gnoss.AD.ServiciosGenerales
             }            
         }
 
-		#endregion
+        public bool ExisteTraductorDeProyecto(Guid pProyectoID)
+        {
+            bool traductorEnProyecto = mEntityContext.TraductorProyecto.Any(x => x.ProyectoID.Equals(pProyectoID));
+
+            if (!traductorEnProyecto)
+            {
+                traductorEnProyecto = mEntityContext.TraductorProyecto.Any(x => x.ProyectoID.Equals(MetaProyecto));
+            }
+
+            return traductorEnProyecto;
+        }
+
+        #endregion
 
 
         public void GuardarDetallesDocumentacion(DetallesDocumentacion detallesDocumentacion)

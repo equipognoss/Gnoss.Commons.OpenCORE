@@ -1,14 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<SonarQubeExclude>false</SonarQubeExclude>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
-		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Es.Riam.Gnoss.AD\Es.Riam.Gnoss.AD.csproj" />
@@ -20,13 +15,8 @@
 		<ProjectReference Include="..\Es.Riam.Gnoss.UtilServiciosWeb\Es.Riam.Gnoss.UtilServiciosWeb.csproj" />
 		<ProjectReference Include="..\Es.Riam.Gnoss.Util\Es.Riam.Gnoss.Util.csproj" />
 		<ProjectReference Include="..\Es.Riam.InterfacesOpen\Es.Riam.InterfacesOpen.csproj" />
+		<ProjectReference Include="..\Es.Riam.Interfaces\Es.Riam.Interfaces.csproj" />
 		<ProjectReference Include="..\Es.Riam.Util\Es.Riam.Util.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="Es.Riam.InterfacesOpen">
-			<HintPath>..\Es.Riam.InterfacesOpen\obj\Debug\net8.0\ref\Es.Riam.InterfacesOpen.dll</HintPath>
-		</Reference>
 	</ItemGroup>
 
 </Project>

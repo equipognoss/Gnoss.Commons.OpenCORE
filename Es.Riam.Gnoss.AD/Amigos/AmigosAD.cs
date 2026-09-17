@@ -1,9 +1,8 @@
 using Es.Riam.AbstractsOpen;
-using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.Identidad;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -755,6 +754,11 @@ namespace Es.Riam.Gnoss.AD.Amigos
             }
 
             return amigosDW;
+        }
+
+        public GrupoAmigos ObtenerGrupoAmigosPorOrganizacionID(Guid pOrganizacionID)
+        {
+            return mEntityContext.GrupoAmigos.JoinIdentidad().JoinPerfil().FirstOrDefault(x => x.Perfil.OrganizacionID.Equals(pOrganizacionID) && x.Identidad.Tipo == (short)TiposIdentidad.Organizacion && x.Identidad.ProyectoID.Equals(ProyectoAD.MetaProyecto)).GrupoAmigos;
         }
         #endregion
 

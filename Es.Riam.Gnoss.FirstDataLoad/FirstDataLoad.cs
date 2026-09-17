@@ -694,6 +694,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                     SolicitudesContacto = true,
                     MensajesGnoss = true,
                     ComentariosRecursos = true,
+                    NuevosSeguidores = true,
                     InvitacionComunidad = true,
                     InvitacionOrganizacion = true,
                     BoletinSuscripcion = 1,

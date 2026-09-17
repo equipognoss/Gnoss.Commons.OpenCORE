@@ -39,12 +39,6 @@ namespace Es.Riam.Gnoss.AD.EntityModel
 
         }
 
-        public EntityContextOracle(UtilPeticion utilPeticion, LoggingService loggingService, ILogger<EntityContextOracle> logger, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string pDefaultSchema = null, bool pCache = false)
-            : base(utilPeticion, loggingService, loggerFactory, dbContextOptions, configService, servicesUtilVirtuosoAndReplication, pDefaultSchema, pCache)
-        {            
-            
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -1338,10 +1332,19 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .Property(a => a.Activo)
                 .HasPrecision(1)
                 .HasColumnType("NUMBER(1)");
+
             modelBuilder.Entity<AsistenteConfigIdentidad>()
                 .Property(a => a.AsistentePorDefecto)
                 .HasPrecision(1)
                 .HasColumnType("NUMBER(1)");
+
+            modelBuilder.Entity<ProyectoSearchPersonalizado>()
+                .Property(e => e.WhereSPARQL)
+                .HasColumnType("NCLOB");
+
+            modelBuilder.Entity<ProyectoSearchPersonalizado>()
+                .Property(e => e.WhereFacetasSPARQL)
+                .HasColumnType("NCLOB");
         }
     }
 }

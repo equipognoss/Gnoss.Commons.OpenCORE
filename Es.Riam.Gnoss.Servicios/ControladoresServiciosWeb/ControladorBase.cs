@@ -22,7 +22,7 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
                     parametros += $"{claveParametro}={pParametros[claveParametro]}";
                 }
             }
-            string respuesta = UtilWeb.WebRequest(UtilWeb.Metodo.POST, url, parametros, pRequest);
+            string respuesta = UtilWeb.WebRequestStringData(UtilWeb.Metodo.POST, url, parametros, pRequest);
             return respuesta;
         }
 

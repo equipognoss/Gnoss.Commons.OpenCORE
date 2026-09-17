@@ -3,17 +3,14 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
 using Es.Riam.Gnoss.AD.Parametro;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.Parametro.Model;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Logica.Parametro
 {
@@ -102,7 +99,7 @@ namespace Es.Riam.Gnoss.Logica.Parametro
 			EventosConfiguradosModel eventosConfigurados = null;
 			if (!string.IsNullOrEmpty(valor))
 			{
-				eventosConfigurados = JsonConvert.DeserializeObject<EventosConfiguradosModel>(valor);
+				eventosConfigurados = JsonSerializer.Deserialize<EventosConfiguradosModel>(valor);
 			}
 
 			return eventosConfigurados;

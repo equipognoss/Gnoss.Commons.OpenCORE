@@ -114,5 +114,15 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// Listado de versiones que tiene un determinado Recurso.
         /// </summary>
         public List<ResourceModel> HistorialRecursos { get; set; }
+
+        /// <summary>
+        /// Diccionario con los idiomas en los que está guardado los triples del recurso
+        /// </summary>
+        public Dictionary<string, string> IdiomasOrigen { get; set; }
+
+        /// <summary>
+        /// Diccionario con los idiomas disponibles en la plataforma y el traductor configurado
+        /// </summary>
+        public Dictionary<string, string> IdiomasDestino { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-using Es.Riam.AbstractsOpen;
+Ôªøusing Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
@@ -35,24 +35,24 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         private DocumentacionCN mDocumentacionCN = null;
 
         /// <summary>
-        /// Clave MAESTRA de la cachÈ
+        /// Clave MAESTRA de la cach√©
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { NombresCL.DOCUMENTACION };
 
         /// <summary>
-        /// DuraciÛn de la cachÈ para los controles de recursos (30 dÌas en segundos).
+        /// Duraci√≥n de la cach√© para los controles de recursos (30 d√≠as en segundos).
         /// </summary>
-        private const double DuracionCacheControlRecursos = 2592000;//30 dÌas en segundos
+        private const double DuracionCacheControlRecursos = 2592000;//30 d√≠as en segundos
 
         /// <summary>
-        /// DuraciÛn de la cachÈ para los contextos de recursos (1 dÌa en segundos).
+        /// Duraci√≥n de la cach√© para los contextos de recursos (1 d√≠a en segundos).
         /// </summary>
-        private const double DuracionCacheContextosRecursos = 86400;//1 dÌa,  antes => 432000;//5 dÌas en segundos
+        private const double DuracionCacheContextosRecursos = 86400;//1 d√≠a,  antes => 432000;//5 d√≠as en segundos
 
         /// <summary>
-        /// DuraciÛn de la cachÈ para los contextos de recursos (5 dÌas en segundos).
+        /// Duraci√≥n de la cach√© para los contextos de recursos (5 d√≠as en segundos).
         /// </summary>
-        private const double DuracionCacheFichaRecursos = 172800;//2 dÌas en segundos
+        private const double DuracionCacheFichaRecursos = 172800;//2 d√≠as en segundos
 
         private ConfigService mConfigService;
         private EntityContext mEntityContext;
@@ -80,7 +80,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Constructor para DocumentacionCL
         /// </summary>
-        /// <param name="pPoolName">Nombre del pool de conexiÛn</param>
+        /// <param name="pPoolName">Nombre del pool de conexi√≥n</param>
         public DocumentacionCL(string pFicheroConfiguracionBD, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCL> logger, ILoggerFactory loggerFactory)
             : base(pFicheroConfiguracionBD, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
@@ -94,8 +94,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Constructor para DocumentacionCL
         /// </summary>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciÛn</param>
-        /// <param name="pPoolName">Nombre del pool de conexiÛn</param>
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraci√≥n</param>
+        /// <param name="pPoolName">Nombre del pool de conexi√≥n</param>
         public DocumentacionCL(string pFicheroConfiguracionBD, string pPoolName, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<DocumentacionCL> logger, ILoggerFactory loggerFactory)
             : base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
@@ -623,10 +623,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Obtiene los primeros recursos de una comunidad
         /// </summary>
-        /// <param name="pDocumentacionDW">DataSet de documentaciÛn donde se insertaran los resultados</param>
+        /// <param name="pDocumentacionDW">DataSet de documentaci√≥n donde se insertaran los resultados</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pPerfilID">Identificador del perfil del usuario en el proyecto</param>
-        /// <param name="pCuantos">N˙mero total de resultados</param>
+        /// <param name="pCuantos">N√∫mero total de resultados</param>
         /// <param name="pTipoDocumento">Integer que indica el tipo de documento que se carga de la cache (-1 para recursos)</param>
         /// <returns>TRUE si lo encuentra en cache, FALSE en caso contrario</returns>
         public bool ObtenerPrimerosRecursos(DataWrapperDocumentacion pDocumentacionDW, Guid pProyectoID, Guid pPerfilID, out int pCuantos, int pTipoDocumento)
@@ -687,10 +687,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Obtiene los primeros recursos de una comunidad
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn donde se insertaran los resultados</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n donde se insertaran los resultados</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pPerfilID">Identificador del perfil del usuario en el proyecto</param>
-        /// <param name="pCuantos">N˙mero total de resultados</param>
+        /// <param name="pCuantos">N√∫mero total de resultados</param>
         /// <param name="pTipoDocumento">Integer que indica el tipo de documento que se carga de la cache (-1 para recursos)</param>
         public void AgregarPrimerosRecursos(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pPerfilID, int pCuantos, int pTipoDocumento)
         {
@@ -835,7 +835,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                             }
                         }
 
-                        //Si el documento esta en ella, borramos esa cache, asi como la que lleva el n∫ de recursos y la lista de gente que tiene recursos privados
+                        //Si el documento esta en ella, borramos esa cache, asi como la que lleva el n¬∫ de recursos y la lista de gente que tiene recursos privados
                         if (contieneElRecurso)
                         {
                             switch (pTipoDocumento)
@@ -1010,9 +1010,9 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Obtiene los recursos m·s populares de un proyecto. La clave expira en 1 dÌa.
+        /// Obtiene los recursos m√°s populares de un proyecto. La clave expira en 1 d√≠a.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet donde se cargar·n los recursos m·s populares.</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet donde se cargar√°n los recursos m√°s populares.</param>
         /// <param name="pProyectoID">Proyecto al que pertenecen los recursos.</param>
         /// <param name="pNumeroResultadosPagina">Numero de recursos que se quieren cargar</param>
         public void ObtenerRecursosPopularesProyecto(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, int pNumeroResultadosPagina)
@@ -1025,7 +1025,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             {
                 docDW = new DataWrapperDocumentacion();
                 docDW = DocumentacionCN.ObtenerRecursosPopularesProyecto(pProyectoID, pNumeroResultadosPagina);
-                //DuraciÛn de la cache: 1 dÌa.
+                //Duraci√≥n de la cache: 1 d√≠a.
                 if (docDW != null)
                 {
                     docDW.CargaRelacionesPerezosasCache();
@@ -1042,7 +1042,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <param name="pRecursosRelacionados">HTML con los recursos relacionados</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <param name="pNumRecursos">N˙mero de recursos relacionados</param>
+        /// <param name="pNumRecursos">N√∫mero de recursos relacionados</param>
         public void AgregarRecursosRelacionados(string pRecursosRelacionados, Guid pProyectoID, Guid pDocumentoID, int pNumRecursos, string pIdioma)
         {
             string rawKey = string.Concat(NombresCL.RECURSOSRELACIONADOS, "_", pProyectoID.ToString(), "_", pDocumentoID.ToString(), "_", pIdioma);
@@ -1059,7 +1059,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDocumentoID">Identificador del documento</param>
-        /// <param name="pNumRecursos">N˙mero de recursos relacionados</param>
+        /// <param name="pNumRecursos">N√∫mero de recursos relacionados</param>
         /// <returns>HTML de los recursos relacionados de un documento</returns>
         public string ObtenerRecursosRelacionados(Guid pProyectoID, Guid pDocumentoID, out int pNumRecursos, string pIdioma)
         {
@@ -1184,9 +1184,9 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Obtiene la base de recursos de un determinado proyecto.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pProyectoID">Identificador de proyecto</param>
-        /// <param name="pOrganizacionID">Identificador de organziaciÛn</param>
+        /// <param name="pOrganizacionID">Identificador de organziaci√≥n</param>
         public void ObtenerBaseRecursosProyecto(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID, Guid pOrganizacionID, Guid pUsuarioID)
         {
             string rawKey = string.Concat("BaseRecursosProyecto_", pProyectoID.ToString());
@@ -1238,10 +1238,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <param name="pListaProyectos">Listado de identificadores de los proyectos</param>
         public void BorrarRecursosRelacionados(List<Guid> pListaProyectos)
         {
-            //       PARA QUIEN TENGA ALGUNA INTENCI”N DE DESCOMENTAR ESTO:
+            //       PARA QUIEN TENGA ALGUNA INTENCI√ìN DE DESCOMENTAR ESTO:
             //       En didactalia, el coste de esto es superior a 1 minuto guardando un recurso
-            //       (hay m·s de 20000 recursos, imagÌnate lo que le puede costar 
-            //       borrar todas las claves de cachÈ...tu ver·s)
+            //       (hay m√°s de 20000 recursos, imag√≠nate lo que le puede costar 
+            //       borrar todas las claves de cach√©...tu ver√°s)
 
 
 
@@ -1271,7 +1271,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         ///// <summary>
         ///// Obtiene la base de recursos de un determinado proyecto.
         ///// </summary>
-        ///// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        ///// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         ///// <param name="pProyectoID">Identificador de proyecto</param>
         //public void ObtenerBaseRecursosProyecto(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pProyectoID)
         //{
@@ -1279,10 +1279,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         //}
 
         /// <summary>
-        /// Obtiene la base de recursos de una organizaciÛn.
+        /// Obtiene la base de recursos de una organizaci√≥n.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
-        /// <param name="pOrganizacionID">Identificador de organizaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
+        /// <param name="pOrganizacionID">Identificador de organizaci√≥n</param>
         public void ObtenerBaseRecursosOrganizacion(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pOrganizacionID, Guid pProyectoID)
         {
             string rawKey = string.Concat("BaseRecursosOrganizacion_", pOrganizacionID.ToString());
@@ -1316,7 +1316,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Obtiene la base de recursos de un usuario.
         /// </summary>
-        /// <param name="pDataWrapperDocumentacion">DataSet de documentaciÛn</param>
+        /// <param name="pDataWrapperDocumentacion">DataSet de documentaci√≥n</param>
         /// <param name="pUsuarioID">Identificador de usuario</param>
         public void ObtenerBaseRecursosUsuario(DataWrapperDocumentacion pDataWrapperDocumentacion, Guid pUsuarioID)
         {
@@ -1353,9 +1353,9 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         #region Que se esta leyendo
 
         /// <summary>
-        /// Agrega el HTML de los recursos m·s populares de la comunidad a la cache
+        /// Agrega el HTML de los recursos m√°s populares de la comunidad a la cache
         /// </summary>
-        /// <param name="pContenidoQueEstaPasando">HTML con los recursos m·s populares</param>
+        /// <param name="pContenidoQueEstaPasando">HTML con los recursos m√°s populares</param>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         public void AgregarQueSeEstaLeyendo(string pContenidoQueSeEstaLeyendo, Guid pProyectoID)
         {
@@ -1365,10 +1365,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Obtiene el HTML de los recursos m·s populares de una comunidad desde la cache
+        /// Obtiene el HTML de los recursos m√°s populares de una comunidad desde la cache
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
-        /// <returns>HTML de los recursos m·s populares de una comunidad</returns>
+        /// <returns>HTML de los recursos m√°s populares de una comunidad</returns>
         public string ObtenerQueSeEstaLeyendo(Guid pProyectoID)
         {
             string rawKey = string.Concat(NombresCL.QUESEESTALEYENDO, "_", pProyectoID.ToString());
@@ -1380,7 +1380,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         #region Form Sem
 
         /// <summary>
-        /// Carga las propiedades y el mapeo de las categorias del tesauro sem·ntico desde el xml de configuraciÛn
+        /// Carga las propiedades y el mapeo de las categorias del tesauro sem√°ntico desde el xml de configuraci√≥n
         /// </summary>
         public void CargarPropiedadesYMappingCategoriasTesauroSemantico(Guid pProyectoID, Dictionary<string, List<Guid>> pDiccionarioMapeoCategorias, List<List<string>> pListaMapeoPropiedadesEntidades, byte[] pArrayMapeo)
         {
@@ -1410,7 +1410,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 //pListaMapeoPropiedadesEntidades = new List<List<string>>();
                 //pDiccionarioMapeoCategorias = new Dictionary<string, List<Guid>>();
 
-                //leer el xml con el mapeo de las categorÌas
+                //leer el xml con el mapeo de las categor√≠as
                 XmlDocument configXML = new XmlDocument();
                 //antes se cargaba desde una ruta y ahora se lee el byte[]
                 //configXML.Load(pUrlMappingCategorias);
@@ -1442,15 +1442,15 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                     pListaMapeoPropiedadesEntidades.Add(listaPropEntidad);
                 }
 
-                //carga de categorÌas
+                //carga de categor√≠as
                 XmlNodeList mapeos = configXML.SelectNodes("/MappingsProyecto/Mapping");
                 foreach (XmlNode mapeo in mapeos)
                 {
-                    //obtener del xml la categorÌa origen
+                    //obtener del xml la categor√≠a origen
                     XmlNode nodoCatOrigen = mapeo.SelectSingleNode("CategoriaOrigen");
                     string catOrigen = nodoCatOrigen.InnerText;
 
-                    //obtener del xml la lista de categorÌas destino
+                    //obtener del xml la lista de categor√≠as destino
                     XmlNodeList nodosCatsDestino = mapeo.SelectNodes("CategoriaDestino");
                     List<Guid> categoriasDestino = new List<Guid>();
                     foreach (XmlNode nodoCatDestino in nodosCatsDestino)
@@ -1477,7 +1477,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             catch (Exception ex)
             {
                 throw ex;
-                //GuardarLogError("Error al cargar el mapeo del tesauro sem·ntico: " + ex.StackTrace);
+                //GuardarLogError("Error al cargar el mapeo del tesauro sem√°ntico: " + ex.StackTrace);
             }
             //}
         }
@@ -1535,7 +1535,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Carga las propiedades y el mapeo de las categorias del tesauro sem·ntico desde el xml de configuraciÛn
+        /// Carga las propiedades y el mapeo de las categorias del tesauro sem√°ntico desde el xml de configuraci√≥n
         /// </summary>
         public MapeoTesauroComunidad CargarPropiedadesYMappingCategoriasTesauroComunidad(Guid pProyectoID, string pUrlMappingCategorias, byte[] pArrayMapeo)
         {
@@ -1545,7 +1545,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             {
                 try
                 {
-                    //leer el xml con el mapeo de las categorÌas
+                    //leer el xml con el mapeo de las categor√≠as
                     XmlDocument configXML = new XmlDocument();
                     //antes se cargaba desde una ruta y ahora se lee el byte[]
                     //configXML.Load(pUrlMappingCategorias);
@@ -1580,7 +1580,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                         }
 
                         List<Mapping> listaMappingsBloque = new List<Mapping>();
-                        //carga de categorÌas
+                        //carga de categor√≠as
                         XmlNodeList nodosMapping = nodoBloque.SelectNodes("Mapping");
 
                         foreach (XmlNode nodoMapping in nodosMapping)
@@ -1589,7 +1589,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                             List<Guid> listaCategoriasMapping = new List<Guid>();
                             List<Rama> listaRamas = new List<Rama>();
 
-                            //obtener del xml la categorÌa origen
+                            //obtener del xml la categor√≠a origen
                             XmlNodeList nodosCatOrigen = nodoMapping.SelectNodes("CategoriaOrigen");
                             foreach (XmlNode nodoCatOrigen in nodosCatOrigen)
                             {
@@ -1610,7 +1610,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                                 Rama rama = new Rama();
                                 List<string> listaCategoriasDestino = new List<string>();
 
-                                //obtener del xml la lista de categorÌas destino
+                                //obtener del xml la lista de categor√≠as destino
                                 XmlNodeList nodosCatsDestino = nodoRama.SelectNodes("CategoriaDestino");
 
                                 foreach (XmlNode nodoCatDestino in nodosCatsDestino)
@@ -1646,7 +1646,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
                 catch (Exception ex)
                 {
                     throw ex;
-                    //GuardarLogError("Error al cargar el mapeo del tesauro sem·ntico: " + ex.StackTrace);
+                    //GuardarLogError("Error al cargar el mapeo del tesauro sem√°ntico: " + ex.StackTrace);
                 }
             }
 
@@ -1654,7 +1654,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Mapea las categorÌas del tesauro de la comunidad con las categorÌas del tesauro sem·ntico
+        /// Mapea las categor√≠as del tesauro de la comunidad con las categor√≠as del tesauro sem√°ntico
         /// </summary>
         public List<string> MapearCategoriasTesauroComunidad(List<Guid> pListaCategoriasRecurso, Guid pProyectoID, string pUrlMappingCategorias, string pSujeto, byte[] pArrayMapeo)
         {
@@ -1665,7 +1665,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
 
             if (mapeoTesauroComunidad != null && mapeoTesauroComunidad.Bloques.Count > 0)
             {
-                //calcular los triples del tesauro sem·ntico
+                //calcular los triples del tesauro sem√°ntico
                 listaTriples.AddRange(CalcularTriplesCategoriasTesauroComunidad(pListaCategoriasRecurso, pSujeto, mapeoTesauroComunidad));
             }
 
@@ -1725,7 +1725,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
             List<Mapping> listaMapeos = new List<Mapping>();
             List<string> listaOrdCategoriaRecurso = new List<string>(pListaOrdCategoriasRecurso.Keys);
 
-            //1∫ buscar parejas de categorias del recurso en el mapeo de la comunidad
+            //1¬∫ buscar parejas de categorias del recurso en el mapeo de la comunidad
             for (int i = 0; i < listaOrdCategoriaRecurso.Count - 1; i++)
             {
                 for (int j = i + 1; j < listaOrdCategoriaRecurso.Count; j++)
@@ -1770,7 +1770,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Mapea las categorÌas del tesauro sem·ntico con las categorÌas del tesauro de la comunidad
+        /// Mapea las categor√≠as del tesauro sem√°ntico con las categor√≠as del tesauro de la comunidad
         /// </summary>
         public List<Guid> MapearCategoriasTesauroSemantico(List<ElementoOntologia> pListaEntidades, Guid pProyectoID, Dictionary<string, List<Guid>> pDiccionarioMapeoCategorias, List<List<string>> pListaMapeoPropiedadesEntidades, byte[] pArrayMapeo)
         {
@@ -1809,10 +1809,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Guarda el array de una ontologÌa.
+        /// Guarda el array de una ontolog√≠a.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public void GuardarDiccionarioMapeoCategoriasTesauroSemantico(Guid pProyectoID, Dictionary<string, List<Guid>> pDiccionarioMapeo)
         {
             string rawKey = string.Concat("MapeoCategoriasTesauroSemantico", "_", pProyectoID.ToString());
@@ -1842,8 +1842,8 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public void GuardarEnCacheMapeoCategoriasTesauroComunidad(Guid pProyectoID, MapeoTesauroComunidad pMapeoTesauroComunidad)
         {
             string rawKey = string.Concat("MapeoCategoriasTesauroComunidad", "_", pProyectoID.ToString());
@@ -1866,10 +1866,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Guarda el array de una ontologÌa.
+        /// Guarda el array de una ontolog√≠a.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public void GuardarListaMapeoPropiedadesEntidades(Guid pProyectoID, List<List<string>> pListaPropiedadesEntidades)
         {
             string rawKey = string.Concat("MapeoPropiedadesEntidades", "_", pProyectoID.ToString());
@@ -1887,9 +1887,9 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Array del mapeo del tesauro de la comunidad.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <param name="pNombreDocumento">Nombre del documento de mapeo se va a almacenar(sem·ntico o comunidad)</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <param name="pNombreDocumento">Nombre del documento de mapeo se va a almacenar(sem√°ntico o comunidad)</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public byte[] ObtenerDocumentoMapeoTesauro(Guid pProyectoID, string pNombreDocumento)
         {
             string rawKey = string.Concat(pNombreDocumento, "_", pProyectoID.ToString());
@@ -1898,11 +1898,11 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Guarda el array del mapeo de la comunidad o el sem·ntico.
+        /// Guarda el array del mapeo de la comunidad o el sem√°ntico.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <param name="pNombreDocumento">Nombre del documento de mapeo se va a almacenar(sem·ntico o comunidad)</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <param name="pNombreDocumento">Nombre del documento de mapeo se va a almacenar(sem√°ntico o comunidad)</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public void GuardarDocumentoMapeoTesauro(Guid pProyectoID, byte[] pMapping, string pNombreDocumento)
         {
             string rawKey = string.Concat(pNombreDocumento, "_", pProyectoID.ToString());
@@ -1918,10 +1918,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Array de una ontologÌa.
+        /// Array de una ontolog√≠a.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public byte[] ObtenerOntologia(Guid pDocumentoID)
         {
             string rawKey = string.Concat("OntologiaDocSem", "_", pDocumentoID.ToString());
@@ -1930,10 +1930,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Guarda el array de una ontologÌa.
+        /// Guarda el array de una ontolog√≠a.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public void GuardarOntologia(Guid pDocumentoID, byte[] pOntologia)
         {
             string rawKey = string.Concat("OntologiaDocSem", "_", pDocumentoID.ToString());
@@ -1949,10 +1949,10 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// ID del Xml de una ontologÌa.
+        /// ID del Xml de una ontolog√≠a.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public Guid? ObtenerIDXmlOntologia(Guid pDocumentoID)
         {
             string rawKey = string.Concat("XmlOntologiaDocSem", "_", pDocumentoID.ToString());
@@ -1961,11 +1961,11 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Guarda el ID del Xml de una ontologÌa.
+        /// Guarda el ID del Xml de una ontolog√≠a.
         /// </summary>
-        /// <param name="pDocumentoID">Identificador del documento de la ontologÌa</param>
+        /// <param name="pDocumentoID">Identificador del documento de la ontolog√≠a</param>
         /// <param name="pXmlID">ID del xml</param>
-        /// <returns>ruta del fichero de ontologÌa descargado</returns>
+        /// <returns>ruta del fichero de ontolog√≠a descargado</returns>
         public void GuardarIDXmlOntologia(Guid pDocumentoID, Guid pXmlID)
         {
             string rawKey = string.Concat("XmlOntologiaDocSem", "_", pDocumentoID.ToString());
@@ -2254,7 +2254,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         }
 
         /// <summary>
-        /// Clave para la cachÈ
+        /// Clave para la cach√©
         /// </summary>
         public override string[] ClaveCache
         {
@@ -2284,7 +2284,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         #region Dispose
 
         /// <summary>
-        /// Determina si est· disposed
+        /// Determina si est√° disposed
         /// </summary>
         private bool disposed = false;
 
@@ -2311,7 +2311,7 @@ namespace Es.Riam.Gnoss.CL.Documentacion
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se est· llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se est√° llamando desde el Dispose()</param>
         protected override void Dispose(bool disposing)
         {
             if (!this.disposed)

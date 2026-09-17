@@ -190,18 +190,20 @@ namespace Es.Riam.Gnoss.Servicios.ControladoresServiciosWeb
             return PeticionServicio(metodo, parametros);
         }
 
-        public void InvalidarVistas(Guid pIdentidadID)
+        public void InvalidarVistas(Guid pIdentidadID, Guid pProyectoID)
         {
             Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("pIdentidadID", pIdentidadID.ToString());
+            parametros.Add("pProyectoID", pProyectoID.ToString());
             PeticionServicio("LimpiarCache", parametros);
         }
         
-        public void InvalidarCacheLocalServicioFacetas(Guid pProyectoID)
+        public void InvalidarCacheLocalServicioFacetas(Guid pProyectoID, Guid pIdentidadID)
         {
             string metodo = "InvalidarCacheLocal";
             Dictionary<string, string> parametros = new Dictionary<string, string>();
             parametros.Add("pProyectoID", pProyectoID.ToString());
+            parametros.Add("pIdentidadID", pIdentidadID.ToString());
             PeticionServicio(metodo, parametros);
         }
     }

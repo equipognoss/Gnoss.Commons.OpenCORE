@@ -224,6 +224,7 @@ namespace Es.Riam.Gnoss.Elementos.ServiciosGenerales
             filaConfiguracionGnossPersona.PersonaID = pPersonaID;
             filaConfiguracionGnossPersona.BoletinSuscripcion = (short)PeriodicidadSuscripcion.Diaria;
             filaConfiguracionGnossPersona.ComentariosRecursos = true;
+            filaConfiguracionGnossPersona.NuevosSeguidores = true;
             filaConfiguracionGnossPersona.InvitacionComunidad = true;
             filaConfiguracionGnossPersona.InvitacionOrganizacion = true;
             filaConfiguracionGnossPersona.SolicitudesContacto = true;

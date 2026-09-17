@@ -313,7 +313,7 @@
 		<Resource tag="NAVEGACION">Navegación</Resource>
 		<Resource tag="MIS_IDENTIDADES">Mis identidades</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Arrastra y suelta una foto para tu perfil</Resource>
-		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Imágenes en formato .PNG o .JPG</Resource>
+		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Imágenes en formato .PNG, .JPG o .WEBP</Resource>
 		<Resource tag="PESO_MAXIMO_250KB">Peso máximo de las imágenes 250kb</Resource>
 		<Resource tag="X_HA_COMENTADO_EN">ha comentado en</Resource>
 		<Resource tag="X_HAN_COMENTADO_EN">han comentado en</Resource>
@@ -330,6 +330,9 @@
 		<Resource tag="DEJARDECOMPARTIR">Dejar de compartir seleccionados</Resource>
     	<Resource tag="CONFIRMARELIMINAR">¿Desea eliminar el elemento seleccionado?</Resource>
     	<Resource tag="SINPERMISO">No tienes permiso para realizar esta acción</Resource>
+		<Resource tag="ENLACEEXTERNO">Enlace externo</Resource>
+		<Resource tag="WARNINGENLACEEXTERNO">¡Atención! Estás a punto de acceder a un enlace externo no controlado</Resource>
+		<Resource tag="ACCEDER">Acceder</Resource>
 	</page>
 	<page name="METADESCRIPTION">
 		<Resource tag="INDICE">Índice de contenido de @1@, navega por sus categorías y descubre los @2@ recursos</Resource>
@@ -907,6 +910,7 @@
 		<Resource tag="SEGUIDOR">Seguidor</Resource>
 		<Resource tag="SEGUIDORES">Seguidores</Resource>
 		<Resource tag="PERFILENWEB">Perfil en la web</Resource>
+		<Resource tag="CONFIGURARNOTIFICACIONES">Configurar notificaciones</Resource>
 		<Resource tag="EDITARPREFERENCIAS">Editar preferencias</Resource>
 		<Resource tag="GUARDARPREFERENCIAS">Guardar preferencias</Resource>
 		<Resource tag="USUARIOSINACTIVIDAD">Este usuario no tiene actividad reciente</Resource>
@@ -1118,7 +1122,7 @@
 		<Resource tag="SUSCRIPCIONCORRECTA">Suscripción realizada correctamente</Resource>
 		<Resource tag="SUSCRIPCIONINCORRECTA">Se ha producido un error al crear la suscripción</Resource>
 		<Resource tag="DESEASRECIBIRNEWSLETTER">Deseas recibir la newsletter</Resource>
-		<Resource tag="SECCIONNOTIFICACIONPERFIL">sección notificaciones de su perfil</Resource>
+		<Resource tag="SECCIONNOTIFICACIONPERFIL">sección configurar notificaciones de su perfil</Resource>
 		<Resource tag="SECCIONSUSCRIBETECOMUNIDAD">sección suscríbete de @1@</Resource>
 		<Resource tag="RECURSOPUBLICADOEL">Recurso publicado el @1@</Resource>
 	</page>
@@ -1371,10 +1375,11 @@
 		<Resource tag="ABREVENTANANUEVA">Se abre en una ventana nueva</Resource>
 		<Resource tag="LECCCIONESDE">Lecciones de:</Resource>
 		<Resource tag="CONFIRMACIONELIMINAR">¿Estás seguro de que deseas eliminar los recursos seleccionados?</Resource>
-		<Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif)</Resource>
+		<Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif, .webp)</Resource>
 		<Resource tag="FORMATOURIINCORRECTO">'@1@' no tiene el formato correcto para ser una URL.</Resource>
 	</page>
 	<page name="PERFILBASERECURSOSFICHA">
+		<Resource tag="TRADUCIR">Traducir</Resource>
 		<Resource tag="AGREGARCATEGORIA">Añadir recurso a categoría</Resource>
 		<Resource tag="AGREGARPREGUNTAACATEGORIA">Añadir pregunta a categoría</Resource>
 		<Resource tag="AGREGARDEBATEACATEGORIA">Añadir debate a categoría</Resource>
@@ -2342,7 +2347,10 @@
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Solicitudes de contactos y amigos</Resource>
+		<Resource tag="MENSAJESGNOSS">Mensajes recibidos en la comunidad</Resource>
+		<Resource tag="INTRONOTIFICACIONES">Elige de qué quieres recibir aviso en tu correo electrónico.</Resource>
 		<Resource tag="COMENTARIOSRECURSOS">Comentarios a mis recursos</Resource>
+		<Resource tag="NUEVOSSEGUIDORES">Nuevos seguidores de mi perfil</Resource>
 		<Resource tag="INVITACIONCOMUNIDAD">Invitaciones para ser miembro de una comunidad</Resource>
 		<Resource tag="INVITACIONORGANIZACION">Invitaciones para representar a una organización</Resource>
 		<Resource tag="BOLETINESSUSCRIPCIONES">Recibir boletín de suscripciones en el correo electrónico</Resource>
@@ -4214,6 +4222,9 @@
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">administrar-peso-busqueda</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">administrar-flujos</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">administrar-asistentes</Resource>
+		<Resource tag="TRADUCIRRECURSOS">traducir-recursos</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVAECOSISTEMA">administrar-carga-masiva-ecosistema</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVA">administrar-carga-masiva</Resource>
 	</page>
 	<page name="COMADMINCOMUNIDAD">
 		<Resource tag="TITULO">Listado de páginas de administración de la comunidad</Resource>
@@ -4275,6 +4286,7 @@
 		<Resource tag="ADMINISTRARFLUJOS">Flujos de trabajo</Resource>
 		<Resource tag="ADMINISTRARTRADUCTOR">Configurar traductor</Resource>		
 		<Resource tag="ADMINISTRARASISTENTES">Administrar asistentes</Resource>
+		<Resource tag="TRADUCIRRECURSOS">Traducir recursos</Resource>
 	</page>
 	<page name="COMADMINDISENIO">
 		<Resource tag="XMLSUBIDO">Archivo subido correctamente</Resource>
@@ -4731,13 +4743,17 @@
 		<Resource tag="GUARDARERROR">Ha habido errores en el guardado de las redirecciones, revisa los errores marcados</Resource>
 		<Resource tag="ERRORSINCAMBIOS">No existen cambios en las redirecciónes que guardar</Resource>
 		<Resource tag="ERRORURLORIGENVACIA">La url de origen no puede estar vacía</Resource>
+		<Resource tag="ERRORURLORIGENNOVALIDA">La url de origen no es valida</Resource>
 		<Resource tag="ERRORSINTIPOREDIRECCION">No se ha seleccionado el tipo de redirección</Resource>
 		<Resource tag="ERRORURLDESTINOVACIA">La url de destino no puede estar vacía</Resource>
+		<Resource tag="ERRORURLDESTINONOVALIDA">La url de destino no es valida</Resource>
 		<Resource tag="ERRORNOMPARAMETROVACIO">El nombre del parámetro no puede estar vacío</Resource>
 		<Resource tag="ERRORSINPARAMETROS">Las redirecciones parametrizadas tienen que tener, al menos, un parametro con todos sus campos rellenados</Resource>
 		<Resource tag="ERRORCAMPOPARAMETROSVACIO">Los parametros deben tener todos sus campos rellenados</Resource>
+		<Resource tag="ERRORCAMPOPARAMETROSNOVALIDO">La url de destino del parametro no es valido</Resource>
 		<Resource tag="ERRORRECALCULANDORUTAS">Ha habido un error recalculando las rutas</Resource>
-		<Resource tag="ERRORGUARDARBD">Ha habido un error interno al guardar las redirecciones</Resource>
+		<Resource tag="ERRORGUARDARBD">Se ha producido un error al tratar de guardar la redirección. Por favor contacta con el administrador</Resource>
+		<Resource tag="RUTAORIGEN">La URL debe ser una ruta relativa</Resource>
 	</page>
 	<page name="COMADMINDINTEGRACIONCONTINUA">
 		<Resource tag="ERRORINTEGRACIONCONTINUA">Error en la peticion de integracion continua</Resource>
@@ -4767,9 +4783,29 @@
 		<Resource tag="GUARDARERROR">Ha habido errores en el guardado de los servicios, revisa los errores marcados</Resource>
 		<Resource tag="ERRORRUTAVACIA">La Ruta del servicio Web no puede estar vacia</Resource>
 	</page>
+	<page name="ADMINCARGAMASIVA">
+		<Resource tag="CARGAMASIVA">Carga Masiva</Resource>
+		<Resource tag="LISTABLANCA">Lista blanca</Resource>
+		<Resource tag="DESCCOMUNIDAD">Configuracion de la lista blanca del servicio de carga masiva de la comunidad</Resource>
+		<Resource tag="DESCECOSISTEMA">Configuracion de la lista blanca del servicio de carga masiva del ecosistema</Resource>
+		<Resource tag="INTRODUCEURL">Introduce una url completa válida que podrá llamar el servicio de carga masiva</Resource>
+		<Resource tag="DESEAELIMINARDOMINIO">¿Desea eliminar la url seleccionada?</Resource>
+	</page>
 	<!-- Traducciones para DevTools -->	
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="AVISOECURSOENPROCESODETRADUCCION">Este recurso está siendo traducido y algunas funciones no estarán disponibles.</Resource>
+		<Resource tag="ERRORRECURSOENPROCESODETRADUCCION">No puedes mandar a traducir un recurso que ya está siendo traducido.</Resource>
+		<Resource tag="INFOTRADUCCION">La traducción se ha enviado con éxito y estará disponible en unos minutos.</Resource>
+		<Resource tag="ERRORSUBIRFICHEROCMSMULTIMEDIA">Se ha producido un error al subir el fichero. Compruebe que el estado del fichero es correcto o que no haya otro con el mismo nombre</Resource>		
+		<Resource tag="SELECCIONAUNIDIOMA">-- Selecciona un idioma --</Resource>
+		<Resource tag="TRADUCIRRECURSO">Traducir recurso</Resource>
+		<Resource tag="TRADUCIRPROPIEDAD">Traducir propiedad</Resource>
+		<Resource tag="INFOTRADUCIRRECURSO">Elige los idiomas a los que desea traducir el recurso</Resource>
+		<Resource tag="INFOTRADUCIRPROPIEDAD">Elige los idiomas a los que desea traducir la propiedad</Resource>
+		<Resource tag="ERRORIDIOMAORIGENINVALIDO">El idioma de origen seleccionado es inválido.</Resource>
+		<Resource tag="ERRORIDIOMADESTINOINVALIDO">Algun idioma de destino seleccionado es inválido.</Resource>
+		<Resource tag="ERRORIDIOMASNOSOPORTADOS">Los idiomas elegidos no están soportados por la plataforma.</Resource>
 		<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">El componente CMS se encuentra en un estado privado, por lo que sus perfiles y/o grupos deben configurarse desde la página de administración de flujos</Resource>
 		<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Selecciona las personas y/o grupos que pueden ver el componente</Resource>
 		<Resource tag="COLOR">Color</Resource>
@@ -4798,9 +4834,30 @@
 		<Resource tag="PROBARTRADUCTOR">Texto a traducir</Resource>
 		<Resource tag="IDIOMADESTINO">Idioma al que se quiere traducir el texto</Resource>
 		<Resource tag="IDIOMAORIGINAL">Idioma original del texto introducido</Resource>
-		<Resource tag="TEXTOTRADUCIDO">Resultado de la traducción</Resource>		
-		<Resource tag="ERRORGUARDARTRADUCTOR">Error, la URL del servicio de traducción y el token no pueden estar vacíos</Resource>		
+		<Resource tag="TEXTOTRADUCIDO">Resultado de la traducción</Resource>
+		<Resource tag="ERRORGUARDARTRADUCTOR">Error, la URL del servicio de traducción y el token no pueden estar vacíos</Resource>
+		<Resource tag="INFOTRADUCIRRECURSOS">La traducción de recursos puede durar bastante tiempo, se puede ver el progreso {a href="@1@"}aquí{/a}</Resource>		
+		<Resource tag="TRADUCIRSELECCIONADOS">Traducir</Resource>		
+		<Resource tag="ERROROBTENERIDIOMAS">Error al obtener los idiomas disponibles</Resource>		
+		<Resource tag="TRADUCCIONENCURSO">Ya hay una traducción en progreso</Resource>		
+		<Resource tag="RECURSOSTRADUCIDOS">Los recursos están siendo traducidos</Resource>
+		<Resource tag="ERRORTIPORECURSONORECONOCIDO">Tipo de recurso no reconocido</Resource>
+		<Resource tag="ERRORTRADUCIRRECURSOS">Ha habido un error al traducir los recursos</Resource>		
+		<Resource tag="NOHAYTRADUCTORCONFIGURADO">No hay ningún servicio de traducción para este proyecto. Puede configurarlo {a href="@1@"}aquí{/a}</Resource>			
+		<Resource tag="TIPOSRECURSO">Tipo de recurso que se quiere traducir</Resource>		
+		<Resource tag="TRADUCIRTODO">Traducir todo</Resource>		
+		<Resource tag="IDIOMAORIGINALRECURSOS">Idioma original de los recursos</Resource>		
+		<Resource tag="IDIOMADESTINORECURSOS">Idioma al que se van a traducir los recursos</Resource>
+		<Resource tag="SELECCIONIDIOMADESTINO">-- Selecciona un idioma --</Resource>	
+		<Resource tag="NOHAYRECURSOSPARATRADUCIR">No se han encontrado recursos para traducir</Resource>
+		<Resource tag="TRADUCCIONMASIVAEXISTENTE">Ya se han mandado a traducir todos los recursos, no es posible volver a hacer una traducción masiva ni de un tipo en concreto hasta que esta finalice</Resource>
+		<Resource tag="TRADUCCIONTIPOEXISTENTE1">Ya se han mandado a traducir los recursos de tipo</Resource>
+		<Resource tag="TRADUCCIONTIPOEXISTENTE2">y ontología</Resource>
+		
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="IDIOMAORIGINALPROPIEDAD">Idioma original de la propiedad</Resource>
+		<Resource tag="IDIOMADESTINOPROPIEDAD">Idioma al que se van a traducir la propiedad</Resource>
+		<Resource tag="SELECCIONIDIOMADESTINO">-- Selecciona un idioma --</Resource>
 		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">Lista de idiomas personalizados en la plataforma.</Resource>
 		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Añadir idioma</Resource>
 		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Clave del idioma </Resource>
@@ -5123,7 +5180,7 @@
 		<Resource tag="COPYRIGHT(EJ:RIAMI+LLAB)">Copyright (Ej: RIAM I+L lab) </Resource>
 		<Resource tag="ENLACEQUEVAAAPARECERENELPIEDEPAGINACOMOCONTACTO.EJ:HTTP://WW">Enlace que va a aparecer en el pie de página como contacto. Ej: http://www.gnoss.com/sobre-la-empresa </Resource>
 		<Resource tag="NUMERODERECURSOSRELACIONADOS">Número de recursos relacionados </Resource>
-		<Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Tamaño al que deben hacerse las capturas de las miniaturas de las imágenes (por defecto 180x160)</Resource>
+		<Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Tamaño del contenedor donde se muestran las miniaturas en los listados de recursos. El ancho también limita el tamaño de la miniatura generada; el alto solo afecta a la visualización (por defecto 180x160)</Resource>
 		<Resource tag="ALTO(EJ280):">Alto (ej 280): </Resource>
 		<Resource tag="ANCHO(EJ280):">Ancho (ej 280): </Resource>
 		<Resource tag="CARGARLOSEDITORESYLECTORESDELOSRECURSOSENLASPAGINASDEBUSQUED">Cargar los editores y lectores de los recursos en las páginas de búsqueda (Afecta al rendimiento de las búsquedas, no marcar si no es imprescindible)</Resource>
@@ -5162,6 +5219,7 @@
 		<Resource tag="MANTENERTEXTOTESAUROSEMANTICOINVARIABLE">Mantener texto tesauro semántico invariable</Resource>
 		<Resource tag="NUMERODEFACETASQUESEPINTANENLAPRIMERAPETICIONDEFACETAS">Número de facetas que se pintan en la primera petición de facetas </Resource>
 		<Resource tag="NUMERODEFACETASQUESEPINTANENLASEGUNDAPETICIONDEFACETAS">Número de facetas que se pintan en la segunda petición de facetas </Resource>
+		<Resource tag="NUMEROMAXIMODEVERSIONESACONSERVARPORRECURSO">Número máximo de versiones a conservar por recurso</Resource>
 		<Resource tag="PROPIEDADESQUESEDESEANUSARENELALGORITMODEPERSONASRECOMENDADA">Propiedades que se desean usar en el algoritmo de personas recomendadas. Cada propiedad lleva asociado su peso en el algoritmo</Resource>
 		<Resource tag="EJ:HTTP://WWW.W3.ORG/2006/VCARD/NS#LOCALITY=4|||HTTP://WWW.W">Ej: http://www.w3.org/2006/vcard/ns#locality=4|||http://www.w3.org/2006/vcard/ns#country-name=3</Resource>
 		<Resource tag="LISTADEFACETASLENTASQUESEVANAOBTENERDEMANERAASINCRONAPARAQUE">Lista de facetas lentas que se van a obtener de manera asíncrona para que la tercera petición de facetas llegue antes</Resource>
@@ -5661,7 +5719,7 @@
 		<Resource tag="PERMISOSADMINISTRACIONECOSISTEMA">Permisos relacionados con las páginas de administración del ecosistema</Resource>
 		<Resource tag="PERMISOSECOSISTEMA">Permisos Ecosistema</Resource>
 		<Resource tag="PERMISOSCOMUNIDAD">Permisos Comunidad</Resource>
-		<Resource tag="DESEAELIMINARELROLSELECCIONADO">¿Desea eliminar el rol seleccionado?</Resource>
+		<Resource tag="DESEAELIMINARELROLSELECCIONADO">¿Desea eliminar el rol seleccionado?{br}Los usuarios y grupos que actualmente tengan asignado este rol perderán los permisos asociados y pasarán a tener el rol de Usuario de la comunidad.</Resource>
 		<Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">Este rol está asignado a uno o más asistentes.{br} Si lo eliminas, dejarán de tener este rol y podría cambiar su comportamiento.{br}¿Seguro que quiere continuar? </Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integración con redes sociales</Resource>
 		<Resource tag="ESTRUCTURA">Estructura</Resource>
@@ -5902,12 +5960,12 @@
 		<Resource tag="AÑADIRRECURSOMULTIMEDIA">Añadir recurso multimedia</Resource>
 		<Resource tag="RECURSOMULTIMEDIA">Recurso multimedia</Resource>
 		<Resource tag="IMAGENCATEGORIA">Imagen de la categoría</Resource>
-		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, la imagen debe estar en formato .PNG o .JPG</Resource>
+		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, la imagen debe estar en formato .PNG, .JPG o .WEBP</Resource>
 		<Resource tag="ERRORGENERICOIMAGENCATEGORIA">Error, la imagen no ha podido subirse correctamente.</Resource>
 		<Resource tag="ERRORPESOIMAGENCATEGORIA">Error, la imagen supera el tamaño máximo permitido: </Resource>
 		<Resource tag="ERRORELIMINARIMAGENCATEGORIA">Error, la imagen de la categoría no ha podido eliminarse correctamente</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Arrastra y suelta en la zona punteada archivo multimedia para subir</Resource>
-		<Resource tag="IMAGENESENFORMATOPNGOJPG">Imágenes en formato .PNG o .JPG</Resource>
+		<Resource tag="IMAGENESENFORMATOPNGOJPG">Imágenes en formato .PNG, .JPG o .WEBP</Resource>
 		<Resource tag="ARCHIVOSENFORMATODOC,DOCX,TXTOPDF">Archivos en formato .DOC, .DOCX, .TXT o .PDF</Resource>
 		<Resource tag="DESEAELIMINARELELEMENTOMULTIMEDIA">¿Desea eliminar el elemento multimedia?</Resource>		
 		<Resource tag="URLDOMINIO">URL dominio</Resource>
@@ -6034,6 +6092,8 @@
 		<Resource tag="INTRODUCEUNIDENTIFICADORUNICOPARALATRADUCCIONACREAR">Introduce un identificador único para la traducción a crear.</Resource>
 		<Resource tag="IDDELATRADUCCION">Id de la traducción</Resource>
 		<Resource tag="AÑADEACONTINUACIONLASTRADUCCIONESPERSONALIZADASPARALOSDIFERE">Añade a continuación las traducciones personalizadas para los diferentes idiomas disponibles en la comunidad.</Resource>
+		<Resource tag="ERRORCARACTERESINVALIDOSTEXTID">El identificador de la traduccion no puede empezar por los caracteres: =, +, -, @, |, salto de linea, tabulación o retorno de carro</Resource>
+		<Resource tag="ERRORCARACTERESINVALIDOSTRADUCCION">La traducción en el idioma @1@ no puede empezar por los caracteres: =, +, -, @, |, salto de linea, tabulación o retorno de carro</Resource>
 		<Resource tag="TRADUCCION">Traducción</Resource>
 		<Resource tag="CLAUSULAS">Cláusulas</Resource>
 		<Resource tag="CONTENIDO">Contenido</Resource>
@@ -6052,6 +6112,32 @@
 		<Resource tag="INTRODUCEELUSUARIO">Introduce el usuario</Resource>
 		<Resource tag="INTRODUCELACONTRASEÑA">Introduce la contraseña</Resource>
 		<Resource tag="INTRODUCEELEMAILPARASUGERENCIAS">Introduce el email para sugerencias</Resource>
+		<Resource tag="CORREOBUZONOBLIGATORIO">El correo electrónico de la comunidad es obligatorio.</Resource>
+		<Resource tag="CORREOBUZONNOVALIDO">El correo electrónico de la comunidad no tiene un formato válido.</Resource>
+		<Resource tag="SMTPOBLIGATORIO">El servidor SMTP es obligatorio.</Resource>
+		<Resource tag="PUERTOOBLIGATORIO">El puerto del servidor SMTP es obligatorio.</Resource>
+		<Resource tag="PUERTONOVALIDO">El puerto del servidor SMTP debe ser un número entero entre 1 y 32767.</Resource>
+		<Resource tag="USUARIOCORREOOBLIGATORIO">El usuario de la cuenta de correo es obligatorio.</Resource>
+		<Resource tag="CONTRASENYACORREOOBLIGATORIA">La contraseña de la cuenta de correo es obligatoria.</Resource>
+		<Resource tag="TIPOSERVIDOROBLIGATORIO">El tipo de servidor de envío es obligatorio.</Resource>
+		<Resource tag="EMAILSUGERENCIASOBLIGATORIO">El email de sugerencias es obligatorio.</Resource>
+		<Resource tag="EMAILSUGERENCIASNOVALIDO">El email de sugerencias no tiene un formato válido.</Resource>
+		<Resource tag="EMAILPRUEBAOBLIGATORIO">Indica el correo electrónico al que se enviará el email de prueba.</Resource>
+		<Resource tag="EMAILPRUEBANOVALIDO">El correo electrónico al que se enviará el email de prueba no tiene un formato válido.</Resource>
+		<Resource tag="ASUNTOCORREOPRUEBA">Correo de prueba de la configuración del buzón</Resource>
+		<Resource tag="CUERPOCORREOPRUEBA">El correo electrónico configurado funciona correctamente.</Resource>
+		<Resource tag="CORREOCONFIGURADOCONEXITO">El correo electrónico se ha configurado con éxito.</Resource>
+		<Resource tag="ERRORSMTPCONEXION">No se ha podido conectar con el servidor SMTP '@1@' en el puerto @2@. Revisa el nombre del servidor, el puerto y si el servidor requiere una conexión segura (SSL). Detalle: @3@</Resource>
+		<Resource tag="ERRORSMTPAUTENTICACION">El servidor SMTP '@1@' ha rechazado las credenciales del usuario '@2@'. Revisa el usuario y la contraseña de la cuenta de correo. Detalle: @3@</Resource>
+		<Resource tag="ERRORSMTPSSL">El servidor SMTP '@1@' requiere una conexión segura. Activa la opción 'Usar servidor seguro' o utiliza un puerto seguro (465 o 587). Detalle: @2@</Resource>
+		<Resource tag="ERRORSMTPREMITENTE">El servidor SMTP ha rechazado el remitente '@1@'. Revisa que la cuenta '@2@' esté autorizada para enviar correos desde esa dirección. Detalle: @3@</Resource>
+		<Resource tag="ERRORSMTPDESTINATARIO">El servidor SMTP ha rechazado el destinatario '@1@'. Detalle: @2@</Resource>
+		<Resource tag="ERRORSMTPDIRECCIONNOVALIDA">Alguna de las direcciones de correo indicadas no tiene un formato válido. Detalle: @1@</Resource>
+		<Resource tag="ERRORSMTPSERVICIONODISPONIBLE">El servidor SMTP '@1@' no está disponible en este momento. Inténtalo de nuevo más tarde. Detalle: @2@</Resource>
+		<Resource tag="ERRORENVIOCORREOPRUEBA">No se ha podido enviar el correo de prueba. Detalle: @1@</Resource>
+		<Resource tag="ERRORGUARDARCONFIGURACIONCORREO">El correo de prueba se ha enviado correctamente, pero no se ha podido guardar la configuración del buzón. Inténtalo de nuevo o contacta con el administrador de la plataforma.</Resource>
+		<Resource tag="TODOSLOSCAMPOSDELBUZONSONOBLIGATORIOS">Todos los campos son obligatorios. Al guardar se enviará un correo de prueba para comprobar que la configuración funciona.</Resource>
+		<Resource tag="LACONTRASENYANOSEMUESTRA">Por seguridad la contraseña no se muestra. Vuelve a introducirla para poder validar y guardar la configuración.</Resource>
 		<Resource tag="OPCIONESDELMETAADMINISTRADOR">Opciones del meta-administrador</Resource>
 		<Resource tag="PERMITIRADMINISTRACIONSEMANTICA">Permitir administración semántica</Resource>
 		<Resource tag="PERMITIRADMINISTRACIONDEVISTAS">Permitir administración de vistas</Resource>
@@ -7131,7 +7217,7 @@
 		<Resource tag="NUEVOICONO">Selecciona un icono para adjuntar</Resource>
 		<Resource tag="ERRORSUBIRICONO">Se produjo un error al subir el icono, inténtelo de nuevo más tarde.</Resource>
 		<Resource tag="SELECCIONARROL">-- Selecciona un rol --</Resource>
-		<Resource tag="FORMATOIMAGENPERMITIDO">Imágenes en formato .JPG, .JPEG, .PNG o .GIF</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Imágenes en formato .JPG, .JPEG, .PNG, .GIF o .WEBP</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Clic o arrastra una imagen aquí</Resource>
 		<Resource tag="ERRORPESOICONO">El icono no puede pesar mas de 2 MB</Resource>
 		<Resource tag="ERRORICONOVACIO">Archivo vacio</Resource>

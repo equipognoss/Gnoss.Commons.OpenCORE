@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 {
@@ -10,6 +6,7 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
     {
         public string Error {  get; set; }
         public string Message {  get; set; }
+        [JsonPropertyName("status")]
         public int Status {  get; set; }    
     }
 }

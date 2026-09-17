@@ -298,6 +298,11 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public bool CompactedMenu { get; set; }
 
         /// <summary>
+        /// Indica si la comunidad tiene disponible el traductor
+        /// </summary>
+        public bool TranslatorAvailable { get; set; }
+
+        /// <summary>
         /// Lista de los perfiles de los administradores
         /// </summary>
         public List<ProfileModel> Administrators { get; set; }

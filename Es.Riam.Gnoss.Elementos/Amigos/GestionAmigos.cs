@@ -58,18 +58,6 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         private List<Guid> mListaPerfilesAmigos;
 
         /// <summary>
-        ///Lista de identificadores de perfiles de solicitudes de contacto
-        /// </summary>
-        private List<Guid> mListaPerfilesSolicitudContacto;
-
-        /// <summary>
-        ///Lista de identificadores de perfiles de solicitudes de amigos
-        /// </summary>
-        private List<Guid> mListaPerfilesSolicitudAmigo;
-
-        //private List<Guid> mListaAmigosDeGrupo;
-
-        /// <summary>
         /// Gestor de identidades
         /// </summary>
         private GestionIdentidades mGestionIdentidades;
@@ -164,18 +152,15 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
                 {
                     Identidad.Identidad identidadAmigo = null;
 
-                    if (mGestionIdentidades.ListaIdentidades.ContainsKey(filaAmigo.IdentidadAmigoID))
+                    if (mGestionIdentidades.ListaIdentidades.ContainsKey(filaAmigo.IdentidadAmigoID) && !mListaAmigosPresentacion.ContainsKey(filaAmigo.IdentidadAmigoID))
                     {
-                        if (!mListaAmigosPresentacion.ContainsKey(filaAmigo.IdentidadAmigoID))
-                        {
-                            identidadAmigo = mGestionIdentidades.ListaIdentidades[filaAmigo.IdentidadAmigoID];
+                        identidadAmigo = mGestionIdentidades.ListaIdentidades[filaAmigo.IdentidadAmigoID];
 
-                            if (identidadAmigo.Clave == pIdentidadID)
-                            {
-                                continue;
-                            }
-                            mListaAmigosPresentacion.Add(filaAmigo.IdentidadAmigoID, identidadAmigo);
+                        if (identidadAmigo.Clave == pIdentidadID)
+                        {
+                            continue;
                         }
+                        mListaAmigosPresentacion.Add(filaAmigo.IdentidadAmigoID, identidadAmigo);
                     }
                 }
             }
@@ -359,23 +344,6 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
                 AmigosDW.ListaAmigo.Add(amigo);
                 mEntityContext.Amigo.Add(amigo);
             }
-        }
-
-        /// <summary>
-        /// Indica si 2 identidades son amigos o no.
-        /// </summary>
-        /// <param name="pIdentidadID">Identidad 1</param>
-        /// <param name="pAmigoID">Identidad 2</param>
-        /// <returns>TRUE si son amigos, FALSE en caso contrario</returns>
-        private bool SonIdentidadesAmigas(Guid pIdentidadID, Guid pAmigoID)
-        {
-            //Se que aquí no debería hacerse llamadas al CN, pero puesto que ya se están haciendo (GeneralCN) y creo que es más importante la eficiencia que esta arquitectura sin sentido (no tiene sentido que no se puedan hacer llamadas al CN), pues lo hago:
-
-            AmigosCN amigosCN = new AmigosCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, null, null);
-            bool sonAmigas = amigosCN.EsAmigoDeIdentidad(pIdentidadID, pAmigoID);
-            amigosCN.Dispose();
-
-            return sonAmigas;
         }
 
         /// <summary>
@@ -736,7 +704,7 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
 
             foreach (Guid id in ListaGrupoAmigos.Keys)
             {
-                PermisoGrupoAmigoOrg filas = this.AmigosDW.ListaPermisoGrupoAmigoOrg.Where(item => item.GrupoID.Equals(id) && item.IdentidadOrganizacionID.Equals(pIdentidad.IdentidadOrganizacion.IdentidadPersonalMyGNOSS.Clave) && item.IdentidadUsuarioID.Equals(pIdentidad.IdentidadMyGNOSS.Clave)).FirstOrDefault();
+                PermisoGrupoAmigoOrg filas = this.AmigosDW.ListaPermisoGrupoAmigoOrg.FirstOrDefault(item => item.GrupoID.Equals(id) && item.IdentidadOrganizacionID.Equals(pIdentidad.IdentidadOrganizacion.IdentidadPersonalMyGNOSS.Clave) && item.IdentidadUsuarioID.Equals(pIdentidad.IdentidadMyGNOSS.Clave));
 
                 if (filas != null && filas.PermisoEdicion)
                 {
@@ -1021,13 +989,12 @@ namespace Es.Riam.Gnoss.Elementos.Amigos
         /// <summary>
         /// Método para serializar el objeto
         /// </summary>
-        /// <param name="pInfo">Datos serializados</param>
-        /// <param name="pContext">Contexto de serialización</param>
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo pInfo, StreamingContext pContext)
+        /// <param name="info">Datos serializados</param>
+        /// <param name="context">Contexto de serialización</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            base.GetObjectData(pInfo, pContext);
-            pInfo.AddValue("GestionIdentidades", GestionIdentidades);
+            base.GetObjectData(info, context);
+            info.AddValue("GestionIdentidades", GestionIdentidades);
         }
 
         #endregion

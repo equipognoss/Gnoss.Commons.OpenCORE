@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.Serialization;
 using Es.Riam.Semantica.Plantillas;
 using System.Linq;
-using static System.Net.WebRequestMethods;
 
 namespace Es.Riam.Semantica.OWL
 {
@@ -764,8 +763,6 @@ namespace Es.Riam.Semantica.OWL
 
                     GestionOWL.LeerOntologiasImportadas(this, contenidoOntologia);
 
-                    //Desencripta el fichero
-                    //this.mFicheroOntologia=new StreamReader( Encriptacion.DesencriptarFichero(this.mRutaOntologia));
                     //Lee todas las entidades y las almacena en mEntidades.
                     this.mEntidades = this.GestorOWL.LeerEntidades(contenidoOntologia);
 

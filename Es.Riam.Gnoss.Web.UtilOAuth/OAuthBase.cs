@@ -9,7 +9,6 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.AbstractsOpen;
 using Microsoft.Extensions.Logging;
-using Es.Riam.Gnoss.Elementos.Amigos;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
 {
@@ -31,8 +30,8 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// </summary>
         protected class QueryParameter
         {
-            private string name = null;
-            private string value = null;
+            private readonly string name = null;
+            private readonly string value = null;
 
             public QueryParameter(string name, string value)
             {
@@ -128,7 +127,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <returns>A list of QueryParameter each containing the parameter name and value</returns>
         private static List<QueryParameter> GetQueryParameters(string parameters)
         {
-            if (parameters.StartsWith("?"))
+            if (parameters.StartsWith('?'))
             {
                 parameters = parameters.Remove(0, 1);
             }
@@ -199,7 +198,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
 
                 if (i < parameters.Count - 1)
                 {
-                    sb.Append("&");
+                    sb.Append('&');
                 }
             }
 
@@ -255,7 +254,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
 
             if (!string.IsNullOrEmpty(token))
             {
-                //parameters.Add(new QueryParameter(OAuthTokenKey, token));
                 parameters.Add(new QueryParameter(OAuthTokenKey, UrlEncode(token)));
             }
 

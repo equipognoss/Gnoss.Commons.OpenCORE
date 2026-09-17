@@ -48,6 +48,7 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Exchange.WebServices.Data;
@@ -78,7 +79,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private short? mTipoUbicacionCMSPaginaActual;
 
         private static List<string> mListaIdiomas = null;
-        private Microsoft.AspNetCore.Hosting.IHostingEnvironment mEnv;
+        private IWebHostEnvironment mEnv;
 
         /// <summary>
         /// Lista de componentes cacheados
@@ -124,7 +125,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
         #region Constructores
 
-        public ControladorCMS(ControllerBaseGnoss pControlador, Guid? pComponenteID, short? pTipoUbicacionCMSPaginaActual, CommunityModel pModeloComunidad, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, bool pSoloCargarComponentesActivos, ILogger<ControladorCMS> logger,ILoggerFactory loggerFactory)
+        public ControladorCMS(ControllerBaseGnoss pControlador, Guid? pComponenteID, short? pTipoUbicacionCMSPaginaActual, CommunityModel pModeloComunidad, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, EntityContextBASE entityContextBASE, VirtuosoAD virtuosoAD, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IWebHostEnvironment env, bool pSoloCargarComponentesActivos, ILogger<ControladorCMS> logger,ILoggerFactory loggerFactory)
            : base(loggingService, configService, entityContext, redisCacheWrapper, gnossCache, virtuosoAD, httpContextAccessor, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mControlador = pControlador;
@@ -398,7 +399,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     }
                     if (fichaComponente == null)
                     {
-                        mLoggingService.AgregarEntrada($"No se ha encontrado el componente {pComponente.Clave} en caché, se procede a cargarlo.");
+                        mLoggingService.GuardarTraza($"No se ha encontrado el componente {pComponente.Clave} en caché, se procede a cargarlo.");
                         if (pComponente is CMSComponenteHTML)
                         {
                             fichaComponente = ObtenerFichaHtmlLibre((CMSComponenteHTML)pComponente, pIdioma);
@@ -506,7 +507,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                         if (pComponente.TipoCaducidadComponenteCMS != TipoCaducidadComponenteCMS.NoCache && fichaComponente != null)
                         {
-                            mLoggingService.AgregarEntrada($"Se agrega el componente {pComponente.Clave} a caché. {fichaComponente.ViewNameResources}");
+                            mLoggingService.GuardarTraza($"Se agrega el componente {pComponente.Clave} a caché. {fichaComponente.ViewNameResources}");
                             CMSCL cmsCL = new CMSCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCL>(), mLoggerFactory);
                             cmsCL.RefrescarComponentePorIDEnProyecto(ProyectoSeleccionado.Clave, pComponente.Clave, pIdioma, fichaComponente, pComponente.TipoCaducidadComponenteCMS);
                             cmsCL.Dispose();
@@ -1191,7 +1192,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns></returns>
         public CMSComponentResourceList ObtenerFichaListadoDinamico(CMSComponente pComponente, string pIdioma)
         {
-            mLoggingService.AgregarEntrada($"Se va a cargar los datos del componente {pComponente.Nombre} - {pComponente.Clave}");
+            mLoggingService.GuardarTraza($"Se va a cargar los datos del componente {pComponente.Nombre} - {pComponente.Clave}");
             CargadorResultados cargadorResultados = new CargadorResultados();
             cargadorResultados.Url = mConfigService.ObtenerUrlServicioResultados();
 
@@ -1272,7 +1273,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 bool obtenerDatosExtraIdentidades = false;
                 ObtenerDatoExtraRecursosComponente(pComponente, ref obtenerDatosExtraRecursos, ref obtenerIdentidades, ref obtenerDatosExtraIdentidades);
                 sw = LoggingService.IniciarRelojTelemetria();
-                mLoggingService.AgregarEntrada($"Se llama al servicio resultados para cargar los datos de: {pComponente.Nombre} - {pComponente.Clave}. Parametros:\n\t-ProyectoID:{proyectoid}\n\t-Parametros:{parametros}\n\t-TipoBusqueda:{tipoBusqueda.Key}\n\t-UrlBusqueda:{urlBusqueda}-DatosExtraRecursos:{obtenerDatosExtraRecursos}");
+                mLoggingService.GuardarTraza($"Se llama al servicio resultados para cargar los datos de: {pComponente.Nombre} - {pComponente.Clave}. Parametros:\n\t-ProyectoID:{proyectoid}\n\t-Parametros:{parametros}\n\t-TipoBusqueda:{tipoBusqueda.Key}\n\t-UrlBusqueda:{urlBusqueda}-DatosExtraRecursos:{obtenerDatosExtraRecursos}");
                 ResultadoModel resultadoModel = cargadorResultados.CargarResultadosGadgetJSON(proyectoid, estaEnProyecto, false, identidadID, parametros, false, pIdioma, tipoBusqueda.Key, componenteListadoDinamico.NumeroItems, urlBusqueda, mRefrescar, obtenerDatosExtraRecursos, obtenerIdentidades, obtenerDatosExtraIdentidades);
                 mLoggingService.AgregarEntradaDependencia("Llamar al servicio de resultados", false, "ObtenerFichaListadoDinamico", sw, true);
                 foreach (ObjetoBuscadorModel fichaRecurso in resultadoModel.ListaResultados)
@@ -1285,7 +1286,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     fichaComponenteListadoRecursos.URLSeeMore = ObtenerURLPaginaConFiltrosEnIdiomaActual(componenteListadoDinamico.URLVerMas, mComunidad.Tabs);
                 }
 
-                mLoggingService.AgregarEntrada($"Se han obtenido los resultados del componente: {pComponente.Nombre} - {pComponente.Clave}: {string.Join(", ", fichaComponenteListadoRecursos.ResourceList.Select(item => $"'{item.Title}'").ToList())}");
+                mLoggingService.GuardarTraza($"Se han obtenido los resultados del componente: {pComponente.Nombre} - {pComponente.Clave}: {string.Join(", ", fichaComponenteListadoRecursos.ResourceList.Select(item => $"'{item.Title}'").ToList())}");
             }
             catch (Exception ex)
             {
@@ -2617,33 +2618,6 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         }
 
         /// <summary>
-        /// Quita el alias "www." del host de una URL absoluta (si lo tiene), para poder comparar URLs que apuntan
-        /// al mismo sitio aunque una use el dominio "desnudo" y otra el subdominio "www." 
-        /// (p.ej. peticiones internas que no pasan por la CDN/balanceador frente al tráfico real de usuarios).
-        /// </summary>
-        private static string RemoveWwwFromHost(string pUrl)
-        {
-            if (string.IsNullOrEmpty(pUrl))
-            {
-                return pUrl;
-            }
-
-            int schemePos = pUrl.IndexOf("://", StringComparison.Ordinal);
-            if (schemePos < 0)
-            {
-                return pUrl;
-            }
-
-            int hostPos = schemePos + 3;
-            if (pUrl.Length >= hostPos + 4 && pUrl.Substring(hostPos, 4).Equals("www.", StringComparison.OrdinalIgnoreCase))
-            {
-                return pUrl.Remove(hostPos, 4);
-            }
-
-            return pUrl;
-        }
-
-        /// <summary>
         /// Obtiene el tipo de búsqueda
         /// </summary>
         public KeyValuePair<TipoBusqueda, Guid> ObtenerTipoBusqueda(string pUrl)
@@ -2706,20 +2680,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                 }
 
                 string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasUrlOriginal, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
-
-                // pUrlAux se construye a partir de "mControlador.BaseURL", que refleja el Host literal de ESTA petición (puede ser el dominio "desnudo", p.ej. accesos internos que no pasan por la CDN/balanceador y no normalizan a "www.").
-                // urlComunidad se construye siempre a partir de la URL base configurada para el proyecto ("BaseURLIdioma"/"UrlPrincipal"), que es fija.
-                // Si ambas difieren solo en el alias "www." siguen siendo el mismo sitio: no debe tratarse como una URL inválida, así que se compara ignorando ese alias.
-                string pUrlAuxNoWww = RemoveWwwFromHost(pUrlAux);
-                string communityUrlNoWww = RemoveWwwFromHost(urlComunidad);
-
-                if (!pUrlAuxNoWww.ToLower().StartsWith(communityUrlNoWww.ToLower()))
+                if (!pUrlAux.ToLower().StartsWith(urlComunidad.ToLower()))
                 {
                     throw new Exception($"No es correcta la URL {pUrlAux}, debe comenzar con {urlComunidad}");
                 }
                 else
                 {
-                    pUrlAux = pUrlAuxNoWww.Replace(communityUrlNoWww + "/", "");
+                    pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
                 }
 
                 ProyectoPestanyaMenu pestanyaBusqueda = mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Values.FirstOrDefault(p => string.Equals(p.Ruta, pUrlAux, StringComparison.InvariantCultureIgnoreCase) && !p.TipoPestanya.Equals(TipoPestanyaMenu.EnlaceInterno));
@@ -2844,15 +2811,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pUrlAux = pUrl;
                 }
                 string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
-                string pUrlAuxNoWww = RemoveWwwFromHost(pUrlAux);
-                string communityUrlNoWww = RemoveWwwFromHost(urlComunidad);
-                if (!pUrlAuxNoWww.StartsWith(communityUrlNoWww))
+                if (!pUrlAux.StartsWith(urlComunidad))
                 {
                     return null;
                 }
                 else
                 {
-                    pUrlAux = pUrlAuxNoWww.Replace(communityUrlNoWww + "/", "");
+                    pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
                 }
 
                 foreach (Guid idPestanya in mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Keys)
@@ -2992,15 +2957,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     pUrlAux = pUrl;
                 }
                 string urlComunidad = UrlsSemanticas.ObtenerURLComunidad(utilIdiomasAux, mControlador.BaseURLIdioma, mControlador.ProyectoSeleccionado.NombreCorto);
-                string pUrlAuxNoWww = RemoveWwwFromHost(pUrlAux);
-                string communityUrlNoWww = RemoveWwwFromHost(urlComunidad);
-                if (!pUrlAuxNoWww.StartsWith(communityUrlNoWww))
+                if (!pUrlAux.StartsWith(urlComunidad))
                 {
                     throw new Exception("No es correcta la URL");
                 }
                 else
                 {
-                    pUrlAux = pUrlAuxNoWww.Replace(communityUrlNoWww + "/", "");
+                    pUrlAux = pUrlAux.Replace(urlComunidad + "/", "");
                 }
 
                 foreach (Guid idPestanya in mControlador.ProyectoSeleccionado.ListaPestanyasMenu.Keys)

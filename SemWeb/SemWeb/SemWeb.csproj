@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<SonarQubeExclude>false</SonarQubeExclude>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspose.Zip" Version="24.10.0" />
-		<PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
+		<PackageReference Include="Aspose.Zip" Version="26.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>

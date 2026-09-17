@@ -1,7 +1,6 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.CL;
-using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -9,9 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
-using System.IO;
-using System.Text;
-using System.Threading;
 using System.Web;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
@@ -28,7 +24,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         public static string CadenaFicheroConfig;
         private LoggingService mLoggingService;
         private GnossCache mGnossCache;
-        private IHostingEnvironment mEnv;
+        private IWebHostEnvironment mEnv;
         private EntityContextOauth mEntityContextOauth;
         private EntityContext mEntityContext;
         private ConfigService mConfigService;
@@ -43,7 +39,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <summary>
         /// Constructor sin parámetros
         /// </summary>
-        public GnossOAuthAuthorizationManager(GnossCache gnossCache, IHostingEnvironment env, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossOAuthAuthorizationManager> logger, ILoggerFactory loggerFactory)
+        public GnossOAuthAuthorizationManager(GnossCache gnossCache, IWebHostEnvironment env, EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<GnossOAuthAuthorizationManager> logger, ILoggerFactory loggerFactory)
         {
             mGnossCache = gnossCache;
             mEnv = env;
@@ -210,27 +206,27 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
 
             bool bienFirmado = false;
             string firma = "";
-            StringBuilder mensajeExtraSB = new StringBuilder();
+            //StringBuilder mensajeExtraSB = new StringBuilder();
             if (pParametrosQuery.Method.Equals("HMAC-SHA1"))
             {
-                mensajeExtraSB.AppendLine("Chequeo firma");
+                //mensajeExtraSB.AppendLine("Chequeo firma");
                 firma = oauthbase.GenerateSignature(new Uri(pParametrosQuery.Url), pParametrosQuery.ConsumerKey, pParametrosQuery.ConsumerSecret, pParametrosQuery.Token, pParametrosQuery.TokenSecret, pHttpMethod, pParametrosQuery.Timespan, pParametrosQuery.Nonce, out urlNormal, out queryNormal);
                 if (firma.Equals(pParametrosQuery.Signature))
                 {
-                    mensajeExtraSB.AppendLine("Firma correcta");
+                    //mensajeExtraSB.AppendLine("Firma correcta");
                     DateTime fecha = new DateTime(1970, 1, 1, 0, 0, 0, 0).Subtract(new TimeSpan(0, 0, int.Parse(pParametrosQuery.Timespan)).Negate());
 
                     //Comprobar que la fecha es inferior al tiempo establecido para la petición (10 minutos)
                     if (fecha.AddMinutes(10) > DateTime.UtcNow)
                     {
-                        mensajeExtraSB.AppendLine("Fecha correcta");
+                        //mensajeExtraSB.AppendLine("Fecha correcta");
                         //Comprobar que el nonce no existe en Redis (Si no esta, guardarlo con una duracion de 10 minutos)
                         string claveCacheNonceStore = "NonceStore_" + pParametrosQuery.Nonce;
                         Guid aleatorio = Guid.NewGuid();
                         DateTime tiempo = DateTime.Now;
                         if (!mGnossCache.ExisteClaveEnCache(claveCacheNonceStore))
                         {
-                            mensajeExtraSB.AppendLine("Nonce correcto");
+                            //mensajeExtraSB.AppendLine("Nonce correcto");
                             tiempo = DateTime.Now;
                             mGnossCache.AgregarObjetoCache(claveCacheNonceStore, fecha, 10 * 60);
                             bienFirmado = true;
@@ -259,7 +255,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             }
             else
             {
-                throw new Exception($"La firma es incorrecta. Parametros usados para generar la firma: \npParametrosQuery.Url: {pParametrosQuery.Url}\npParametrosQuery.ConsumerKey: {pParametrosQuery.ConsumerKey}\npParametrosQuery.ConsumerSecret: {pParametrosQuery.ConsumerSecret}\npParametrosQuery.Token: {pParametrosQuery.Token}\npParametrosQuery.TokenSecret: {pParametrosQuery.TokenSecret}\npHttpMethod: {pHttpMethod}\n, pParametrosQuery.Timespan: {pParametrosQuery.Timespan}\npParametrosQuery.Nonce: {pParametrosQuery.Nonce}\npParametrosQuery.Signature: {pParametrosQuery.Signature}\npParametrosQuery.Signature. \nFirma obtenida: {firma}\nMensaje extra: {mensajeExtraSB.ToString()}");
+                throw new Exception($"La firma es incorrecta. Parametros usados para generar la firma: \npParametrosQuery.Url: {pParametrosQuery.Url}\npParametrosQuery.ConsumerKey: {pParametrosQuery.ConsumerKey}\npParametrosQuery.ConsumerSecret: {pParametrosQuery.ConsumerSecret}\npParametrosQuery.Token: {pParametrosQuery.Token}\npParametrosQuery.TokenSecret: {pParametrosQuery.TokenSecret}\npHttpMethod: {pHttpMethod}\n, pParametrosQuery.Timespan: {pParametrosQuery.Timespan}\npParametrosQuery.Nonce: {pParametrosQuery.Nonce}\npParametrosQuery.Signature: {pParametrosQuery.Signature}\npParametrosQuery.Signature. \nFirma obtenida: {firma}");
             }
             return user;
         }

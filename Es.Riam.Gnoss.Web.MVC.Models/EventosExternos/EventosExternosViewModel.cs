@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-
+﻿
 namespace Es.Riam.Gnoss.Web.MVC.Models.EventosExternos
 {
     public class EventosExternosViewModel

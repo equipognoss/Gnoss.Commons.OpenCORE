@@ -8,8 +8,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Tesauro
 {
     public class ColaImagenCategoria
     {
-        public Guid CategoriaID;
-        public string NombreImagenOriginal;
-        public Guid ProyectoID;
+        public Guid CategoriaID { get; set; }
+        public string NombreImagenOriginal { get; set; }
+        public Guid ProyectoID { get; set; }
     }
 }

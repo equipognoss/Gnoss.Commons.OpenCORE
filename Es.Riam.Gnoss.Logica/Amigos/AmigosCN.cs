@@ -1,14 +1,11 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.Amigos;
-using Es.Riam.Gnoss.AD.Amigos.Model;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
+using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 using System;
 
 namespace Es.Riam.Gnoss.Logica.Amigos
@@ -18,8 +15,8 @@ namespace Es.Riam.Gnoss.Logica.Amigos
     /// </summary>
     public class AmigosCN : BaseCN, IDisposable
     {
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #region Constructores
 
         /// <summary>
@@ -117,6 +114,11 @@ namespace Es.Riam.Gnoss.Logica.Amigos
             return AmigosAD.CargarAmigosCompleto(pIdentidadID);
         }
 
+        public GrupoAmigos ObtenerGrupoAmigosPorOrganizacionID(Guid pOrganizacionID)
+        {
+            return AmigosAD.ObtenerGrupoAmigosPorOrganizacionID(pOrganizacionID);
+        }
+
         #endregion
 
         #region Dispose
@@ -155,11 +157,10 @@ namespace Es.Riam.Gnoss.Logica.Amigos
             {
                 disposed = true;
 
-                if (disposing)
+                //Libero todos los recursos administrados que he añadido a esta clase
+                if (disposing && AmigosAD != null)
                 {
-                    //Libero todos los recursos administrados que he añadido a esta clase
-                    if (AmigosAD != null)
-                        AmigosAD.Dispose();
+                    AmigosAD.Dispose();
                 }
                 AmigosAD = null;
             }

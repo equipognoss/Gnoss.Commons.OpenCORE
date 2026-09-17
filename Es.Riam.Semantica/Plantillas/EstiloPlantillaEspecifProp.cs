@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using Es.Riam.Semantica.OWL;
 using System.Runtime.Serialization;
@@ -8,7 +8,7 @@ namespace Es.Riam.Semantica.Plantillas
     #region Enumeraciones
 
     /// <summary>
-    /// Tipo de campo de una ontologÌa: entero, texto, etc.
+    /// Tipo de campo de una ontolog√≠a: entero, texto, etc.
     /// </summary>
     public enum TipoCampoOntologia
     {
@@ -36,7 +36,13 @@ namespace Es.Riam.Semantica.Plantillas
         EmbebedLink = 21,
         ImagenExterna = 22,
         EmbebedObject = 23,
-        ArchivoLink = 24
+        ArchivoLink = 24,
+        ImagenOpenSD = 25,
+        ImagenOpenSDSequence = 26,
+        ImagenOpenSDReferenceHorizontal = 27,
+        ImagenOpenSDReferenceVertical = 28,
+        ImagenOpenSDCollectionHorizontal = 29,
+        ImagenOpenSDCollectionRows = 30
     }
 
     #endregion
@@ -65,7 +71,7 @@ namespace Es.Riam.Semantica.Plantillas
         private TipoCampoOntologia? mTipoCampo;
 
         /// <summary>
-        /// Propiedad ontolÛgica.
+        /// Propiedad ontol√≥gica.
         /// </summary>
         private Propiedad mPropiedad;
 
@@ -85,7 +91,7 @@ namespace Es.Riam.Semantica.Plantillas
         private string mValorDefectoNoSeleccionable;
 
         /// <summary>
-        /// RestricciÛn del n˙mero de caracteres.
+        /// Restricci√≥n del n√∫mero de caracteres.
         /// </summary>
         private RestriccionNumCaracteres mRestrNumCaract;
 
@@ -105,17 +111,17 @@ namespace Es.Riam.Semantica.Plantillas
         private bool mUsarJcrop = false;
 
         /// <summary>
-        /// Anchura y altura mÌnimas para el recorte del Jcrop.
+        /// Anchura y altura m√≠nimas para el recorte del Jcrop.
         /// </summary>
         private KeyValuePair<int, int> mMinSizeJcrop;
 
         /// <summary>
-        /// Anchura y altura m·ximas para el recorte del Jcrop.
+        /// Anchura y altura m√°ximas para el recorte del Jcrop.
         /// </summary>
         private KeyValuePair<int, int> mMaxSizeJcrop;
 
         /// <summary>
-        /// Parametros de galerÌa si la propiedad debe ser una galerÌa de im·genes, NULL en caso contrario.
+        /// Parametros de galer√≠a si la propiedad debe ser una galer√≠a de im√°genes, NULL en caso contrario.
         /// </summary>
         private string mGaleriaImagenes;
 
@@ -125,22 +131,28 @@ namespace Es.Riam.Semantica.Plantillas
         private KeyValuePair<string, string> mOpenSeaDragon;
 
         /// <summary>
-        /// Clase CSS para el tÌtulo de la propiedad.
+        /// Modo de visualizaci√≥n para el visor OpenSeaDragon con tiles DZ.
+        /// NULL si la propiedad no usa el visor extendido.
+        /// </summary>
+        private string mOpenSeaDragonTiles;
+
+        /// <summary>
+        /// Clase CSS para el t√≠tulo de la propiedad.
         /// </summary>
         private string mClaseCssPanelTitulo;
 
         /// <summary>
-        /// Nombre del tag para el tÌtulo en ediciÛn.
+        /// Nombre del tag para el t√≠tulo en edici√≥n.
         /// </summary>
         private string mTagNameTituloEdicion;
 
         /// <summary>
-        /// Nombre del tag para el tÌtulo en lectura.
+        /// Nombre del tag para el t√≠tulo en lectura.
         /// </summary>
         private string mTagNameTituloLectura;
 
         /// <summary>
-        /// Nombre de la propiedad en ediciÛn.
+        /// Nombre de la propiedad en edici√≥n.
         /// </summary>
         private Dictionary<string, string> mAtrNombre;
 
@@ -150,7 +162,7 @@ namespace Es.Riam.Semantica.Plantillas
         private Dictionary<string, string> mAtrNombreLectura;
 
         /// <summary>
-        /// Nombre de la propiedad en ediciÛn.
+        /// Nombre de la propiedad en edici√≥n.
         /// </summary>
         private string mNombre;
 
@@ -160,12 +172,12 @@ namespace Es.Riam.Semantica.Plantillas
         private string mNombreLectura;
 
         /// <summary>
-        /// Indica que los valores de la propiedad se introducir·n separados por comas.
+        /// Indica que los valores de la propiedad se introducir√°n separados por comas.
         /// </summary>
         private bool mValoresSepComas;
 
         /// <summary>
-        /// Indica si el formato de la fecha es mes-aÒo.
+        /// Indica si el formato de la fecha es mes-a√±o.
         /// </summary>
         private bool mFechaMesAnio;
 
@@ -220,17 +232,17 @@ namespace Es.Riam.Semantica.Plantillas
         private string mClaseCss;
 
         /// <summary>
-        /// Texto para el botÛn de agregar elemento.
+        /// Texto para el bot√≥n de agregar elemento.
         /// </summary>
         private string mTextoAgregarElem;
 
         /// <summary>
-        /// Texto para el botÛn de guardar elemento.
+        /// Texto para el bot√≥n de guardar elemento.
         /// </summary>
         private string mTextoBotonAceptarElemento;
 
         /// <summary>
-        /// Indica is hay que mostrar la vista previa de la propiedad en ediciÛn.
+        /// Indica is hay que mostrar la vista previa de la propiedad en edici√≥n.
         /// </summary>
         private bool mVistaPrevEnEdicion;
 
@@ -240,12 +252,12 @@ namespace Es.Riam.Semantica.Plantillas
         private string mClaseCssPanel;
 
         /// <summary>
-        /// Texto para el botÛn de cancelar elemento.
+        /// Texto para el bot√≥n de cancelar elemento.
         /// </summary>
         private string mTextoCancelarElem;
 
         /// <summary>
-        /// Texto para el botÛn de editar elemento.
+        /// Texto para el bot√≥n de editar elemento.
         /// </summary>
         private string mTextoEdicionEntSel;
 
@@ -280,7 +292,7 @@ namespace Es.Riam.Semantica.Plantillas
         private string mUrlLinkDelValor;
 
         /// <summary>
-        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pestaÒa.
+        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pesta√±a.
         /// </summary>
         private bool mNuevaPestanya = true;
 
@@ -320,12 +332,12 @@ namespace Es.Riam.Semantica.Plantillas
         private string mValorPorDefecto;
 
         /// <summary>
-        /// ExpresiÛn regular para aplicar al valor de una propiedad.
+        /// Expresi√≥n regular para aplicar al valor de una propiedad.
         /// </summary>
         private string mExpresionRegular;
 
         /// <summary>
-        /// Indica si solo se debe mostrar la primera coincidencia de la expresiÛn regular.
+        /// Indica si solo se debe mostrar la primera coincidencia de la expresi√≥n regular.
         /// </summary>
         private bool mPrimeraCoincidenciaExpresionRegular;
 
@@ -340,17 +352,17 @@ namespace Es.Riam.Semantica.Plantillas
         private bool mPrivadoPrivadoParaMiembrosComunidad;
 
         /// <summary>
-        /// Propiedad que definie la privacidad de alg˙n nodo
+        /// Propiedad que definie la privacidad de alg√∫n nodo
         /// </summary>
         private List<Guid> mPrivadoParaGrupoEditores;
 
         /// <summary>
-        /// N˙mero de elementos por p·gina para la paginaciÛn de las entidades auxiliares de la propiedad.
+        /// N√∫mero de elementos por p√°gina para la paginaci√≥n de las entidades auxiliares de la propiedad.
         /// </summary>
         private int mNumElemPorPag;
 
         /// <summary>
-        /// Ruta de la vista personalizada para la paginaciÛn en caso de que la haya.
+        /// Ruta de la vista personalizada para la paginaci√≥n en caso de que la haya.
         /// </summary>
         private string mVistaPersonalizadaPaginacion;
 
@@ -364,7 +376,7 @@ namespace Es.Riam.Semantica.Plantillas
         #region Constructores
 
         /// <summary>
-        /// Constructor sin par·metros.
+        /// Constructor sin par√°metros.
         /// </summary>
         public EstiloPlantillaEspecifProp()
         {
@@ -402,6 +414,7 @@ namespace Es.Riam.Semantica.Plantillas
             MaxSizeJcrop = pEstiloRef.MaxSizeJcrop;
             GaleriaImagenes = pEstiloRef.GaleriaImagenes;
             OpenSeaDragon = pEstiloRef.OpenSeaDragon;
+            OpenSeaDragonTiles = pEstiloRef.OpenSeaDragonTiles;
             ClaseCssPanelTitulo = pEstiloRef.ClaseCssPanelTitulo;
             TagNameTituloEdicion = pEstiloRef.TagNameTituloEdicion;
             TagNameTituloLectura = pEstiloRef.TagNameTituloLectura;
@@ -450,10 +463,10 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Constructor para la deseralizaciÛn
+        /// Constructor para la deseralizaci√≥n
         /// </summary>
         /// <param name="info">Datos serializados</param>
-        /// <param name="context">Contexto de serializaciÛn</param>
+        /// <param name="context">Contexto de serializaci√≥n</param>
         protected EstiloPlantillaEspecifProp(SerializationInfo info, StreamingContext context)
         {
             mAtrNombre = (Dictionary<string, string>)info.GetValue("AtrNombre", typeof(Dictionary<string, string>));
@@ -490,6 +503,7 @@ namespace Es.Riam.Semantica.Plantillas
             mNuevaPestanya = (bool)info.GetValue("NuevaPestanya", typeof(bool));
             mNumElemPorPag = (int)info.GetValue("NumElemPorPag", typeof(int));
             mOpenSeaDragon = (KeyValuePair<string, string>)info.GetValue("OpenSeaDragon", typeof(KeyValuePair<string, string>));
+            mOpenSeaDragonTiles = (string)info.GetValue("OpenSeaDragonTiles", typeof(string));
             mPrimeraCoincidenciaExpresionRegular = (bool)info.GetValue("PrimeraCoincidenciaExpresionRegular", typeof(bool));
             mPrivadoParaGrupoEditores = (List<Guid>)info.GetValue("PrivadoParaGrupoEditores", typeof(List<Guid>));
             mPrivadoPrivadoParaMiembrosComunidad = (bool)info.GetValue("PrivadoPrivadoParaMiembrosComunidad", typeof(bool));
@@ -630,7 +644,7 @@ namespace Es.Riam.Semantica.Plantillas
                     mTipoCampo = ObtenerTipoCampo();
                 }
 
-                // aÒadido para serializar
+                // a√±adido para serializar
                 if (!mTipoCampo.HasValue && mPropiedad == null)
                 {
                     mTipoCampo = (TipoCampoOntologia?)mTipoCampoINT;
@@ -657,7 +671,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Propiedad ontolÛgica.
+        /// Propiedad ontol√≥gica.
         /// </summary>
         public Propiedad Propiedad
         {
@@ -721,7 +735,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// RestricciÛn del n˙mero de caracteres.
+        /// Restricci√≥n del n√∫mero de caracteres.
         /// </summary>
         public RestriccionNumCaracteres RestrNumCaract
         {
@@ -766,7 +780,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Anchura y altura mÌnimas para el recorte del Jcrop. Por defecto es '75,75'.
+        /// Anchura y altura m√≠nimas para el recorte del Jcrop. Por defecto es '75,75'.
         /// </summary>
         public KeyValuePair<int, int> MinSizeJcrop
         {
@@ -781,7 +795,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Anchura y altura m·ximas para el recorte del Jcrop. No hay m·ximo por defeto.
+        /// Anchura y altura m√°ximas para el recorte del Jcrop. No hay m√°ximo por defeto.
         /// </summary>
         public KeyValuePair<int, int> MaxSizeJcrop
         {
@@ -811,7 +825,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Parametros de galerÌa si la propiedad debe ser una galerÌa de im·genes, NULL en caso contrario.
+        /// Parametros de galer√≠a si la propiedad debe ser una galer√≠a de im√°genes, NULL en caso contrario.
         /// </summary>
         public string GaleriaImagenes
         {
@@ -840,8 +854,18 @@ namespace Es.Riam.Semantica.Plantillas
             }
         }
 
+        // <summary>
+        /// Modo de visualizaci√≥n para el visor OpenSeaDragon con tiles DZ.
+        /// NULL si la propiedad no usa el visor extendido.
+        /// </summary>
+        public string OpenSeaDragonTiles
+        {
+            get { return mOpenSeaDragonTiles; }
+            set { mOpenSeaDragonTiles = value; }
+        }
+
         /// <summary>
-        /// Clase CSS para el tÌtulo de la propiedad.
+        /// Clase CSS para el t√≠tulo de la propiedad.
         /// </summary>
         public string ClaseCssPanelTitulo
         {
@@ -856,7 +880,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Nombre del tag para el tÌtulo en ediciÛn.
+        /// Nombre del tag para el t√≠tulo en edici√≥n.
         /// </summary>
         public string TagNameTituloEdicion
         {
@@ -871,7 +895,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Nombre del tag para el tÌtulo en lectura.
+        /// Nombre del tag para el t√≠tulo en lectura.
         /// </summary>
         public string TagNameTituloLectura
         {
@@ -886,7 +910,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Nombre de la propiedad en ediciÛn.
+        /// Nombre de la propiedad en edici√≥n.
         /// </summary>
         public Dictionary<string, string> AtrNombre
         {
@@ -929,7 +953,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Nombre de la propiedad en ediciÛn.
+        /// Nombre de la propiedad en edici√≥n.
         /// </summary>
         public string Nombre
         {
@@ -960,7 +984,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Nombre de la propiedad en ediciÛn.
+        /// Nombre de la propiedad en edici√≥n.
         /// </summary>
         public string NombreLectura
         {
@@ -991,7 +1015,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica que los valores de la propiedad se introducir·n separados por comas.
+        /// Indica que los valores de la propiedad se introducir√°n separados por comas.
         /// </summary>
         public bool ValoresSepComas
         {
@@ -1019,7 +1043,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica que los valores de la propiedad se introducir·n separados por comas.
+        /// Indica que los valores de la propiedad se introducir√°n separados por comas.
         /// </summary>
         public bool ValoresSepComasAlmacenado
         {
@@ -1030,7 +1054,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica si el formato de la fecha es mes-aÒo.
+        /// Indica si el formato de la fecha es mes-a√±o.
         /// </summary>
         public bool FechaMesAnio
         {
@@ -1195,7 +1219,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Texto para el botÛn de agregar elemento.
+        /// Texto para el bot√≥n de agregar elemento.
         /// </summary>
         public string TextoAgregarElem
         {
@@ -1210,7 +1234,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Texto para el botÛn de guardar elemento.
+        /// Texto para el bot√≥n de guardar elemento.
         /// </summary>
         public string TextoBotonAceptarElemento
         {
@@ -1225,7 +1249,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica is hay que mostrar la vista previa de la propiedad en ediciÛn.
+        /// Indica is hay que mostrar la vista previa de la propiedad en edici√≥n.
         /// </summary>
         public bool VistaPrevEnEdicion
         {
@@ -1255,7 +1279,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Texto para el botÛn de cancelar elemento.
+        /// Texto para el bot√≥n de cancelar elemento.
         /// </summary>
         public string TextoCancelarElem
         {
@@ -1270,7 +1294,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Texto para el botÛn de editar elemento.
+        /// Texto para el bot√≥n de editar elemento.
         /// </summary>
         public string TextoEdicionEntSel
         {
@@ -1380,7 +1404,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pestaÒa.
+        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pesta√±a.
         /// </summary>
         public bool NuevaPestanya
         {
@@ -1500,7 +1524,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// ExpresiÛn regular para aplicar al valor de una propiedad.
+        /// Expresi√≥n regular para aplicar al valor de una propiedad.
         /// </summary>
         public string ExpresionRegular
         {
@@ -1515,7 +1539,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica si solo se debe mostrar la primera coincidencia de la expresiÛn regular.
+        /// Indica si solo se debe mostrar la primera coincidencia de la expresi√≥n regular.
         /// </summary>
         public bool PrimeraCoincidenciaExpresionRegular
         {
@@ -1572,7 +1596,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// N˙mero de elementos por p·gina para la paginaciÛn de las entidades auxiliares de la propiedad.
+        /// N√∫mero de elementos por p√°gina para la paginaci√≥n de las entidades auxiliares de la propiedad.
         /// </summary>
         public int NumElemPorPag
         {
@@ -1587,7 +1611,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Ruta de la vista personalizada para la paginaciÛn en caso de que la haya.
+        /// Ruta de la vista personalizada para la paginaci√≥n en caso de que la haya.
         /// </summary>
         public string VistaPersonalizadaPaginacion
         {
@@ -1618,7 +1642,7 @@ namespace Es.Riam.Semantica.Plantillas
 
         #endregion
 
-        #region MÈtodos
+        #region M√©todos
 
         /// <summary>
         /// Devuelve el nombre de la entidad.
@@ -1686,7 +1710,7 @@ namespace Es.Riam.Semantica.Plantillas
         private TipoCampoOntologia ObtenerTipoCampo()
         {
             if (mPropiedad.ListaValoresPermitidos != null && mPropiedad.ListaValoresPermitidos.Count > 0)
-            {//La propiedad podr· tomar solo un grupo de valores (One Of)
+            {//La propiedad podr√° tomar solo un grupo de valores (One Of)
                 if (mPropiedad.RangoRelativo == "" || mPropiedad.RangoRelativo.ToLower() == "string")//Sin rango o String
                 {
                     if (EsPropiedadConValoresCheck)
@@ -1722,7 +1746,7 @@ namespace Es.Riam.Semantica.Plantillas
                 }
             }
             else
-            {//La propiedad podr· adoptar cualquier valor de su tipo.
+            {//La propiedad podr√° adoptar cualquier valor de su tipo.
                 if (mPropiedad.RangoRelativo == "" || mPropiedad.RangoRelativo.ToLower() == "string")//Sin rango o String
                 {
                     return TipoCampoOntologia.Texto;
@@ -1753,7 +1777,7 @@ namespace Es.Riam.Semantica.Plantillas
                 }
             }
 
-            //Nunca alcanzar· esta linea (se pone para que compile):
+            //Nunca alcanzar√° esta linea (se pone para que compile):
             return TipoCampoOntologia.Texto;
         }
 
@@ -1775,8 +1799,8 @@ namespace Es.Riam.Semantica.Plantillas
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se est· llamando desde el Dispose()</param>
-        /// <param name="pEliminarListasComunes">Indica si hay que eliminar listas comunes entre elementos ontologÌas copiados</param>
+        /// <param name="disposing">Determina si se est√° llamando desde el Dispose()</param>
+        /// <param name="pEliminarListasComunes">Indica si hay que eliminar listas comunes entre elementos ontolog√≠as copiados</param>
         protected override void Dispose(bool disposing, bool pEliminarListasComunes)
         {
             if (!disposed)
@@ -1784,7 +1808,7 @@ namespace Es.Riam.Semantica.Plantillas
                 disposed = true;
                 //if (disposing)
                 //{
-                //Libero todos los recursos administrados que he aÒadido a esta clase
+                //Libero todos los recursos administrados que he a√±adido a esta clase
                 //}
 
                 mPropiedad = null;
@@ -1806,10 +1830,10 @@ namespace Es.Riam.Semantica.Plantillas
         #region Miembros de ISerializable
 
         /// <summary>
-        /// MÈtodo para serializar el objeto
+        /// M√©todo para serializar el objeto
         /// </summary>
         /// <param name="info">Datos serializados</param>
-        /// <param name="context">Contexto de serializaciÛn</param>
+        /// <param name="context">Contexto de serializaci√≥n</param>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("AtrNombre", mAtrNombre);
@@ -1845,6 +1869,7 @@ namespace Es.Riam.Semantica.Plantillas
             info.AddValue("NuevaPestanya", mNuevaPestanya);
             info.AddValue("NumElemPorPag", mNumElemPorPag);
             info.AddValue("OpenSeaDragon", mOpenSeaDragon);
+            info.AddValue("OpenSeaDragonTiles", mOpenSeaDragonTiles);
             info.AddValue("PrimeraCoincidenciaExpresionRegular", mPrimeraCoincidenciaExpresionRegular);
             info.AddValue("PrivadoParaGrupoEditores", mPrivadoParaGrupoEditores);
             info.AddValue("PrivadoPrivadoParaMiembrosComunidad", mPrivadoPrivadoParaMiembrosComunidad);
@@ -1878,30 +1903,30 @@ namespace Es.Riam.Semantica.Plantillas
     }
 
     /// <summary>
-    /// RestricciÛn del n˙mero de caracteres de una propiedad.
+    /// Restricci√≥n del n√∫mero de caracteres de una propiedad.
     /// </summary>
     [Serializable]
     public class RestriccionNumCaracteres
     {
-        #region RestricciÛn n˙mero caracteres
+        #region Restricci√≥n n√∫mero caracteres
 
         /// <summary>
-        /// Valor para la restricciÛn de los caracteres: Menor.
+        /// Valor para la restricci√≥n de los caracteres: Menor.
         /// </summary>
         public static string RestriCaract_Menor = "<";
 
         /// <summary>
-        /// Valor para la restricciÛn de los caracteres: Menor.
+        /// Valor para la restricci√≥n de los caracteres: Menor.
         /// </summary>
         public static string RestriCaract_Mayor = ">";
 
         /// <summary>
-        /// Valor para la restricciÛn de los caracteres: Menor.
+        /// Valor para la restricci√≥n de los caracteres: Menor.
         /// </summary>
         public static string RestriCaract_Igual = "=";
 
         /// <summary>
-        /// Valor para la restricciÛn de los caracteres: Menor.
+        /// Valor para la restricci√≥n de los caracteres: Menor.
         /// </summary>
         public static string RestriCaract_Entre = "-";
 
@@ -1910,17 +1935,17 @@ namespace Es.Riam.Semantica.Plantillas
         #region Miembros
 
         /// <summary>
-        /// Tipo de restricciÛn.
+        /// Tipo de restricci√≥n.
         /// </summary>
         private string mTipoRestricion;
 
         /// <summary>
-        /// Valor restricciÛn
+        /// Valor restricci√≥n
         /// </summary>
         private int mValor;
 
         /// <summary>
-        /// Valor m·ximo para la restricciÛn entre X e Y.
+        /// Valor m√°ximo para la restricci√≥n entre X e Y.
         /// </summary>
         private int mValorHasta = -1;
 
@@ -1929,7 +1954,7 @@ namespace Es.Riam.Semantica.Plantillas
         #region Propiedades
 
         /// <summary>
-        /// Tipo de restricciÛn.
+        /// Tipo de restricci√≥n.
         /// </summary>
         public string TipoRestricion
         {
@@ -1944,7 +1969,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Valor restricciÛn
+        /// Valor restricci√≥n
         /// </summary>
         public int Valor
         {
@@ -1959,7 +1984,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Valor m·ximo para la restricciÛn entre X e Y.
+        /// Valor m√°ximo para la restricci√≥n entre X e Y.
         /// </summary>
         public int ValorHasta
         {
@@ -1977,7 +2002,7 @@ namespace Es.Riam.Semantica.Plantillas
     }
 
     /// <summary>
-    /// ImagÈn miniatura para un propiedad de tipo imagen.
+    /// Imag√©n miniatura para un propiedad de tipo imagen.
     /// </summary>
 
     [Serializable]
@@ -1986,12 +2011,12 @@ namespace Es.Riam.Semantica.Plantillas
         #region Miembros
 
         /// <summary>
-        /// TamaÒos de la im·genes
+        /// Tama√±os de la im√°genes
         /// </summary>
         private Dictionary<int, int> mTamanios;
 
         /// <summary>
-        /// Tipo de recorte o redimensiÛn.
+        /// Tipo de recorte o redimensi√≥n.
         /// </summary>
         private Dictionary<int, string> mTipo;
 
@@ -2000,7 +2025,7 @@ namespace Es.Riam.Semantica.Plantillas
         #region Propiedades
 
         /// <summary>
-        /// TamaÒos de la im·genes
+        /// Tama√±os de la im√°genes
         /// </summary>
         public Dictionary<int, int> Tamanios
         {
@@ -2020,7 +2045,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Tipo de recorte o redimensiÛn.
+        /// Tipo de recorte o redimensi√≥n.
         /// </summary>
         public Dictionary<int, string> Tipo
         {
@@ -2072,7 +2097,7 @@ namespace Es.Riam.Semantica.Plantillas
         private List<string> mPropiedadesEdicion;
 
         /// <summary>
-        /// Propiedades que se mostrar·n en la vista previa del formulario.
+        /// Propiedades que se mostrar√°n en la vista previa del formulario.
         /// </summary>
         private List<EstiloPlantillaEspecifProp> mPropiedadesLectura;
 
@@ -2087,12 +2112,12 @@ namespace Es.Riam.Semantica.Plantillas
         private string mNamespaceGrafo;
 
         /// <summary>
-        /// Texto para el 1∫ elemento de la selecciÛn.
+        /// Texto para el 1¬∫ elemento de la selecci√≥n.
         /// </summary>
         private string mTextoElemento0;
 
         /// <summary>
-        /// Tipo de presentaciÛn.
+        /// Tipo de presentaci√≥n.
         /// </summary>
         private string mTipoPresentacion;
 
@@ -2137,37 +2162,37 @@ namespace Es.Riam.Semantica.Plantillas
         private List<string> mAtributosRecurso;
 
         /// <summary>
-        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pestaÒa.
+        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pesta√±a.
         /// </summary>
         private bool mNuevaPestanya = true;
 
         /// <summary>
-        /// Indica si la relaciÛn de entidades externas es recÌproca.
+        /// Indica si la relaci√≥n de entidades externas es rec√≠proca.
         /// </summary>
         private bool mReciproca;
 
         /// <summary>
-        /// Propiedad por la que se debe ordenar la consulta recÌproca y el tipo de orden.
+        /// Propiedad por la que se debe ordenar la consulta rec√≠proca y el tipo de orden.
         /// </summary>
         private KeyValuePair<string, string> mPropOrdenRecipocidad;
 
         // <summary>
-        /// Indica el nombre de la propiedad que tendr·n las entidades externas recÌprocas.
+        /// Indica el nombre de la propiedad que tendr√°n las entidades externas rec√≠procas.
         /// </summary>
         private string mPropiedadReciproca;
 
         /// <summary>
-        /// Indica el nombre de la propiedad de la entidad externa que enlaza con la ediciÛn de la propiedad actual.
+        /// Indica el nombre de la propiedad de la entidad externa que enlaza con la edici√≥n de la propiedad actual.
         /// </summary>
         private string mPropiedadEdicionReciproca;
 
         /// <summary>
-        /// Indica el tipo de la entidad externa que enlaza con la ediciÛn de la propiedad actual.
+        /// Indica el tipo de la entidad externa que enlaza con la edici√≥n de la propiedad actual.
         /// </summary>
         private string mEntidadEdicionReciproca;
 
         /// <summary>
-        /// Consulta para obtener las entidades externas recÌprocas.
+        /// Consulta para obtener las entidades externas rec√≠procas.
         /// </summary>
         private string mConsultaReciproca;
 
@@ -2177,7 +2202,7 @@ namespace Es.Riam.Semantica.Plantillas
         private string mConsulta;
 
         /// <summary>
-        /// Consulta de ediciÛn para obtener las entidades externas.
+        /// Consulta de edici√≥n para obtener las entidades externas.
         /// </summary>
         private string mConsultaEdicion;
 
@@ -2192,17 +2217,17 @@ namespace Es.Riam.Semantica.Plantillas
         private List<string> mExtraWhereAutocompletarExtras;
 
         /// <summary>
-        /// Mensaje para mostrar cuando no hay resultados en la selecciÛn de entidad.
+        /// Mensaje para mostrar cuando no hay resultados en la selecci√≥n de entidad.
         /// </summary>
         private string mMensajeNoResultados;
 
         /// <summary>
-        /// N˙mero de elementos por p·gina para el selector de entidad.
+        /// N√∫mero de elementos por p√°gina para el selector de entidad.
         /// </summary>
         private int mNumElemPorPag;
 
         /// <summary>
-        /// Ruta de la vista personalizada para la paginaciÛn en caso de que la haya.
+        /// Ruta de la vista personalizada para la paginaci√≥n en caso de que la haya.
         /// </summary>
         private string mVistaPersonalizadaPaginacion;
 
@@ -2217,7 +2242,7 @@ namespace Es.Riam.Semantica.Plantillas
         private KeyValuePair<string, string> mPropiedadDeLaQueDepende;
 
         /// <summary>
-        /// Indica si los contenidos relacionados se mostrar·n ˙nicamente en el idioma de navegaciÛn del usuario
+        /// Indica si los contenidos relacionados se mostrar√°n √∫nicamente en el idioma de navegaci√≥n del usuario
         /// </summary>
         private bool mSoloIdiomaUsuario;
 
@@ -2291,7 +2316,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Propiedades que se mostrar·n en la vista previa del formulario.
+        /// Propiedades que se mostrar√°n en la vista previa del formulario.
         /// </summary>
         public List<EstiloPlantillaEspecifProp> PropiedadesLectura
         {
@@ -2341,7 +2366,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Texto para el 1∫ elemento de la selecciÛn.
+        /// Texto para el 1¬∫ elemento de la selecci√≥n.
         /// </summary>
         public string TextoElemento0
         {
@@ -2356,7 +2381,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Tipo de presentaciÛn.
+        /// Tipo de presentaci√≥n.
         /// </summary>
         public string TipoPresentacion
         {
@@ -2493,7 +2518,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pestaÒa.
+        /// Indica si el link al recurso que la contiene debe abrirse en una nueva pesta√±a.
         /// </summary>
         public bool NuevaPestanya
         {
@@ -2508,7 +2533,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica si la relaciÛn de entidades externas es recÌproca.
+        /// Indica si la relaci√≥n de entidades externas es rec√≠proca.
         /// </summary>
         public bool Reciproca
         {
@@ -2523,7 +2548,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Propiedad por la que se debe ordenar la consulta recÌproca y el tipo de orden.
+        /// Propiedad por la que se debe ordenar la consulta rec√≠proca y el tipo de orden.
         /// </summary>
         public KeyValuePair<string, string> PropOrdenRecipocidad
         {
@@ -2538,7 +2563,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica el nombre de la propiedad que tendr·n las entidades externas recÌprocas.
+        /// Indica el nombre de la propiedad que tendr√°n las entidades externas rec√≠procas.
         /// </summary>
         public string PropiedadReciproca
         {
@@ -2553,7 +2578,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica el nombre de la propiedad de la entidad externa que enlaza con la ediciÛn de la propiedad actual.
+        /// Indica el nombre de la propiedad de la entidad externa que enlaza con la edici√≥n de la propiedad actual.
         /// </summary>
         public string PropiedadEdicionReciproca
         {
@@ -2568,7 +2593,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica el tipo de la entidad externa que enlaza con la ediciÛn de la propiedad actual.
+        /// Indica el tipo de la entidad externa que enlaza con la edici√≥n de la propiedad actual.
         /// </summary>
         public string EntidadEdicionReciproca
         {
@@ -2583,7 +2608,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Consulta para obtener las entidades externas recÌprocas.
+        /// Consulta para obtener las entidades externas rec√≠procas.
         /// </summary>
         public string ConsultaReciproca
         {
@@ -2613,7 +2638,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Consulta de ediciÛn para obtener las entidades externas.
+        /// Consulta de edici√≥n para obtener las entidades externas.
         /// </summary>
         public string ConsultaEdicion
         {
@@ -2658,7 +2683,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Mensaje para mostrar cuando no hay resultados en la selecciÛn de entidad.
+        /// Mensaje para mostrar cuando no hay resultados en la selecci√≥n de entidad.
         /// </summary>
         public string MensajeNoResultados
         {
@@ -2673,7 +2698,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// N˙mero de elementos por p·gina para el selector de entidad.
+        /// N√∫mero de elementos por p√°gina para el selector de entidad.
         /// </summary>
         public int NumElemPorPag
         {
@@ -2688,7 +2713,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Ruta de la vista personalizada para la paginaciÛn en caso de que la haya.
+        /// Ruta de la vista personalizada para la paginaci√≥n en caso de que la haya.
         /// </summary>
         public string VistaPersonalizadaPaginacion
         {
@@ -2733,7 +2758,7 @@ namespace Es.Riam.Semantica.Plantillas
         }
 
         /// <summary>
-        /// Indica si los contenidos relacionados se mostrar·n ˙nicamente en el idioma de navegaciÛn del usuario
+        /// Indica si los contenidos relacionados se mostrar√°n √∫nicamente en el idioma de navegaci√≥n del usuario
         /// </summary>
         public bool SoloIdiomaUsuario
         {
@@ -2749,10 +2774,10 @@ namespace Es.Riam.Semantica.Plantillas
 
         #endregion
 
-        #region MÈtodos
+        #region M√©todos
 
         /// <summary>
-        /// Propiedades lectura m·s las propiedades Auxiliares de cada prop jerarquicamente.
+        /// Propiedades lectura m√°s las propiedades Auxiliares de cada prop jerarquicamente.
         /// </summary>
         public static List<EstiloPlantillaEspecifProp> PropiedadesLecturaYAuxiliares(List<EstiloPlantillaEspecifProp> pPropiedadesLectura)
         {

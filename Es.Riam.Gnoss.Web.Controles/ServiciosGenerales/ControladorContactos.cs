@@ -34,15 +34,15 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
     {
         #region Miembros
 
-        private LoggingService mLoggingService;
-        private VirtuosoAD mVirtuosoAD;
-        private EntityContext mEntityContext;
-        private ConfigService mConfigService;
-        private EntityContextBASE mEntityContextBASE;
-        private RedisCacheWrapper mRedisCacheWrapper;
-        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly LoggingService mLoggingService;
+        private readonly VirtuosoAD mVirtuosoAD;
+        private readonly EntityContext mEntityContext;
+        private readonly ConfigService mConfigService;
+        private readonly EntityContextBASE mEntityContextBASE;
+        private readonly RedisCacheWrapper mRedisCacheWrapper;
+        private readonly IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores

@@ -1544,6 +1544,26 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
         {
             return DocumentacionAD.ObtenerDocumentosIDVinculadosAOntologiaProyecto(pOntologiaID, pProyectoID);
         }
+        /// <summary>
+        /// Obtiene una lista de los documentos cuya última versión pertenece a un tipo de recurso y un proyecto concretos
+        /// </summary>
+        /// <param name="pTipoDocumentacion">Tipo de recurso</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>Lista de documentos de un determinado tipo</return>
+        public List<DocumentoConOriginalID> ObtenerRecursosUltimaVersionPorTipoDocumento(TiposDocumentacion pTipoDocumentacion, Guid pProyectoID)
+        {
+            return DocumentacionAD.ObtenerRecursosUltimaVersionPorTipoDocumento((short)pTipoDocumentacion, pProyectoID);
+        }
+        /// <summary>
+        /// Obtiene una lista de los documentos cuya última versión pertenece a una ontología y un proyecto concretos
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+        /// <param name="pProyectoID">Identificador del proyecto</param>
+        /// <returns>Lista de documentos cuyo elemento vinculado es la ontología</return>
+        public List<DocumentoConOriginalID> ObtenerUltimaVersionDocumentosVinculadosAOntologiaProyecto(Guid pOntologiaID, Guid pProyectoID)
+        {
+            return DocumentacionAD.ObtenerUltimaVersionDocumentosVinculadosAOntologiaProyecto(pOntologiaID, pProyectoID);
+        }
 
         /// <summary>
         /// Obtiene si existen documentos cuyo elemento vinculado es el ID de la ontología
@@ -2845,12 +2865,17 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
             return DocumentacionAD.ObtenerElementoVinculadoDeDocumento(pDocumentoID);
         }
 
-        /// <summary>
-        /// Obtiene los lectores de una lista de documentos.
-        /// </summary>
-        /// <param name="pListaDocumentosID">Identificadores de los documentos</param>
-        /// <returns>Tabla DocumentoRolIdentidad y DocumentoRolGrupoIdentidades cargada con los editores de los documentos</returns>
-        public DataWrapperDocumentacion ObtenerLectoresYGruposLectoresDocumentos(List<Guid> pListaDocumentosID)
+		public List<DocumentoConOriginalID> ObtenerTodosLosDocumentosDeProyecto(Guid pProyectoID)
+		{
+            return DocumentacionAD.ObtenerTodosLosDocumentosDeProyecto(pProyectoID);
+		}
+
+		/// <summary>
+		/// Obtiene los lectores de una lista de documentos.
+		/// </summary>
+		/// <param name="pListaDocumentosID">Identificadores de los documentos</param>
+		/// <returns>Tabla DocumentoRolIdentidad y DocumentoRolGrupoIdentidades cargada con los editores de los documentos</returns>
+		public DataWrapperDocumentacion ObtenerLectoresYGruposLectoresDocumentos(List<Guid> pListaDocumentosID)
         {
             return DocumentacionAD.ObtenerLectoresYGruposLectoresDocumentos(pListaDocumentosID);
         }
@@ -3022,12 +3047,6 @@ namespace Es.Riam.Gnoss.Logica.Documentacion
                 DocumentacionAD = null;
             }
         }
-
-       
-
-
-
-
         #endregion
 
         #region Propiedades

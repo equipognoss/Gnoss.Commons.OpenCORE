@@ -13,10 +13,13 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
         private string rutaDocumentoWebVinBase;
         private string rutaDocumentoWebVinBaseExtra;
         private string rutaDocuemntoRolIndentidad;
+        private string rutaImagenesManifest;
+        private string rutaImagenes;
         private string ontologia;
         private Guid proyectoId;
         private Guid paqueteId;
         private Guid cargaId;
+        public Guid ontologiaId;
 
         /// <summary>
         /// Ruta triples del grafo de ontolgia
@@ -106,6 +109,23 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.CargaMasiva
         {
             get { return cargaId; }
             set { cargaId = value; }
+        }
+
+        public Guid OntologiaId
+        {
+            get { return ontologiaId; }
+            set { ontologiaId = value; }
+        }
+
+        public string RutaImagenesManifest
+        {
+            get { return rutaImagenesManifest; }
+            set { rutaImagenesManifest = value; }
+        }
+        public string RutaImagenes
+        {
+            get { return rutaImagenes; }
+            set { rutaImagenes = value; }
         }
     }
 }

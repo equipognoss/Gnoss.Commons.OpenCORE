@@ -1,24 +1,19 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 {
     public class SciaTranslateResponse
     {
-		[JsonProperty("textTranslate")]
+		[JsonPropertyName("textTranslate")]
 		public string TextTranslate {  get; set; }
 
-		[JsonProperty("usage")]
+		[JsonPropertyName("usage")]
 		public Usage Usage {  get; set; }
     }
 
     public class Usage
     {
-		[JsonProperty("tokens")]
+		[JsonPropertyName("tokens")]
 		public int Tokens { get; set; }
     }
 }

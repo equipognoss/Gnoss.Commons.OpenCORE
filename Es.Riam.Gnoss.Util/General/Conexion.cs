@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -26,6 +27,7 @@ namespace Es.Riam.Gnoss.Util.General
         private readonly Usuario _usuario;
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
+        private static readonly HttpClient mHttpClient = new HttpClient();
         public Conexion(IHttpContextAccessor httpContextAccessor, IHostEnvironment env, UtilPeticion utilPeticion, LoggingService loggingService, Usuario usuario, ILogger<Conexion> logger, ILoggerFactory loggerFactory)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -456,20 +458,13 @@ namespace Es.Riam.Gnoss.Util.General
         {
             if (!mContenidoFicheros.ContainsKey(pUrl) || !mUltimaLecturaFicheros.ContainsKey(pUrl) || DateTime.Now.Subtract(mUltimaLecturaFicheros[pUrl]).TotalSeconds > 60)
             {
-                WebResponse myResponse = null;
-                Stream receiveStream = null;
-                StreamReader readStream = null;
                 try
                 {
-                    HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(pUrl);
-                    myRequest.Method = "GET";
-                    myRequest.UserAgent = UtilWeb.GenerarUserAgent();
-                    myResponse = myRequest.GetResponse();
-                    receiveStream = myResponse.GetResponseStream();
-                    readStream = new StreamReader(receiveStream);
+                    mHttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(UtilWeb.GenerarUserAgent());
+
+                    string contenido = mHttpClient.GetStringAsync(pUrl).GetAwaiter().GetResult();
                     try
                     {
-                        string contenido = readStream.ReadToEnd();
                         if (!mContenidoFicheros.ContainsKey(pUrl))
                         {
                             mContenidoFicheros.TryAdd(pUrl, contenido);
@@ -490,23 +485,14 @@ namespace Es.Riam.Gnoss.Util.General
                             LeerFicheroConfigWeb(pUrl, pNumeroReintentos + 1);
                         }
                     }
-                    receiveStream.Close();
-                    readStream.Close();
-                    myResponse.Close();
                 }
                 catch (Exception e)
                 {
                     _loggingService.GuardarLogError(e, mlogger);
                 }
-                finally
-                {
-                    if (myResponse != null) { myResponse.Close(); }
-                    if (receiveStream != null) { receiveStream.Close(); }
-                    if (readStream != null) { readStream.Close(); }
-                }
             }
 
-            return mContenidoFicheros[pUrl];
+            return mContenidoFicheros.TryGetValue(pUrl, out string valor) ? valor : null;
         }
 
         public string ObtenerParametro(string pFicheroConfiguracionBD, string pRutaParametro, bool pDevolverError)
@@ -1079,31 +1065,6 @@ namespace Es.Riam.Gnoss.Util.General
             escritor.Write(Configuracion.ESTRUCTURA_CONFIG);
             escritor.Close();
             escritor.Dispose();
-        }
-
-        /// <summary>
-        /// Obtiene la key de la sesión para un dominio concreto
-        /// </summary>
-        /// <param name="pDominioAplicacion">Dominio de la aplicación actual</param>
-        /// <returns></returns>
-        public string ObtenerKeySesion(string pDominioAplicacion)
-        {
-            string key = ObtenerParametro("config/keySesion.config", "config/KeySesion", false);
-
-            if (string.IsNullOrEmpty(key))
-            {
-                if (string.IsNullOrEmpty(pDominioAplicacion))
-                {
-                    pDominioAplicacion = "GNOSS Sistema Semántico";
-                }
-
-                pDominioAplicacion += "_*#%&_" + ObtenerProyectoConexion();
-
-                key = HashHelper.GenerarMD5(pDominioAplicacion);
-                AgregarParametro("config/keySesion.config", "config", "KeySesion", key);
-
-            }
-            return key;
         }
 
         public string ObtenerUrlFicheroConfigXML()

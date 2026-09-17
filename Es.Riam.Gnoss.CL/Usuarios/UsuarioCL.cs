@@ -26,7 +26,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         private UsuarioCN mUsuarioCN = null;
 
         /// <summary>
-        /// Clave MAESTRA de la caché
+        /// Clave MAESTRA de la cachï¿½
         /// </summary>
         private readonly string[] mMasterCacheKeyArray = { "Usuario" };
 
@@ -53,10 +53,10 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             mLoggerFactory = loggerFactory;
         }
 
-        #region Métodos
+        #region Mï¿½todos
 
         /// <summary>
-        /// Elimina la caché de usuarios de una organizacion con sus identidades
+        /// Elimina la cachï¿½ de usuarios de una organizacion con sus identidades
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la organizacion</param>
         public void EliminarCacheUsuariosCargaLigeraParaFiltros(Guid pOrganizacionID)
@@ -66,7 +66,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         }
 
         /// <summary>
-        /// Agrega la caché de usuarios de una organizacion con sus identidades
+        /// Agrega la cachï¿½ de usuarios de una organizacion con sus identidades
         /// </summary>
         /// <param name="pOrganizacionID">Identificador de la organizacion</param>
         public DataWrapperUsuario ObtenerCacheUsuariosCargaLigeraParaFiltros(Guid pOrganizacionID)
@@ -74,12 +74,12 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             mEntityContext.UsarEntityCache = true;
             string rawKey = string.Concat("UsuariosDeOrganizacionCargaLigeraParaFiltros_", pOrganizacionID);
 
-            // Compruebo si está en la caché
+            // Compruebo si estï¿½ en la cachï¿½
             DataWrapperUsuario dataWrapperUsuario = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperUsuario)) as DataWrapperUsuario;
             if (dataWrapperUsuario == null)
             {
                 UsuarioCN usuarioCN = new UsuarioCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UsuarioCN>(), mLoggerFactory);
-                // Si no está, lo cargo y lo almaceno en la caché
+                // Si no estï¿½, lo cargo y lo almaceno en la cachï¿½
                 dataWrapperUsuario = usuarioCN.CargarUsuariosDeOrganizacionCargaLigeraParaFiltros(pOrganizacionID);
                 if (dataWrapperUsuario != null)
                 {
@@ -111,7 +111,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
 
             string rawKey = string.Concat("idRedSocial_", pID);
 
-            // Compruebo si está en la caché
+            // Compruebo si estï¿½ en la cachï¿½
             datos = ObtenerObjetoDeCache(rawKey, typeof(Dictionary<string, object>)) as Dictionary<string, object>;
             return datos;
         }
@@ -145,14 +145,12 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         /// <returns></returns>
         public EstadoLoginUsuario ComprobarSiUsuarioPuedeHacerLogin(Guid pUsuarioID)
         {         
-            ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
-            IDatabase db = conexion.GetDatabase();
+            IDatabase db = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB).GetDatabase();
             int ventanaDeTiempoPeticiones = mConfigService.ObtenerVentanaTiempoLogin();
             int maximoPeticiones = mConfigService.ObtenerNumMaxPeticionesLogin();
             string estaBloqueado = db.StringGet($"{CLAVE_USUARIO_BLOQUEADO}{pUsuarioID}");
             if (!string.IsNullOrEmpty(estaBloqueado))
             {
-                conexion.Close();
                 return EstadoLoginUsuario.Bloqueado;
             }
 
@@ -161,7 +159,6 @@ namespace Es.Riam.Gnoss.CL.Usuarios
             if (limited)
             {
                 db.StringSet($"{CLAVE_USUARIO_BLOQUEADO}{pUsuarioID}", "Bloqueado", TimeSpan.FromMinutes(30));
-                conexion.Close();
                 return EstadoLoginUsuario.Bloqueado;
             }
 
@@ -174,11 +171,9 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         /// <param name="pUsuarioID"></param>
         public void DesbloquearUsuario(Guid pUsuarioID)
         {
-            ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
-            IDatabase db = conexion.GetDatabase();
+            IDatabase db = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB).GetDatabase();
             db.KeyDelete($"{CLAVE_USUARIO_BLOQUEADO}{pUsuarioID}");
             db.KeyDelete($"{CLAVE_INTENTOS_LOGIN_USUARIO}{pUsuarioID}");
-            conexion.Close();
         }
 
         /// <summary>
@@ -187,10 +182,8 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         /// <param name="pUsuarioID"></param>
         public void ReiniciarNumeroIntentosDeLoginUsuario(Guid pUsuarioID)
         {
-            ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mRedisIP},defaultDatabase={mRedisDB}");
-            IDatabase db = conexion.GetDatabase();
+            IDatabase db = RedisMultiplexerPool.Obtener(mRedisIP, mRedisDB).GetDatabase();
             db.KeyDelete($"{CLAVE_INTENTOS_LOGIN_USUARIO}{pUsuarioID}");
-            conexion.Close();
         }
         #endregion
 
@@ -213,7 +206,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         }
 
         /// <summary>
-        /// Clave para la caché
+        /// Clave para la cachï¿½
         /// </summary>
         public override string[] ClaveCache
         {
@@ -228,7 +221,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         #region Dispose
 
         /// <summary>
-        /// Determina si está disposed
+        /// Determina si estï¿½ disposed
         /// </summary>
         private bool disposed = false;
 
@@ -255,7 +248,7 @@ namespace Es.Riam.Gnoss.CL.Usuarios
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se estï¿½ llamando desde el Dispose()</param>
         protected override void Dispose(bool disposing)
         {
             if (!this.disposed)

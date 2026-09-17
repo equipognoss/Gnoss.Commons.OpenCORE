@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.UtilServiciosWeb
 {
@@ -19,7 +15,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public Guid ProyectoIDPorNombreCorto(string pNombreCorto)
         {
             string result = CallWebMethods.CallGetApi(Url, $"ProyectoIDPorNombreCorto?pNombreCorto={pNombreCorto}");
-            Guid guidResult = JsonConvert.DeserializeObject<Guid>(result);
+            Guid guidResult = JsonSerializer.Deserialize<Guid>(result);
 
             return guidResult;
         }
@@ -27,7 +23,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public string UrlPropiaProyecto(Guid pProyectoID)
         {
             string result = CallWebMethods.CallGetApi(Url, $"UrlPropiaProyecto?pProyectoID={pProyectoID}");
-            string resultParser = JsonConvert.DeserializeObject<string>(result);
+            string resultParser = JsonSerializer.Deserialize<string>(result);
 
             return resultParser;
         }
@@ -35,7 +31,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
         public string UrlServicioResultados()
         {
             string result = CallWebMethods.CallGetApi(Url, $"UrlServicioResultados");
-            string resultParser = JsonConvert.DeserializeObject<string>(result);
+            string resultParser = JsonSerializer.Deserialize<string>(result);
 
             return resultParser;
         }

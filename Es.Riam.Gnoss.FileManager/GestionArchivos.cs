@@ -3,10 +3,9 @@ using Es.Riam.InterfacesOpenArchivos;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
+using NetVips;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -462,7 +461,7 @@ namespace Es.Riam.Gnoss.FileManager
             }
         }
 
-        public void CrearFicheroFisico(string pRuta, string pNombreArchivo, byte[] pBytes, bool pEncriptarFichero = false)
+        public void CrearFicheroFisico(string pRuta, string pNombreArchivo, byte[] pBytes, bool pEncriptarFichero = false, bool pErrorSiYaExiste = false)
         {
             try
             {
@@ -490,6 +489,10 @@ namespace Es.Riam.Gnoss.FileManager
                     {
                         _loggingService.AgregarEntrada($"Se encripta el fichero {infoFichero.Name}");
                         pBytes = _utilArchivos.EncriptarArchivo(pBytes);
+                    }
+                    if (pErrorSiYaExiste && File.Exists(infoFichero.FullName))
+                    {
+                        throw new Exception($"El fichero ya existe.");
                     }
                     FileStream fileStream = new FileStream(infoFichero.FullName, FileMode.Create, FileAccess.Write);
                     fileStream.Write(pBytes, 0, pBytes.Length);
@@ -727,8 +730,8 @@ namespace Es.Riam.Gnoss.FileManager
                 fileInfoModel.size = fichero.Length;
                 if (fichero.Extension == ".png" || fichero.Extension == ".jpg" || fichero.Extension == ".gif")
                 {
-                    byte[] imageBytes = File.ReadAllBytes(fichero.FullName);
-                    SixLabors.ImageSharp.Image image = UtilImages.ConvertirArrayBytesEnImagen(imageBytes);
+                    using var image = Image.NewFromFile(fichero.FullName);
+
                     fileInfoModel.width = image.Width;
                     fileInfoModel.height = image.Height;
                 }
@@ -858,7 +861,7 @@ namespace Es.Riam.Gnoss.FileManager
                     // Si el fichero no tiene extensión, se copiarán todos los ficheros del directorio origen al directorio destino que comiencen por el nombre del
                     // fichero. De esta forma se copian las redimensiones de las imágenes y las carpetas de openseadragons en caso de haberlas.
                     string[] directoriesNames = Directory.GetDirectories(pRutaOrigen).Where(item => item.Contains(pNombreArchivoOrigen)).ToArray();
-                    string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).Select(item => item.Substring(item.LastIndexOf(Path.DirectorySeparatorChar) + 1)).ToArray();
+                    string[] filesNames = Directory.GetFiles(pRutaOrigen).Where(item => Path.GetFileName(item).StartsWith(pNombreArchivoOrigen)).Select(item => Path.GetFileName(item)).ToArray();
 
                     foreach (string fileName in filesNames)
                     {

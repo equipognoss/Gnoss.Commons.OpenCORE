@@ -36,6 +36,7 @@ using Es.Riam.Metagnoss.ExportarImportar;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Extensions.Logging;
@@ -669,7 +670,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                         ReempazarDocumentoIDEntidad(pDocID, pNuevoDocID, hijo);
                         prop.AgregarValor(hijo);
                     }
-                    else if (prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Archivo && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.ArchivoLink && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Imagen && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Video)
+                    else if (prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Archivo && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.ArchivoLink && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Imagen && prop.EspecifPropiedad.TipoCampo != TipoCampoOntologia.Video &&
+                    !EsTipoOpenSD(prop.EspecifPropiedad.TipoCampo))
                     {
                         prop.LimpiarValor(valor);
                         prop.AgregarValor(valor.Replace(docID, nuevoDocID));
@@ -1594,7 +1596,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     string datosJcrop = $"{pPropiedad.EspecifPropiedad.MinSizeJcrop.Key};{pPropiedad.EspecifPropiedad.MinSizeJcrop.Value};{pPropiedad.EspecifPropiedad.MaxSizeJcrop.Key};{pPropiedad.EspecifPropiedad.MaxSizeJcrop.Value};";
                     caracteristica.Append($"UsarJcrop={datosJcrop},");
                 }
-
+                if (!string.IsNullOrEmpty(pPropiedad.EspecifPropiedad.OpenSeaDragonTiles))
+                {
+                    caracteristica.Append($"UsarOpenSD={pPropiedad.EspecifPropiedad.OpenSeaDragonTiles},");
+                }
                 if (PropiedadEsMultidioma(pPropiedad))
                 {
                     caracteristica.Append("propMultiIdioma=true,");
@@ -1611,7 +1616,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// <returns>TRUE si una propiedad es multiidioma, FALSE si no</returns>
         private bool PropiedadEsMultidioma(Propiedad pPropiedad)
         {
-            return pPropiedad.Tipo == TipoPropiedad.DatatypeProperty && !string.IsNullOrEmpty(mIdiomaDefecto) && (pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Tiny || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Texto || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.TextArea || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedObject || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedLink) && (pPropiedad.EspecifPropiedad.GrafoDependiente == null || !pPropiedad.ValorUnico) && pPropiedad.EspecifPropiedad.GrafoAutocompletar == null && !pPropiedad.EspecifPropiedad.NoMultiIdioma && (string.IsNullOrEmpty(PropiedadIdiomaBusquedaComunidad) || PropiedadIdiomaBusquedaComunidad != pPropiedad.Nombre);
+            return pPropiedad.Tipo == TipoPropiedad.DatatypeProperty && !string.IsNullOrEmpty(mIdiomaDefecto) && (pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Tiny || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Texto || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.TextArea || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedObject || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.EmbebedLink || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Imagen || pPropiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ImagenExterna) && (pPropiedad.EspecifPropiedad.GrafoDependiente == null || !pPropiedad.ValorUnico) && pPropiedad.EspecifPropiedad.GrafoAutocompletar == null && !pPropiedad.EspecifPropiedad.NoMultiIdioma && (string.IsNullOrEmpty(PropiedadIdiomaBusquedaComunidad) || PropiedadIdiomaBusquedaComunidad != pPropiedad.Nombre);
         }
 
         /// <summary>
@@ -4304,7 +4309,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
             if (!pSemPropModel.EntityParent.SemanticResourceModel.ReadMode)
             {
-                if ((propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Video || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Imagen || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink))
+                if ((propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Video || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Imagen || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink ||
+                    EsTipoOpenSD(propiedad.EspecifPropiedad.TipoCampo)))
                 {//Así funcionan los fileUpload
                     pSemPropModel.OntologyPropInfo.ControlID = $"Campo_{propiedad.NombreGeneracionIDs}_ent_{propiedad.ElementoOntologia.TipoEntidadGeneracionIDs}";
                 }
@@ -4556,7 +4562,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
             }
             else
             {
-                if (propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Imagen || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Video || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Checks || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink)
+                if (propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Imagen || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Video || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Archivo || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.Checks || propiedad.EspecifPropiedad.TipoCampo == TipoCampoOntologia.ArchivoLink ||
+                   EsTipoOpenSD(propiedad.EspecifPropiedad.TipoCampo))
                 {
                     if (!string.IsNullOrEmpty(pValor))
                     {
@@ -4805,13 +4812,14 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
 
                 //hash
                 byte[] buffer = Encoding.UTF8.GetBytes(shared_secret + timestamp);
-                SHA1CryptoServiceProvider cryptoTransformSHA1 =
-                new SHA1CryptoServiceProvider();
+                SHA1 cryptoTransformSHA1 = SHA1.Create();
                 string hash = BitConverter.ToString(
                     cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "").ToLower();
 
+                string id = ObtenerSlideShareId(pValor);
+
                 string embedCode = "No disponible";
-                string ruta = $"https://www.slideshare.net/api/2/get_slideshow?api_key={api_key}&ts={timestamp}&hash={hash}&slideshow_url={pValor}";
+                string ruta = $"https://www.slideshare.net/api/2/get_slideshow?api_key={api_key}&ts={timestamp}&hash={hash}&slideshow_id={id}";
 
                 try
                 {
@@ -4826,21 +4834,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                             {
                                 embedCode = reader.ReadString();
 
-                                string titulo = embedCode.Substring(embedCode.IndexOf("<strong style"), embedCode.IndexOf("</strong>", embedCode.IndexOf("<strong style")) - embedCode.IndexOf("<strong style") + 9);
-
-                                //Eliminamos el título del código embebido
-                                embedCode = embedCode.Replace(titulo, "");
-
-                                //Modificamos el tamaño para que sea más pequeño
-                                embedCode = embedCode.Replace("width=\"425\"", "width=\"360\"");
-                                embedCode = embedCode.Replace("width:425", "width:360");
-                                embedCode = embedCode.Replace("height=\"355\"", "height=\"257\"");
-                                embedCode = embedCode.Replace("height:355", "height:257");
-
-                                int indexOfEmbed = embedCode.IndexOf("<embed");
-
-                                embedCode = embedCode.Substring(0, indexOfEmbed) + "<param name=\"wmode\" value=\"transparent\">" + embedCode.Substring(indexOfEmbed, 6) + " wmode=\"transparent\" " + embedCode.Substring(indexOfEmbed + 6);
-
+                                embedCode = LimpiarEmbedSlideShare(embedCode);
                             }
                         }
                         reader.Close();
@@ -4864,6 +4858,40 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
                     //No rompemos la ejecución por un fallo al obtener el link
                 }
             }
+        }
+
+        private string ObtenerSlideShareId(string pUrl)
+        {
+            Uri uri = new Uri(pUrl);
+            Match resultado = Regex.Match(uri.AbsolutePath, @"/(\d+)$");
+            return resultado.Success ? resultado.Groups[1].Value : "";
+        }
+
+        private string LimpiarEmbedSlideShare(string pEmbedCode)
+        {
+            HtmlDocument embedHtlm = new HtmlDocument();
+
+            embedHtlm.LoadHtml(pEmbedCode);
+
+            var metaDivs = embedHtlm.DocumentNode.SelectNodes("//div[contains(., 'from')]");
+
+            if (metaDivs != null)
+            {
+                foreach (var div in metaDivs)
+                    div.Remove();
+            }
+
+            //Modificamos el tamaño para que sea más pequeño
+            var iframe = embedHtlm.DocumentNode.SelectSingleNode("//iframe");
+
+            if (iframe != null)
+            {
+                // modificar tamaño
+                iframe.SetAttributeValue("width", "360");
+                iframe.SetAttributeValue("height", "257");
+            }
+
+            return embedHtlm.DocumentNode.InnerHtml;
         }
 
         /// <summary>
@@ -7408,6 +7436,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         }
 
         #endregion
+        /// <summary>
+        /// Indica si un campo es de tipo OpenSeaDragon
+        /// </summary>
+        public static bool EsTipoOpenSD(TipoCampoOntologia tipo)
+        {
+            return tipo == TipoCampoOntologia.ImagenOpenSD ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDSequence ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDReferenceHorizontal ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDReferenceVertical ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDCollectionHorizontal ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDCollectionRows;
+        }
 
         #endregion
 

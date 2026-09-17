@@ -1,7 +1,6 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
-using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.Trazas;
 using Es.Riam.Gnoss.Elementos.ParametroAplicacion;
@@ -150,10 +149,31 @@ namespace Es.Riam.Gnoss.Servicios
 
         public int ThreadID { get; private set; }
 
-        protected RabbitMQClient RabbitMqClientLectura;
+        private RabbitMQClient mRabbitMqClientLectura;
+
+        /// <summary>
+        /// Dispone el cliente anterior al reasignar: los workers que reconectan (RealizarMantenimientoRabbitMQ)
+        /// creaban un RabbitMQClient nuevo sobre este campo sin liberar el anterior, dejando conexiones/canales
+        /// AMQP huérfanos en cada reconexión.
+        /// </summary>
+        protected RabbitMQClient RabbitMqClientLectura
+        {
+            get
+            {
+                return mRabbitMqClientLectura;
+            }
+            set
+            {
+                if (!ReferenceEquals(mRabbitMqClientLectura, value))
+                {
+                    mRabbitMqClientLectura?.Dispose();
+                }
+                mRabbitMqClientLectura = value;
+            }
+        }
         protected bool mReiniciarLecturaRabbit = false;
         protected ConfigService mConfigService;
-        private IHostingEnvironment mEnv;
+        private IWebHostEnvironment mEnv;
         private static object BLOQUEO_COMPROBACION_TRAZA = new object();
         private static DateTime HORA_COMPROBACION_TRAZA;
         protected ILogger mLogger;
@@ -257,7 +277,6 @@ namespace Es.Riam.Gnoss.Servicios
                 LoggingService loggingService = scope.ServiceProvider.GetRequiredService<LoggingService>();
                 RedisCacheWrapper redisCacheWrapper = scope.ServiceProvider.GetRequiredService<RedisCacheWrapper>();
                 GnossCache gnossCache = scope.ServiceProvider.GetRequiredService<GnossCache>();
-                VirtuosoAD virtuosoAD = scope.ServiceProvider.GetRequiredService<VirtuosoAD>();
                 IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication = scope.ServiceProvider.GetRequiredService<IServicesUtilVirtuosoAndReplication>();
                 LoggingService.TrazaHabilitada = mConfigService.TrazaHabilitada();
                 loggingService.GuardarLog($"Trazas habilitadas: {LoggingService.TrazaHabilitada}", mLogger);
@@ -288,7 +307,7 @@ namespace Es.Riam.Gnoss.Servicios
                     EstablecerDominioCache();
                     EstablecerNombreConexionRabbitMQ();
 
-                    RealizarMantenimiento(entityContext, entityContextBASE, null, loggingService, redisCacheWrapper, gnossCache, virtuosoAD, servicesUtilVirtuosoAndReplication);
+                    RealizarMantenimiento(entityContext, entityContextBASE, null, loggingService, redisCacheWrapper, gnossCache, servicesUtilVirtuosoAndReplication);
                 }
                 catch (Exception ex)
                 {
@@ -378,7 +397,7 @@ namespace Es.Riam.Gnoss.Servicios
         /// <summary>
         /// Realiza las tareas del servicio.
         /// </summary>
-        public virtual void RealizarMantenimiento(EntityContext entityContext, EntityContextBASE entityContextBASE, UtilidadesVirtuoso utilidadesVirtuoso, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public virtual void RealizarMantenimiento(EntityContext entityContext, EntityContextBASE entityContextBASE, UtilidadesVirtuoso utilidadesVirtuoso, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, GnossCache gnossCache, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
             throw new Exception("Implementar");
         }

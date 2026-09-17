@@ -21,7 +21,6 @@ namespace Es.Riam.Util
 
         public UtilEws(string pUsuario, string pPasword, string pUrl)
         {
-            ServicePointManager.ServerCertificateValidationCallback = CertificateValidationCallBack;
             TimeZoneInfo centralTZ = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time");
             mService = new ExchangeService(ExchangeVersion.Exchange2013_SP1, centralTZ);
             mService.Credentials = new WebCredentials(pUsuario, pPasword);

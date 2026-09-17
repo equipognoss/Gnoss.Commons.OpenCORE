@@ -461,7 +461,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 }
                 catch (Exception ex)
                 {
-                    AgregarEntradaTraza(string.Format("No sirve el data set de caché porque ha fallado al hacer un merge con el actual: ", ex.Message));
+                    mLoggingService.GuardarLogError(ex, $"No sirve el data set de caché de rawKey '{rawKey}' porque ha fallado al hacer un merge con el actual", mlogger);
                     facetaDW = null;
                 }
 
@@ -484,6 +484,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 {
                     facetaDW.CargaRelacionesPerezosasCache();
                 }
+
+                LogDataWrapperFacetasState(nameof(ObtenerTodasFacetasDeProyecto), "BD (recién cargado)", rawKey, pProyectoID, pOrganizacionID, pListaItems, pFacetasHome, facetaDW, pIncludeStackTrace: true);
+
                 AgregarObjetoCache(rawKey, facetaDW);
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, facetaDW);
             }
@@ -560,9 +563,43 @@ namespace Es.Riam.Gnoss.CL.Facetado
             }
         }
 
+
+        /// <summary>
+        /// Registra el estado de un DataWrapperFacetas: método que lo generó, origen de los datos (BD, caché local o caché distribuida), clave de caché, parámetros de la llamada, y counts de las tablas principales. Pensado para poder identificar,
+        /// </summary>
+        /// <param name="pMethod">Nombre del método de FacetaCL que genera/sirve el DataWrapperFacetas</param>
+        /// <param name="pSource">Origen de los datos: BD, caché local o caché distribuida</param>
+        /// <param name="pRawKey">Clave de caché usada</param>
+        /// <param name="pProjectId">ProyectoID recibido por el método</param>
+        /// <param name="pOrganizationId">OrganizacionID recibido por el método </param>
+        /// <param name="pItemList">Lista de items recibida por el método </param>
+        /// <param name="pIsHomeFacets">Valor de pFacetasHome recibido por el método</param>
+        /// <param name="pFacetDataWrapper">DataWrapperFacetas a registrar</param>
+        /// <param name="pIncludeStackTrace">Si se debe incluir la traza de pila completa (solo en el camino frío de carga desde BD, nunca en cada lectura de caché)</param>
+        private void LogDataWrapperFacetasState(string pMethod, string pSource, string pRawKey, Guid pProjectId, Guid? pOrganizationId, List<string> pItemList, bool pIsHomeFacets, DataWrapperFacetas pFacetDataWrapper, bool pIncludeStackTrace = false)
+        {
+            if (pFacetDataWrapper == null)
+            {
+                return;
+            }
+
+            string organizationIdText = pOrganizationId.HasValue ? pOrganizationId.Value.ToString() : "null";
+            string stackTraceText = pIncludeStackTrace ? $"\n\tPila de llamada: {Environment.StackTrace}" : "";
+
+            mLoggingService.GuardarLog(
+                $"[{pMethod}] DataWrapperFacetas ({pSource}). rawKey: '{pRawKey}'." +
+                $" ProyectoID: {pProjectId}. OrganizacionID: {organizationIdText}. FacetasHome: {pIsHomeFacets}." +
+                $"\n\t -ConfiguracionConexionGrafo: {pFacetDataWrapper.ListaConfiguracionConexionGrafo.Count}" +
+                $"\n\t -FacetaFiltroProyecto: {pFacetDataWrapper.ListaFacetaFiltroProyecto.Count}" +
+                $"\n\t -FacetaObjetoConocimientoProyecto: {pFacetDataWrapper.ListaFacetaObjetoConocimientoProyecto.Count}" +
+                $"\n\t -FacetaObjetoConocimiento: {pFacetDataWrapper.ListaFacetaObjetoConocimiento.Count}" +
+                stackTraceText,
+                mlogger);
+        }
+
         /// <summary>
         /// Obtiene los parámetros de configuración de un proyecto.
-        /// </summary>        
+        /// </summary>
         /// <param name="ListaItems">Lista de elementos buscados</param>
         /// <param name="OrganizacionID">Organizacion en la que se hace la búsqueda</param>
         /// <param name="pProyectoID">Proyecto en el que se hace la búsqueda</param>
@@ -606,11 +643,12 @@ namespace Es.Riam.Gnoss.CL.Facetado
             DataWrapperFacetas facetaDW = null;
             //Guid? idClavesActualizadas = null;
 
-
             // Compruebo si está en la caché
+            string facetsCacheSource = "caché local";
             facetaDW = ObtenerObjetoDeCacheLocal(rawKey) as DataWrapperFacetas;
             if (facetaDW == null)
             {
+                facetsCacheSource = "caché redis";
                 facetaDW = ObtenerObjetoDeCache(rawKey, typeof(DataWrapperFacetas)) as DataWrapperFacetas;
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, facetaDW);
             }
@@ -622,13 +660,14 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 try
                 {
                     facetaAuxDW.Merge(facetaDW);
-                    // Le asigno el creado en esta plataforma, porque si hay campos que no tenía el dataset de caché, luego da problemas cuando intentas acceder a ellos. 
-                    // La comprobación de la estructura no sirve, porque la tabla sí contiene la columna, pero la fila no (mu raro). 
+                    // Le asigno el creado en esta plataforma, porque si hay campos que no tenía el dataset de caché, luego da problemas cuando intentas acceder a ellos.
+                    // La comprobación de la estructura no sirve, porque la tabla sí contiene la columna, pero la fila no (mu raro).
                     facetaDW = facetaAuxDW;
+                    LogDataWrapperFacetasState(nameof(ObtenerFacetasDeProyecto), facetsCacheSource, rawKey, pProyectoID, pOrganizacionID, pListaItems, pFacetasHome, facetaDW);
                 }
                 catch (Exception ex)
                 {
-                    AgregarEntradaTraza(string.Format("No sirve el data set de caché porque ha fallado al hacer un merge con el actual: ", ex.Message));
+                    mLoggingService.GuardarLogError(ex, $"No sirve el data set de caché de rawKey '{rawKey}' porque ha fallado al hacer un merge con el actual", mlogger);
                     facetaDW = null;
                 }
             }
@@ -645,12 +684,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 {
                     facetaDW = FacetaCN.ObtenerFacetasDeProyecto(pListaItems, pOrganizacionID, pProyectoID);
                 }
-
-
-                if (facetaDW != null)
-                {
-                    facetaDW.CargaRelacionesPerezosasCache();
-                }
+                LogDataWrapperFacetasState(nameof(ObtenerFacetasDeProyecto), "BD (recién cargado)", rawKey, pProyectoID, pOrganizacionID, pListaItems, pFacetasHome, facetaDW, pIncludeStackTrace: true);
                 AgregarObjetoCache(rawKey, facetaDW);
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, facetaDW);
             }

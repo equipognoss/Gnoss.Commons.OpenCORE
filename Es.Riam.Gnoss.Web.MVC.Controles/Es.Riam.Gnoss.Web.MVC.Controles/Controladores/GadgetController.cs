@@ -43,6 +43,7 @@ using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Semantica.OWL;
 using Es.Riam.Semantica.Plantillas;
 using Es.Riam.Util;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
@@ -70,7 +71,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         private readonly ICompositeViewEngine mViewEngine;
         private readonly IUtilServicioIntegracionContinua mUtilServicioIntegracionContinua;
         private IAvailableServices mAvailableServices;
-        Microsoft.AspNetCore.Hosting.IHostingEnvironment mEnv;
+        private readonly IWebHostEnvironment mEnv;
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
 
@@ -78,7 +79,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Controladores
         /// Constructor a partir de la página que contiene al controlador
         /// </summary>
         /// <param name="pController">Controller</param>
-        public GadgetController(ControllerBaseGnoss pController, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, GnossCache gnossCache, ConfigService configService, VirtuosoAD virtuosoAD, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, Microsoft.AspNetCore.Hosting.IHostingEnvironment env, IAvailableServices availableServices, ILogger<GadgetController> logger, ILoggerFactory loggerFactory)
+        public GadgetController(ControllerBaseGnoss pController, IHttpContextAccessor httpContextAccessor, LoggingService loggingService, GnossCache gnossCache, ConfigService configService, VirtuosoAD virtuosoAD, EntityContext entityContext, RedisCacheWrapper redisCacheWrapper, EntityContextBASE entityContextBASE, ICompositeViewEngine viewEngine, IUtilServicioIntegracionContinua utilServicioIntegracionContinua, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, IWebHostEnvironment env, IAvailableServices availableServices, ILogger<GadgetController> logger, ILoggerFactory loggerFactory)
             : this(pController, null, httpContextAccessor, loggingService, gnossCache, configService, virtuosoAD, entityContext, redisCacheWrapper, entityContextBASE, viewEngine, utilServicioIntegracionContinua, servicesUtilVirtuosoAndReplication,logger,loggerFactory)
         {
             mlogger = logger;

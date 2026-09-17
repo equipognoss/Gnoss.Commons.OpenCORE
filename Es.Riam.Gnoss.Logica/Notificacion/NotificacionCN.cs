@@ -5,19 +5,16 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.Notificacion;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.EntityModelBASE.Models;
 using Es.Riam.Gnoss.AD.Notificacion;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Logica.Notificacion
 {
@@ -150,7 +147,7 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                             List<string> filasAInsertar = new List<string>();
                             foreach (var notificacion in notificaciones)
                             {
-                                filasAInsertar.Add(JsonConvert.SerializeObject(notificacion.NotificacionID));
+                                filasAInsertar.Add(JsonSerializer.Serialize(notificacion.NotificacionID));
                             }
 
                             List<string> mensajesFallidos = (List<string>)rabbitMQ.AgregarElementosACola(filasAInsertar);
@@ -159,7 +156,7 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                             {
                                 foreach (string mensajeFallido in mensajesFallidos)
                                 {
-                                    Guid notificacionID = Guid.Parse(JsonConvert.DeserializeObject(mensajeFallido).ToString());
+                                    Guid notificacionID = Guid.Parse(JsonSerializer.Deserialize<Guid>(mensajeFallido).ToString());
 
                                     mLoggingService.GuardarLogError($"No se ha podido encolar la notificacion con ID: {notificacionID}",mlogger);
 
@@ -193,7 +190,7 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                             List<string> filasAInsertar = new List<string>();
                             foreach (var notificacion in notificaciones)
                             {
-                                filasAInsertar.Add(JsonConvert.SerializeObject(notificacion.NotificacionID));
+                                filasAInsertar.Add(JsonSerializer.Serialize(notificacion.NotificacionID));
                             }
 
                             List<string> mensajesFallidos = (List<string>)rabbitMQ.AgregarElementosACola(filasAInsertar);
@@ -202,7 +199,7 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                             {
                                 foreach (string mensajeFallido in mensajesFallidos)
                                 {
-                                    Guid notificacionID = Guid.Parse(JsonConvert.DeserializeObject(mensajeFallido).ToString());
+                                    Guid notificacionID = Guid.Parse(JsonSerializer.Deserialize<Guid>(mensajeFallido).ToString());
 
                                     mLoggingService.GuardarLogError($"No se ha podido encolar la notificacion con ID: {notificacionID}",mlogger);
 

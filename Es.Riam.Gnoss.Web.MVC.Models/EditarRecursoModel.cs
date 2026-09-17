@@ -134,6 +134,26 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public bool SemanticResourceAvailable { get; set; }
 
         /// <summary>
+        /// Indica si está disponible la creación de preguntas
+        /// </summary>
+        public bool CreateQuestion { get; set; }
+
+        /// <summary>
+        /// Indica si está disponible la creación de debates
+        /// </summary>
+        public bool CreateDebate { get; set; }
+
+        /// <summary>
+        /// Indica si está disponible la creación de encuestas
+        /// </summary>
+        public bool CreatePoll { get; set; }
+
+        /// <summary>
+        /// Indica si está disponible la creación de una referencia a documento físico
+        /// </summary>
+        public bool DocReference { get; set; }
+
+        /// <summary>
         /// Src para el iframe que se genera para Brightcove.
         /// </summary>
         public string SrcIframeBrightcove { get; set; }
@@ -152,6 +172,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// Src para el iframe que se genera para TOP.
         /// </summary>
         public string SrcIframeTOP { get; set; }
+
     }
 
     /// <summary>
@@ -1456,6 +1477,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             }
         }
 
+
+
         /// <summary>
         /// Entidad semántica a la que representa el modelo.
         /// </summary>
@@ -2316,6 +2339,16 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         #endregion
     }
 
+    /// <summary>
+    /// Modelo que representa las propiedades para la visualización con OpenSeaDragon.
+    /// </summary>
+    [Serializable]
+    public class OpenSeadragonViewModel
+    {
+        public string IdControl { get; set; }
+        public string Modo { get; set; }
+        public List<string> Urls { get; set; }
+    }
     /// <summary>
     /// Modelo para la acción de obtener los hijos de una categoría de un tesauro semántico.
     /// </summary>

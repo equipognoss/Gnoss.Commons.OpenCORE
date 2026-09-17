@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -25,26 +28,33 @@ namespace Es.Riam.Util
         /// </summary>
         public enum Metodo
         {
-            /// <summary>
-            /// GET
-            /// </summary>
+            /// <summary>GET</summary>
             GET,
-            /// <summary>
-            /// POST
-            /// </summary>
+            /// <summary>POST</summary>
             POST,
-            /// <summary>
-            /// PUT
-            /// </summary>
+            /// <summary>PUT</summary>
             PUT,
-            /// <summary>
-            /// DELETE
-            /// </summary>
+            /// <summary>DELETE</summary>
             DELETE
         }
 
         #endregion
+
         private IHttpContextAccessor _httpContextAccessor;
+
+        private static readonly HttpClient mHttpClient = new HttpClient()
+        {
+            Timeout = TimeSpan.FromMinutes(30)
+        };
+
+        private static readonly HttpClient mHttpClientNoRedirect = new HttpClient(new HttpClientHandler
+        {
+            AllowAutoRedirect = false
+        })
+        {
+            Timeout = TimeSpan.FromMinutes(30)
+        };
+
         public UtilWeb(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -64,326 +74,206 @@ namespace Es.Riam.Util
         /// <summary>
         /// Envía una petición web
         /// </summary>
-        /// <param name="pMetodo">Método Http (GET, POST, PUT, etc)</param>
-        /// <param name="pUrl">Url completa del recurso web</param>
-        /// <param name="pPostData">Datos para enviar en la petición (en formato querystring)</param>
-        /// <returns>Respuesta del servidor</returns>
-        public string WebRequest(Metodo pMetodo, string pUrl, string pPostData, IHttpContextAccessor pRequest = null)
+        public static string WebRequestStringData(Metodo pMetodo, string pUrl, string pPostData, HttpRequest pRequest = null)
         {
-            return WebRequest(pMetodo, pUrl, pPostData, "application/x-www-form-urlencoded", pRequest);
+            return WebRequestStringData(pMetodo, pUrl, pPostData, "application/x-www-form-urlencoded", true, null, pRequest);
         }
 
         /// <summary>
         /// Envía una petición web
         /// </summary>
-        /// <param name="pMetodo">Método Http (GET, POST, PUT, etc)</param>
-        /// <param name="pUrl">Url completa del recurso web</param>
-        /// <param name="pPostData">Datos para enviar en la petición (en formato querystring)</param>
-        /// <returns>Respuesta del servidor</returns>
-        public static string WebRequest(Metodo pMetodo, string pUrl, string pPostData, HttpRequest pRequest = null)
+        public string WebRequestStringData(Metodo pMetodo, string pUrl, string pPostData, string pContentType)
         {
-            return WebRequest(pMetodo, pUrl, pPostData, "application/x-www-form-urlencoded", true, null, pRequest);
+            return WebRequestStringData(pMetodo, pUrl, pPostData, pContentType, true);
         }
 
         /// <summary>
         /// Envía una petición web
         /// </summary>
-        /// <param name="pMetodo">Método Http (GET, POST, PUT, etc)</param>
-        /// <param name="pUrl">Url completa del recurso web</param>
-        /// <param name="pPostData">Datos para enviar en la petición (en formato querystring)</param>
-        /// <returns>Respuesta del servidor</returns>
-        public string WebRequest(Metodo pMetodo, string pUrl, string pPostData, string pContentType, IHttpContextAccessor pRequest = null)
+        public string WebRequestStringData(Metodo pMetodo, string pUrl, string pPostData, string pContentType, bool pSeguirRedireccion)
         {
-            return WebRequest(pMetodo, pUrl, pPostData, pContentType, true, pRequest);
+            return WebRequestStringData(pMetodo, pUrl, pPostData, pContentType, pSeguirRedireccion, null);
         }
 
         /// <summary>
         /// Envía una petición web
         /// </summary>
-        /// <param name="pMetodo">Método Http (GET, POST, PUT, etc)</param>
-        /// <param name="pUrl">Url completa del recurso web</param>
-        /// <param name="pPostData">Datos para enviar en la petición (en formato querystring)</param>
-        /// <returns>Respuesta del servidor</returns>
-        public string WebRequest(Metodo pMetodo, string pUrl, string pPostData, string pContentType, bool pSeguirRedireccion, IHttpContextAccessor pRequest = null)
+        public string WebRequestStringData(Metodo pMetodo, string pUrl, string pPostData, string pContentType, bool pSeguirRedireccion, Dictionary<string, string> pCabeceras)
         {
-            return WebRequest(pMetodo, pUrl, pPostData, pContentType, pSeguirRedireccion, null, pRequest);
+            try
+            {
+                HttpClient client = pSeguirRedireccion ? mHttpClient : mHttpClientNoRedirect;
+                HttpRequestMessage request = BuildRequest(pMetodo, pUrl, pPostData, pContentType, pCabeceras);
+
+                HttpResponseMessage response = client.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
 
-        /// <summary>
-        /// Envía una petición web
-        /// </summary>
-        /// <param name="pMetodo">Método Http (GET, POST, PUT, etc)</param>
-        /// <param name="pUrl">Url completa del recurso web</param>
-        /// <param name="pPostData">Datos para enviar en la petición (en formato querystring)</param>
-        /// <returns>Respuesta del servidor</returns>
-        public string WebRequest(Metodo pMetodo, string pUrl, string pPostData, string pContentType, bool pSeguirRedireccion, Dictionary<string, string> pCabeceras, IHttpContextAccessor pRequest = null)
+        private HttpRequestMessage BuildRequest(Metodo pMetodo, string pUrl, string pPostData, string pContentType, Dictionary<string, string> pCabeceras)
         {
-            HttpWebRequest webRequest = null;
-            StreamWriter requestWriter = null;
-            string responseData = "";
+            var request = new HttpRequestMessage(new HttpMethod(pMetodo.ToString()), pUrl);
 
-            Uri UriActual = null;
-
-            webRequest = System.Net.WebRequest.Create(pUrl) as HttpWebRequest;
-            webRequest.Method = pMetodo.ToString();
-            webRequest.ServicePoint.Expect100Continue = false;
-            if (pRequest != null)
-            {
-                webRequest.UserAgent = pRequest.HttpContext.Request.Headers["UserAgent"];
-                UriActual = new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request));
-                if (pRequest.HttpContext.Request.Headers != null)
-                {
-                    string accept = pRequest.HttpContext.Request.Headers["Accept"];
-                    webRequest.Accept = accept;
-                }
-            }
-            else if (_httpContextAccessor.HttpContext != null && _httpContextAccessor.HttpContext.Request != null)
-            {
-                webRequest.UserAgent = _httpContextAccessor.HttpContext.Request.Headers["UserAgent"];
-                UriActual = new Uri(UriHelper.GetEncodedUrl(_httpContextAccessor.HttpContext.Request));
-            }
-            else
-            {
-                webRequest.UserAgent = GenerarUserAgent();
-            }
-
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                if (_httpContextAccessor.HttpContext.Request != null && _httpContextAccessor.HttpContext.Request.Headers != null)
-                {
-                    string accept = _httpContextAccessor.HttpContext.Request.Headers["Accept"];
-                    
-                    if (accept.Contains("application/json"))
-                    {
-                        webRequest.UserAgent += " GnossInternalRequest";
-                    }
-                }
-            }
-            else
-            {
-                webRequest.UserAgent += " GnossInternalRequest";
-            }
-
-            if (UriActual != null)
-            {
-                string urlReferer = UriActual.ToString();
-                webRequest.Referer = urlReferer;
-            }
-
-            if (pCabeceras != null && pCabeceras.Count > 0)
-            {
-                foreach (string cabecera in pCabeceras.Keys)
-                {
-                    if (cabecera.ToLower().Equals("accept"))
-                    {
-                        webRequest.Accept = pCabeceras[cabecera];
-                    }
-                    else
-                    {
-                        webRequest.Headers.Add(cabecera, pCabeceras[cabecera]);
-                    }
-                }
-            }
-
-            if (!pSeguirRedireccion)
-            {
-                webRequest.AllowAutoRedirect = false;
-            }
+            SetUserAgentAndReferer(request);
+            SetCabeceras(request, pCabeceras);
 
             if (pMetodo == Metodo.POST || pMetodo == Metodo.PUT)
             {
-                webRequest.ContentType = pContentType;
-
-                //Enviamos los datos
-                requestWriter = new StreamWriter(webRequest.GetRequestStream());
-                try
-                {
-                    requestWriter.Write(pPostData);
-                }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    requestWriter.Close();
-                    requestWriter = null;
-                }          
+                request.Content = new StringContent(pPostData ?? string.Empty, Encoding.UTF8, pContentType);
             }
 
-            responseData = WebResponseGet(webRequest);
-
-            webRequest = null;
-
-            return responseData;
+            return request;
         }
 
-        public static string WebRequest(Metodo pMetodo, string pUrl, string pPostData, string pContentType, bool pSeguirRedireccion, Dictionary<string, string> pCabeceras, HttpRequest pRequest = null)
+        private void SetUserAgentAndReferer(HttpRequestMessage request)
         {
-            HttpWebRequest webRequest = null;
-            StreamWriter requestWriter = null;
-            string responseData = "";
+            Uri uriActual = null;
+            string userAgent;
 
-            Uri UriActual = null;
-
-            webRequest = System.Net.WebRequest.Create(pUrl) as HttpWebRequest;
-            webRequest.Method = pMetodo.ToString();
-            webRequest.ServicePoint.Expect100Continue = false;
-            if (pRequest != null)
+            if (_httpContextAccessor?.HttpContext?.Request != null)
             {
-                webRequest.UserAgent = GenerarUserAgent();
-                UriActual = new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request));
-                if (pRequest.HttpContext.Request.Headers != null)
+                userAgent = _httpContextAccessor.HttpContext.Request.Headers["UserAgent"];
+                uriActual = new Uri(UriHelper.GetEncodedUrl(_httpContextAccessor.HttpContext.Request));
+            }
+            else
+            {
+                userAgent = GenerarUserAgent();
+            }
+
+            if (_httpContextAccessor?.HttpContext?.Request?.Headers != null)
+            {
+                string accept = _httpContextAccessor.HttpContext.Request.Headers["Accept"];
+                if (!string.IsNullOrEmpty(accept) && accept.Contains("application/json"))
                 {
-                    string accept = pRequest.HttpContext.Request.Headers["Accept"];
-                    webRequest.Accept = accept;
+                    userAgent += " GnossInternalRequest";
                 }
             }
             else
             {
-                webRequest.UserAgent = GenerarUserAgent();
+                userAgent += " GnossInternalRequest";
             }
-            
 
-            if (pRequest != null && pRequest.HttpContext != null)
+            if (!string.IsNullOrEmpty(userAgent))
             {
-                if (pRequest.HttpContext.Request != null && pRequest.HttpContext.Request.Headers != null)
+                request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            }
+
+            if (uriActual != null)
+            {
+                request.Headers.TryAddWithoutValidation("Referer", uriActual.ToString());
+            }
+        }
+
+        private void SetCabeceras(HttpRequestMessage request, Dictionary<string, string> pCabeceras)
+        {
+            if (pCabeceras?.Count > 0)
+            {
+                foreach (var cabecera in pCabeceras)
                 {
-                    string accept = pRequest.HttpContext.Request.Headers["Accept"];
-
-                    if (accept.Contains("application/json"))
+                    if (cabecera.Key.ToLower().Equals("accept"))
                     {
-                        webRequest.UserAgent += " GnossInternalRequest";
-                    }
-                }
-            }
-            else
-            {
-                webRequest.UserAgent += " GnossInternalRequest";
-            }
-
-            if (UriActual != null)
-            {
-                string urlReferer = UriActual.ToString();
-
-                
-                webRequest.Referer = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(urlReferer));
-            }
-
-            if (pCabeceras != null && pCabeceras.Count > 0)
-            {
-                foreach (string cabecera in pCabeceras.Keys)
-                {
-                    if (cabecera.ToLower().Equals("accept"))
-                    {
-                        webRequest.Accept = pCabeceras[cabecera];
+                        request.Headers.Accept.ParseAdd(cabecera.Value);
                     }
                     else
                     {
-                        webRequest.Headers.Add(cabecera, pCabeceras[cabecera]);
+                        request.Headers.TryAddWithoutValidation(cabecera.Key, cabecera.Value);
                     }
                 }
             }
+        }
 
-            if (pPostData.Contains("pIdentidadID"))
+        /// <summary>
+        /// Envía una petición web (estático)
+        /// </summary>
+        public static string WebRequestStringData(Metodo pMetodo, string pUrl, string pPostData, string pContentType, bool pSeguirRedireccion, Dictionary<string, string> pCabeceras, HttpRequest pRequest = null)
+        {
+            try
             {
-                string identidadID = ObtenerIdentidadID(pPostData);
-                webRequest.Headers.Add("Authorization", $"bearer {identidadID}");
-            }
+                HttpClient client = pSeguirRedireccion ? mHttpClient : mHttpClientNoRedirect;
+                var request = new HttpRequestMessage(new HttpMethod(pMetodo.ToString()), pUrl);
 
-            if (!pSeguirRedireccion)
+                string userAgent = GenerarUserAgent();
+                Uri uriActual = null;
+
+                if (pRequest?.HttpContext?.Request != null)
+                {
+                    uriActual = new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request));
+                    string accept = pRequest.HttpContext.Request.Headers["Accept"];
+                    if (!string.IsNullOrEmpty(accept))
+                    {
+                        request.Headers.Accept.ParseAdd(accept);
+                        if (accept.Contains("application/json"))
+                        {
+                            userAgent += " GnossInternalRequest";
+                        }
+                    }
+                }
+                else
+                {
+                    userAgent += " GnossInternalRequest";
+                }
+
+                request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+
+                if (uriActual != null)
+                {
+                    string urlReferer = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(uriActual.ToString()));
+                    request.Headers.TryAddWithoutValidation("Referer", urlReferer);
+                }
+
+                if (pCabeceras?.Count > 0)
+                {
+                    foreach (var cabecera in pCabeceras)
+                    {
+                        if (cabecera.Key.ToLower().Equals("accept"))
+                        {
+                            request.Headers.Accept.ParseAdd(cabecera.Value);
+                        }
+                        else
+                        {
+                            request.Headers.TryAddWithoutValidation(cabecera.Key, cabecera.Value);
+                        }
+                    }
+                }
+
+                if (pPostData?.Contains("pIdentidadID") == true)
+                {
+                    string identidadID = ObtenerIdentidadID(pPostData);
+                    request.Headers.TryAddWithoutValidation("Authorization", $"bearer {identidadID}");
+                }
+
+                if (pMetodo == Metodo.POST || pMetodo == Metodo.PUT)
+                {
+                    request.Content = new StringContent(pPostData ?? string.Empty, Encoding.UTF8, pContentType);
+                }
+
+                HttpResponseMessage response = client.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
             {
-                webRequest.AllowAutoRedirect = false;
+                throw new Exception(ex.Message, ex);
             }
-
-            if (pMetodo == Metodo.POST || pMetodo == Metodo.PUT)
-            {
-                webRequest.ContentType = pContentType;
-
-                //Enviamos los datos
-                requestWriter = new StreamWriter(webRequest.GetRequestStream());
-                try
-                {
-                    requestWriter.Write(pPostData);
-                }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    requestWriter.Close();
-                    requestWriter = null;
-                }
-            }
-            responseData = WebResponseGet(webRequest);
-
-            webRequest = null;
-
-            return responseData;
         }
 
         private static string ObtenerIdentidadID(string pPostData)
         {
-            string identidadID = pPostData.Split("pIdentidadID=")[1].Split("&")[0];
-
-            return identidadID;
-        }
-
-
-        /// <summary>
-        /// Procesa la respuesta del servidor a una petición
-        /// </summary>
-        /// <param name="pWebRequest">Petición Http</param>
-        /// <returns>Datos de la respuesta del servidor</returns>
-        public static string WebResponseGet(HttpWebRequest pWebRequest)
-        {
-            StreamReader responseReader = null;
-            string responseData = "";
-
-            try
-            {
-                responseReader = new StreamReader(pWebRequest.GetResponse().GetResponseStream());
-                responseData = responseReader.ReadToEnd();
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                if (responseReader != null)
-                {
-                    responseReader.Close();
-                    responseReader = null;
-                }
-            }
-            return responseData;
+            return pPostData.Split("pIdentidadID=")[1].Split("&")[0];
         }
 
         /// <summary>
         /// Hace una petición POST a una URL con una serie de parámetros
         /// </summary>
-        /// <param name="pUrl">URL para la petición</param>
-        /// <param name="pParametros">Clave y valor de cada parámetro de la petición. El valor NO debe estar codificado, se hará en el método.</param>
-        /// <returns></returns>
         public static string HacerPeticionPost(string pUrl, Dictionary<string, string> pParametros, Dictionary<string, string> pCabeceras = null)
         {
-            HttpWebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
-            wr.Method = "POST";
-            wr.ContentType = "application/x-www-form-urlencoded";
-            wr.Timeout = 300000;
-            wr.UserAgent = GenerarUserAgent();
-
-            if (pCabeceras != null)
-            {
-                foreach (string cabecera in pCabeceras.Keys)
-                {
-                    wr.Headers.Add(cabecera, pCabeceras[cabecera]);
-                }
-            }
-
-            //Codificación del mensaje
             string requestParameters = "";
 
             if (pParametros != null && pParametros.Count > 0)
@@ -392,120 +282,456 @@ namespace Es.Riam.Util
                 {
                     requestParameters = string.Concat(requestParameters, key, "=", HttpUtility.UrlEncode(pParametros[key]), "&");
                 }
-
                 requestParameters = requestParameters.Substring(0, requestParameters.Length - 1);
             }
 
-            byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-            wr.ContentLength = byteData.Length;
-            Stream newStream = wr.GetRequestStream();
-           
-            //Envio de parametros                    
-            newStream.Write(byteData, 0, byteData.Length);
-
-            // Obtiene la respuesta
-            WebResponse response = wr.GetResponse();
-
-            // Stream con el contenido recibido del servidor
-            newStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(newStream);
-
-            // Leemos el contenido
-            string responseFromServer = reader.ReadToEnd();
-
-            // Cerramos los streams
-            reader.Close();
-            newStream.Close();
-
-            return responseFromServer;
+            return WebRequestStringData(Metodo.POST, pUrl, requestParameters, "application/x-www-form-urlencoded", true, pCabeceras);
         }
 
         /// <summary>
-        /// Hace una petición POST a una URL con una serie de parámetros
+        /// Hace una petición POST devolviendo HttpResponseMessage
         /// </summary>
-        /// <param name="pUrl">URL para la petición</param>
-        /// <param name="pParametros">Clave y valor de cada parámetro de la petición. El valor NO debe estar codificado, se hará en el método.</param>
-        /// <returns></returns>
-        public static WebResponse HacerPeticionPostDevolviendoWebResponse(string pUrl, Dictionary<string, string> pParametros, string pToken = "")
+        public static HttpResponseMessage HacerPeticionPostDevolviendoHttpResponseMessage(string pUrl, Dictionary<string, string> pParametros)
         {
-            return HacerPeticionDevolviendoWebResponse("POST", pUrl, pParametros, pToken);
+            return HacerPeticionDevolviendoHttpResponseMessage("POST", pUrl, pParametros);
         }
 
         /// <summary>
-        /// Hace una petición GET a una URL con una serie de parámetros
+        /// Hace una petición POST devolviendo HttpResponseMessage
         /// </summary>
-        /// <param name="pUrl">URL para la petición</param>
-        /// <param name="pParametros">Clave y valor de cada parámetro de la petición. El valor NO debe estar codificado, se hará en el método.</param>
-        /// <returns></returns>
-        public static WebResponse HacerPeticionGetDevolviendoWebResponse(string pUrl)
+        public static HttpResponseMessage HacerPeticionPostDevolviendoHttpResponseMessage(string pUrl, byte[] pByteData)
         {
-            return HacerPeticionDevolviendoWebResponse("GET", pUrl, null);
+            return HacerPeticionDevolviendoHttpResponseMessage("POST", pUrl, pByteData);
         }
 
         /// <summary>
-        /// Hace una petición a una URL con una serie de parámetros
+        /// Hace una petición GET devolviendo HttpResponseMessage
         /// </summary>
-        /// <param name="pUrl">URL para la petición</param>
-        /// <param name="pParametros">Clave y valor de cada parámetro de la petición. El valor NO debe estar codificado, se hará en el método.</param>
-        /// <returns></returns>
-        private static WebResponse HacerPeticionDevolviendoWebResponse(string pMethod, string pUrl, Dictionary<string, string> pParametros, string pToken = "")
+        public static HttpResponseMessage HacerPeticionGetDevolviendoHttpResponseMessage(string pUrl, string pToken = "")
         {
-            HttpWebRequest wr = (HttpWebRequest)System.Net.WebRequest.Create(pUrl);
-            wr.Timeout = 1200000;//20 minutos
-            wr.Method = pMethod;
-            wr.ContentType = "application/x-www-form-urlencoded";
-            wr.UserAgent = GenerarUserAgent();
+            return HacerPeticionDevolviendoHttpResponseMessage("GET", pUrl, new Dictionary<string, string>(), pToken);
+        }
+
+        /// <summary>
+        /// Hace una petición GET devolviendo HttpResponseMessage
+        /// </summary>
+        public static HttpResponseMessage HacerPeticionGetDevolviendoHttpResponseMessage(Uri pUrl, string pToken = "")
+        {
+            return HacerPeticionDevolviendoHttpResponseMessage("GET", pUrl, new Dictionary<string, string>(), pToken);
+        }
+
+        public static HttpResponseMessage HacerPeticionDevolviendoHttpResponseMessage(string pMethod, string pUrl, Dictionary<string, string> pParametros, string pToken = "")
+        {
+            try
+            {
+                HttpResponseMessage response = HacerPeticionDevolviendoHttpResponseMessageSinValidarEstado(pMethod, pUrl, pParametros, pToken);
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Hace una petición devolviendo el HttpResponseMessage sin comprobar el código de estado de la respuesta.
+        /// A diferencia de HacerPeticionDevolviendoHttpResponseMessage, no lanza excepción cuando la respuesta no es
+        /// correcta, por lo que el llamante puede leer el estado y el cuerpo, donde el servicio detalla el motivo del error.
+        /// </summary>
+        /// <param name="pMethod">Método HTTP de la petición</param>
+        /// <param name="pUrl">Url a la que se hace la petición</param>
+        /// <param name="pParametros">Parámetros que se envían como formulario</param>
+        /// <param name="pToken">Token bearer, si la petición va autenticada</param>
+        /// <returns>La respuesta del servicio, sea cual sea su código de estado</returns>
+        public static HttpResponseMessage HacerPeticionDevolviendoHttpResponseMessageSinValidarEstado(string pMethod, string pUrl, Dictionary<string, string> pParametros, string pToken = "")
+        {
+            var request = new HttpRequestMessage(new HttpMethod(pMethod), pUrl);
+            request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
 
             if (!string.IsNullOrEmpty(pToken))
             {
-                wr.Headers.Add("Authorization", $"Bearer {pToken}");
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
             }
 
-            //Codificación del mensaje
-            string requestParameters = "";
-
-            if (pParametros != null && pParametros.Count > 0)
+            if (pParametros?.Count > 0)
             {
-                foreach (string key in pParametros.Keys)
+                request.Content = new FormUrlEncodedContent(pParametros);
+            }
+            else
+            {
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/x-www-form-urlencoded");
+            }
+
+            return mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+        }
+
+        public static HttpResponseMessage HacerPeticionDevolviendoHttpResponseMessage(string pMethod, Uri pUrl, Dictionary<string, string> pParametros, string pToken = "")
+        {
+            try
+            {
+                var request = new HttpRequestMessage(new HttpMethod(pMethod), pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+
+                if (!string.IsNullOrEmpty(pToken))
                 {
-                    requestParameters = string.Concat(requestParameters, key, "=", HttpUtility.UrlEncode(pParametros[key]), "&");
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
                 }
 
-                requestParameters = requestParameters.Substring(0, requestParameters.Length - 1);
+                if (pParametros?.Count > 0)
+                {
+                    request.Content = new FormUrlEncodedContent(pParametros);
+                }
+                else
+                {
+                    request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/x-www-form-urlencoded");
+                }
 
-                byte[] byteData = Encoding.UTF8.GetBytes(requestParameters);
-                wr.ContentLength = byteData.Length;
-                Stream newStream = wr.GetRequestStream();
-                
-                //Envio de parametros                    
-                newStream.Write(byteData, 0, byteData.Length);
+                HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response;
             }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
 
-            return wr.GetResponse();
+        public static HttpResponseMessage HacerPeticionDevolviendoHttpResponseMessage(string pMethod, string pUrl, byte[] pByteData, string pToken = "")
+        {
+            try
+            {
+                var request = new HttpRequestMessage(new HttpMethod(pMethod), pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+
+                if (!string.IsNullOrEmpty(pToken))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
+                }
+
+                if (pMethod == "POST" && pByteData != null)
+                {
+                    request.Content = new ByteArrayContent(pByteData);
+                    //request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                }
+                else
+                {
+                    request.Content = new StringContent(string.Empty);
+                }
+
+                HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
 
         /// <summary>
-        /// Comprueba si existe una URL. Devuelve True si existe o False en caso contrario.
+        /// Envía una petición web devolviendo bytes
         /// </summary>
-        /// <param name="pUrl">Url que se desa comprobar</param>
-        /// <returns>Devuelve True si existe o False en caso contrario.</returns>
+        public static byte[] WebRequestBytes(string httpMethod, string url, byte[] byteData)
+        {
+            return WebRequestBytes(httpMethod, url, byteData, true);
+        }
+
+        public static byte[] WebRequestBytes(string httpMethod, string url, byte[] byteData, bool pSeguirRedireccion)
+        {
+            try
+            {
+                HttpClient client = pSeguirRedireccion ? mHttpClient : mHttpClientNoRedirect;
+                var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+
+                if (httpMethod == "POST")
+                {
+                    request.Content = byteData != null
+                        ? new ByteArrayContent(byteData) { Headers = { ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded") } }
+                        : new StringContent(string.Empty);
+                }
+
+                HttpResponseMessage response = client.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Envía una petición web devolviendo bytes con token
+        /// </summary>
+        public static byte[] WebRequestBytes(string httpMethod, string url, byte[] byteData, string pContentType, string pToken = "")
+        {
+            try
+            {
+                var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+
+                if (!string.IsNullOrEmpty(pToken))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
+                }
+
+                if (httpMethod == "POST")
+                {
+                    request.Content = byteData != null
+                        ? new ByteArrayContent(byteData) { Headers = { ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(pContentType) } }
+                        : new StringContent(string.Empty);
+                }
+
+                HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Envía una petición web con token y body string
+        /// </summary>
+        public static string WebRequest(string pHttpMethod, string pUrl, byte[] pByteData, bool pRedirect = true, string pUserAgent = "")
+        {
+            return WebRequest(pHttpMethod, pUrl, null, pByteData, pRedirect: pRedirect, pUserAgent: pUserAgent);
+        }
+
+        public static string WebRequest(string pHttpMethod, string pUrl, string pToken, byte[] pByteData, string pContentType = "x-www-form-urlencoded", bool pRedirect = true, string pUserAgent = "")
+        {
+            try
+            {
+                HttpClient client = pRedirect ? mHttpClient : mHttpClientNoRedirect;
+
+                var request = new HttpRequestMessage(new HttpMethod(pHttpMethod), pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", !string.IsNullOrEmpty(pUserAgent) ? pUserAgent : GenerarUserAgent());
+
+                if (!string.IsNullOrEmpty(pToken))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
+                }
+
+                if (pHttpMethod == "POST")
+                {
+                    request.Content = pByteData != null
+                        ? new ByteArrayContent(pByteData) { Headers = { ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue($"application/{pContentType}") } }
+                        : new StringContent(string.Empty);
+                }
+                else
+                {
+                    request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue($"application/{pContentType}"));
+                }
+
+                HttpResponseMessage response = client.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                string message = pUrl;
+                if (ex.StatusCode != null)
+                {
+                    message += $"\r\nError: {ex.Message}";
+                }
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// Se hace una peticion Post por defecto con un diccionario FormData
+        /// </summary>
+        public static HttpResponseMessage WebRequestFormDataConToken(string pUrl, Dictionary<string, string> pFormData, string pTipoToken = "Bearer", string pToken = "")
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+
+                if (!string.IsNullOrEmpty(pToken))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(pTipoToken, pToken);
+                }
+
+                request.Content = new FormUrlEncodedContent(pFormData);
+
+                HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Se hace una peticion Post por defecto con un diccionario FormData
+        /// </summary>
+        public static HttpResponseMessage WebRequestFormDataConToken(string pUrl, byte[] pData, string pTipoToken = "Bearer", string pToken = "", bool pIsPut = false)
+        {
+            try
+            {
+                HttpMethod httpMethod = HttpMethod.Post;
+                if (pIsPut)
+                {
+                    httpMethod = HttpMethod.Put;
+                }
+                var request = new HttpRequestMessage(httpMethod, pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+
+                if (!string.IsNullOrEmpty(pToken))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(pTipoToken, pToken);
+                }
+
+                request.Content = pData != null
+                        ? new ByteArrayContent(pData) 
+                        : new StringContent(string.Empty);
+
+                HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public static HttpResponseMessage WebRequestPutStringContent(string pUrl, string pData, string pToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, pUrl);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
+            request.Content = new StringContent("write", Encoding.UTF8, "text/plain");
+
+            HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+
+        /// <summary>
+        /// POST con objeto JSON
+        /// </summary>
+        public static string WebRequestPostWithJsonObject(string pUrl, object pObjeto = null, string pToken = null)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+                if (!string.IsNullOrEmpty(pToken))
+                {
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", pToken);
+                }
+                request.Content = pObjeto != null
+                    ? new StringContent(JsonConvert.SerializeObject(pObjeto), Encoding.UTF8, "application/json")
+                    : new StringContent(string.Empty);
+
+                HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public static void DescargarFichero(string pUrl, string pRuta, bool pSeguirRedireccion)
+        {
+            byte[] bytes = WebRequestBytes("GET", pUrl, null, pSeguirRedireccion);
+            File.WriteAllBytes(pRuta, bytes);
+        }
+
+        private static readonly ConcurrentDictionary<string, HttpClient> mHttpClientsConCredenciales = new ConcurrentDictionary<string, HttpClient>();
+
+        private static HttpClient ObtenerClienteConCredenciales(string pUrl, string pUsuario, string pPassword, int pTimeoutSegundos = 100)
+        {
+            if (pTimeoutSegundos == 0)
+            {
+                pTimeoutSegundos = 100;
+            }
+            string clave = $"{pUrl}_{pUsuario}";
+
+            return mHttpClientsConCredenciales.GetOrAdd(clave, _ =>
+            {
+                var credentialCache = new CredentialCache();
+                credentialCache.Add(
+                    new Uri(pUrl),
+                    "Digest",
+                    new NetworkCredential(pUsuario, pPassword)
+                );
+
+                var handler = new HttpClientHandler
+                {
+                    Credentials = credentialCache
+                };
+
+                return new HttpClient(handler)
+                {
+                    Timeout = TimeSpan.FromSeconds(pTimeoutSegundos)
+                };
+            });
+        }
+        public static byte[] WebRequestCredenciales(string pMetodo, string pUrl, Dictionary<string, string> pFormData, string pUsuario, string pPassword, int pTimeoutSegundos)
+        {
+            try
+            {
+                HttpClient client = !string.IsNullOrEmpty(pUsuario)
+                    ? ObtenerClienteConCredenciales(pUrl, pUsuario, pPassword, pTimeoutSegundos)
+                    : mHttpClient;
+
+                var request = new HttpRequestMessage(new HttpMethod(pMetodo), pUrl);
+                request.Headers.TryAddWithoutValidation("User-Agent", GenerarUserAgent());
+                //request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+                if (pMetodo == "POST")
+                {
+                    request.Content = pFormData?.Count > 0
+                        ? new FormUrlEncodedContent(pFormData)
+                        : new StringContent(string.Empty);
+                }
+
+                HttpResponseMessage response = client.SendAsync(request).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+
+                return response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+        /// <summary>
+        /// Comprueba si existe una URL.
+        /// </summary>
         public static bool ExisteUrl(string pUrl)
         {
             try
             {
-                //comprobar que es una url valida
                 string regexpresion = "^((([hH][tT][tT][pP][sS]?|[fF][tT][pP])\\:\\/\\/)?([\\w\\.\\-]+(\\:[\\w\\.\\&%\\$\\-]+)*@)?((([^\\s\\(\\)\\<\\>\\\\\\\"\\.\\[\\]\\,@;:]+)(\\.[^\\s\\(\\)\\<\\>\\\\\\\"\\.\\[\\]\\,@;:]+)*(\\.[a-zA-Z]{2,4}))|((([01]?\\d{1,2}|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d{1,2}|2[0-4]\\d|25[0-5])))(\\b\\:(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3}|0)\\b)?((\\/[^\\/][\\w\\.\\,\\?\\'\\\\\\/\\+&%\\$#\\=~_\\-@:]*)*[^\\.\\,\\?\\\"\\'\\(\\)\\[\\]!;<>{}\\s\\x7F-\\xFF])?)$";
-
                 Regex reg = new Regex(regexpresion);
                 if (reg.IsMatch(pUrl.Trim()))
                 {
-                    new WebClient().DownloadData(pUrl);
-                    return true;
+                    var request = new HttpRequestMessage(HttpMethod.Get, pUrl);
+                    HttpResponseMessage response = mHttpClient.SendAsync(request).GetAwaiter().GetResult();
+                    return response.IsSuccessStatusCode;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             catch
             {
@@ -514,212 +740,88 @@ namespace Es.Riam.Util
         }
 
         /// <summary>
-        /// Devuelve la url semántica actual. Antiguo Request.Url.
+        /// Devuelve la url semántica actual.
         /// </summary>
-        /// <returns>Url semántica actual</returns>
         public string RequestUrl()
         {
             return RequestUrl(_httpContextAccessor.HttpContext.Request);
         }
 
         /// <summary>
-        /// Devuelve la url semántica actual. Antiguo Request.Url.
+        /// Devuelve la url semántica actual.
         /// </summary>
-        /// <param name="pRequest">Request</param>
-        /// <returns>Url semántica actual</returns>
         public static string RequestUrl(HttpRequest pRequest)
-        {        
-            string url = pRequest.Scheme + "://" + new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request)).Authority + pRequest.Path;
+        {
+            string scheme = pRequest.Headers.TryGetValue("X-Forwarded-Proto", out var forwardedProto)
+                ? forwardedProto.ToString().Split(',')[0].Trim()  // puede venir como "https, http" en cadena
+                : pRequest.Scheme;
+
+            string host = pRequest.Headers.TryGetValue("X-Forwarded-Host", out var forwardedHost)
+                ? forwardedHost.ToString().Split(',')[0].Trim()
+                : pRequest.Host.ToString();
+
+            string prefix = pRequest.Headers.TryGetValue("X-Forwarded-Prefix", out var forwardedPrefix)
+                ? forwardedPrefix.ToString()
+                : string.Empty;
+
+            string url = $"{scheme}://{host}{prefix}{pRequest.Path}";
             if (url.Contains("?"))
             {
                 url = url.Substring(0, url.IndexOf("?"));
             }
-
             url += pRequest.QueryString.ToString();
-
             return url;
         }
 
         /// <summary>
-        /// Devuelve la url semántica actual sin query. Antiguo Request.Url sin query.
+        /// Devuelve la url semántica actual sin query.
         /// </summary>
-        /// <param name="pRequest">Request</param>
-        /// <returns>Url semántica actual</returns>
         public static string RequestUrlSinQuery(HttpRequest pRequest)
         {
-            string url = pRequest.Scheme + "://" + new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request)).Authority + pRequest.PathBase;
-            return url;
+            return pRequest.Scheme + "://" + new Uri(UriHelper.GetEncodedUrl(pRequest.HttpContext.Request)).Authority + pRequest.PathBase;
         }
 
         /// <summary>
-        /// Devuelve la url semántica actual. Antiguo Request.AbsoluteUri.
+        /// Devuelve la url semántica actual.
         /// </summary>
-        /// <returns>Url semántica actual</returns>
         public string AbsoluteUri()
         {
             return RequestUrl();
         }
 
         /// <summary>
-        /// Devuelve la url semántica actual. Antiguo Request.AbsoluteUri.
+        /// Devuelve la url semántica actual.
         /// </summary>
-        /// <param name="pRequest">Request</param>
-        /// <returns>Url semántica actual</returns>
         public string AbsoluteUri(HttpRequest pRequest)
         {
             return RequestUrl(pRequest);
         }
 
         /// <summary>
-        /// Devuelve la url semántica actual. Antiguo Request.Segments.
+        /// Devuelve los segmentos de la url.
         /// </summary>
-        /// <param name="pRequest">Request</param>
-        /// <returns>Url semántica actual</returns>
         public static string[] Segments(HttpRequest pRequest)
         {
             string pathBase = pRequest.PathBase;
             string[] segmentos = pathBase.Split(new char[] { '/' });
-
             for (int i = 0; i < segmentos.Length; i++)
             {
                 segmentos[i] += "/";
             }
-
             return segmentos;
         }
 
-
         /// <summary>
-        /// Devuelve la url semántica actual. Antiguo Request.AbsolutePath.
+        /// Devuelve el path absoluto de la url.
         /// </summary>
-        /// <param name="pRequest">Request</param>
-        /// <returns>Url semántica actual</returns>
         public static string AbsolutePath(HttpRequest pRequest)
         {
             return pRequest.PathBase;
         }
 
-
         /// <summary>
-        /// Make a POST request to an url with an oauth sign and an object in the body of the request as json
+        /// Genera el UserAgent
         /// </summary>
-        /// <param name="url">Url to make the request</param>
-        /// <param name="model">Object to send in the body request as json</param>
-        /// <param name="acceptHeader">(Optional) Accept header</param>
-        /// <returns>Response of the server</returns>
-        public static string WebRequestPostWithJsonObject(string url, object model, string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
-        {
-            string json = JsonConvert.SerializeObject(model);
-            return WebRequest("POST", url, json, "application/json", acceptHeader, cabecerasAdicionales);
-        }
-
-        /// <summary>
-        /// Request an url with an oauth sign
-        /// </summary>
-        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
-        /// <param name="url">Url to make the request</param>
-        /// <param name="postData">(Optional) Post data to send in the body request</param>
-        /// <param name="contentType">(Optional) Content type of the postData</param>
-        /// <param name="acceptHeader">(Optional) Accept header</param>
-        /// <returns>Response of the server</returns>
-        public static string WebRequest(string httpMethod, string url, string postData = "", string contentType = "", string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
-        {
-            HttpContent contentData = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-            contentData.Headers.Add("UserAgent", GenerarUserAgent());
-            string result = "";
-            HttpResponseMessage response = null;
-            try
-            {
-                HttpClient client = new HttpClient();
-                response = client.PostAsync($"{url}", contentData).Result;
-                response.EnsureSuccessStatusCode();
-                result = response.Content.ReadAsStringAsync().Result;
-                return result;
-            }
-            catch (HttpRequestException ex)
-            {
-                if (!string.IsNullOrEmpty(response.Content.ReadAsStringAsync().Result))
-                {
-                    throw new HttpRequestException(response.Content.ReadAsStringAsync().Result);
-                }
-                else
-                {
-                    throw new HttpRequestException(response.ReasonPhrase);
-                }
-            }
-        }
-
-        /*
-        public static string WebRequest(string httpMethod, string url, string postData = "", string contentType = "", string acceptHeader = "", Dictionary<HttpRequestHeader, string> cabecerasAdicionales = null)
-        {
-            HttpWebRequest webRequest = null;
-            StreamWriter requestWriter = null;
-            string responseData = "";
-
-            webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
-            webRequest.Method = httpMethod;
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 200000;
-
-            string signUrl = webRequest.RequestUri.ToString();
-
-            if (!string.IsNullOrEmpty(webRequest.RequestUri.Query))
-            {
-                signUrl = webRequest.RequestUri.ToString().Replace(webRequest.RequestUri.Query, "");
-            }
-
-            if (!string.IsNullOrEmpty(contentType))
-            {
-                webRequest.ContentType = contentType;
-            }
-            if (!string.IsNullOrEmpty(acceptHeader))
-            {
-                webRequest.Accept = acceptHeader;
-            }
-
-            if (cabecerasAdicionales != null)
-            {
-                foreach (HttpRequestHeader header in cabecerasAdicionales.Keys)
-                {
-                    webRequest.Headers.Add(header, cabecerasAdicionales[header]);
-                }
-            }
-
-
-            if (httpMethod == "POST" || httpMethod == "PUT" || httpMethod == "DELETE")
-            {
-                requestWriter = new StreamWriter(webRequest.GetRequestStream());
-                try
-                {
-                    requestWriter.Write(postData);
-                }
-                finally
-                {
-                    requestWriter.Close();
-                    requestWriter = null;
-                }
-            }
-            try
-            {
-                responseData = WebResponseGet(webRequest);
-            }
-            catch (WebException ex)
-            {
-                string message = null;
-                StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-                message = sr.ReadToEnd();
-                throw new Exception(message, ex);
-            }
-
-            webRequest = null;
-
-            return responseData;
-        }*/
-
-        /// <summary>
-        /// Generate the UserAgent
-        /// </summary>
-        /// <returns>The custom UserAgent</returns>
         public static string GenerarUserAgent()
         {
             string OSVersion = Environment.OSVersion.ToString();

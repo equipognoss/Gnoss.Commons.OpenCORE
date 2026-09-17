@@ -1,26 +1,36 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Channels;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.RabbitMQ
 {
     public class RabbitMQAMQP : IAMQPClient, IDisposable
     {
+        private const int ESPERA_RECONEXION_INICIAL_SEGUNDOS = 5;
+        private const int ESPERA_RECONEXION_MAXIMA_SEGUNDOS = 60;
+
         private IConnection mConexion;
         private RabbitMQClient mGestorRabbit;
         private IModel mChannel;
+        private string mConsumerTag;
         private LoggingService mLoggingService;
         private ConfigService mConfigService;
         private ILogger mlogger;
         private ILoggerFactory mLoggerFactory;
+
+        private readonly CancellationTokenSource mCts = new CancellationTokenSource();
+        private readonly object mReconexionLock = new object();
+        private bool mReconectando;
+        private bool mDisposed;
+        private Action mAccionSuscripcion;
+
         public RabbitMQAMQP(RabbitMQClient pGestorRabbit, LoggingService loggingService, ConfigService configService, ILogger<RabbitMQAMQP> logger, ILoggerFactory loggerFactory)
         {
             mConfigService = configService;
@@ -66,142 +76,203 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
         public void ObtenerElementosDeCola(RabbitMQClient.ReceivedDelegate receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction)
         {
-            try
+            IniciarConsumoConReintentos(() => SuscribirConsumer(receivedFunction, shutdownFunction));
+        }
+
+        private void SuscribirConsumer(RabbitMQClient.ReceivedDelegate receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction)
+        {
+            IModel channel = Channel;
+            channel.BasicQos(0, 1, false);
+
+            channel.QueueDeclare(queue: mGestorRabbit.QueueName,
+                                 durable: true,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+            //Pruebas Quorum
+                                 //arguments: new Dictionary<string, object>() { { "x-queue-type", "quorum" } });
+
+            if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
             {
-                IModel channel = Channel;
-                channel.BasicQos(0, 1, false);
+                string tipoExchange = "fanout";
 
-                channel.QueueDeclare(queue: mGestorRabbit.QueueName,
-                                     durable: true,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
-                //Pruebas Quorum
-                                     //arguments: new Dictionary<string, object>() { { "x-queue-type", "quorum" } });
-
-                if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
+                if (!string.IsNullOrEmpty(mGestorRabbit.Routing))
                 {
-                    string tipoExchange = "fanout";
-
-                    if (!string.IsNullOrEmpty(mGestorRabbit.Routing))
-                    {
-                        tipoExchange = "direct";
-                    }
-
-                    channel.ExchangeDeclare(mGestorRabbit.ExchangeName, tipoExchange, true);
-
-                    channel.QueueBind(queue: mGestorRabbit.QueueName,
-                                        exchange: mGestorRabbit.ExchangeName,
-                                        routingKey: mGestorRabbit.Routing);
+                    tipoExchange = "direct";
                 }
 
-                EventingBasicConsumer eventingBasicConsumer = new EventingBasicConsumer(channel);
+                channel.ExchangeDeclare(mGestorRabbit.ExchangeName, tipoExchange, true);
 
-                
-                eventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+                channel.QueueBind(queue: mGestorRabbit.QueueName,
+                                    exchange: mGestorRabbit.ExchangeName,
+                                    routingKey: mGestorRabbit.Routing);
+            }
+
+            EventingBasicConsumer eventingBasicConsumer = new EventingBasicConsumer(channel);
+
+
+            eventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+            {
+                try
                 {
-                    try
+                    // Por si existen cosas de otro hilo, las elimino
+                    //UtilPeticion.EliminarObjetosDeHilo(Thread.CurrentThread.ManagedThreadId);
+
+                    IBasicProperties basicProperties = basicDeliveryEventArgs.BasicProperties;
+
+                    string body = Encoding.UTF8.GetString(basicDeliveryEventArgs.Body.Span);
+
+                    if (receivedFunction(body))
                     {
-                        // Por si existen cosas de otro hilo, las elimino
-                        //UtilPeticion.EliminarObjetosDeHilo(Thread.CurrentThread.ManagedThreadId);
-
-                        IBasicProperties basicProperties = basicDeliveryEventArgs.BasicProperties;
-
-                        string body = Encoding.UTF8.GetString(basicDeliveryEventArgs.Body.Span);
-
-                        if (receivedFunction(body))
-                        {
-                            channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
-                        }
-                        else
-                        {
-                            channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
-                        }
+                        channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
                     }
-                    catch (Exception ex)
+                    else
                     {
                         channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
-                        mLoggingService.GuardarLogError(ex, mlogger);
-                        throw;
                     }
-                };
-
-                eventingBasicConsumer.Shutdown += (sender, shutdownEventArgs) =>
+                }
+                catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText, mlogger);
-                    shutdownFunction();
-                };
+                    channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, true);
+                    mLoggingService.GuardarLogError(ex, mlogger);
+                    throw;
+                }
+            };
 
-                channel.BasicConsume(mGestorRabbit.QueueName, false, eventingBasicConsumer);
-            }
-            catch
+            eventingBasicConsumer.Shutdown += (sender, shutdownEventArgs) =>
             {
-                throw;
-            }
+                mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText, mlogger);
+                NotificarShutdownYReconectar(shutdownFunction);
+            };
+
+            mConsumerTag = channel.BasicConsume(mGestorRabbit.QueueName, false, eventingBasicConsumer);
         }
 
         public void ObtenerElementosDeColaReintentos(RabbitMQClient.ReceivedDelegateRetry receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction, string pErrorExchange)
         {
-            try
+            IniciarConsumoConReintentos(() => SuscribirConsumerConReintentos(receivedFunction, shutdownFunction, pErrorExchange));
+        }
+
+        private void SuscribirConsumerConReintentos(RabbitMQClient.ReceivedDelegateRetry receivedFunction, RabbitMQClient.ShutDownDelegate shutdownFunction, string pErrorExchange)
+        {
+            IModel channel = Channel;
+            channel.BasicQos(0, 1, false);
+
+            channel.QueueBind(queue: mGestorRabbit.QueueName,
+                                    exchange: mGestorRabbit.ExchangeName,
+                                    routingKey: mGestorRabbit.Routing);
+
+            EventingBasicConsumer eventingBasicConsumer = new EventingBasicConsumer(channel);
+
+
+            eventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
             {
-                IModel channel = Channel;
-                channel.BasicQos(0, 1, false);
-
-                channel.QueueBind(queue: mGestorRabbit.QueueName,
-                                        exchange: mGestorRabbit.ExchangeName,
-                                        routingKey: mGestorRabbit.Routing);
-
-                EventingBasicConsumer eventingBasicConsumer = new EventingBasicConsumer(channel);
-
-
-                eventingBasicConsumer.Received += (sender, basicDeliveryEventArgs) =>
+                try
                 {
-                    try
+                    // Por si existen cosas de otro hilo, las elimino
+                    //UtilPeticion.EliminarObjetosDeHilo(Thread.CurrentThread.ManagedThreadId);
+
+                    IBasicProperties basicProperties = basicDeliveryEventArgs.BasicProperties;
+
+                    string body = Encoding.UTF8.GetString(basicDeliveryEventArgs.Body.Span);
+                    int retryCount = GetRetryCount(basicDeliveryEventArgs);
+                    bool procesadoCorrecto = receivedFunction(body, retryCount);
+                    if(procesadoCorrecto)
                     {
-                        // Por si existen cosas de otro hilo, las elimino
-                        //UtilPeticion.EliminarObjetosDeHilo(Thread.CurrentThread.ManagedThreadId);
-
-                        IBasicProperties basicProperties = basicDeliveryEventArgs.BasicProperties;
-
-                        string body = Encoding.UTF8.GetString(basicDeliveryEventArgs.Body.Span);
-                        int retryCount = GetRetryCount(basicDeliveryEventArgs);
-                        bool procesadoCorrecto = receivedFunction(body, retryCount);
-                        if(procesadoCorrecto)
-                        {
-                            channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
-                        }
-                        else if (!procesadoCorrecto && retryCount > 3)
-                        {
-                            if (!string.IsNullOrEmpty(pErrorExchange))
-                            {
-                                SendToErrorQueue(basicDeliveryEventArgs, body, pErrorExchange);
-                            }
-                            channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
-                        }
-                        else
-                        {
-                            channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, false);
-                        }
+                        channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
                     }
-                    catch (Exception ex)
+                    else if (!procesadoCorrecto && retryCount > 3)
+                    {
+                        if (!string.IsNullOrEmpty(pErrorExchange))
+                        {
+                            SendToErrorQueue(basicDeliveryEventArgs, body, pErrorExchange);
+                        }
+                        channel.BasicAck(basicDeliveryEventArgs.DeliveryTag, false);
+                    }
+                    else
                     {
                         channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, false);
-                        mLoggingService.GuardarLogError(ex, mlogger);
-                        throw;
                     }
-                };
-
-                eventingBasicConsumer.Shutdown += (sender, shutdownEventArgs) =>
+                }
+                catch (Exception ex)
                 {
-                    mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText, mlogger);
-                    shutdownFunction();
-                };
+                    channel.BasicNack(basicDeliveryEventArgs.DeliveryTag, false, false);
+                    mLoggingService.GuardarLogError(ex, mlogger);
+                    throw;
+                }
+            };
 
-                channel.BasicConsume(mGestorRabbit.QueueName, false, eventingBasicConsumer);
-            }
-            catch
+            eventingBasicConsumer.Shutdown += (sender, shutdownEventArgs) =>
             {
-                throw;
+                mLoggingService.GuardarLogError(shutdownEventArgs.ReplyText, mlogger);
+                NotificarShutdownYReconectar(shutdownFunction);
+            };
+
+            mConsumerTag = channel.BasicConsume(mGestorRabbit.QueueName, false, eventingBasicConsumer);
+        }
+
+        /// <summary>
+        /// Notifica al worker el corte de conexión (informativo, p. ej. para logging/métricas) y reconecta
+        /// el consumer internamente. La reconexión ya no depende de que el worker reaccione al aviso.
+        /// </summary>
+        private void NotificarShutdownYReconectar(RabbitMQClient.ShutDownDelegate shutdownFunction)
+        {
+            try
+            {
+                shutdownFunction?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+            }
+
+            IniciarConsumoConReintentos(mAccionSuscripcion);
+        }
+
+        /// <summary>
+        /// Mantiene un consumer activo en la cola mientras esta instancia exista: si la suscripción falla
+        /// (broker caído al arrancar) o se cae en caliente, reintenta en segundo plano con backoff exponencial
+        /// (5s -> 60s) en vez de propagar la excepción una única vez al llamador.
+        /// </summary>
+        private void IniciarConsumoConReintentos(Action accionSuscripcion)
+        {
+            mAccionSuscripcion = accionSuscripcion;
+
+            lock (mReconexionLock)
+            {
+                if (mDisposed || mReconectando)
+                {
+                    return;
+                }
+                mReconectando = true;
+            }
+
+            Task.Run(() => BucleReconexion(accionSuscripcion));
+        }
+
+        private void BucleReconexion(Action accionSuscripcion)
+        {
+            int esperaSegundos = ESPERA_RECONEXION_INICIAL_SEGUNDOS;
+
+            while (!mCts.IsCancellationRequested && !mDisposed)
+            {
+                try
+                {
+                    accionSuscripcion();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex, $"No se ha podido conectar/suscribir el consumer de RabbitMQ para la cola '{mGestorRabbit.QueueName}'. Reintentando en {esperaSegundos}s.", mlogger);
+
+                    mCts.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(esperaSegundos));
+                    esperaSegundos = Math.Min(esperaSegundos * 2, ESPERA_RECONEXION_MAXIMA_SEGUNDOS);
+                }
+            }
+
+            lock (mReconexionLock)
+            {
+                mReconectando = false;
             }
         }
 
@@ -286,7 +357,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
             }
         }
 
-		public void AgregarElementoAColaConReintentosExchange(string message)
+		public void AgregarElementoAColaConReintentosExchange(string message, byte priority)
 		{
 
 			byte[] messageBytes = Encoding.UTF8.GetBytes(message);
@@ -296,7 +367,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
 				var properties = channel.CreateBasicProperties();
 				properties.Persistent = true;
-
+                properties.Priority = priority;
 
 				if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
 				{
@@ -325,7 +396,57 @@ namespace Es.Riam.Gnoss.RabbitMQ
 			}
 		}
 
-		public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+        public IList<string> AgregarElementosAColaConReintentosExchange(IEnumerable<string> messages, byte priority)
+        {
+            List<string> failedMessages = new List<string>();
+            using (var channel = Conexion.CreateModel())
+            {
+                channel.ConfirmSelect();
+
+                var properties = channel.CreateBasicProperties();
+                properties.Persistent = true;
+                properties.Priority = priority;
+
+                if (!string.IsNullOrEmpty(mGestorRabbit.ExchangeName))
+                {
+                    string tipoExchange = "fanout";
+
+                    if (!string.IsNullOrEmpty(mGestorRabbit.Routing))
+                    {
+                        tipoExchange = "topic";
+                    }
+
+                    channel.ExchangeDeclare(mGestorRabbit.ExchangeName, tipoExchange, true);
+                }
+                else
+                {
+                    channel.QueueDeclare(queue: mGestorRabbit.QueueName,
+                                     durable: true,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+                }
+                foreach (string message in messages)
+                {
+                    try
+                    {
+                        byte[] messageBytes = Encoding.UTF8.GetBytes(message);
+                        channel.BasicPublish(exchange: mGestorRabbit.ExchangeName,
+                                     routingKey: mGestorRabbit.QueueName,
+                                     basicProperties: properties,
+                                     body: messageBytes);
+                    }
+                    catch
+                    {
+                        mLoggingService.GuardarLogError($"Error al encolar el mensaje: \n {message} en la cola {mGestorRabbit.QueueName}.", mlogger);
+                        failedMessages.Add(message);
+                    }
+                }
+            }
+            return failedMessages;
+        }
+
+        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
         {
             List<string> failedMessages = new List<string>();
 
@@ -404,6 +525,12 @@ namespace Es.Riam.Gnoss.RabbitMQ
         /// </summary>
         public void CerrarConexionLectura()
         {
+            lock (mReconexionLock)
+            {
+                mDisposed = true;
+            }
+            mCts.Cancel();
+
             if (mChannel != null)
             {
                 mChannel.Close();
@@ -412,13 +539,45 @@ namespace Es.Riam.Gnoss.RabbitMQ
 
         public void Dispose()
         {
-            if(mChannel != null)
+            lock (mReconexionLock)
             {
-                mChannel.Close();
+                mDisposed = true;
             }
-            if(mConexion != null)
+            mCts.Cancel();
+
+            if (mChannel != null)
             {
-                mConexion.Close();
+                try
+                {
+                    if (mChannel.IsOpen)
+                    {
+                        if (!string.IsNullOrEmpty(mConsumerTag))
+                        {
+                            mChannel.BasicCancel(mConsumerTag);
+                        }
+                        mChannel.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex, mlogger);
+                }
+                mChannel = null;
+            }
+            if (mConexion != null)
+            {
+                try
+                {
+                    if (mConexion.IsOpen)
+                    {
+                        mConexion.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex, mlogger);
+                }
+                mConexion = null;
             }
         }
 
@@ -428,13 +587,15 @@ namespace Es.Riam.Gnoss.RabbitMQ
             {
                 if (mConexion == null || !mConexion.IsOpen)
                 {
-                    Dictionary<string, object> listaConexiones = null;
-
                     string cadenaRabbit = mConfigService.ObtenerRabbitMQClient(mGestorRabbit.TipoCola);
                     if ((mConexion == null || !mConexion.IsOpen) && !string.IsNullOrEmpty(cadenaRabbit))
                     {
                         ConnectionFactory connectionFactory = new ConnectionFactory();
                         connectionFactory.Uri = new Uri(cadenaRabbit);
+                        // La reconexión la gestiona IniciarConsumoConReintentos/BucleReconexion; si se deja la
+                        // auto-recovery de la librería activa, compite con ese bucle y duplica consumers tras
+                        // un corte del broker (ver docs/eficiencia-recursos/plan-fix-rabbitmq-doble-consumer-y-reconexion-arranque.md).
+                        connectionFactory.AutomaticRecoveryEnabled = false;
                         try
                         {
                             mConexion = connectionFactory.CreateConnection(RabbitMQClient.ClientName);
@@ -442,19 +603,6 @@ namespace Es.Riam.Gnoss.RabbitMQ
                         catch(Exception ex){
                             mLoggingService.GuardarLogError($"Error al crear la conexion: {cadenaRabbit}", mlogger);
                             throw;
-                        }
-                        if (listaConexiones == null)
-                        {
-                            listaConexiones = new Dictionary<string, object>();
-                        }
-
-                        if (listaConexiones.ContainsKey(mGestorRabbit.TipoCola))
-                        {
-                            listaConexiones[mGestorRabbit.TipoCola] = mConexion;
-                        }
-                        else
-                        {
-                            listaConexiones.Add(mGestorRabbit.TipoCola, mConexion);
                         }
                     }
                 }
@@ -467,7 +615,7 @@ namespace Es.Riam.Gnoss.RabbitMQ
         {
             get
             {
-                if (mChannel == null)
+                if (mChannel == null || !mChannel.IsOpen)
                 {
                     mChannel = Conexion.CreateModel();
                 }

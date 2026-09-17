@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Web;
 
 namespace Es.Riam.Util
@@ -45,7 +45,7 @@ namespace Es.Riam.Util
             anotation.topics = pTopics;
             List<SherlockEntityInfoModel> listSherlockTopicInfoModel = new List<SherlockEntityInfoModel>();
             List<SherlockEntityInfoModel> listSherlockEntityInfoModel = new List<SherlockEntityInfoModel>();
-            respuesta = JsonConvert.DeserializeObject<AnnotationResult>(_utilWeb.WebRequest(UtilWeb.Metodo.POST, UriNerSherlock, JsonConvert.SerializeObject(anotation), "application/json"));
+            respuesta = JsonSerializer.Deserialize<AnnotationResult>(_utilWeb.WebRequestStringData(UtilWeb.Metodo.POST, UriNerSherlock, JsonSerializer.Serialize(anotation), "application/json"));
             respuesta.augmentedTextDescription = UtilCadenas.AcentoToAcute(HttpUtility.UrlDecode(respuesta.augmentedTextDescription));
             foreach (AnnotationResult.Result result in respuesta.entityList)
             {
@@ -132,8 +132,8 @@ namespace Es.Riam.Util
 
                 }
             }
-            respuesta.entitiesInfo = JsonConvert.SerializeObject(listSherlockEntityInfoModel);
-            respuesta.topicsInfo = JsonConvert.SerializeObject(listSherlockTopicInfoModel);
+            respuesta.entitiesInfo = JsonSerializer.Serialize(listSherlockEntityInfoModel);
+            respuesta.topicsInfo = JsonSerializer.Serialize(listSherlockTopicInfoModel);
             return respuesta;
         }
         private static string GetFirstLabelEntity(AnnotationResult.Result.Entity entity)

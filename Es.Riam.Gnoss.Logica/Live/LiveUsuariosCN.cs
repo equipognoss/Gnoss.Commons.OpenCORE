@@ -1,8 +1,6 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.Live;
 using Es.Riam.Gnoss.AD.Live.Model;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -10,8 +8,7 @@ using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Data;
+using System.Text.Json;
 
 
 namespace Es.Riam.Gnoss.Logica.Live
@@ -23,10 +20,10 @@ namespace Es.Riam.Gnoss.Logica.Live
         private const string COLA_USUARIOS = "ColaUsuarios";
         private const string EXCHANGE = "";
 
-        private LoggingService mLoggingService;
-        private ConfigService mConfigService;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly LoggingService mLoggingService;
+        private readonly ConfigService mConfigService;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -71,11 +68,11 @@ namespace Es.Riam.Gnoss.Logica.Live
         /// <param name="pTipo">Tipo de elemento</param>
         public void InsertarFilaEnColaUsuarios(Guid pProyectoid, Guid pId, int pAccion, int pTipo, string pInfoExtra, IAvailableServices pAvailableServices)
         {
-            InsertarFilaEnCola(pProyectoid, pId, pAccion, pTipo, pInfoExtra, "", pAvailableServices);
+            InsertarFilaEnCola(pProyectoid, pId, pAccion, pTipo, pInfoExtra, pAvailableServices);
         }
 
 
-        private void InsertarFilaEnCola(Guid pProyectoid, Guid pId, int pAccion, int pTipo, string pInfoExtra, string pNombreTabla, IAvailableServices pAvailableServices)
+        private void InsertarFilaEnCola(Guid pProyectoid, Guid pId, int pAccion, int pTipo, string pInfoExtra, IAvailableServices pAvailableServices)
         {
             LiveUsuariosDS liveUsuariosDS = new LiveUsuariosDS();
             LiveUsuariosDS.ColaUsuariosRow filaCola = liveUsuariosDS.ColaUsuarios.NewColaUsuariosRow();

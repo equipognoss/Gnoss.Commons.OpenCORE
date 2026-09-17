@@ -72,7 +72,7 @@ namespace Es.Riam.Util
 		private static byte[] CrearSalt(int size)
 		{
 			// Generamos un código aleatorio para la encriptación.
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			RandomNumberGenerator rng = RandomNumberGenerator.Create();
 			byte[] buff = new byte[size];
 
 			rng.GetBytes(buff);
@@ -102,13 +102,11 @@ namespace Es.Riam.Util
 			if (p256)
 			{
 				//Usando SHA256
-				SHA256 mySHA256 = SHA256Managed.Create();
-				passwordHashed = mySHA256.ComputeHash(passwordSalted);
+				passwordHashed = SHA256.HashData(passwordSalted);
 			}
 			else
 			{
-				HashAlgorithm ha = new SHA1CryptoServiceProvider();
-				passwordHashed = ha.ComputeHash(passwordSalted);
+				passwordHashed = SHA1.HashData(passwordSalted);
 			}
 
 			// Añadimos el salt al hash en texto claro
@@ -138,29 +136,5 @@ namespace Es.Riam.Util
 
 			return true;
 		}
-
-		/// <summary>
-		/// Genera un resumen MD5 a partir de un string
-		/// </summary>
-		/// <param name="pCadena">string a resumir</param>
-		/// <returns>string resumido</returns>
-		public static string GenerarMD5(string pCadena)
-		{
-			MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-
-			byte[] byteArray = Encoding.ASCII.GetBytes(pCadena);
-
-			byteArray = md5.ComputeHash(byteArray);
-
-			string hashedValue = "";
-
-			foreach (byte b in byteArray)
-			{
-				hashedValue += b.ToString("x2");
-			}
-
-			return hashedValue;
-		}
-
 	}
 }

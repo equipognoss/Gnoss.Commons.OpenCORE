@@ -1,5 +1,6 @@
 ﻿using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.OAuthAD;
+using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,15 @@ namespace Es.Riam.Gnoss.Web.OAuthAD
            : base(loggingService, dbContextOptions, configService, logger, loggerFactory, pDefaultSchema)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ConsumerData>()
+                .Property(e => e.FechaAlta)
+                .HasColumnType("timestamp without time zone");
         }
     }
 }

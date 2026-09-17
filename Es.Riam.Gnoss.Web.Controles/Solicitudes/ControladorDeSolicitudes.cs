@@ -53,11 +53,12 @@ using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
+using NetVips;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using Proyecto = Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS.Proyecto;
@@ -1473,17 +1474,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                     servicioImagenes.BorrarImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString() + ".png");
                     mLoggingService.AgregarEntradaDependencia("Borrar imagen desde servicio imagenes", false, "GuardarFotoPersona", sw, true);
 
-                    SixLabors.ImageSharp.Image image = UtilImages.ConvertirArrayBytesEnImagen(resultado);
+                    using var image = UtilImages.ConvertirArrayBytesEnImagen(resultado);
 
                     //Ajusto su tamaño
-                    SixLabors.ImageSharp.SizeF tamanioProporcional = UtilImages.CalcularTamanioProporcionado(image, 54, 54);
-                    image = UtilImages.AjustarImagen(image, tamanioProporcional.Width, tamanioProporcional.Height);
+                    using var resized = UtilImages.AjustarImagen(image, 54, 54);
 
-                    //Guardo la imagen en un archivo temporal
-                    MemoryStream ms = new MemoryStream();
-                    image.SaveAsPng(ms);
+                    servicioImagenes.AgregarImagen(resized.PngsaveBuffer(),
+                        UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString() + "_peque", ".png");
 
-                    servicioImagenes.AgregarImagen(ms.ToArray(), UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString() + "_peque", ".png");
                 }
             }
             catch (Exception)
@@ -1519,16 +1517,16 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                     servicioImagenes.BorrarImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString() + ".png");
                     mLoggingService.AgregarEntradaDependencia("Borrar imagen desde servicio imagenes", false, "GuardarFotoPersona", sw, true);
 
-                    SixLabors.ImageSharp.Image image = UtilImages.ConvertirArrayBytesEnImagen(pFila.Logotipo);
+                    using var image = UtilImages.ConvertirArrayBytesEnImagen(pFila.Logotipo);
 
-                    //Ajusto su tamaño
-                    SixLabors.ImageSharp.SizeF tamanioProporcional = UtilImages.CalcularTamanioProporcionado(image, 54, 54);
-                    image = UtilImages.AjustarImagen(image, tamanioProporcional.Width, tamanioProporcional.Height);
+                    using var resized = UtilImages.AjustarImagen(image, 54, 54);
 
-                    //Guardo la imagen en un archivo temporal
-                    MemoryStream ms = new MemoryStream();
-                    image.SaveAsPng(ms);
-                    servicioImagenes.AgregarImagen(ms.ToArray(), UtilArchivos.ContentImagenesOrganizaciones + "/" + pFila.OrganizacionID.ToString() + "_peque", ".png");
+
+                    // Guardo la imagen
+                    servicioImagenes.AgregarImagen(
+                        resized.PngsaveBuffer(),
+                        UtilArchivos.ContentImagenesOrganizaciones + "/" + pFila.OrganizacionID.ToString() + "_peque",
+                        ".png");
                 }
             }
             catch (Exception)
@@ -1592,16 +1590,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Solicitudes
                     servicioImagenes.BorrarImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString() + ".png");
                     mLoggingService.AgregarEntradaDependencia("Borrar imagen desde servicio imagenes", false, "SubirFoto", sw, true);
 
-                    SixLabors.ImageSharp.Image image = UtilImages.ConvertirArrayBytesEnImagen(pFila.Foto);
+                    using var image = UtilImages.ConvertirArrayBytesEnImagen(pFila.Foto);
 
-                    //Ajusto su tamaño
-                    SixLabors.ImageSharp.SizeF tamanioProporcional = UtilImages.CalcularTamanioProporcionado(image, 54, 54);
-                    image = UtilImages.AjustarImagen(image, tamanioProporcional.Width, tamanioProporcional.Height);
+                    using var resized = UtilImages.AjustarImagen(image, 54, 54);
 
-                    //Guardo la imagen en un archivo temporal
-                    MemoryStream ms = new MemoryStream();
-                    image.SaveAsPng(ms);
-                    servicioImagenes.AgregarImagen(ms.ToArray(), UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString() + "_peque", ".png");
+                    // Guardo la imagen
+                    servicioImagenes.AgregarImagen(
+                        resized.PngsaveBuffer(),
+                        UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString() + "_peque",
+                        ".png");
                 }
             }
             catch (Exception)

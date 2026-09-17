@@ -165,7 +165,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
                     pQuery = pQuery.Trim().Substring(6);
                 }
 
-                NameValueCollection parametros = new NameValueCollection();
+                Dictionary<string, string> parametros = new Dictionary<string, string>();
                 parametros.Add("query", pQuery);
                 //parametros.Add("timeout", TimeOutVirtuoso.ToString());
                 //parametros.Add("format", "text/csv");
@@ -211,7 +211,7 @@ namespace Es.Riam.Gnoss.AD.Virtuoso
             return resultado;
         }
 
-        private int ActualizarVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, NameValueCollection pParametros)
+        private int ActualizarVirtuoso_WebClient(VirtuosoConnectionData pVirtuosoConnectionData, string pQuery, Dictionary<string, string> pParametros)
         {
             return mServicesUtilVirtuosoAndReplication.ActualizarVirtuoso_WebClient(pVirtuosoConnectionData, pQuery, pParametros);
         }

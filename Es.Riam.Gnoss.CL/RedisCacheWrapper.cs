@@ -1,6 +1,7 @@
-﻿using BeetleX.Redis;
+using BeetleX.Redis;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,52 +9,69 @@ namespace Es.Riam.Gnoss.CL
 {
     public class RedisCacheWrapper : IDisposable
     {
-        private Dictionary<string, RedisDB> redisClientLectura;
-        private Dictionary<string, RedisDB> redisClientEscritura;
+        private ConcurrentDictionary<string, RedisDB> redisClientLectura;
+        private ConcurrentDictionary<string, RedisDB> redisClientEscritura;
         public IMemoryCache Cache { get; set; }
         public RedisCacheWrapper(IMemoryCache cache)
         {
             Cache = cache;
-            redisClientLectura = new Dictionary<string, RedisDB>();
-            redisClientEscritura = new Dictionary<string, RedisDB>();
+            redisClientLectura  = new ConcurrentDictionary<string, RedisDB>();
+            redisClientEscritura = new ConcurrentDictionary<string, RedisDB>();
         }
         public RedisCacheWrapper()
         {
-            redisClientLectura = new Dictionary<string, RedisDB>();
-            redisClientEscritura = new Dictionary<string, RedisDB>();
+            redisClientLectura  = new ConcurrentDictionary<string, RedisDB>();
+            redisClientEscritura = new ConcurrentDictionary<string, RedisDB>();
         }
         public RedisDB RedisLectura(string pPoolName)
         {
-            if (redisClientLectura.ContainsKey(pPoolName))
+            if (redisClientLectura.TryGetValue(pPoolName, out RedisDB db))
             {
-                return redisClientLectura[pPoolName];
+                return db;
             }
             return null;
         }
 
         public RedisDB RedisEscritura(string pPoolName)
         {
-            if (redisClientEscritura.ContainsKey(pPoolName))
+            if (redisClientEscritura.TryGetValue(pPoolName, out RedisDB db))
             {
-                return redisClientEscritura[pPoolName];
+                return db;
             }
             return null;
         }
 
         public void AddRedisEscritura(string pPoolName, RedisDB redisClient)
         {
-            redisClientEscritura.Add(pPoolName, redisClient);
+            RedisDB anterior = null;
+            redisClientEscritura.AddOrUpdate(pPoolName, redisClient, (clave, previo) =>
+            {
+                anterior = previo;
+                return redisClient;
+            });
+            if (anterior != null && !ReferenceEquals(anterior, redisClient))
+            {
+                anterior.Dispose();
+            }
         }
         public void AddRedisLectura(string pPoolName, RedisDB redisClient)
         {
-            redisClientLectura.Add(pPoolName, redisClient);
+            RedisDB anterior = null;
+            redisClientLectura.AddOrUpdate(pPoolName, redisClient, (clave, previo) =>
+            {
+                anterior = previo;
+                return redisClient;
+            });
+            if (anterior != null && !ReferenceEquals(anterior, redisClient))
+            {
+                anterior.Dispose();
+            }
         }
 
         public void CerrarConexionesEscritura()
         {
             foreach (var item in redisClientEscritura.Values)
             {
-                //GuardarLog($"Dispose escritura: El DB es: {item.DB}");
                 item.Dispose();
             }
         }
@@ -62,14 +80,12 @@ namespace Es.Riam.Gnoss.CL
         {
             foreach (var item in redisClientLectura.Values)
             {
-                //GuardarLog($"Dispose lectura: El DB es: {item.DB}");
                 item.Dispose();
             }
         }
 
         public void Dispose()
         {
-            
             CerrarConexionesEscritura();
             CerrarConexionesLectura();
         }

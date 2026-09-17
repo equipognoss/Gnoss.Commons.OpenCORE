@@ -219,7 +219,7 @@
     <Resource tag="NAVEGACION">Navegación</Resource>
     <Resource tag="MIS_IDENTIDADES">MY IDENTITIES</Resource>
     <Resource tag="ARRASTRA_Y_SUELTA">Drag and drop a photo for your profile in the dotted area</Resource>
-    <Resource tag="IMAGENES_FORMATO_JPG_PNG">Images in .PNG or .JPG format</Resource>
+    <Resource tag="IMAGENES_FORMATO_JPG_PNG">Images in .PNG, .JPG or .WEBP format</Resource>
     <Resource tag="PESO_MAXIMO_250KB">Maximum image weight 250kb</Resource>
     <Resource tag="X_HAN_COMENTADO_EN">have commented on</Resource>
     <Resource tag="INTRODUCE_APELLIDOS">Enter your last name</Resource>
@@ -794,6 +794,7 @@
     <Resource tag="SEGUIDOR">Follower</Resource>
     <Resource tag="SEGUIDORES">Followers</Resource>
     <Resource tag="PERFILENWEB">Profile on the website</Resource>
+    <Resource tag="CONFIGURARNOTIFICACIONES">Notification settings</Resource>
     <Resource tag="EDITARPREFERENCIAS">Edit preferences</Resource>
     <Resource tag="GUARDARPREFERENCIAS">Save preferences</Resource>
     <Resource tag="USUARIOSINACTIVIDAD">
@@ -992,7 +993,7 @@
     <Resource tag="SUSCRIPCIONCORRECTA">Subscription successful</Resource>
     <Resource tag="SUSCRIPCIONINCORRECTA">An error occurred while the subscription was created</Resource>
     <Resource tag="DESEASRECIBIRNEWSLETTER">You want to receive the newsletter</Resource>
-    <Resource tag="SECCIONNOTIFICACIONPERFIL">notifications section of your profile</Resource>
+    <Resource tag="SECCIONNOTIFICACIONPERFIL">configure notifications section of your profile</Resource>
     <Resource tag="SECCIONSUSCRIBETECOMUNIDAD">subscribe section of @1@</Resource>
   </page>
   <page name="BANDEJAENTRADA">
@@ -1231,7 +1232,7 @@
 	<Resource tag="DESEAELIMINARVERSION">Do you want to delete this version of the resource?</Resource>
 	<Resource tag="ABREVENTANANUEVA">It is opened in a new window</Resource>
     <Resource tag="LECCCIONESDE">Lessons of:</Resource>
-    <Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif)</Resource>
+    <Resource tag="FORMATONOVALIDO">The format of the image you are trying to import is not valid (.jpg, .png, .jpeg, .gif, .webp)</Resource>
   </page>
   <page name="PERFILBASERECURSOSFICHA">
     <Resource tag="AGREGARCATEGORIA">Add resource to category</Resource>
@@ -2157,7 +2158,10 @@
   </page>
   <page name="CONFIGURACIONGNOSS">
     <Resource tag="SOLICITUDCONTACTO">Contact and friend requests</Resource>
+    <Resource tag="MENSAJESGNOSS">Messages received in the community</Resource>
+    <Resource tag="INTRONOTIFICACIONES">Choose what you want to be notified about by email.</Resource>
     <Resource tag="COMENTARIOSRECURSOS">Comments to my resources</Resource>
+    <Resource tag="NUEVOSSEGUIDORES">New followers of my profile</Resource>
     <Resource tag="INVITACIONCOMUNIDAD">Invitations to join a community</Resource>
     <Resource tag="INVITACIONORGANIZACION">Invitations to represent an organization</Resource>
     <Resource tag="BOLETINESSUSCRIPCIONES">Subscription newsletters</Resource>
@@ -3853,6 +3857,14 @@
 	<Resource tag="ADMINISTRARDESPLIEGUES">Deployments</Resource>
 	<Resource tag="ADMINISTRAINTEGRACIONCONTINUA">Upload Changes</Resource>
   </page>
+	<page name="ADMINCARGAMASIVA">
+		<Resource tag="CARGAMASIVA">Bulk Upload</Resource>
+		<Resource tag="LISTABLANCA">Whitelist</Resource>
+		<Resource tag="DESCCOMUNIDAD">Whitelist configuration for the community bulk upload service</Resource>
+		<Resource tag="DESCECOSISTEMA">Whitelist configuration for the ecosystem bulk upload service</Resource>
+		<Resource tag="INTRODUCEURL">Enter a valid full URL that will be allowed to call the bulk upload service</Resource>
+		<Resource tag="DESEAELIMINARDOMINIO">Do you want to delete the selected URL?</Resource>
+	</page>
 	<page name="DEVTOOLS">
 		<!-- Traducciones menu lateral devtools-->
 		<Resource tag="ADMINISTRAREVENTOSEXTERNOS">External events</Resource>

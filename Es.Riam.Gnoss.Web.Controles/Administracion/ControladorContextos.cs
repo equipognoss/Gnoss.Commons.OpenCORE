@@ -445,7 +445,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             try
             {
                 string peticion = $"{UrlApiDesplieguesEntornoSiguiente}/PropiedadesIntegracion?nombreProy={ProyectoSeleccionado.NombreCorto}&UsuarioID={pUsuarioID}";
-                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, todasLasPropiedadesIntegracionContinua, "");
+                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, todasLasPropiedadesIntegracionContinua);
             }
             catch
             {

@@ -40,5 +40,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper.Model
         public string name { get; set; }
         public string extension { get; set; }
         public byte[] file { get; set; }
+        public bool error_if_exists { get; set; }
     }
 }

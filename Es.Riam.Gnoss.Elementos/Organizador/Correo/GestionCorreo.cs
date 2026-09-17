@@ -1,5 +1,7 @@
+using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
 using Es.Riam.Gnoss.AD.Notificacion;
 using Es.Riam.Gnoss.AD.Organizador.Correo;
 using Es.Riam.Gnoss.AD.Organizador.Correo.Model;
@@ -14,20 +16,15 @@ using Es.Riam.Gnoss.Logica.Notificacion;
 using Es.Riam.Gnoss.Logica.Organizador.Correo;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.Interfaces.InterfacesOpen;
+using Es.Riam.Util;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
-using Es.Riam.Util;
 using IDE = Es.Riam.Gnoss.Elementos.Identidad.Identidad;
-using Es.Riam.Gnoss.AD.EntityModel.Models.IdentidadDS;
-using Es.Riam.AbstractsOpen;
-using Es.Riam.Interfaces.InterfacesOpen;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
-using Microsoft.Extensions.Logging;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 
 namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 {
@@ -60,7 +57,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
     /// Gestor de correo
     /// </summary>
     [Serializable]
-    public class GestionCorreo : GestionGnoss, ISerializable, IDisposable
+    public class GestionCorreo : GestionGnoss, ISerializable
     {
         #region Miembros
 
@@ -196,6 +193,11 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
             mAvailableServices = availableServices;
         }
 
+        protected GestionCorreo(SerializationInfo info, StreamingContext context): base(info, context)
+        {
+
+        }
+
         #endregion
 
         #region Métodos generales
@@ -208,13 +210,11 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <param name="pAsunto">Asunto del correo</param>
         /// <param name="pCuerpo">Cuerpo del correo</param>
         /// <param name="pUrlBase">Url base</param>
-        public Guid AgregarCorreo(Guid pAutor, List<Guid> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, Elementos.ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTiposNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
+        public Guid AgregarCorreo(Guid pAutor, List<Guid> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTiposNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
         {
-            //Dictionary<Guid, bool> listaDestinatios = new Dictionary<Guid, bool>();
             List<Guid> listaDestinatios = new List<Guid>();
             foreach (Guid id in pDestinatarios)
             {
-                //listaDestinatios.Add(id, false);
                 listaDestinatios.Add(id);
             }
 
@@ -236,7 +236,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                 listaDestinatios.Add(id, false);
             }
             Guid correoID = Guid.NewGuid();
-            AgregarCorreoExterno(correoID, pAutor, listaDestinatios, pAsunto, pCuerpo, pUrlBase, TipoEnvioCorreoBienvenida.CorreoExterno, pProyecto, pTiposNotificacion, pEnviarDatosConTiempos, pLanguageCode, true);
+            AgregarCorreoExterno(correoID, pAutor, listaDestinatios, pAsunto, pCuerpo, pUrlBase, pProyecto, pTiposNotificacion, pEnviarDatosConTiempos, pLanguageCode, true);
 
             return correoID;
         }
@@ -251,7 +251,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         public Guid AgregarCorreoTutorGrupos(Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, Elementos.ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTiposNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
         {
             Guid correoID = Guid.NewGuid();
-            AgregarCorreoExterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, TipoEnvioCorreoBienvenida.CorreoExterno, pProyecto, pTiposNotificacion, pEnviarDatosConTiempos, pLanguageCode, true);
+            AgregarCorreoExterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pProyecto, pTiposNotificacion, pEnviarDatosConTiempos, pLanguageCode, true);
 
             return correoID;
         }
@@ -277,7 +277,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <param name="pCuerpo">Cuerpo del correo</param>
         /// <param name="pUrlBase">Url base</param>
         /// <param name="pEnviarMail">TRUE si se debe enviar por mail, FALSE en caso contrario</param>
-        public Guid AgregarCorreo(Guid pAutor, List<Guid> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, TipoEnvioCorreoBienvenida pEnvioCorreoBienvenida, Elementos.ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTipoNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
+        public Guid AgregarCorreo(Guid pAutor, List<Guid> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, TipoEnvioCorreoBienvenida pEnvioCorreoBienvenida, ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTipoNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
         {
             Dictionary<Guid, bool> listaDestinatios = new Dictionary<Guid, bool>();
             foreach (Guid id in pDestinatarios)
@@ -297,7 +297,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <param name="pCuerpo">Cuerpo del correo</param>
         /// <param name="pUrlBase">Url base</param>
         /// <param name="pEnviarMail">TRUE si se debe enviar por mail, FALSE en caso contrario</param>
-        public Guid AgregarCorreo(Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, TipoEnvioCorreoBienvenida pEnvioCorreoBienvenida, Elementos.ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTipoNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
+        public Guid AgregarCorreo(Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, TipoEnvioCorreoBienvenida pEnvioCorreoBienvenida, ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTipoNotificacion, string pLanguageCode, bool pEnviarDatosConTiempos = false)
         {
             Guid correoID = Guid.Empty;
             if (pDestinatarios.Count > 0)
@@ -306,16 +306,16 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                 {
                     case TipoEnvioCorreoBienvenida.CorreoInterno:
                         correoID = Guid.NewGuid();
-                        AgregarCorreoInterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pEnvioCorreoBienvenida, pProyecto, pEnviarDatosConTiempos);
+                        AgregarCorreoInterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pEnviarDatosConTiempos);
                         break;
                     case TipoEnvioCorreoBienvenida.CorreoExterno:
                         correoID = Guid.NewGuid();
-                        AgregarCorreoExterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pEnvioCorreoBienvenida, pProyecto, pTipoNotificacion, pEnviarDatosConTiempos, pLanguageCode);
+                        AgregarCorreoExterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pProyecto, pTipoNotificacion, pEnviarDatosConTiempos, pLanguageCode);
                         break;
                     case TipoEnvioCorreoBienvenida.CorreoInternoYExterno:
                         correoID = Guid.NewGuid();
-                        AgregarCorreoInterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pEnvioCorreoBienvenida, pProyecto, pEnviarDatosConTiempos);
-                        AgregarCorreoExterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pEnvioCorreoBienvenida, pProyecto, pTipoNotificacion, pEnviarDatosConTiempos, pLanguageCode);
+                        AgregarCorreoInterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pEnviarDatosConTiempos);
+                        AgregarCorreoExterno(correoID, pAutor, pDestinatarios, pAsunto, pCuerpo, pUrlBase, pProyecto, pTipoNotificacion, pEnviarDatosConTiempos, pLanguageCode);
                         break;
                 }
             }
@@ -323,7 +323,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
             return correoID;
         }
 
-        private void AgregarCorreoInterno(Guid pCorreoID, Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, TipoEnvioCorreoBienvenida pEnvioCorreoBienvenida, Elementos.ServiciosGenerales.Proyecto pProyecto, bool pEnviarDatosConTiempos)
+        private void AgregarCorreoInterno(Guid pCorreoID, Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, bool pEnviarDatosConTiempos)
         {
             if (mCorreoDS == null)
             {
@@ -457,7 +457,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
             #endregion
         }
 
-        private void AgregarCorreoExterno(Guid pCorreoID, Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, TipoEnvioCorreoBienvenida pEnvioCorreoBienvenida, Elementos.ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTipoNotificacion, bool pEnviarDatosConTiempos, string pLanguageCode, bool pEsMensajeTutor = false)
+        private void AgregarCorreoExterno(Guid pCorreoID, Guid pAutor, Dictionary<Guid, bool> pDestinatarios, string pAsunto, string pCuerpo, string pUrlBase, ServiciosGenerales.Proyecto pProyecto, TiposNotificacion pTipoNotificacion, bool pEnviarDatosConTiempos, string pLanguageCode, bool pEsMensajeTutor = false)
         {
             List<Guid> listaPersonas = new List<Guid>();
             List<Guid> listaGrupos = new List<Guid>();
@@ -539,15 +539,12 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <param name="pEsEcosistemaSinMetaProyecto"></param>
         /// <param name="pParametroProyecto"></param>
         /// <returns></returns>
-        public bool EsEcosistemaMetaProyectoYTieneMensajePersonalizadoBienvenida(bool pEsEcosistemaSinMetaProyecto, Dictionary<string, string> pParametroProyecto)
+        public static bool EsEcosistemaMetaProyectoYTieneMensajePersonalizadoBienvenida(bool pEsEcosistemaSinMetaProyecto, Dictionary<string, string> pParametroProyecto)
         {
             bool enviarEmail = false;
-            if (pEsEcosistemaSinMetaProyecto)
+            if (pEsEcosistemaSinMetaProyecto && pParametroProyecto.ContainsKey(ParametroAD.TipoEnviarMensajeBienvenida))
             {
-                if (pParametroProyecto.ContainsKey(ParametroAD.TipoEnviarMensajeBienvenida))
-                {
-                    enviarEmail = true;
-                }
+                enviarEmail = true;
             }
             return enviarEmail;
         }
@@ -862,7 +859,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 
                         if (grupoSinAcentos.Equals(posibleGrupoSinAcentos))
                         {
-                            foreach (IDE amigo in GrupoAmigosObtenerAmigos(grupoAmigos).Values)
+                            foreach (IDE amigo in GrupoAmigosObtenerAmigos().Values)
                             {
                                 if (!lista.Contains(amigo.Clave))
                                 {
@@ -880,7 +877,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
             return lista;
         }
 
-        private Dictionary<Guid, Es.Riam.Gnoss.Elementos.Identidad.Identidad> GrupoAmigosObtenerAmigos(AD.EntityModel.Models.IdentidadDS.GrupoAmigos grupoAmigos)
+        private Dictionary<Guid, Es.Riam.Gnoss.Elementos.Identidad.Identidad> GrupoAmigosObtenerAmigos()
         {
             Dictionary<Guid, Es.Riam.Gnoss.Elementos.Identidad.Identidad> listaAmigos = new Dictionary<Guid, Es.Riam.Gnoss.Elementos.Identidad.Identidad>();
 
@@ -1150,17 +1147,17 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// </summary>
         /// <param name="pInfo">Datos serializados</param>
         /// <param name="pContext">Contexto de serialización</param>
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo pInfo, StreamingContext pContext)
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            pInfo.AddValue("CorreoDS", CorreoDS);
-            pInfo.AddValue("GestorAmigos", GestorAmigos);
-            pInfo.AddValue("GestorIdentidades", GestorIdentidades);
-            pInfo.AddValue("GestorNotificaciones", GestorNotificaciones);
+            base.GetObjectData(info, context);
+            info.AddValue("CorreoDS", CorreoDS);
+            info.AddValue("GestorAmigos", GestorAmigos);
+            info.AddValue("GestorIdentidades", GestorIdentidades);
+            info.AddValue("GestorNotificaciones", GestorNotificaciones);
 
             if (IdentidadActual != null)
             {
-                pInfo.AddValue("IdentidadActual", IdentidadActual.Clave);
+                info.AddValue("IdentidadActual", IdentidadActual.Clave);
             }
         }
 
@@ -1185,8 +1182,8 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="pDisposing">Determina si se está llamando desde el Dispose()</param>
-        protected override void Dispose(bool pDisposing)
+        /// <param name="disposing">Determina si se está llamando desde el Dispose()</param>
+        protected override void Dispose(bool disposing)
         {
             if (!this.mDisposed)
             {
@@ -1194,7 +1191,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
 
                 try
                 {
-                    if (pDisposing)
+                    if (disposing)
                     {
                         //Liberamos todos los recursos administrados que hemos añadido a esta clase
                         if (this.mListaCorreosRecibidos != null)
@@ -1238,7 +1235,7 @@ namespace Es.Riam.Gnoss.Elementos.Organizador.Correo
                     mGestorNotificaciones = null;
 
                     // Llamo al dispose de la clase base
-                    base.Dispose(pDisposing);
+                    base.Dispose(disposing);
                 }
             }
         }

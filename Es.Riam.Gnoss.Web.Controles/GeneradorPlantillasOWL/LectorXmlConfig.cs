@@ -1,4 +1,4 @@
-using Es.Riam.Gnoss.AD.Documentacion;
+Ôªøusing Es.Riam.Gnoss.AD.Documentacion;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -24,18 +24,18 @@ using System.Xml;
 namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 {
     /// <summary>
-    /// Clase lectora del xml de configuraciÛn.
+    /// Clase lectora del xml de configuraci√≥n.
     /// </summary>
     public class LectorXmlConfig
     {
         #region Miembros
 
-        #region Est·ticos
+        #region Est√°ticos
 
         /// <summary>
         /// Nodo de ConfiguracionGeneral.
         /// </summary>
-        public static string NodoConfigGen = "ConfiguracionGeneral"; //TambiÈn est· en Ontologia, si se cambia aquÌ, hay que cambiarlo allÌ.
+        public static string NodoConfigGen = "ConfiguracionGeneral"; //Tambi√©n est√° en Ontologia, si se cambia aqu√≠, hay que cambiarlo all√≠.
 
         /// <summary>
         /// Estilos ya cargados.
@@ -47,7 +47,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         #endregion
 
         /// <summary>
-        /// ID de la ontolgÌa.
+        /// ID de la ontolg√≠a.
         /// </summary>
         private Guid mOntologiaID;
 
@@ -62,17 +62,17 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         private string mNombreCortoProy;
 
         /// <summary>
-        /// estilo de configuraciÛn general.
+        /// estilo de configuraci√≥n general.
         /// </summary>
         private EstiloPlantillaConfigGen estiloConfig;
 
         /// <summary>
-        /// Fichero de configuraciÛn de la base de datos
+        /// Fichero de configuraci√≥n de la base de datos
         /// </summary>
         private string mFicheroConfiguracionBD;
 
         /// <summary>
-        /// Nombre de la ontologÌa m·s el tipo de entidad para xml fraccionados por entidad.
+        /// Nombre de la ontolog√≠a m√°s el tipo de entidad para xml fraccionados por entidad.
         /// </summary>
         private string mNombreOntoConTipoEntidad;
 
@@ -113,7 +113,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="pOntologiaID">ID de la ontolgÌa</param>
+        /// <param name="pOntologiaID">ID de la ontolg√≠a</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
         public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, ILogger<LectorXmlConfig> logger, ILoggerFactory loggerFactory)
         {
@@ -131,9 +131,9 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="pOntologiaID">ID de la ontolgÌa</param>
+        /// <param name="pOntologiaID">ID de la ontolg√≠a</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciÛn de BD</param>
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraci√≥n de BD</param>
         public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, string pFicheroConfiguracionBD, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, ILogger<LectorXmlConfig> logger, ILoggerFactory loggerFactory)
             : this(pOntologiaID, pProyectoID, loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD,logger,loggerFactory)
         {
@@ -145,10 +145,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="pOntologiaID">ID de la ontolgÌa</param>
+        /// <param name="pOntologiaID">ID de la ontolg√≠a</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
-        /// <param name="pFicheroConfiguracionBD">Fichero de configuraciÛn de BD</param>
-        /// <param name="pNombreOnto">Nombre de la ontologÌa</param>
+        /// <param name="pFicheroConfiguracionBD">Fichero de configuraci√≥n de BD</param>
+        /// <param name="pNombreOnto">Nombre de la ontolog√≠a</param>
         /// <param name="pTipoEntidad">Tipo de entidad con namespace</param>
         public LectorXmlConfig(Guid pOntologiaID, Guid pProyectoID, string pFicheroConfiguracionBD, string pNombreOnto, string pTipoEntidad, LoggingService loggingService, EntityContext entityContext, ConfigService configService, RedisCacheWrapper redisCacheWrapper, VirtuosoAD virtuosoAD, ILogger<LectorXmlConfig> logger, ILoggerFactory loggerFactory)
             : this(pOntologiaID, pProyectoID, pFicheroConfiguracionBD, loggingService, entityContext, configService, redisCacheWrapper, virtuosoAD,logger, loggerFactory)
@@ -160,13 +160,13 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
         #endregion
 
-        #region MÈtodos
+        #region M√©todos
 
         /// <summary>
-        /// Obtiene la configuraciÛn xml de una ontologÌa.
+        /// Obtiene la configuraci√≥n xml de una ontolog√≠a.
         /// </summary>
         /// 
-        /// <returns>Diccionario con la configuraciÛn</returns>
+        /// <returns>Diccionario con la configuraci√≥n</returns>
         public Dictionary<string, List<EstiloPlantilla>> ObtenerConfiguracionXml()
         {
             DocumentacionCL docCL = null;
@@ -229,7 +229,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                 }
                 catch (Exception ex)
                 {
-                    //puede que otro proceso haya cargado esta variable est·tica
+                    //puede que otro proceso haya cargado esta variable est√°tica
                 }
             }
 
@@ -237,11 +237,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene la configuraciÛn xml de una ontologÌa.
+        /// Obtiene la configuraci√≥n xml de una ontolog√≠a.
         /// </summary>
         /// <param name="pTextoXML">Contenido Xml de la plantilla</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
-        /// <returns>Diccionario con la configuraciÛn</returns>
+        /// <returns>Diccionario con la configuraci√≥n</returns>
         public Dictionary<string, List<EstiloPlantilla>> ObtenerConfiguracionXml(string pTextoXML, Guid pProyectoID, int pNumIntentos = 0)
         {
             byte[] byteArray = null;
@@ -287,11 +287,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene la configuraciÛn xml de una ontologÌa.
+        /// Obtiene la configuraci√≥n xml de una ontolog√≠a.
         /// </summary>
         /// <param name="pByteArray">Contenido Xml en byte[] de la plantilla</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
-        /// <returns>Diccionario con la configuraciÛn</returns>
+        /// <returns>Diccionario con la configuraci√≥n</returns>
         public Dictionary<string, List<EstiloPlantilla>> ObtenerConfiguracionXml(byte[] pByteArray, Guid pProyectoID)
         {
             ProyectoCL proyCL = null;
@@ -694,7 +694,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                 }
 
 
-                #region Ocultar partes men˙ documento
+                #region Ocultar partes men√∫ documento
 
                 if (GetNodo(nodoConfig, "OcultarPublicadorDoc") != null)
                 {
@@ -1402,9 +1402,9 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Completa un elemento ordenado a partir de un nodo botÛn.
+        /// Completa un elemento ordenado a partir de un nodo bot√≥n.
         /// </summary>
-        /// <param name="pNodoBoton">Nodo botÛn</param>
+        /// <param name="pNodoBoton">Nodo bot√≥n</param>
         /// <param name="pElemOrd">Elemento ordenado</param>
         private void CompletarElemOrdNodoBoton(XmlNode pNodoBoton, ElementoOrdenado pElemOrd)
         {
@@ -1558,6 +1558,30 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                     else if (nodo.InnerText == "EmbebedObject")
                     {
                         estiloProp.TipoCampoSetter = TipoCampoOntologia.EmbebedObject;
+                    }
+                    else if (nodo.InnerText == "ImagenOpenSD")
+                    {
+                        estiloProp.TipoCampoSetter = TipoCampoOntologia.ImagenOpenSD;
+                    }
+                    else if (nodo.InnerText == "ImagenOpenSDSequence")
+                    {
+                        estiloProp.TipoCampoSetter = TipoCampoOntologia.ImagenOpenSDSequence;
+                    }
+                    else if (nodo.InnerText == "ImagenOpenSDReferenceHorizontal")
+                    {
+                        estiloProp.TipoCampoSetter = TipoCampoOntologia.ImagenOpenSDReferenceHorizontal;
+                    }
+                    else if (nodo.InnerText == "ImagenOpenSDReferenceVertical")
+                    {
+                        estiloProp.TipoCampoSetter = TipoCampoOntologia.ImagenOpenSDReferenceVertical;
+                    }
+                    else if (nodo.InnerText == "ImagenOpenSDCollectionHorizontal")
+                    {
+                        estiloProp.TipoCampoSetter = TipoCampoOntologia.ImagenOpenSDCollectionHorizontal;
+                    }
+                    else if (nodo.InnerText == "ImagenOpenSDCollectionRows")
+                    {
+                        estiloProp.TipoCampoSetter = TipoCampoOntologia.ImagenOpenSDCollectionRows;
                     }
                 }
                 else if (nodo.Name == "UsarChecks")
@@ -1734,7 +1758,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                 {
                     estiloProp.ValoresSepComas = true;
                 }
-                else if (nodo.Name == "FormatoFechaMesAÒo")
+                else if (nodo.Name == "FormatoFechaMesA√±o")
                 {
                     estiloProp.FechaMesAnio = true;
                 }
@@ -2180,7 +2204,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
                     #endregion
 
-                    #region Tesauro Sem·ntico
+                    #region Tesauro Sem√°ntico
 
                     //IMPORTANTE: Si se cambia el orden de las propiedades hay que buscar y cambiar las apariciones de .PropiedadesEdicion[2] por ejemplo.
 
@@ -2198,7 +2222,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                             estiloProp.SelectorEntidad.PropiedadesEdicion.Add(EstiloPlantilla.Source_TesSem);
                         }
 
-                        if (estiloProp.SelectorEntidad.PropiedadesEdicion.Count == 1)//VinculaciÛn Tesauro-CategorÌa
+                        if (estiloProp.SelectorEntidad.PropiedadesEdicion.Count == 1)//Vinculaci√≥n Tesauro-Categor√≠a
                         {
                             estiloProp.SelectorEntidad.PropiedadesEdicion.Add(EstiloPlantilla.Member_TesSem);
                         }
@@ -2208,7 +2232,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
                             estiloProp.SelectorEntidad.PropiedadesEdicion.Add(EstiloPlantilla.Identifier_TesSem);
                         }
 
-                        if (estiloProp.SelectorEntidad.PropiedadesEdicion.Count == 3)//nombre categorÌa
+                        if (estiloProp.SelectorEntidad.PropiedadesEdicion.Count == 3)//nombre categor√≠a
                         {
                             estiloProp.SelectorEntidad.PropiedadesEdicion.Add(EstiloPlantilla.PrefLabel_TesSem);
                         }
@@ -2328,10 +2352,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene una acciÛn a partir de un nodo de acciÛn.
+        /// Obtiene una acci√≥n a partir de un nodo de acci√≥n.
         /// </summary>
-        /// <param name="pNodoAccion">Nodo con la acciÛn</param>
-        /// <returns>AcciÛn a partir de un nodo de acciÛn</returns>
+        /// <param name="pNodoAccion">Nodo con la acci√≥n</param>
+        /// <returns>Acci√≥n a partir de un nodo de acci√≥n</returns>
         private AccionSemCms ObtenerAccionDeNodo(XmlNode pNodoAccion)
         {
             if (pNodoAccion.Attributes["ID"] == null)
@@ -2373,10 +2397,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene una condiciÛn a partir de un nodo de condiciÛn.
+        /// Obtiene una condici√≥n a partir de un nodo de condici√≥n.
         /// </summary>
-        /// <param name="pNodoCondicion">Nodo con la condiciÛn</param>
-        /// <returns>CondiciÛn a partir de un nodo de condiciÛn</returns>
+        /// <param name="pNodoCondicion">Nodo con la condici√≥n</param>
+        /// <returns>Condici√≥n a partir de un nodo de condici√≥n</returns>
         private CondicionSemCms ObtenerCondicionDeNodo(XmlNode pNodoCondicion)
         {
             if (pNodoCondicion.Attributes["ID"] == null)
@@ -2459,10 +2483,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene las variables declaradas para la condiciÛn.
+        /// Obtiene las variables declaradas para la condici√≥n.
         /// </summary>
         /// <param name="pNodo">Nodo con las variables</param>
-        /// <returns>Variables declaradas para la condiciÛn</returns>
+        /// <returns>Variables declaradas para la condici√≥n</returns>
         private Dictionary<string, string> ObtenerVariablesProp(XmlNode pNodo)
         {
             Dictionary<string, string> variables = new Dictionary<string, string>();
@@ -2509,10 +2533,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene una linea con las propiedades jerarquicas y de selecciÛn entidad que hay en un estilo de propiedad.
+        /// Obtiene una linea con las propiedades jerarquicas y de selecci√≥n entidad que hay en un estilo de propiedad.
         /// </summary>
         /// <param name="pEstiloProp">Estilo prop</param>
-        /// <returns>Linea con las propiedades jerarquicas y de selecciÛn entidad que hay en un estilo de propiedad</returns>
+        /// <returns>Linea con las propiedades jerarquicas y de selecci√≥n entidad que hay en un estilo de propiedad</returns>
         private string ObtenerPropsJerarquitasSelEntExtEnTexto(EstiloPlantillaEspecifProp pEstiloProp)
         {
             string prop = pEstiloProp.NombreRealPropiedad;
@@ -2544,22 +2568,22 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene un nodo de una raÌz a partir de su nombre.
+        /// Obtiene un nodo de una ra√≠z a partir de su nombre.
         /// </summary>
-        /// <param name="pRaiz">Documento xml raÌz</param>
+        /// <param name="pRaiz">Documento xml ra√≠z</param>
         /// <param name="pNodo">Nombre del nodo</param>
-        /// <returns>Nodo de una raÌz a partir de su nombre</returns>
+        /// <returns>Nodo de una ra√≠z a partir de su nombre</returns>
         private XmlNode GetNodo(XmlDocument pRaiz, string pNodo)
         {
             return GetNodo(pRaiz.SelectNodes(pNodo));
         }
 
         /// <summary>
-        /// Obtiene un nodo de una raÌz a partir de su nombre.
+        /// Obtiene un nodo de una ra√≠z a partir de su nombre.
         /// </summary>
-        /// <param name="pRaiz">Nodo xml raÌz</param>
+        /// <param name="pRaiz">Nodo xml ra√≠z</param>
         /// <param name="pNodo">Nombre del nodo</param>
-        /// <returns>Nodo de una raÌz a partir de su nombre</returns>
+        /// <returns>Nodo de una ra√≠z a partir de su nombre</returns>
         private XmlNode GetNodo(XmlNode pRaiz, string pNodo)
         {
             return GetNodo(pRaiz.SelectNodes(pNodo));
@@ -2610,11 +2634,11 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene los nodos de una raÌz a partir de su nombre.
+        /// Obtiene los nodos de una ra√≠z a partir de su nombre.
         /// </summary>
-        /// <param name="pRaiz">Nodo xml raÌz</param>
+        /// <param name="pRaiz">Nodo xml ra√≠z</param>
         /// <param name="pNodo">Nombre del nodo</param>
-        /// <returns>Nodos de una raÌz a partir de su nombre</returns>
+        /// <returns>Nodos de una ra√≠z a partir de su nombre</returns>
         private List<XmlNode> GetNodos(XmlNode pRaiz, string pNodo)
         {
             XmlNodeList nodos = pRaiz.SelectNodes(pNodo);
@@ -2622,10 +2646,10 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Obtiene los nodos de una raÌz a partir de su nombre.
+        /// Obtiene los nodos de una ra√≠z a partir de su nombre.
         /// </summary>
-        /// <param name="pRaiz">Nodo xml raÌz</param>
-        /// <returns>Nodos de una raÌz a partir de su nombre</returns>
+        /// <param name="pRaiz">Nodo xml ra√≠z</param>
+        /// <returns>Nodos de una ra√≠z a partir de su nombre</returns>
         private List<XmlNode> GetChildNodes(XmlNode pRaiz)
         {
             XmlNodeList nodos = pRaiz.ChildNodes;
@@ -2646,7 +2670,8 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             foreach (XmlNode nodo in pNodos)
             {
-                if (nodo.NodeType == XmlNodeType.Comment)
+                //Se omite cualquier nodo que no sea un elemento: comentarios, secciones CDATA y texto suelto que aparece entre etiquetas (saltos de l√≠nea, sangrados o caracteres invisibles). Esos nodos no forman parte de la configuraci√≥n y, al contarse como un nodo m√°s, provocan una lectura err√≥nea del objeto de conocimiento.
+                if (nodo.NodeType != XmlNodeType.Element)
                 {
                     continue;
                 }
@@ -2730,12 +2755,12 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
         }
 
         /// <summary>
-        /// Genera un archivo de configuraciÛn estandar, para una plantilla.
+        /// Genera un archivo de configuraci√≥n estandar, para una plantilla.
         /// </summary>
-        /// <param name="pNamespaceOnto">Namespace ontologÌa</param>
-        /// <param name="pOntologia">OntologÌa</param>
-        /// <param name="pOntologiaSecundaria">Indica si es una ontologÌa secundaria</param>
-        /// <returns>Array de bytes del fichero de configuraciÛn generado</returns>
+        /// <param name="pNamespaceOnto">Namespace ontolog√≠a</param>
+        /// <param name="pOntologia">Ontolog√≠a</param>
+        /// <param name="pOntologiaSecundaria">Indica si es una ontolog√≠a secundaria</param>
+        /// <returns>Array de bytes del fichero de configuraci√≥n generado</returns>
         public static byte[] GenerarArchivoConfiguracionEstandar(string pNamespaceOnto, Ontologia pOntologia, bool pOntologiaSecundaria)
         {
             string tabulacion = ConstantesArchivoConfiguracion.Tabulacion;
@@ -2746,7 +2771,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             if (listaEntidadesPrincipales == null || listaEntidadesPrincipales.Count == 0)
             {
-                throw new ExcepcionGeneral("No existe ninguna entidad principal en la ontologÌa. La entidad principal de la ontologÌa no debe estar en el rango de ninguna propiedad");
+                throw new ExcepcionGeneral("No existe ninguna entidad principal en la ontolog√≠a. La entidad principal de la ontolog√≠a no debe estar en el rango de ninguna propiedad");
             }
 
             string tipoEntidad = listaEntidadesPrincipales[0].TipoEntidad;
@@ -2767,7 +2792,7 @@ namespace Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL
 
             if (!pOntologiaSecundaria)
             {
-                archivo.WriteLine(tabulacion + tabulacion + "<DescripcionDoc EntidadID=\"" + tipoEntidad + "\">@@@DESCRIPCI”N</DescripcionDoc>");
+                archivo.WriteLine(tabulacion + tabulacion + "<DescripcionDoc EntidadID=\"" + tipoEntidad + "\">@@@DESCRIPCI√ìN</DescripcionDoc>");
             }
 
             archivo.WriteLine(tabulacion + tabulacion + "<HtmlNuevo>true</HtmlNuevo>");

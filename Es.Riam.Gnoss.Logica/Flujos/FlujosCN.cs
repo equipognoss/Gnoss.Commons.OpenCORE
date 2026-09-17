@@ -1,10 +1,7 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
-using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Flujos;
-using Es.Riam.Gnoss.AD.Identidad;
-using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -12,11 +9,9 @@ using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.Flujos;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO.Pipelines;
-using System.Linq;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Logica.Flujos
 {
@@ -499,7 +494,7 @@ namespace Es.Riam.Gnoss.Logica.Flujos
                     filaCola.EliminarEstado = pEliminarEstado;
                     filaCola.UsuarioID = pUsuarioID;
 
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(filaCola));
+                    rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(filaCola));
                 }
             }
         }

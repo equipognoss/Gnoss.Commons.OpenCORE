@@ -1,16 +1,9 @@
 ﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 using System.Web;
 
 namespace Es.Riam.Gnoss.UtilServiciosWeb
@@ -46,7 +39,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion AgregarDocumento");
                 string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"DocumentosLink/add-document?pDocumentoID={pDocumentoID}&pNombre={pNombre}&pExtension={pExtension}", pBytes, true, "pBytes", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion AgregarDocumento");
-                bool exito = JsonConvert.DeserializeObject<bool>(result);
+                bool exito = JsonSerializer.Deserialize<bool>(result);
                 return exito;
             }
             catch(Exception ex)
@@ -63,7 +56,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion AgregarVideo");
                 string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/AgregarVideo?pDocumentoID={pDocumentoID}&pExtension={pExtensionArchivo}", bufferRecurso, true, "pFichero", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion AgregarVideo");
-                int exito = JsonConvert.DeserializeObject<int>(result);
+                int exito = JsonSerializer.Deserialize<int>(result);
                 return exito;
             }
             catch (Exception ex)
@@ -80,7 +73,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion BorrarVideosDeRecurso");
                 string result = CallWebMethods.CallGetApiToken(mUrlInternService, $"Videos/BorrarVideosDeRecurso?pRuta={HttpUtility.UrlEncode(pRuta)}", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion BorrarVideosDeRecurso");
-                int exito = JsonConvert.DeserializeObject<int>(result);
+                int exito = JsonSerializer.Deserialize<int>(result);
                 return exito;
             }
             catch (Exception ex)
@@ -97,7 +90,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion AgregarVideoOrganizacion");
                 string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/AgregarVideoOrganizacion?pDocumentoID={pDocumentoID}&pExtension={pExtensionArchivo}&pOrganizacionID={pOrganizacionID}", bufferRecurso, true, "pFichero", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion AgregarVideoOrganizacion");
-                int exito = JsonConvert.DeserializeObject<int>(result);
+                int exito = JsonSerializer.Deserialize<int>(result);
                 return exito;
             }
             catch (Exception ex)
@@ -114,7 +107,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion AgregarVideoPersonal");
                 string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/AgregarVideoPersonal?pDocumentoID={pDocumentoID}&pExtension={pExtensionArchivo}&pPersonaID={pPersonaID}", bufferRecurso, true, "pFichero", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion AgregarVideoPersonal");
-                int exito = JsonConvert.DeserializeObject<int>(result);
+                int exito = JsonSerializer.Deserialize<int>(result);
                 return exito;
             }
             catch (Exception ex)
@@ -159,7 +152,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion ObtenerEspacioVideoPersonal");
                 string result = CallWebMethods.CallGetApiToken(mUrlInternService, $"Videos/ObtenerEspacioVideoPersonal?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion ObtenerEspacioVideoPersonal");
-                double num = JsonConvert.DeserializeObject<double>(result);
+                double num = JsonSerializer.Deserialize<double>(result);
                 return num;
             }
             catch (Exception ex)
@@ -176,7 +169,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion ObtenerEspacioVideoOrganizacion");
                 string result = CallWebMethods.CallGetApi(mUrlInternService, $"Videos/ObtenerEspacioVideoOrganizacion?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}");
                 mLoggingService.AgregarEntrada("FIN Peticion ObtenerEspacioVideoOrganizacion");
-                double num = JsonConvert.DeserializeObject<double>(result);
+                double num = JsonSerializer.Deserialize<double>(result);
                 return num;
             }
             catch (Exception ex)
@@ -193,7 +186,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion CopiarVideo");
                 string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/CopiarVideo?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}&pDocumentoIDCopia={pDocumentoIDCopia}&pOrganizacionID={pOrganizacionID}&pPersonaIDDestino{pPersonaIDDestino}&pOrganizacionIDDestino={pOrganizacionIDDestino}&pExtension={pExtension}", "", false, "file", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion CopiarVideo");
-                bool exito = JsonConvert.DeserializeObject<bool>(result);
+                bool exito = JsonSerializer.Deserialize<bool>(result);
                 return exito;
             }
             catch (Exception ex)
@@ -210,7 +203,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion AgregarVideoPersonal");
                 string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/AgregarVideoSemantico?pExtension={pExtension}&pDocumentoID={pDocumentoID}&pVideoID={pVideoID}", pFichero, true, "pFichero", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion AgregarVideoPersonal");
-                int exito = JsonConvert.DeserializeObject<int>(result);
+                int exito = JsonSerializer.Deserialize<int>(result);
                 return exito;
             }
             catch(Exception ex)

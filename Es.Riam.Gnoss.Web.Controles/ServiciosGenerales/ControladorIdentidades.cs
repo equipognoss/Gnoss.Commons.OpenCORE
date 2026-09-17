@@ -64,16 +64,18 @@ using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using SixLabors.ImageSharp;
+using NetVips;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Web;
+using Image = NetVips.Image;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 {
@@ -1534,96 +1536,6 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             proyectoCN.Dispose();
         }
 
-        #region Métodos Privados SmartFocus
-
-
-        /// <summary>
-        /// Realiza una petición HTTP
-        /// </summary>
-        /// <param name="pUrl"></param>
-        /// <param name="pContentType"></param>
-        /// <param name="pCuerpo"></param>
-        /// <param name="pAuthorization"></param>
-        /// <param name="pMetodo"></param>
-        /// <returns></returns>
-        public static string HacerPeticion(string pUrl, string pContentType = null, string pCuerpo = null, string pAuthorization = null, string pMetodo = null)
-        {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(pUrl);
-
-            // Set some reasonable limits on resources used by this request
-            request.MaximumAutomaticRedirections = 4;
-            //request.MaximumResponseHeadersLength = 4;
-            // Set credentials to use for this request.
-            request.Credentials = CredentialCache.DefaultCredentials;
-            request.UserAgent = UtilWeb.GenerarUserAgent();
-
-            if (!string.IsNullOrEmpty(pMetodo))
-            {
-                request.Method = pMetodo;
-            }
-
-            if (!string.IsNullOrEmpty(pAuthorization))
-            {
-                request.PreAuthenticate = true;
-                request.Headers["Authorization"] = pAuthorization;
-            }
-
-            request.UserAgent = "gnoss";
-            request.KeepAlive = true;
-
-            if (!string.IsNullOrEmpty(pContentType))
-            {
-                request.ContentType = pContentType;
-            }
-
-            if (!string.IsNullOrEmpty(pCuerpo))
-            {
-                UTF8Encoding encoding = new UTF8Encoding();
-                byte[] paramByte = encoding.GetBytes(pCuerpo);
-                request.ContentLength = paramByte.Length;
-
-                Stream streamRequest = request.GetRequestStream();
-                streamRequest.Write(paramByte, 0, paramByte.Length);
-                streamRequest.Flush();
-                streamRequest.Close();
-                streamRequest.Dispose();
-            }
-
-            HttpWebResponse response = null;
-            Stream receiveStream = null;
-            StreamReader readStream = null;
-            string respuesta = "";
-
-            try
-            {
-                response = (HttpWebResponse)request.GetResponse();
-                // Get the stream associated with the response.
-                receiveStream = response.GetResponseStream();
-                // Pipes the stream to a higher level stream reader with the required encoding format. 
-                readStream = new StreamReader(receiveStream, Encoding.UTF8);
-
-                respuesta = readStream.ReadToEnd();
-                response.Close();
-                readStream.Close();
-                readStream.Dispose();
-            }
-            catch (WebException webEx)
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader(webEx.Response.GetResponseStream());
-                    string error = sr.ReadToEnd();
-                    sr.Close();
-                    throw;
-                }
-                catch { }
-            }
-
-            return respuesta;
-        }
-
-        #endregion
-
         public Perfil AgregarPerfilPersonaOrganizacion(GestionIdentidades pGestorIdentidades, GestionOrganizaciones pGestorOrganizaciones, GestionUsuarios pGestorUsuarios, Es.Riam.Gnoss.Elementos.ServiciosGenerales.Persona pPersona, Elementos.ServiciosGenerales.Organizacion pOrganizacion, bool pCrearIdentidadEnMetaProyecto, Guid? pMetaOrganizacionID, Guid? pMetaProyectoID, LiveDS pLiveDS, Dictionary<Guid, bool> pRecibirNewsletterDefectoProyectos, IAvailableServices pAvailableServices)
         {
             Perfil perfil = pGestorIdentidades.AgregarPerfilPersonaOrganizacion(pPersona, pOrganizacion, pCrearIdentidadEnMetaProyecto, pMetaOrganizacionID, pMetaProyectoID, pRecibirNewsletterDefectoProyectos);
@@ -1918,8 +1830,14 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             //EntityContext.SaveChanges();
             dataWrapperPersona.ListaPersona.Add(filaPersona);
             //Guardar foto en el servidor y en la BD
-            GuardarFoto(filaPersona, filaSU.SolicitudID, mConfigService.ObtenerUrlServicioInterno());
-
+            try
+            {
+                GuardarFoto(filaPersona, filaSU.SolicitudID, mConfigService.ObtenerUrlServicioInterno());
+            }
+            catch(Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+            }
             AD.EntityModel.Models.PersonaDS.ConfiguracionGnossPersona filaConfigPers = gestorPersonas.AgregarConfiguracionGnossPersona(filaPersona.PersonaID);
 
             if (filaSU.EsBuscable)
@@ -2316,8 +2234,8 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
             try
             {
                 ServicioImagenes servicioImagenes = new ServicioImagenes(mLoggingService, mConfigService, mLoggerFactory.CreateLogger<ServicioImagenes>(), mLoggerFactory);
-                //string url = pUrlIntragnossServicios.Replace("https://", "http://");
                 servicioImagenes.Url = pUrlIntragnossServicios;
+
                 byte[] resultado = servicioImagenes.ObtenerImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString(), ".png");
 
                 if (resultado != null)
@@ -2326,19 +2244,17 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     {
                         pFila.Foto = resultado;
                     }
-                    servicioImagenes.AgregarImagen(resultado, UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString(), ".png");
+
+                    servicioImagenes.AgregarImagen(resultado,UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString(), ".png");
+
                     servicioImagenes.BorrarImagen(UtilArchivos.ContentImagenesSolicitudes + "/" + pSolicitudID.ToString() + ".png");
-                    Image image = UtilImages.ConvertirArrayBytesEnImagen(resultado);
+                    using var image = UtilImages.ConvertirArrayBytesEnImagen(resultado);
 
-                    //Ajusto su tamaño
-                    SizeF tamanioProporcional = UtilImages.CalcularTamanioProporcionado(image, 54, 54);
-                    image = UtilImages.AjustarImagen(image, tamanioProporcional.Width, tamanioProporcional.Height);
+                    // Escalamos manteniendo proporción para que quepa en 54x54
+                    using var resized = UtilImages.AjustarImagen(image, 54, 54);
 
-                    //Guardo la imagen en un archivo temporal
-                    MemoryStream ms = new MemoryStream();
-                    image.SaveAsPng(ms);
-
-                    servicioImagenes.AgregarImagen(ms.ToArray(), UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString() + "_peque", ".png");
+                    servicioImagenes.AgregarImagen(resized.PngsaveBuffer(),
+                        UtilArchivos.ContentImagenesPersonas + "/" + pFila.PersonaID.ToString() + "_peque", ".png"); 
                 }
             }
             catch (Exception)
@@ -2585,7 +2501,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     string respuesta = string.Empty;
                     try
                     {
-                        respuesta = new UtilWeb(mHttpContextAccessor).WebRequest(UtilWeb.Metodo.POST, url, JsonConvert.SerializeObject(usuario), "application/json");//POST
+                        respuesta = new UtilWeb(mHttpContextAccessor).WebRequestStringData(UtilWeb.Metodo.POST, url, JsonSerializer.Serialize(usuario), "application/json");//POST
                     }
                     catch (Exception ex)
                     {
@@ -2598,7 +2514,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (!string.IsNullOrEmpty(respuesta))
                     {
-                        jsonEstado = JsonConvert.DeserializeObject<JsonEstado>(respuesta);
+                        jsonEstado = JsonSerializer.Deserialize<JsonEstado>(respuesta);
                     }
 
                     //log
@@ -2787,7 +2703,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
                     string respuesta = string.Empty;
                     try
                     {
-                        respuesta = new UtilWeb(mHttpContextAccessor).WebRequest(UtilWeb.Metodo.POST, url, JsonConvert.SerializeObject(usuario), "application/json");//POST
+                        respuesta = new UtilWeb(mHttpContextAccessor).WebRequestStringData(UtilWeb.Metodo.POST, url, JsonSerializer.Serialize(usuario), "application/json");//POST
                     }
                     catch (Exception ex)
                     {
@@ -2800,7 +2716,7 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
                     if (!string.IsNullOrEmpty(respuesta))
                     {
-                        jsonEstado = JsonConvert.DeserializeObject<JsonEstado>(respuesta);
+                        jsonEstado = JsonSerializer.Deserialize<JsonEstado>(respuesta);
                     }
 
                     //log

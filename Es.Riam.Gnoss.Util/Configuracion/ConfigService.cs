@@ -1,40 +1,58 @@
 ﻿using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Util.Configuracion
 {
     [Serializable]
     public class ConfigService
     {
+
+        private const string NOMBRE_CONEXION_AZURE = "AzureStorageConnectionString";
+        private const string NOMBRE_DESPLEGADO_DOCKER = "DesplegadoDocker";
+        private const string NOMBRE_USAR_CACHE_LOCAL = "usarCacheLocal";
+        private const string NOMBRE_USAR_CACHE_REFRESH = "usarCacheRefreshActiva";
+        private const string SECCION_CONNECTION_STRING = "ConnectionStrings";
+        private const string SECCION_VIRTUOSO = "Virtuoso";
+        private const string SECCION_SERVICIOS = "Servicios";
+        private const string SECCION_REDIS = "redis";
+        private const string SECCION_ENTORNOS = "Entornos";
+        private const string SECCION_ACTUAL = "Actual";
+        private const string SECCION_SUPERIOR = "Superior";
+        private const string SECCION_REPLICACION_MASTER = "ColaReplicacionMaster";
+        private const string SECCION_REPLICACION_MASTER_HOME = "ColaReplicacionMasterHome";
+        private const string SECCION_ANSIBLE = "Ansible";
+        private const string VARIABLE_VIRTUOSO_CONNECTION_STRING = "virtuosoConnectionString";
+        private const string VARIABLE_LANZAR_HILO_CARGA_MASIVA = "LanzarHiloCargaMasiva";
+        private const string VARIABLE_LANZAR_HILO_DESCARGA_MASIVA = "LanzarHiloDescargaMasiva";
+        private const string VARIABLE_RUTA_EJECUCION_WEB = "rutaEjecucionWeb";
+        private const string VARIABLE_VERSION_CACHE_MIGRAR = "versionCacheMigrar";
+        private const string VARIABLE_COLA_PRINCIPAL_TRADUCCIONES = "colaPrincipalTraducciones";
+        private const string VARIABLE_COLA_REINTENTOS_TRADUCCIONES = "colaReintentosTraducciones";
+        private const string VARIABLE_COLA_ERRORES_TRADUCCIONES = "colaErroresTraducciones";
+
         private IConfigurationRoot Configuration { get; set; }
         private IDictionary EnvironmentVariables { get; set; }
         private string sqlConnectionString { get; set; }
-        private string virtuosoConnectionString;
-        private VirtuosoConnectionData virtuosoConnectionData;
+        private string virtuosoConnectionString;        
         private string virtuosoConnectionStringHome;
+        private VirtuosoConnectionData virtuosoConnectionData;
         private VirtuosoConnectionData virtuosoConnectionDataHome;
         private string tipoBD;
         private string nivelCompatibilidadBD;
         private string timeoutVirtuoso;
         private string azure;
         private string baseConnectionString;
-        private string hAPoxyVirtuosoConnectionString;
         private string usarHilosInteractuarRedis;
         private int numeroPersonasEnvioNewsletter;
         private string usarCache;
-        private bool? usarCacheLocal;
-        private bool? usarCacheRefreshActiva;
+        private bool usarCacheLocal;
+        private bool usarCacheRefreshActiva;
         private string numeroPersonasEnvioNewsletterString;
         private string azureServiceBusReintentos;
         private bool? cookieSesion;
@@ -126,17 +144,15 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string emailErrores;
         private int hilosAplicacion;
         private string tokenJenkins;
-        private string connectionJenkins;
-        private string JenkinsLastBuildInfo;
+        private string connectionJenkins;        
         private int horaEnvioErrores;
         private bool? replicacionActivada;
         private bool? replicacionActivadaHome;
         private bool? procesarStringGrafo;
         private bool? show500Error;
         private bool? escribirFicheroExternoTriples;
-        private bool? cacheV4;
+        private bool cacheV4;
         private bool? configuradoEtiquetadoInteligente;
-        private string urlDespligues;
         private string robots;
         private string urlDocuments;
         private string urlServicioEtiquetas;
@@ -202,9 +218,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string pathLocalBackPlaybook;
         private string urlRepositorioPlaybook;
         private string tokenRepositorio;
-
-        private int ventanaDeTiempoPeticionesLogin;
-        private int numMaxPeticionesLogin;
         private string configContentSecurityPolocy;
         private bool? forzarEjecucionSiteMaps;
         private string rutaEjecucionWeb;
@@ -221,6 +234,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         private string colaPrincipalTraducciones;
         private string colaReintentosTraducciones;
         private string colaErroresTraducciones;
+        private int apiPort;
+        private int managementPort;
 
         public string GetCadenaConexion()
         {
@@ -480,13 +495,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             if (string.IsNullOrEmpty(cadenaConexionAzureStorage))
             {
                 IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-                if (environmentVariables.Contains("AzureStorageConnectionString"))
+                if (environmentVariables.Contains(NOMBRE_CONEXION_AZURE))
                 {
-                    cadenaConexionAzureStorage = environmentVariables["AzureStorageConnectionString"] as string;
+                    cadenaConexionAzureStorage = environmentVariables[NOMBRE_CONEXION_AZURE] as string;
                 }
                 else
                 {
-                    cadenaConexionAzureStorage = Configuration.GetConnectionString("AzureStorageConnectionString");
+                    cadenaConexionAzureStorage = Configuration.GetConnectionString(NOMBRE_CONEXION_AZURE);
                 }
             }
             return cadenaConexionAzureStorage;
@@ -548,13 +563,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             if (string.IsNullOrEmpty(azureStorageConnectionString))
             {
                 IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-                if (environmentVariables.Contains("AzureStorageConnectionString"))
+                if (environmentVariables.Contains(NOMBRE_CONEXION_AZURE))
                 {
-                    azureStorageConnectionString = environmentVariables["AzureStorageConnectionString"] as string;
+                    azureStorageConnectionString = environmentVariables[NOMBRE_CONEXION_AZURE] as string;
                 }
                 else
                 {
-                    azureStorageConnectionString = Configuration["AzureStorageConnectionString"];
+                    azureStorageConnectionString = Configuration[NOMBRE_CONEXION_AZURE];
                 }
             }
             return azureStorageConnectionString;
@@ -667,7 +682,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 if (EnvironmentVariables.Contains("OrganizacionConexion"))
                 {
                     string variable = EnvironmentVariables["OrganizacionConexion"] as string;
-                    Guid devolver = Guid.Empty;
+                    Guid devolver;
                     if (Guid.TryParse(variable, out devolver))
                     {
                         organizacionConexion = devolver;
@@ -680,6 +695,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return organizacionConexion;
         }
+
         public string ObtenerIdiomaDefecto()
         {
             if (string.IsNullOrEmpty(idiomaDefecto))
@@ -703,15 +719,15 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
         public bool EstaDesplegadoEnDocker()
         {
-            if (viewsAdministracion == false)
+            if (!viewsAdministracion)
             {
-                if (EnvironmentVariables.Contains("DesplegadoDocker"))
+                if (EnvironmentVariables.Contains(NOMBRE_DESPLEGADO_DOCKER))
                 {
-                    viewsAdministracion = bool.Parse(EnvironmentVariables["DesplegadoDocker"] as string);
+                    viewsAdministracion = bool.Parse(EnvironmentVariables[NOMBRE_DESPLEGADO_DOCKER] as string);
                 }
-                else if (!string.IsNullOrEmpty(Configuration["DesplegadoDocker"]))
+                else if (!string.IsNullOrEmpty(Configuration[NOMBRE_DESPLEGADO_DOCKER]))
                 {
-                    viewsAdministracion = bool.Parse(Configuration["DesplegadoDocker"]);
+                    viewsAdministracion = bool.Parse(Configuration[NOMBRE_DESPLEGADO_DOCKER]);
                 }
             }
 
@@ -771,44 +787,46 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
         public bool ObtenerUsarCacheLocal()
         {
-            if (EnvironmentVariables.Contains("usarCacheLocal"))
-            {
-                string variable = EnvironmentVariables["usarCacheLocal"] as string;
-                if (variable.ToLower() == "false")
+            if (EnvironmentVariables.Contains(NOMBRE_USAR_CACHE_LOCAL))
+            {                
+                string variable = EnvironmentVariables[NOMBRE_USAR_CACHE_LOCAL] as string;
+                if(!bool.TryParse(variable, out usarCacheLocal))
                 {
-                    usarCacheLocal = false;
+                    return true;
                 }
             }
             else
             {
-                usarCacheLocal = Configuration.GetValue<bool?>("usarCacheLocal");
+                if(Configuration.GetValue<bool?>(NOMBRE_USAR_CACHE_LOCAL) == null)
+                {
+                    return true;
+                }
+                usarCacheLocal = Configuration.GetValue<bool>(NOMBRE_USAR_CACHE_LOCAL);
             }
-            if (usarCacheLocal == null)
-            {
-                return true;
-            }
-            return usarCacheLocal.Value;
+           
+            return usarCacheLocal;
         }
 
         public bool UsarCacheRefreshActiva()
         {
-            if (EnvironmentVariables.Contains("usarCacheRefreshActiva"))
+            if (EnvironmentVariables.Contains(NOMBRE_USAR_CACHE_REFRESH))
             {
-                string variable = EnvironmentVariables["usarCacheRefreshActiva"] as string;
-                if (variable.ToLower() == "false")
+                string variable = EnvironmentVariables[NOMBRE_USAR_CACHE_REFRESH] as string;
+                if (!bool.TryParse(variable, out usarCacheRefreshActiva))
                 {
-                    usarCacheRefreshActiva = false;
+                    return true;
                 }
             }
             else
             {
-                usarCacheRefreshActiva = Configuration.GetValue<bool?>("usarCacheRefreshActiva");
+                if (Configuration.GetValue<bool?>(NOMBRE_USAR_CACHE_REFRESH) == null)
+                {
+                    return true;
+                }
+                usarCacheRefreshActiva = Configuration.GetValue<bool>(NOMBRE_USAR_CACHE_REFRESH);
             }
-            if (usarCacheRefreshActiva == null)
-            {
-                return true;
-            }
-            return usarCacheRefreshActiva.Value;
+
+            return usarCacheRefreshActiva;
         }
 
         public int ObtenerCaptchaNumIntentos()
@@ -830,8 +848,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             captchaNumIntentos = captchaNumIntentosOut;
             return captchaNumIntentos;
         }
-
-
 
         public int ObtenerHorasBorrado()
         {
@@ -872,6 +888,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             intervalo = intervaloOut;
             return intervalo;
         }
+
         public string ObtenerUsarHilosInteractuarRedis()
         {
             if (string.IsNullOrEmpty(usarHilosInteractuarRedis))
@@ -1056,11 +1073,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                var lectura = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Lectura").GetChildren();
+                var lectura = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_VIRTUOSO).GetSection("Lectura").GetChildren();
                 int childs = lectura.Count();
 
                 var numRand = rand.Next(0, childs - 1);
-                cadena = lectura.ToList().ElementAt(numRand).Value;
+                cadena = lectura.ElementAt(numRand).Value;
             }
 
             return cadena;
@@ -1071,9 +1088,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             string cadena = "";
             string nombreConexionVirtuoso = "";
             var rand = new Random();
-            VirtuosoConnectionData virtuosoConnectionData = null;
+            VirtuosoConnectionData virtuosoConnection = null;
             var virtuososEnvironment = EnvironmentVariables.Keys.Cast<string>().Where(item => item.StartsWith("Virtuoso__Escritura"));
-            var virtuososSettings = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura").GetChildren();
+            var virtuososSettings = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_VIRTUOSO).GetSection("Escritura").GetChildren();
             if (virtuososEnvironment.Any())
             {
                 var numRand = rand.Next(0, virtuososEnvironment.Count() - 1);
@@ -1081,8 +1098,8 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 cadena = EnvironmentVariables[key] as string;
                 nombreConexionVirtuoso = key.Replace("Virtuoso__Escritura__", "");
 
-                virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
-                EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
+                virtuosoConnection = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnection);
             }
             else if (virtuososSettings.Any())
             {
@@ -1090,16 +1107,16 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 cadena = virtuososSettings.ElementAt(numRand).Value;
                 nombreConexionVirtuoso = virtuososSettings.ElementAt(numRand).Key;
 
-                virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
-                EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
+                virtuosoConnection = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnection);
             }
             else
             {
-                virtuosoConnectionData = ObtenerVirtuosoConnectionString();
-                virtuosoConnectionData.UpgradeToReadAndWriteConnection();
+                virtuosoConnection = ObtenerVirtuosoConnectionString();
+                virtuosoConnection.UpgradeToReadAndWriteConnection();
             }
 
-            return new KeyValuePair<string, VirtuosoConnectionData>(nombreConexionVirtuoso, virtuosoConnectionData);
+            return new KeyValuePair<string, VirtuosoConnectionData>(nombreConexionVirtuoso, virtuosoConnection);
         }
 
         public Dictionary<string, VirtuosoConnectionData> ObtenerDiccionarioVirtuososEscritura()
@@ -1108,7 +1125,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             string nombreConexionVirtuoso = "";
             Dictionary<string, VirtuosoConnectionData> listaVirtuosos = new Dictionary<string, VirtuosoConnectionData>();
             var virtuososEnvironment = EnvironmentVariables.Keys.Cast<string>().Where(item => item.StartsWith("Virtuoso__Escritura"));
-            var virtuososSettings = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura").GetChildren();
+            var virtuososSettings = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_VIRTUOSO).GetSection("Escritura").GetChildren();
             if (virtuososEnvironment.Any())
             {
                 foreach (string key in virtuososEnvironment)
@@ -1116,9 +1133,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                     cadena = EnvironmentVariables[key] as string;
                     nombreConexionVirtuoso = key.Replace("Virtuoso__Escritura__", "");
 
-                    VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
-                    listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
-                    EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
+                    VirtuosoConnectionData virtuosoConnection = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                    listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnection);
+                    EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnection);
                 }
             }
             else if (virtuososSettings.Any())
@@ -1127,17 +1144,17 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     cadena = element.Value;
                     nombreConexionVirtuoso = element.Key;
-                    VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+                    VirtuosoConnectionData virtuosoConnection = new VirtuosoConnectionData(nombreConexionVirtuoso, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
 
-                    listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
-                    EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
+                    listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnection);
+                    EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnection);
                 }
             }
             else
             {
-                VirtuosoConnectionData virtuosoConnectionData = ObtenerVirtuosoConnectionString();
-                virtuosoConnectionData.UpgradeToReadAndWriteConnection();
-                listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnectionData);
+                VirtuosoConnectionData virtuosoConnection = ObtenerVirtuosoConnectionString();
+                virtuosoConnection.UpgradeToReadAndWriteConnection();
+                listaVirtuosos.Add(nombreConexionVirtuoso, virtuosoConnection);
             }
 
             return listaVirtuosos;
@@ -1156,7 +1173,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                return Configuration.GetSection("ConnectionStrings").GetSection("BidirectionalReplication").Exists();
+                return Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection("BidirectionalReplication").Exists();
             }
         }
 
@@ -1169,7 +1186,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                var bidirectionalReplicationSection = Configuration.GetSection("ConnectionStrings").GetSection("BidirectionalReplication");
+                var bidirectionalReplicationSection = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection("BidirectionalReplication");
                 if (bidirectionalReplicationSection != null)
                 {
                     replica = bidirectionalReplicationSection[pNombreConexion];
@@ -1178,7 +1195,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
             if (string.IsNullOrEmpty(replica) && CheckBidirectionalReplicationIsActive())
             {
-                throw new Exception($"La conexión {pNombreConexion} no está configurada en la sección BidirectionalReplication.");
+                throw new ExcepcionGeneral($"La conexión {pNombreConexion} no está configurada en la sección BidirectionalReplication.");
             }
 
             return replica;
@@ -1234,13 +1251,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                cadena = Configuration.GetSection("ConnectionStrings").GetSection("Virtuoso").GetSection("Escritura")[name];
+                cadena = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_VIRTUOSO).GetSection("Escritura")[name];
             }
 
-            VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData(name, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
-            EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnectionData);
+            VirtuosoConnectionData virtuosoConnection = new VirtuosoConnectionData(name, cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+            EstablecerUsuarioLecturaAConexionVirtuoso(virtuosoConnection);
 
-            return virtuosoConnectionData;
+            return virtuosoConnection;
         }
 
         public VirtuosoConnectionData ObtenerVirtuosoEscrituraHome()
@@ -1252,15 +1269,15 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                cadena = Configuration.GetSection("ConnectionStrings").GetSection("Virtuosohome")["VirtuosoEscrituraHome"];
+                cadena = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection("Virtuosohome")["VirtuosoEscrituraHome"];
             }
-            VirtuosoConnectionData virtuosoConnectionData = new VirtuosoConnectionData("VirtuosoEscrituraHome", cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
+            VirtuosoConnectionData virtuosoConnection = new VirtuosoConnectionData("VirtuosoEscrituraHome", cadena, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.WriteOnly);
 
             VirtuosoConnectionData virtuosoConnectionDataLectura = ObtenerVirtuosoConnectionStringHome();
 
-            virtuosoConnectionData.SetReadUserFromConnection(virtuosoConnectionDataLectura);
+            virtuosoConnection.SetReadUserFromConnection(virtuosoConnectionDataLectura);
 
-            return virtuosoConnectionData;
+            return virtuosoConnection;
         }
 
         public string ObtenerVersion()
@@ -1279,22 +1296,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return version;
         }
 
-        //public string ObtenerHAProxyVirtuosoConnectionString()
-        //{
-        //    if (string.IsNullOrEmpty(hAPoxyVirtuosoConnectionString))
-        //    {
-        //        if (EnvironmentVariables.Contains("HA_PROXY"))
-        //        {
-        //            hAPoxyVirtuosoConnectionString = EnvironmentVariables["HA_PROXY"] as string;
-        //        }
-        //        else
-        //        {
-        //            hAPoxyVirtuosoConnectionString = Configuration.GetConnectionString("HA_PROXY");
-        //        }
-        //    }
-        //    return hAPoxyVirtuosoConnectionString;
-        //}
-
         public string ObtenerUrlBase()
         {
             if (string.IsNullOrEmpty(urlBase))
@@ -1305,9 +1306,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlBase = Configuration.GetSection("Servicios")["urlBase"];
+                    urlBase = Configuration.GetSection(SECCION_SERVICIOS)["urlBase"];
                 }
-                if (!string.IsNullOrEmpty(urlBase) && urlBase.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlBase) && urlBase.EndsWith('/'))
                 {
                     urlBase = urlBase.TrimEnd('/');
                 }
@@ -1325,9 +1326,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiLucene = Configuration.GetSection("Servicios")["urlLucene"];
+                    urlApiLucene = Configuration.GetSection(SECCION_SERVICIOS)["urlLucene"];
                 }
-                if (!string.IsNullOrEmpty(urlApiLucene) && !urlApiLucene.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlApiLucene) && !urlApiLucene.EndsWith('/'))
                 {
                     urlApiLucene = $"{urlApiLucene}/";
                 }
@@ -1372,24 +1373,22 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             if (EnvironmentVariables.Contains("CacheV4"))
             {
                 string variable = EnvironmentVariables["CacheV4"] as string;
-                if (variable.ToLower() == "false")
+
+                if (!bool.TryParse(variable, out usarCacheLocal))
                 {
-                    cacheV4 = false;
-                }
-                else if (variable.ToLower() == "true")
-                {
-                    cacheV4 = true;
-                }
+                    return false;
+                }                                
             }
             else
             {
-                cacheV4 = Configuration.GetValue<bool?>("CacheV4");
+                if(Configuration.GetValue<bool?>(NOMBRE_USAR_CACHE_LOCAL) == null)
+                {
+                    return false;
+                }
+                cacheV4 = Configuration.GetValue<bool>("CacheV4");
             }
-            if (cacheV4 == null)
-            {
-                return false;
-            }
-            return cacheV4.Value;
+           
+            return cacheV4;
         }
 
         public string ObtenerSqlConnectionString()
@@ -1407,6 +1406,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return sqlConnectionString;
         }
+
         public string ObtenerOauthConnectionString()
         {
             if (string.IsNullOrEmpty(oauth))
@@ -1428,6 +1428,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
             return oauth;
         }
+
         public string ObtenerBaseConnectionString()
         {
             if (string.IsNullOrEmpty(baseConnectionString))
@@ -1443,21 +1444,27 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             return baseConnectionString;
         }
+
         public VirtuosoConnectionData ObtenerVirtuosoConnectionString()
-        {
+        {            
             if (string.IsNullOrEmpty(virtuosoConnectionString))
             {
-                if (EnvironmentVariables.Contains("virtuosoConnectionString"))
+                if (EnvironmentVariables.Contains(VARIABLE_VIRTUOSO_CONNECTION_STRING))
                 {
-                    virtuosoConnectionString = EnvironmentVariables["virtuosoConnectionString"] as string;
-                    virtuosoConnectionData = new VirtuosoConnectionData("virtuosoConnectionString", virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
+                    virtuosoConnectionString = EnvironmentVariables[VARIABLE_VIRTUOSO_CONNECTION_STRING] as string;
+                    virtuosoConnectionData = new VirtuosoConnectionData(VARIABLE_VIRTUOSO_CONNECTION_STRING, virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
                 }
                 else
                 {
-                    virtuosoConnectionString = Configuration.GetConnectionString("virtuosoConnectionString");
-                    virtuosoConnectionData = new VirtuosoConnectionData("virtuosoConnectionString", virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
+                    virtuosoConnectionString = Configuration.GetConnectionString(VARIABLE_VIRTUOSO_CONNECTION_STRING);
+                    virtuosoConnectionData = new VirtuosoConnectionData(VARIABLE_VIRTUOSO_CONNECTION_STRING, virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
                 }
             }
+            else if (virtuosoConnectionData == null)
+            {
+                virtuosoConnectionData = new VirtuosoConnectionData("virtuosoConnectionString", virtuosoConnectionString, ObtenerPuertoVirtuoso(), VirtuosoConnectionType.ReadOnly);
+            }
+
             return virtuosoConnectionData;
         }
 
@@ -1528,13 +1535,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             if (string.IsNullOrEmpty(azure))
             {
-                if (EnvironmentVariables.Contains("AzureStorageConnectionString"))
+                if (EnvironmentVariables.Contains(NOMBRE_CONEXION_AZURE))
                 {
-                    azure = EnvironmentVariables["AzureStorageConnectionString"] as string;
+                    azure = EnvironmentVariables[NOMBRE_CONEXION_AZURE] as string;
                 }
                 else
                 {
-                    azure = Configuration.GetConnectionString("AzureStorageConnectionString");
+                    azure = Configuration.GetConnectionString(NOMBRE_CONEXION_AZURE);
                 }
             }
             return azure;
@@ -1549,7 +1556,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                cadena = Configuration.GetSection("ConnectionStrings").GetSection("redis").GetSection(mPoolName)["ip-master"];
+                cadena = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_REDIS).GetSection(mPoolName)["ip-master"];
             }
 
             return cadena;
@@ -1564,7 +1571,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                cadena = Configuration.GetSection("ConnectionStrings").GetSection("redis").GetSection(mPoolName)["ip-read"];
+                cadena = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_REDIS).GetSection(mPoolName)["ip-read"];
             }
 
             return cadena;
@@ -1579,7 +1586,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                bd = Configuration.GetSection("ConnectionStrings").GetSection("redis").GetSection(mPoolName)["bd"];
+                bd = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_REDIS).GetSection(mPoolName)["bd"];
             }
 
             int bdInt;
@@ -1632,7 +1639,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                timeout = Configuration.GetSection("ConnectionStrings").GetSection("redis").GetSection(mPoolName)["timeout"];
+                timeout = Configuration.GetSection(SECCION_CONNECTION_STRING).GetSection(SECCION_REDIS).GetSection(mPoolName)["timeout"];
             }
 
             int timeoutInt;
@@ -1723,7 +1730,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 if (EnvironmentVariables.Contains("ProyectoConexion"))
                 {
                     string variable = EnvironmentVariables["ProyectoConexion"] as string;
-                    Guid devolver = Guid.Empty;
+                    Guid devolver;
                     if (Guid.TryParse(variable, out devolver))
                     {
                         proyectoConexion = devolver;
@@ -1748,7 +1755,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 if (EnvironmentVariables.Contains("ProyectoGnoss"))
                 {
                     string variable = EnvironmentVariables["ProyectoGnoss"] as string;
-                    Guid devolver = Guid.Empty;
+                    Guid devolver;
                     if (Guid.TryParse(variable, out devolver))
                     {
                         proyectoGnoss = devolver;
@@ -1769,7 +1776,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 if (EnvironmentVariables.Contains("OrganizacionGnoss"))
                 {
                     string variable = EnvironmentVariables["OrganizacionGnoss"] as string;
-                    Guid devolver = Guid.Empty;
+                    Guid devolver;
                     if (Guid.TryParse(variable, out devolver))
                     {
                         organizacionGnoss = devolver;
@@ -1797,7 +1804,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlLogin = Configuration.GetSection("Servicios")["urlLogin"];
+                    urlLogin = Configuration.GetSection(SECCION_SERVICIOS)["urlLogin"];
                 }
                 if (!string.IsNullOrEmpty(urlLogin) && urlLogin.EndsWith('/'))
                 {
@@ -1817,7 +1824,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlDespliegues = Configuration.GetSection("Servicios")["urlDespliegues"];
+                    urlDespliegues = Configuration.GetSection(SECCION_SERVICIOS)["urlDespliegues"];
                 }
 
                 if (!string.IsNullOrEmpty(urlDespliegues) && urlDespliegues.EndsWith('/'))
@@ -1839,7 +1846,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             else
             {
-                urlServicio = Configuration.GetSection("Servicios")[servicio];
+                urlServicio = Configuration.GetSection(SECCION_SERVICIOS)[servicio];
             }
 
 
@@ -1856,9 +1863,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlResultados = Configuration.GetSection("Servicios")["urlResultados"];
+                    urlResultados = Configuration.GetSection(SECCION_SERVICIOS)["urlResultados"];
                 }
-                if (!string.IsNullOrEmpty(urlResultados) && urlResultados.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlResultados) && urlResultados.EndsWith('/'))
                 {
                     urlResultados = urlResultados.TrimEnd('/');
                 }
@@ -1877,9 +1884,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlCheckStatus = Configuration.GetSection("Servicios")["urlApiCheckServices"];
+                    urlCheckStatus = Configuration.GetSection(SECCION_SERVICIOS)["urlApiCheckServices"];
                 }
-                if (!string.IsNullOrEmpty(urlCheckStatus) && urlCheckStatus.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlCheckStatus) && urlCheckStatus.EndsWith('/'))
                 {
                     urlCheckStatus = urlCheckStatus.TrimEnd('/');
                 }
@@ -1898,7 +1905,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlResultadosExterno = Configuration.GetSection("Servicios")["urlResultadosExterno"];
+                    urlResultadosExterno = Configuration.GetSection(SECCION_SERVICIOS)["urlResultadosExterno"];
                 }
             }
             if (string.IsNullOrEmpty(urlResultadosExterno))
@@ -1918,9 +1925,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlFacetas = Configuration.GetSection("Servicios")["urlFacetas"];
+                    urlFacetas = Configuration.GetSection(SECCION_SERVICIOS)["urlFacetas"];
                 }
-                if (!string.IsNullOrEmpty(urlFacetas) && urlFacetas.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlFacetas) && urlFacetas.EndsWith('/'))
                 {
                     urlFacetas = urlFacetas.TrimEnd('/');
                 }
@@ -1938,14 +1945,14 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlFacetasExterno = Configuration.GetSection("Servicios")["urlFacetasExterno"];
+                    urlFacetasExterno = Configuration.GetSection(SECCION_SERVICIOS)["urlFacetasExterno"];
                 }
             }
             if (string.IsNullOrEmpty(urlFacetasExterno))
             {
                 urlFacetasExterno = ObtenerUrlServicioFacetas();
             }
-            if (!string.IsNullOrEmpty(urlFacetasExterno) && urlFacetasExterno.EndsWith("/"))
+            if (!string.IsNullOrEmpty(urlFacetasExterno) && urlFacetasExterno.EndsWith('/'))
             {
                 urlFacetasExterno = urlFacetasExterno.TrimEnd('/');
             }
@@ -1959,7 +1966,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 if (EnvironmentVariables.Contains("ProyectoPrincipal"))
                 {
                     string variable = EnvironmentVariables["ProyectoPrincipal"] as string;
-                    Guid devolver = Guid.Empty;
+                    Guid devolver;
                     if (Guid.TryParse(variable, out devolver))
                     {
                         proyectoPrincipal = devolver;
@@ -2056,7 +2063,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiDesplieguesEntornoSiguiente = Configuration.GetSection("Servicios")["urlApiDesplieguesEntornoSiguiente"];
+                    urlApiDesplieguesEntornoSiguiente = Configuration.GetSection(SECCION_SERVICIOS)["urlApiDesplieguesEntornoSiguiente"];
                 }
             }
             return urlApiDesplieguesEntornoSiguiente;
@@ -2072,7 +2079,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiDesplieguesEntornoParametro = Configuration.GetSection("Servicios")["urlApiDesplieguesEntornoParametro"];
+                    urlApiDesplieguesEntornoParametro = Configuration.GetSection(SECCION_SERVICIOS)["urlApiDesplieguesEntornoParametro"];
                 }
             }
             return urlApiDesplieguesEntornoParametro;
@@ -2102,7 +2109,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiDesplieguesEntornoAnterior = Configuration.GetSection("Servicios")["urlApiDesplieguesEntornoAnterior"];
+                    urlApiDesplieguesEntornoAnterior = Configuration.GetSection(SECCION_SERVICIOS)["urlApiDesplieguesEntornoAnterior"];
                 }
             }
             return urlApiDesplieguesEntornoAnterior;
@@ -2118,7 +2125,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApi = Configuration.GetSection("Servicios")["urlApi"];
+                    urlApi = Configuration.GetSection(SECCION_SERVICIOS)["urlApi"];
                 }
             }
             return urlApi;
@@ -2182,7 +2189,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiDesplieguesEntorno = Configuration.GetSection("Servicios")["urlApiDesplieguesEntorno"];
+                    urlApiDesplieguesEntorno = Configuration.GetSection(SECCION_SERVICIOS)["urlApiDesplieguesEntorno"];
                 }
             }
             return urlApiDesplieguesEntorno;
@@ -2198,7 +2205,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiIntegracionContinua = Configuration.GetSection("Servicios")["urlApiIntegracionContinua"];
+                    urlApiIntegracionContinua = Configuration.GetSection(SECCION_SERVICIOS)["urlApiIntegracionContinua"];
                 }
             }
             return urlApiIntegracionContinua;
@@ -2213,7 +2220,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlApiAnsible = Configuration.GetSection("Servicios")["urlAnsible"];
+                    urlApiAnsible = Configuration.GetSection(SECCION_SERVICIOS)["urlAnsible"];
                 }
             }
             return urlApiAnsible;
@@ -2258,11 +2265,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    configuracionDespliegue.Entornos.Actual.nombre_entorno = Configuration.GetSection("Entornos").GetSection("Actual")["nombre_entorno"];
-                    configuracionDespliegue.Entornos.Actual.server_front = Configuration.GetSection("Entornos").GetSection("Actual")["server_front"];
-                    configuracionDespliegue.Entornos.Actual.server_back = Configuration.GetSection("Entornos").GetSection("Actual")["server_back"];
-                    configuracionDespliegue.Entornos.Actual.ruta_front = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_front"];
-                    configuracionDespliegue.Entornos.Actual.ruta_back = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_back"];
+                    configuracionDespliegue.Entornos.Actual.nombre_entorno = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["nombre_entorno"];
+                    configuracionDespliegue.Entornos.Actual.server_front = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["server_front"];
+                    configuracionDespliegue.Entornos.Actual.server_back = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["server_back"];
+                    configuracionDespliegue.Entornos.Actual.ruta_front = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["ruta_front"];
+                    configuracionDespliegue.Entornos.Actual.ruta_back = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["ruta_back"];
                 }
 
                 if (EnvironmentVariables.Keys.Cast<string>().Any(item => item.StartsWith("Entornos__Superior")))
@@ -2275,11 +2282,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    configuracionDespliegue.Entornos.Superior.nombre_entorno = Configuration.GetSection("Entornos").GetSection("Superior")["nombre_entorno"];
-                    configuracionDespliegue.Entornos.Superior.server_front = Configuration.GetSection("Entornos").GetSection("Superior")["server_front"];
-                    configuracionDespliegue.Entornos.Superior.server_back = Configuration.GetSection("Entornos").GetSection("Superior")["server_back"];
-                    configuracionDespliegue.Entornos.Superior.ruta_front = Configuration.GetSection("Entornos").GetSection("Superior")["ruta_front"];
-                    configuracionDespliegue.Entornos.Superior.ruta_back = Configuration.GetSection("Entornos").GetSection("Superior")["ruta_back"];
+                    configuracionDespliegue.Entornos.Superior.nombre_entorno = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_SUPERIOR)["nombre_entorno"];
+                    configuracionDespliegue.Entornos.Superior.server_front = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_SUPERIOR)["server_front"];
+                    configuracionDespliegue.Entornos.Superior.server_back = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_SUPERIOR)["server_back"];
+                    configuracionDespliegue.Entornos.Superior.ruta_front = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_SUPERIOR)["ruta_front"];
+                    configuracionDespliegue.Entornos.Superior.ruta_back = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_SUPERIOR)["ruta_back"];
                 }
             }
             return configuracionDespliegue;
@@ -2311,9 +2318,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlContent = Configuration.GetSection("Servicios")["urlContent"];
+                    urlContent = Configuration.GetSection(SECCION_SERVICIOS)["urlContent"];
                 }
-                if (!string.IsNullOrEmpty(urlContent) && urlContent.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlContent) && urlContent.EndsWith('/'))
                 {
                     urlContent = urlContent.TrimEnd('/');
                 }
@@ -2610,7 +2617,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             bool exist = false;
             foreach (var key in EnvironmentVariables.Keys)
             {
-                if (((string)key).Contains("ColaReplicacionMaster"))
+                if (((string)key).Contains(SECCION_REPLICACION_MASTER))
                 {
                     existEnvironmentVariables = true;
                     exist = true;
@@ -2618,7 +2625,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             if (!existEnvironmentVariables)
             {
-                exist = Configuration.GetSection("ColaReplicacionMaster").Exists();
+                exist = Configuration.GetSection(SECCION_REPLICACION_MASTER).Exists();
             }
 
             return exist;
@@ -2630,7 +2637,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             bool exist = false;
             foreach (var key in EnvironmentVariables.Keys)
             {
-                if (((string)key).Contains("ColaReplicacionMasterHome"))
+                if (((string)key).Contains(SECCION_REPLICACION_MASTER_HOME))
                 {
                     existEnvironmentVariables = true;
                     exist = true;
@@ -2638,7 +2645,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             if (!existEnvironmentVariables)
             {
-                exist = Configuration.GetSection("ColaReplicacionMasterHome").Exists();
+                exist = Configuration.GetSection(SECCION_REPLICACION_MASTER_HOME).Exists();
             }
 
             return exist;
@@ -2659,10 +2666,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             if (!existEnvironmentVariables)
             {
-                bool exist = Configuration.GetSection("ColaReplicacionMaster").Exists();
+                bool exist = Configuration.GetSection(SECCION_REPLICACION_MASTER).Exists();
                 if (exist)
                 {
-                    var colas = Configuration.GetSection("ColaReplicacionMaster").GetChildren();
+                    var colas = Configuration.GetSection(SECCION_REPLICACION_MASTER).GetChildren();
                     foreach (var cola in colas)
                     {
                         colasReplicacionMaster.Add(cola.Key, cola.Value);
@@ -2688,10 +2695,10 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             }
             if (!existEnvironmentVariables)
             {
-                bool exist = Configuration.GetSection("ColaReplicacionMasterHome").Exists();
+                bool exist = Configuration.GetSection(SECCION_REPLICACION_MASTER_HOME).Exists();
                 if (exist)
                 {
-                    var colas = Configuration.GetSection("ColaReplicacionMasterHome").GetChildren();
+                    var colas = Configuration.GetSection(SECCION_REPLICACION_MASTER_HOME).GetChildren();
                     foreach (var cola in colas)
                     {
                         colasReplicacionMasterHome.Add(cola.Key, cola.Value);
@@ -2990,9 +2997,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlDocuments = Configuration.GetSection("Servicios")["urlDocuments"];
+                    urlDocuments = Configuration.GetSection(SECCION_SERVICIOS)["urlDocuments"];
                 }
-                if (!string.IsNullOrEmpty(urlDocuments) && urlDocuments.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlDocuments) && urlDocuments.EndsWith('/'))
                 {
                     urlDocuments = urlDocuments.TrimEnd('/');
                 }
@@ -3011,9 +3018,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlAfinidad = Configuration.GetSection("Servicios")["urlAfinidad"];
+                    urlAfinidad = Configuration.GetSection(SECCION_SERVICIOS)["urlAfinidad"];
                 }
-                if (!string.IsNullOrEmpty(urlAfinidad) && urlAfinidad.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlAfinidad) && urlAfinidad.EndsWith('/'))
                 {
                     urlAfinidad = urlAfinidad.TrimEnd('/');
                 }
@@ -3031,7 +3038,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlServicioEtiquetas = Configuration.GetSection("Servicios")["urlServicioEtiquetas"];
+                    urlServicioEtiquetas = Configuration.GetSection(SECCION_SERVICIOS)["urlServicioEtiquetas"];
                 }
             }
             return urlServicioEtiquetas;
@@ -3047,9 +3054,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlIntern = Configuration.GetSection("Servicios")["urlInterno"];
+                    urlIntern = Configuration.GetSection(SECCION_SERVICIOS)["urlInterno"];
                 }
-                if (!string.IsNullOrEmpty(urlIntern) && urlIntern.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlIntern) && urlIntern.EndsWith('/'))
                 {
                     urlIntern = urlIntern.TrimEnd('/');
                 }
@@ -3067,7 +3074,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlServicioBrightcove = Configuration.GetSection("Servicios")["urlServicioBrightcove"];
+                    urlServicioBrightcove = Configuration.GetSection(SECCION_SERVICIOS)["urlServicioBrightcove"];
                 }
             }
             return urlServicioBrightcove;
@@ -3089,7 +3096,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     authority = Configuration["Authority"];
                 }
-                if (!string.IsNullOrEmpty(authority) && authority.EndsWith("/"))
+                if (!string.IsNullOrEmpty(authority) && authority.EndsWith('/'))
                 {
                     authority = authority.TrimEnd('/');
                 }
@@ -3107,7 +3114,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlServicioTOP = Configuration.GetSection("Servicios")["urlServicioTOP"];
+                    urlServicioTOP = Configuration.GetSection(SECCION_SERVICIOS)["urlServicioTOP"];
                 }
             }
             return urlServicioTOP;
@@ -3429,14 +3436,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         public string ObtenerVirtuosoEndpointEN()
         {
             string endpoint = "";
-            var rand = new Random();
             if (EnvironmentVariables.Contains($"Virtuoso__virtuosoEndpointEN"))
             {
                 endpoint = EnvironmentVariables[$"Virtuoso__virtuosoEndpointEN"] as string;
             }
             else
             {
-                endpoint = Configuration.GetSection("Virtuoso")["virtuosoEndpointEN"];
+                endpoint = Configuration.GetSection(SECCION_VIRTUOSO)["virtuosoEndpointEN"];
 
             }
 
@@ -3444,15 +3450,14 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         }
         public string ObtenerVirtuosoEndpointES()
         {
-            string endpoint = "";
-            var rand = new Random();
+            string endpoint = "";            
             if (EnvironmentVariables.Contains($"Virtuoso__virtuosoEndpointES"))
             {
                 endpoint = EnvironmentVariables[$"Virtuoso__virtuosoEndpointES"] as string;
             }
             else
             {
-                endpoint = Configuration.GetSection("Virtuoso")["virtuosoEndpointES"];
+                endpoint = Configuration.GetSection(SECCION_VIRTUOSO)["virtuosoEndpointES"];
 
             }
 
@@ -3479,13 +3484,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             bool lanzarHilodescargaMasiva = true;
 
-            if (EnvironmentVariables.Contains("LanzarHiloDescargaMasiva"))
+            if (EnvironmentVariables.Contains(VARIABLE_LANZAR_HILO_DESCARGA_MASIVA))
             {
-                lanzarHilodescargaMasiva = bool.Parse(EnvironmentVariables["LanzarHiloDescargaMasiva"] as string);
+                lanzarHilodescargaMasiva = bool.Parse(EnvironmentVariables[VARIABLE_LANZAR_HILO_DESCARGA_MASIVA] as string);
             }
-            else if (!string.IsNullOrEmpty(Configuration["LanzarHiloDescargaMasiva"]))
+            else if (!string.IsNullOrEmpty(Configuration[VARIABLE_LANZAR_HILO_DESCARGA_MASIVA]))
             {
-                lanzarHilodescargaMasiva = bool.Parse(Configuration["LanzarHiloDescargaMasiva"]);
+                lanzarHilodescargaMasiva = bool.Parse(Configuration[VARIABLE_LANZAR_HILO_DESCARGA_MASIVA]);
             }
 
             return lanzarHilodescargaMasiva;
@@ -3495,16 +3500,30 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             bool lanzarHiloCargaMasiva = true;
 
-            if (EnvironmentVariables.Contains("LanzarHiloCargaMasiva"))
+            if (EnvironmentVariables.Contains(VARIABLE_LANZAR_HILO_CARGA_MASIVA))
             {
-                lanzarHiloCargaMasiva = bool.Parse(EnvironmentVariables["LanzarHiloCargaMasiva"] as string);
+                lanzarHiloCargaMasiva = bool.Parse(EnvironmentVariables[VARIABLE_LANZAR_HILO_CARGA_MASIVA] as string);
             }
-            else if (!string.IsNullOrEmpty(Configuration["LanzarHiloCargaMasiva"]))
+            else if (!string.IsNullOrEmpty(Configuration[VARIABLE_LANZAR_HILO_CARGA_MASIVA]))
             {
-                lanzarHiloCargaMasiva = bool.Parse(Configuration["LanzarHiloCargaMasiva"]);
+                lanzarHiloCargaMasiva = bool.Parse(Configuration[VARIABLE_LANZAR_HILO_CARGA_MASIVA]);
             }
 
             return lanzarHiloCargaMasiva;
+        }
+
+        public bool LanzarHiloCargaImagenes()
+        {
+            bool lanzarHiloCargaImagenes = true;
+            if (EnvironmentVariables.Contains("LanzarHiloCargaImagenes"))
+            {
+                lanzarHiloCargaImagenes = bool.Parse(EnvironmentVariables["LanzarHiloCargaImagenes"] as string);
+            }
+            else if (!string.IsNullOrEmpty(Configuration["LanzarHiloCargaImagenes"]))
+            {
+                lanzarHiloCargaImagenes = bool.Parse(Configuration["LanzarHiloCargaImagenes"]);
+            }
+            return lanzarHiloCargaImagenes;
         }
 
         public string ObtenerUbicacionIndiceLucene()
@@ -3576,14 +3595,11 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             if (!puertoVirtuoso.HasValue)
             {
                 int port;
-                if (EnvironmentVariables.Contains("puertoVirtuoso") && int.TryParse(EnvironmentVariables["puertoVirtuoso"] as string, out port))
+                if ((EnvironmentVariables.Contains("puertoVirtuoso") && int.TryParse(EnvironmentVariables["puertoVirtuoso"] as string, out port)) || int.TryParse(Configuration.GetConnectionString("puertoVirtuoso"), out port))
                 {
                     puertoVirtuoso = port;
                 }
-                else if (int.TryParse(Configuration.GetConnectionString("puertoVirtuoso"), out port))
-                {
-                    puertoVirtuoso = port;
-                }
+                
                 if (!puertoVirtuoso.HasValue)
                 {
                     puertoVirtuoso = 8890;
@@ -3597,15 +3613,12 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             if (!puertoVirtuosoAux.HasValue)
             {
                 int port;
-                //if (EnvironmentVariables.Contains("puertoVirtuosoAux"))
-                if (EnvironmentVariables.Contains("puertoVirtuosoAux") && int.TryParse(EnvironmentVariables["puertoVirtuosoAux"] as string, out port))
+                
+                if ((EnvironmentVariables.Contains("puertoVirtuosoAux") && int.TryParse(EnvironmentVariables["puertoVirtuosoAux"] as string, out port)) || int.TryParse(Configuration.GetConnectionString("puertoVirtuosoAux"), out port))
                 {
                     puertoVirtuosoAux = port;
                 }
-                else if (int.TryParse(Configuration.GetConnectionString("puertoVirtuosoAux"), out port))
-                {
-                    puertoVirtuosoAux = port;
-                }
+
                 if (!puertoVirtuosoAux.HasValue)
                 {
                     puertoVirtuosoAux = 1111;
@@ -3705,9 +3718,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlEtiquetadoInteligente = Configuration.GetSection("Servicios")["urlEtiquetadoInteligente"];
+                    urlEtiquetadoInteligente = Configuration.GetSection(SECCION_SERVICIOS)["urlEtiquetadoInteligente"];
                 }
-                if (!string.IsNullOrEmpty(urlEtiquetadoInteligente) && !urlEtiquetadoInteligente.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlEtiquetadoInteligente) && !urlEtiquetadoInteligente.EndsWith('/'))
                 {
                     urlEtiquetadoInteligente = $"{urlEtiquetadoInteligente}/";
                 }
@@ -3935,9 +3948,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    urlServicioKeycloak = Configuration.GetSection("Servicios")["urlKeycloak"];
+                    urlServicioKeycloak = Configuration.GetSection(SECCION_SERVICIOS)["urlKeycloak"];
                 }
-                if (!string.IsNullOrEmpty(urlServicioKeycloak) && urlServicioKeycloak.EndsWith("/"))
+                if (!string.IsNullOrEmpty(urlServicioKeycloak) && urlServicioKeycloak.EndsWith('/'))
                 {
                     urlServicioKeycloak = urlServicioKeycloak.TrimEnd('/');
                 }
@@ -4052,7 +4065,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    authenticationString = Configuration.GetSection("Ansible")["authenticationString"];
+                    authenticationString = Configuration.GetSection(SECCION_ANSIBLE)["authenticationString"];
                 }
             }
             return authenticationString;
@@ -4068,9 +4081,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    ansibleEndpoint = Configuration.GetSection("Ansible")["ansibleEndpoint"];
+                    ansibleEndpoint = Configuration.GetSection(SECCION_ANSIBLE)["ansibleEndpoint"];
                 }
-                if (!string.IsNullOrEmpty(ansibleEndpoint) && ansibleEndpoint.EndsWith("/"))
+                if (!string.IsNullOrEmpty(ansibleEndpoint) && ansibleEndpoint.EndsWith('/'))
                 {
                     ansibleEndpoint = ansibleEndpoint.TrimEnd('/');
                 }
@@ -4088,7 +4101,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    servidorDestinoPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["server_front"];
+                    servidorDestinoPlaybook = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["server_front"];
                 }
             }
             return servidorDestinoPlaybook;
@@ -4104,7 +4117,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    servidorBackPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["server_back"];
+                    servidorBackPlaybook = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["server_back"];
                 }
             }
             return servidorBackPlaybook;
@@ -4120,7 +4133,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    pathLocalFrontPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_front"];
+                    pathLocalFrontPlaybook = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["ruta_front"];
                 }
             }
             return pathLocalFrontPlaybook;
@@ -4136,7 +4149,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    pathLocalBackPlaybook = Configuration.GetSection("Entornos").GetSection("Actual")["ruta_back"];
+                    pathLocalBackPlaybook = Configuration.GetSection(SECCION_ENTORNOS).GetSection(SECCION_ACTUAL)["ruta_back"];
                 }
             }
             return pathLocalBackPlaybook;
@@ -4184,7 +4197,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    tokenEscrituraAnsible = Configuration.GetSection("Ansible")["tokenEscrituraAnsible"];
+                    tokenEscrituraAnsible = Configuration.GetSection(SECCION_ANSIBLE)["tokenEscrituraAnsible"];
                 }
             }
             return tokenEscrituraAnsible;
@@ -4200,19 +4213,57 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 }
                 else
                 {
-                    tokenLecturaAnsible = Configuration.GetSection("Ansible")["tokenLecturaAnsible"];
+                    tokenLecturaAnsible = Configuration.GetSection(SECCION_ANSIBLE)["tokenLecturaAnsible"];
                 }
             }
             return tokenLecturaAnsible;
         }
 
+        public int ObtenerApiPort()
+        {
+            string port;
+            if (EnvironmentVariables.Contains("ApiPort"))
+            {
+                port = EnvironmentVariables["ApiPort"] as string;
 
+            }
+            else
+            {
+                port = Configuration["ApiPort"];
+            }
+            int.TryParse(port, out apiPort);
+            if (apiPort == 0)
+            {
+                apiPort = 8080;
+            }
 
+            return apiPort;
+        }
 
+        public int ObtenerManagementPort()
+        {
+            string port;
+            if (EnvironmentVariables.Contains("ManagementPort"))
+            {
+                port = EnvironmentVariables["ManagementPort"] as string;
 
+            }
+            else
+            {
+                port = Configuration["ManagementPort"];
+            }
+            int.TryParse(port, out managementPort);
+            if (managementPort == 0)
+            {
+                managementPort = 8081;
+            }
+
+            return managementPort;
+        }
 
         public int ObtenerVentanaTiempoLogin()
         {
+            int ventanaDeTiempoPeticionesLogin;
             string tiempo;
             if (EnvironmentVariables.Contains("ventanaDeTiempoPeticionesLogin"))
             {
@@ -4234,6 +4285,7 @@ namespace Es.Riam.Gnoss.Util.Configuracion
 
         public int ObtenerNumMaxPeticionesLogin()
         {
+            int numMaxPeticionesLogin;
             string maxPeticiones;
             if (EnvironmentVariables.Contains("numMaxPeticionesLogin"))
             {
@@ -4298,13 +4350,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             if (string.IsNullOrEmpty(rutaEjecucionWeb))
             {
-                if (EnvironmentVariables.Contains("rutaEjecucionWeb"))
+                if (EnvironmentVariables.Contains(VARIABLE_RUTA_EJECUCION_WEB))
                 {
-                    rutaEjecucionWeb = EnvironmentVariables["rutaEjecucionWeb"] as string;
+                    rutaEjecucionWeb = EnvironmentVariables[VARIABLE_RUTA_EJECUCION_WEB] as string;
                 }
-                else if (Configuration["rutaEjecucionWeb"] != null)
+                else if (Configuration[VARIABLE_RUTA_EJECUCION_WEB] != null)
                 {
-                    rutaEjecucionWeb = Configuration["rutaEjecucionWeb"];
+                    rutaEjecucionWeb = Configuration[VARIABLE_RUTA_EJECUCION_WEB];
                 }
                 else
                 {
@@ -4319,13 +4371,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             if (string.IsNullOrEmpty(versionCacheMigrar))
             {
-                if (EnvironmentVariables.Contains("versionCacheMigrar"))
+                if (EnvironmentVariables.Contains(VARIABLE_VERSION_CACHE_MIGRAR))
                 {
-                    versionCacheMigrar = EnvironmentVariables["versionCacheMigrar"] as string;
+                    versionCacheMigrar = EnvironmentVariables[VARIABLE_VERSION_CACHE_MIGRAR] as string;
                 }
-                else if (Configuration["versionCacheMigrar"] != null)
+                else if (Configuration[VARIABLE_VERSION_CACHE_MIGRAR] != null)
                 {
-                    versionCacheMigrar = Configuration["versionCacheMigrar"];
+                    versionCacheMigrar = Configuration[VARIABLE_VERSION_CACHE_MIGRAR];
                 }
                 else
                 {
@@ -4430,62 +4482,6 @@ namespace Es.Riam.Gnoss.Util.Configuracion
             return colaTraducciones;
         }
 
-        public string ObtenerHostSCIA()
-        {
-            if (string.IsNullOrEmpty(hostSCIA))
-            {
-                if (EnvironmentVariables.Contains($"Servicios__urlSCIA"))
-                {
-                    hostSCIA = EnvironmentVariables[$"Servicios__urlSCIA"] as string;
-                }
-                else
-                {
-                    hostSCIA = Configuration.GetSection("Servicios")["urlSCIA"];
-                }
-                if (!string.IsNullOrEmpty(hostSCIA) && hostSCIA.EndsWith('/'))
-                {
-                    hostSCIA = hostSCIA.TrimEnd('/');
-                }
-            }
-            return hostSCIA;
-        }
-
-        public string ObtenerTokenUrlServicioTraducciones()
-        {
-            string cadena = "";
-            if (EnvironmentVariables.Contains($"Servicios__traducciones__token"))
-            {
-                cadena = EnvironmentVariables[$"Servicios__traducciones__token"] as string;
-            }
-            else
-            {
-                cadena = Configuration.GetSection("Servicios").GetSection("traducciones")["token"];
-            }
-
-            return cadena;
-        }
-
-        public string ObtenerModeloTraduccion()
-        {
-            if (string.IsNullOrEmpty(modeloTraduccion))
-            {
-                if (EnvironmentVariables.Contains("Servicios__traducciones__modeloTraduccion"))
-                {
-                    modeloTraduccion = EnvironmentVariables["Servicios__traducciones__modeloTraduccion"] as string;
-                }
-                else if (Configuration.GetSection("Servicios").GetSection("traducciones")["modeloTraduccion"] != null)
-                {
-                    modeloTraduccion = Configuration.GetSection("Servicios").GetSection("traducciones")["modeloTraduccion"];
-                }
-                else
-                {
-                    modeloTraduccion = "";
-                }
-            }
-
-            return modeloTraduccion;
-        }
-
         public string ObtenerInstruccionesAdicionalesTraduccion()
         {
             if (string.IsNullOrEmpty(instruccionesAdicionalesTraduccion))
@@ -4494,9 +4490,9 @@ namespace Es.Riam.Gnoss.Util.Configuracion
                 {
                     instruccionesAdicionalesTraduccion = EnvironmentVariables["Servicios__traducciones__instruccionesAdicionalesTraduccion"] as string;
                 }
-                else if (Configuration.GetSection("Servicios").GetSection("traducciones")["instruccionesAdicionalesTraduccion"] != null)
+                else if (Configuration.GetSection(SECCION_SERVICIOS).GetSection("traducciones")["instruccionesAdicionalesTraduccion"] != null)
                 {
-                    instruccionesAdicionalesTraduccion = Configuration.GetSection("Servicios").GetSection("traducciones")["instruccionesAdicionalesTraduccion"];
+                    instruccionesAdicionalesTraduccion = Configuration.GetSection(SECCION_SERVICIOS).GetSection("traducciones")["instruccionesAdicionalesTraduccion"];
                 }
                 else
                 {
@@ -4511,13 +4507,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             if (string.IsNullOrEmpty(colaPrincipalTraducciones))
             {
-                if (EnvironmentVariables.Contains("colaPrincipalTraducciones"))
+                if (EnvironmentVariables.Contains(VARIABLE_COLA_PRINCIPAL_TRADUCCIONES))
                 {
-                    colaPrincipalTraducciones = EnvironmentVariables["colaPrincipalTraducciones"] as string;
+                    colaPrincipalTraducciones = EnvironmentVariables[VARIABLE_COLA_PRINCIPAL_TRADUCCIONES] as string;
                 }
-                else if (Configuration["colaPrincipalTraducciones"] != null)
+                else if (Configuration[VARIABLE_COLA_PRINCIPAL_TRADUCCIONES] != null)
                 {
-                    colaPrincipalTraducciones = Configuration["colaPrincipalTraducciones"];
+                    colaPrincipalTraducciones = Configuration[VARIABLE_COLA_PRINCIPAL_TRADUCCIONES];
                 }
                 else
                 {
@@ -4532,13 +4528,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             if (string.IsNullOrEmpty(colaReintentosTraducciones))
             {
-                if (EnvironmentVariables.Contains("colaReintentosTraducciones"))
+                if (EnvironmentVariables.Contains(VARIABLE_COLA_REINTENTOS_TRADUCCIONES))
                 {
-                    colaReintentosTraducciones = EnvironmentVariables["colaReintentosTraducciones"] as string;
+                    colaReintentosTraducciones = EnvironmentVariables[VARIABLE_COLA_REINTENTOS_TRADUCCIONES] as string;
                 }
-                else if (Configuration["colaReintentosTraducciones"] != null)
+                else if (Configuration[VARIABLE_COLA_REINTENTOS_TRADUCCIONES] != null)
                 {
-                    colaReintentosTraducciones = Configuration["colaReintentosTraducciones"];
+                    colaReintentosTraducciones = Configuration[VARIABLE_COLA_REINTENTOS_TRADUCCIONES];
                 }
                 else
                 {
@@ -4553,13 +4549,13 @@ namespace Es.Riam.Gnoss.Util.Configuracion
         {
             if (string.IsNullOrEmpty(colaErroresTraducciones))
             {
-                if (EnvironmentVariables.Contains("colaErroresTraducciones"))
+                if (EnvironmentVariables.Contains(VARIABLE_COLA_ERRORES_TRADUCCIONES))
                 {
-                    colaErroresTraducciones = EnvironmentVariables["colaErroresTraducciones"] as string;
+                    colaErroresTraducciones = EnvironmentVariables[VARIABLE_COLA_ERRORES_TRADUCCIONES] as string;
                 }
-                else if (Configuration["colaErroresTraducciones"] != null)
+                else if (Configuration[VARIABLE_COLA_ERRORES_TRADUCCIONES] != null)
                 {
-                    colaErroresTraducciones = Configuration["colaErroresTraducciones"];
+                    colaErroresTraducciones = Configuration[VARIABLE_COLA_ERRORES_TRADUCCIONES];
                 }
                 else
                 {

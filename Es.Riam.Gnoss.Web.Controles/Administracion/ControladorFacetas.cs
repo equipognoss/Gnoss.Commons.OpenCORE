@@ -883,7 +883,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
 
                 string peticion = $"{UrlApiDesplieguesEntornoSiguiente}/PropiedadesIntegracion?nombreProy={ProyectoSeleccionado.NombreCorto}&UsuarioID={pUsuarioID}";
-                _ = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua, "");
+                _ = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua);
             }
             catch
             {
@@ -1075,7 +1075,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 
         #region Invalidar Caches
 
-        public void InvalidarCaches(string UrlIntragnoss)
+        public void InvalidarCaches(string UrlIntragnoss, Guid pIdentidadID)
         {
             FacetaCL facetaCL = new FacetaCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, null, mLoggerFactory.CreateLogger<FacetaCL>(), mLoggerFactory);
             bool cachearFacetas = !(ParametroProyecto.ContainsKey("CacheFacetas") && ParametroProyecto["CacheFacetas"].Equals("0"));
@@ -1085,10 +1085,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             facetadoCL.InvalidarResultadosYFacetasDeBusquedaEnProyecto(ProyectoSeleccionado.Clave, "*");
 
             mGnossCache.VersionarCacheLocal(ProyectoSeleccionado.Clave);
-
+            
             CargadorFacetas cargadorFacetas = new CargadorFacetas();
             cargadorFacetas.Url = mConfigService.ObtenerUrlServicioFacetas();
-            cargadorFacetas.InvalidarCacheLocalServicioFacetas(ProyectoSeleccionado.Clave);
+            cargadorFacetas.InvalidarCacheLocalServicioFacetas(ProyectoSeleccionado.Clave, pIdentidadID);
         }
 
         #endregion

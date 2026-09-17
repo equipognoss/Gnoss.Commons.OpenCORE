@@ -61,7 +61,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Es.Riam.Gnoss.Web.Controles
 {
@@ -3802,8 +3801,6 @@ namespace Es.Riam.Gnoss.Web.Controles
             }
         }
 
-        private string mVersion = string.Empty;
-
         /// <summary>
         /// Obtiene la versión de la aplicación
         /// </summary>
@@ -3811,22 +3808,7 @@ namespace Es.Riam.Gnoss.Web.Controles
         {
             get
             {
-                if (mVersion == string.Empty)
-                {
-                    try
-                    {
-                        string ficheroVersion = "Config/version.txt";
-
-                        StreamReader sr = new StreamReader(AppDomain.CurrentDomain.SetupInformation.ApplicationBase + ficheroVersion);
-                        mVersion = sr.ReadLine();
-                        sr.Close();
-                    }
-                    catch
-                    {
-                        mVersion = "1.0.0.0";
-                    }
-                }
-                return mVersion;
+                return mConfigService.ObtenerVersion();
             }
         }
 

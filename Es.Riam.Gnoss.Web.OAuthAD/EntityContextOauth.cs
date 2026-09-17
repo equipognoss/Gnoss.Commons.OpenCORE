@@ -66,7 +66,7 @@ namespace Es.Riam.Gnoss.OAuthAD
                     break;
 
                 case "2":
-                    optionsBuilder.UseNpgsql(mConfigService.ObtenerOauthConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
+                    optionsBuilder.UseNpgsql(mConfigService.ObtenerOauthConnectionString(), o => o.SetPostgresVersion(new Version(10, 0)));
                     break;
             }
 
@@ -200,7 +200,6 @@ namespace Es.Riam.Gnoss.OAuthAD
             modelBuilder.Entity<ConsumerData>(entity =>
             {
                 entity.Property(e => e.ConsumerId).ValueGeneratedNever();
-                entity.Property(e => e.FechaAlta).HasColumnType("timestamp without time zone");
 
                 entity.HasOne(d => d.OAuthConsumer)
                     .WithOne(p => p.ConsumerData)

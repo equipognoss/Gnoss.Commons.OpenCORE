@@ -1,18 +1,18 @@
-﻿using System;
+﻿using MessagePack;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using Newtonsoft.Json;
+using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using Newtonsoft.Json;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-
-using System.IO.Pipelines;
-using MessagePack;
+using System.Text.Json.Serialization;
 
 namespace Es.Riam.Util
 {
@@ -21,6 +21,18 @@ namespace Es.Riam.Util
     /// </summary>
     public class UtilGeneral
     {
+        private static readonly HttpClient mHttpClient = new HttpClient()
+        {
+            Timeout = TimeSpan.FromMinutes(30)
+        };
+
+        private static readonly HttpClient mHttpClientNoRedirect = new HttpClient(new HttpClientHandler
+        {
+            AllowAutoRedirect = false
+        })
+        {
+            Timeout = TimeSpan.FromMinutes(30)
+        };
 
         public UtilGeneral()
         {
@@ -112,252 +124,7 @@ namespace Es.Riam.Util
         }
 
 
-        /// <summary>
-        /// Request an url with an oauth sign
-        /// </summary>
-        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
-        /// <param name="url">Url to make the request</param>
-        /// <param name="postData">(Optional) Post data to send in the body request</param>
-        /// <param name="contentType">(Optional) Content type of the postData</param>
-        /// <param name="acceptHeader">(Optional) Accept header</param>
-        /// <returns>Response of the server</returns>
-        public static string WebRequest(string httpMethod, string url, byte[] byteData, bool pRedirect = true)
-        {
-            HttpWebRequest webRequest = null;
-            string responseData = "";
-
-            webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
-            webRequest.Method = httpMethod;
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 600000;
-            webRequest.ContentType = "application/x-www-form-urlencoded";
-            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
-
-            if (!pRedirect) 
-            {
-                webRequest.AllowAutoRedirect = false;
-            }
-            if (httpMethod == "POST")
-            {
-                webRequest.ContentLength = 0;
-
-                if (byteData != null)
-                {
-                    webRequest.ContentLength = byteData.Length;
-
-                    Stream dataStream = webRequest.GetRequestStream();
-                    dataStream.Write(byteData, 0, byteData.Length);
-                    dataStream.Close();
-                }
-            }
-            try
-            {
-                responseData = WebResponseGet(webRequest);
-            }
-            catch (WebException ex)
-            {
-                string message = url;
-                try
-                {
-                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-                    message += "\r\nError: " + sr.ReadToEnd();
-                }
-                catch { }
-
-                // Error reading the error response, throw the original exception
-                throw new Exception(message, ex);
-            }
-
-            webRequest = null;
-
-            return responseData;
-        }
-
-        public static string WebRequest(string httpMethod, string url, string token, byte[] byteData, string pContentType = "x-www-form-urlencoded")
-        {
-            HttpWebRequest webRequest = null;
-            string responseData = "";
-
-            webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
-            webRequest.Method = httpMethod;
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 600000;
-            webRequest.ContentType = $"application/{pContentType}";
-			webRequest.Headers.Add("Authorization", "Bearer " + token);
-            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
-            if (httpMethod == "POST")
-            {
-                webRequest.ContentLength = 0;
-
-                if (byteData != null)
-                {
-                    webRequest.ContentLength = byteData.Length;
-
-                    Stream dataStream = webRequest.GetRequestStream();
-                    dataStream.Write(byteData, 0, byteData.Length);
-                    dataStream.Close();
-                }
-            }
-            try
-            {
-                responseData = WebResponseGet(webRequest);
-            }
-            catch (WebException ex)
-            {
-                string message = url;
-                try
-                {
-                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-                    message += "\r\nError: " + sr.ReadToEnd();
-                }
-                catch { }
-
-                // Error reading the error response, throw the original exception
-                //throw new Exception(message, ex);
-                return "";
-            }
-
-            webRequest = null;
-
-            return responseData;
-        }
-
-        public static string WebRequestPost(string pUrl, object pObjeto = null)
-        {
-            HttpWebRequest webRequest = System.Net.WebRequest.Create(pUrl) as HttpWebRequest;
-            webRequest.Method = "POST";
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 3600000;
-            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
-
-            if (pObjeto != null)
-            {
-                webRequest.ContentType = "application/json";
-                string json = JsonConvert.SerializeObject(pObjeto);
-
-                StreamWriter requestWriter = new StreamWriter(webRequest.GetRequestStream());
-                try
-                {
-                    requestWriter.Write(json);
-                }
-                finally
-                {
-                    requestWriter.Close();
-                    requestWriter = null;
-                }
-            }
-
-            try
-            {
-                WebResponse response = webRequest.GetResponse();
-                StreamReader sr = new StreamReader(response.GetResponseStream());
-                string respuesta = sr.ReadToEnd();
-                sr.Close();
-
-                return respuesta;
-            }
-            catch (WebException ex)
-            {
-                if (ex.Response != null)
-                {
-                    //Leer respuesta
-                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-                    string respuesta = sr.ReadToEnd();
-                    sr.Close();
-                    throw new Exception(respuesta, ex);
-                }
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Request an url with an oauth sign
-        /// </summary>
-        /// <param name="httpMethod">Http method (GET, POST, PUT...)</param>
-        /// <param name="url">Url to make the request</param>
-        /// <param name="postData">(Optional) Post data to send in the body request</param>
-        /// <param name="contentType">(Optional) Content type of the postData</param>
-        /// <param name="acceptHeader">(Optional) Accept header</param>
-        /// <returns>Response of the server</returns>
-        public byte[] WebRequestBytes(string httpMethod, string url, byte[] byteData)
-        {
-            HttpWebRequest webRequest = null;
-            byte[] responsebytes = null;
-
-            webRequest = System.Net.WebRequest.Create(url) as HttpWebRequest;
-            webRequest.Method = httpMethod;
-            webRequest.ServicePoint.Expect100Continue = false;
-            webRequest.Timeout = 600000;
-            webRequest.ContentType = "application/x-www-form-urlencoded";
-            webRequest.UserAgent = UtilWeb.GenerarUserAgent();
-
-            if (httpMethod == "POST")
-            {
-                webRequest.ContentLength = 0;
-
-                if (byteData != null)
-                {
-                    webRequest.ContentLength = byteData.Length;
-
-                    Stream dataStream = webRequest.GetRequestStream();
-                    dataStream.Write(byteData, 0, byteData.Length);
-                    dataStream.Close();
-                }
-            }
-            try
-            {
-                var webResponse = webRequest.GetResponse();
-
-                using (BinaryReader ns = new BinaryReader(webResponse.GetResponseStream()))
-                {
-                    responsebytes = ns.ReadBytes((int)webResponse.ContentLength);
-                }
-            }
-            catch (WebException ex)
-            {
-                string message = null;
-                try
-                {
-                    StreamReader sr = new StreamReader(ex.Response.GetResponseStream());
-                    message = sr.ReadToEnd();
-                }
-                catch { }
-
-                // Error reading the error response, throw the original exception
-                throw;
-            }
-
-            webRequest = null;
-
-            return responsebytes;
-        }
-
-        /// <summary>
-        /// Make a http get request
-        /// </summary>
-        /// <param name="pWebRequest">HttpWebRequest object</param>
-        /// <returns>Server response</returns>
-        private static string WebResponseGet(HttpWebRequest pWebRequest)
-        {
-            StreamReader responseReader = null;
-            string responseData = "";
-
-            try
-            {
-                responseReader = new StreamReader(pWebRequest.GetResponse().GetResponseStream(), Encoding.UTF8);
-                responseData = responseReader.ReadToEnd();
-            }
-            finally
-            {
-                if (responseReader != null)
-                {
-                    responseReader.Close();
-                    responseReader = null;
-                }
-            }
-            return responseData;
-        }
-
+        
         #endregion
     }
 

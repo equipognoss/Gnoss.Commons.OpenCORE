@@ -1,17 +1,9 @@
-﻿using Es.Riam.Gnoss.Elementos.Suscripcion;
-using Es.Riam.Gnoss.Util.Configuracion;
+﻿using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 using System.Web;
 
 namespace Es.Riam.Gnoss.UtilServiciosWeb
@@ -46,7 +38,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
                 mLoggingService.AgregarEntrada("INICIO Peticion EliminarArchivosDeRecurso");
                 string result = CallWebMethods.CallGetApiToken(mUrlInternService, $"DocumentosLink/BorrarDirectorioDeDocumento?pDocumentoID={pDocumentoID}", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion EliminarArchivosDeRecurso");
-                bool exito = JsonConvert.DeserializeObject<bool>(result);
+                bool exito = JsonSerializer.Deserialize<bool>(result);
                 return exito;
             }
             catch (Exception ex)

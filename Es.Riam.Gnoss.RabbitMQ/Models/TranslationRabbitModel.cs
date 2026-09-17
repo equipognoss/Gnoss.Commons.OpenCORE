@@ -16,5 +16,6 @@ namespace Es.Riam.Gnoss.RabbitMQ.Models
 		public string OriginalLanguage { get; set; }
 		public List<string> TargetLanguages { get; set; }
 		public Guid UserID { get; set; }
+		public Guid ProcessID { get; set; }
 	}
 }

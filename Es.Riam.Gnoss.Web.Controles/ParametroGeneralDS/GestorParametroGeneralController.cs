@@ -100,6 +100,35 @@ namespace Es.Riam.Gnoss.Web.Controles.ParametroGeneralDSName
             mEntityContext.ParametroProyecto.Add(parametro);
         }
 
+        /// <summary>
+        /// Actualiza el valor de un parámetro de proyecto. Si la fila recibida está desvinculada del contexto
+        /// (por ejemplo, porque se ha construido en memoria a partir del diccionario de parámetros del proyecto),
+        /// se recupera la fila real de base de datos para que Entity Framework detecte el cambio.
+        /// </summary>
+        /// <param name="pParametro">Fila del parámetro a actualizar</param>
+        /// <param name="pValor">Nuevo valor del parámetro</param>
+        public void ActualizarParametroProyecto(ParametroProyecto pParametro, string pValor)
+        {
+            ParametroProyecto parametroBD = pParametro;
+
+            if (mEntityContext.Entry(pParametro).State == EntityState.Detached)
+            {
+                parametroBD = mEntityContext.ParametroProyecto.FirstOrDefault(param => param.OrganizacionID.Equals(pParametro.OrganizacionID) && param.ProyectoID.Equals(pParametro.ProyectoID) && param.Parametro.Equals(pParametro.Parametro));
+            }
+
+            pParametro.Valor = pValor;
+
+            if (parametroBD == null)
+            {
+                // La fila no existe en base de datos, la creo con el nuevo valor
+                mEntityContext.ParametroProyecto.Add(pParametro);
+            }
+            else
+            {
+                parametroBD.Valor = pValor;
+            }
+        }
+
         public void EliminarParametroProyecto(ParametroProyecto parametro)
         {
             if (mEntityContext.Entry(parametro).State == EntityState.Detached)

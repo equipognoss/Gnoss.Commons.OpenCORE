@@ -9,7 +9,6 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Parametro;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ParametrosProyecto;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -27,37 +26,26 @@ using Es.Riam.Gnoss.Logica.ExportacionBusqueda;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Flujos;
 using Es.Riam.Gnoss.Logica.Identidad;
-using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
-using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using SemWeb.Inference;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Web;
-using VDS.Common.Tries;
-using static Es.Riam.Gnoss.Util.Seguridad.Capacidad;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel.SearchTabModel;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
@@ -577,7 +565,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			try
 			{
 				string peticion = $"{UrlApiDesplieguesEntornoSeleccionado}/PropiedadesIntegracion?nombreProy={ProyectoSeleccionado.NombreCorto}&UsuarioID={pUsuarioID}";
-				string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua, "");
+				string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua);
 			}
 			catch
 			{
@@ -625,7 +613,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             try
             {
                 string peticion = $"{UrlApiDesplieguesEntornoSeleccionado}/PropiedadesIntegracion?nombreProy={ProyectoSeleccionado.NombreCorto}&UsuarioID={pUsuarioID}";
-                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua, "");
+                string requestParameters = UtilWeb.WebRequestPostWithJsonObject(peticion, propiedadesIntegracionContinua);
             }
             catch
             {
@@ -845,6 +833,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			{
 				if (!pestanya.Deleted)
 				{
+					LimpiarInyeccionCodigoPestanya(pestanya);
 					//AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = ObtenerPestanyaSiExsite(pestanya.Key);
 					AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pestanya.Key));
 					if (filaPestanya == null)
@@ -864,6 +853,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			//Modificar las que tienen cambios
 			foreach (TabModel pestanya in pListaPestanyas)
 			{
+				LimpiarInyeccionCodigoPestanya(pestanya);
 				if (!pestanya.Deleted && !listaPestanyasNuevas.Contains(pestanya.Key))
 				{
 					AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu filaPestanya = GestionProyectos.DataWrapperProyectos.ListaProyectoPestanyaMenu.FirstOrDefault(pest => pest.PestanyaID.Equals(pestanya.Key));
@@ -1052,6 +1042,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 			List<string> listaRutasPestanyasInvalidarEnCache = new List<string>();
 
 			//Añadir las nuevas
+			LimpiarInyeccionCodigoPestanya(pPestanya);
 
 			if (!pPestanya.Deleted)
 			{
@@ -1282,7 +1273,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
 
 			proyectoPestanyaMenuVersionPaginaNueva.Fecha = DateTime.Now;
-			proyectoPestanyaMenuVersionPaginaNueva.ModeloJSON = JsonConvert.SerializeObject(pestanya);
+			proyectoPestanyaMenuVersionPaginaNueva.ModeloJSON = JsonSerializer.Serialize(pestanya);
 			proyectoPestanyaMenuVersionPaginaNueva.Comentario = pComentario ?? "";
 
             mEntityContext.ProyectoPestanyaMenuVersionPaginas.Add(proyectoPestanyaMenuVersionPaginaNueva);
@@ -1362,7 +1353,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             ProyectoPestanyaMenuVersionPagina proyectoPestanyaMenuVersionPaginaVieja =
             mEntityContext.ProyectoPestanyaMenuVersionPaginas.FirstOrDefault(x => x.VersionID==versionAnterior);
 
-			TabModel pestanyaRestaurar = JsonConvert.DeserializeObject<TabModel>(proyectoPestanyaMenuVersionPaginaVieja.ModeloJSON);
+			TabModel pestanyaRestaurar = JsonSerializer.Deserialize<TabModel>(proyectoPestanyaMenuVersionPaginaVieja.ModeloJSON);
 			pestanyaRestaurar.Modified = true;
 			GuardarPestanya(pestanyaRestaurar, pComentario: pComentario);
 
@@ -1489,6 +1480,14 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
 				pFilaPestanya.HtmlAlternativo = HttpUtility.UrlDecode(pPestanya.HtmlAlternativoPrivacidad);
 			}
 		}
+
+		private static void LimpiarInyeccionCodigoPestanya(TabModel pPestanya)
+		{
+            if (pPestanya != null && !string.IsNullOrEmpty(pPestanya.Name))
+            {
+                pPestanya.Name = UtilCadenas.LimpiarInyeccionCodigo(pPestanya.Name);
+            }
+        }
 
 		private void GuardarDatosFilaPestanyaCMS(AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaMenu pFilaPestanya, TabModel pPestanya)
 		{
@@ -2882,7 +2881,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 return new byte[0];
             }
 
-            string serializar = JsonConvert.SerializeObject(obj);
+            string serializar = JsonSerializer.Serialize(obj);
             return Encoding.ASCII.GetBytes(serializar);
         }
 

@@ -17,11 +17,10 @@ using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Gnoss.Web.MVC.Models.ViewModels;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
@@ -37,11 +36,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
 
         #region Miembros
 
-        private EntityContext mEntityContext;
-        private LoggingService mLoggingService;
-        private ConfigService mConfigService;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly EntityContext mEntityContext;
+        private readonly LoggingService mLoggingService;
+        private readonly ConfigService mConfigService;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -3029,9 +3028,9 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             return ProyectoAD.ObtenerRolUsuarioEnProyecto(pProyectoID);
         }
 
-        public TraductorProyecto ObtenerTraductorDeProyecto(Guid pProyectoID)
+        public TraductorProyecto ObtenerTraductorDeProyecto(Guid pProyectoID, bool pSoloProyecto = false)
         {
-            return ProyectoAD.ObtenerTraductorDeProyecto(pProyectoID);
+            return ProyectoAD.ObtenerTraductorDeProyecto(pProyectoID, pSoloProyecto);
         }
 
         public void EliminarTraductorProyecto(Guid pProyectoID)
@@ -3044,6 +3043,11 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             ProyectoAD.GuardarTraductorProyecto(pProyectoID, pToken, pEndpoint, pPrompt, pActivo, pModelo);
         }
 
+        public bool ExisteTraductorDeProyecto(Guid pProyectoID)
+        {
+            return ProyectoAD.ExisteTraductorDeProyecto(pProyectoID);
+        }
+
         #endregion
 
         /// <summary>
@@ -3054,39 +3058,6 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
         public Dictionary<Guid, int> ObtenerContadoresMiembrosProyecto()
         {
             return ProyectoAD.ObtenerContadoresMiembrosProyecto();
-        }
-        
-
-		/// <summary>
-		/// Valida la lista de proyectos pasada como parámetro
-		/// </summary>
-		/// <param name="pProyectos">Lista de proyectos</param>
-		private void ValidarProyectos(List<Proyecto> pProyectos)
-        {
-            for (int i = 0; i < pProyectos.Count; i++)
-            {
-                //Nombre de formato superior a 1000 caracteres
-                if (pProyectos[i].Nombre.Length > 1000)
-                {
-                    throw new ErrorDatoNoValido("El nombre del proyecto '" + pProyectos[i].Nombre + "' no puede contener más de 1000 caracteres");
-                }
-
-                //Nombre cadena vacía
-                if (pProyectos[i].Nombre.Trim().Length == 0)
-                {
-                    throw new ErrorDatoNoValido("El nombre del proyecto '" + pProyectos[i].Nombre + "' no puede ser una cadena vacía");
-                }
-
-                //Descripción no válida
-                if (!string.IsNullOrEmpty(pProyectos[i].Descripcion))
-                {
-                    //Si es vacía la ponemos a Null
-                    if (pProyectos[i].Descripcion.Trim().Length == 0)
-                    {
-                        pProyectos[i].Descripcion = null;
-                    }
-                }
-            }
         }
 
         #endregion
@@ -3130,13 +3101,10 @@ namespace Es.Riam.Gnoss.Logica.ServiciosGenerales
             {
                 mDisposed = true;
 
-                if (pDisposing)
+                if (pDisposing && this.ProyectoAD != null)
                 {
                     //Libero todos los recursos administrados que he añadido a esta clase
-                    if (this.ProyectoAD != null)
-                    {
-                        ProyectoAD.Dispose();
-                    }
+                    ProyectoAD.Dispose();
                 }
                 ProyectoAD = null;
             }

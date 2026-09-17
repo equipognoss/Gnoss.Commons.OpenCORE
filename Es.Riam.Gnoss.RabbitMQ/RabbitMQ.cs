@@ -62,12 +62,17 @@ namespace Es.Riam.Gnoss.RabbitMQ
             Cliente.AgregarElementoACola(message);
         }
 
-		public void AgregarElementoAColaConReintentosExchange(string message)
+		public void AgregarElementoAColaConReintentosExchange(string message, byte priority)
 		{
-			Cliente.AgregarElementoAColaConReintentosExchange(message);
+			Cliente.AgregarElementoAColaConReintentosExchange(message, priority);
 		}
 
-		public IList<string> AgregarElementosACola(IEnumerable<string> messages)
+        public void AgregarElementosAColaConReintentosExchange(IEnumerable<string> messages, byte priority)
+        {
+            Cliente.AgregarElementosAColaConReintentosExchange(messages, priority);
+        }
+
+        public IList<string> AgregarElementosACola(IEnumerable<string> messages)
         {
             return Cliente.AgregarElementosACola(messages);
         }

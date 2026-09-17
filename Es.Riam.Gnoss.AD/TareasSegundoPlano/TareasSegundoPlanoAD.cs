@@ -54,8 +54,8 @@ namespace Es.Riam.Gnoss.AD.TareasSegundoPlano
 					Tipo = pTipo,
 					Nombre = pNombre,
 					Estado = EstadoTarea.Pendiente,
-					FechaInicio = pFechaInicio,
-					EventosTotales = pEventosTotales,
+                    FechaInicio = DateTime.SpecifyKind(pFechaInicio, DateTimeKind.Utc),
+                    EventosTotales = pEventosTotales,
 				});
 			mEntityContext.SaveChanges();
 			return tareaId;
@@ -71,6 +71,15 @@ namespace Es.Riam.Gnoss.AD.TareasSegundoPlano
 			return mEntityContext.TareasSegundoPlano.Where((tarea)=>(tarea).ProyectoID.Equals(pProyectoId)).ToList();
 		}
 
+		public TareasSegundoPlano ObtenerTareaPorID(Guid pTareaID)
+		{
+			return mEntityContext.TareasSegundoPlano.FirstOrDefault(x => x.Id.Equals(pTareaID));
+		}
+
+		public List<TareasSegundoPlano> ObtenerTareasActivasDeProyectoPorTipo(Guid pProyectoID, string pTipo)
+		{
+			return mEntityContext.TareasSegundoPlano.Where(x => x.ProyectoID.Equals(pProyectoID) && x.Tipo.ToLower().Equals(pTipo.ToLower()) && (x.Estado == EstadoTarea.Pendiente || x.Estado == EstadoTarea.EnProceso)).ToList();
+		}
 
 		/// <summary>
 		/// Modifica el estado de una tarea en segundo plano
@@ -81,7 +90,6 @@ namespace Es.Riam.Gnoss.AD.TareasSegundoPlano
 		{
 			TareasSegundoPlano tarea = mEntityContext.TareasSegundoPlano.Where((tarea) => (tarea).Id.Equals(pTareaId)).FirstOrDefault();
 			tarea.Estado = pEstado;
-			mEntityContext.TareasSegundoPlano.Update(tarea);
 			mEntityContext.SaveChanges();
 		}
 

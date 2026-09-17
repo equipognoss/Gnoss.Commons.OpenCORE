@@ -9,6 +9,7 @@
     using Es.Riam.Gnoss.Util.Configuracion;
     using Es.Riam.Gnoss.Web.MVC.Models;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -41,34 +42,21 @@
     using Oracle.ManagedDataAccess.Client;
     using Riam.Util;
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Common;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using System.Linq;
     using System.Reflection;
     using Util.General;
-    using Models.Sitemaps;
-    using Npgsql;
-    using System.Reflection;
-    using Es.Riam.Gnoss.AD.EntityModel.Models.Cookies;
-    using Es.Riam.AbstractsOpen;
-    using Es.Riam.Gnoss.AD.TareasSegundoPlano;
-    using Microsoft.Extensions.Options;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Roles;
-    using Es.Riam.Gnoss.AD.ParametroAplicacion;
-    using VDS.RDF;
 	using Es.Riam.Gnoss.AD.EntityModel.Models.Flujos;
     using Es.Riam.Gnoss.AD.EntityModel.Models.Traductor;
     using Es.Riam.Gnoss.AD.EntityModel.Models.Asistente;
 
     public partial class EntityContext : DbContext
     {
-        private string mDefaultSchema;
         private bool mCache;
 
         private UtilPeticion mUtilPeticion;
@@ -91,34 +79,6 @@
             mCache = pCache;
             mlogger = loggerFactory.CreateLogger<EntityContext>();
             mLoggerFactory = loggerFactory;
-            mUtilPeticion = utilPeticion;
-            //if (_configService.ObtenerTipoBD().Equals("2"))
-            //{
-            //    mDefaultSchema = "dbo";
-            //}
-
-            mLoggingService = loggingService;
-            mDbContextOptions = dbContextOptions;
-            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            if (!pTracking)
-            {
-                SetTrackingFalse();
-            }
-        }
-
-        public EntityContext(UtilPeticion utilPeticion, LoggingService loggingService, ILoggerFactory loggerFactory, DbContextOptions<EntityContext> dbContextOptions, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, string pDefaultSchema = null, bool pCache = false, bool pTracking = true)
-            : base(dbContextOptions)
-        {
-            loggingService.AgregarEntrada("Tiempos_construir_entityContext");
-            _configService = configService;
-            mDefaultSchema = pDefaultSchema;
-            //if (_configService.ObtenerTipoBD().Equals("2") && mDefaultSchema == null)
-            //{
-            //    mDefaultSchema = "dbo";
-            //}
-            mCache = pCache;
-			mlogger = loggerFactory.CreateLogger<EntityContext>();
-			mLoggerFactory = loggerFactory;
             mUtilPeticion = utilPeticion;
             mLoggingService = loggingService;
             mDbContextOptions = dbContextOptions;
@@ -155,10 +115,15 @@
                     break;
 
                 case "2":
-                    optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
+                    optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString(), o => o.SetPostgresVersion(new Version(10, 0)));
+
+                    // TODO: parche temporal. Hay un arrastre de cambios pendientes en las migraciones de Postgres
+                    // (tipos de columna DateTime y estrategia de columnas identity/serial) previo a esta migracion,
+                    // causado por la subida a Npgsql 10. Ver informe de analisis para el fix definitivo y quitar esta linea.
+                    optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
                     break;
             }
-            
+
             optionsBuilder.UseLoggerFactory(mLoggerFactory);
         }
 
@@ -601,6 +566,8 @@
 
         public virtual DbSet<Carga> Carga { get; set; }
         public virtual DbSet<CargaPaquete> CargaPaquete { get; set; }
+        public virtual DbSet<CargaMasivaConfiguracion> CargaMasivaConfiguracion { get; set; }
+        public virtual DbSet<CargaMasivaDominioPermitido> CargaMasivaDominioPermitido { get; set; }
 
         //Cookie
         public virtual DbSet<CategoriaProyectoCookie> CategoriaProyectoCookie { get; set; }
@@ -708,6 +675,11 @@
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (_configService.ObtenerTipoBD().Equals("2"))
+            {
+                NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            }
+
             modelBuilder.HasDbFunction(IsNumericMethodInfo)
             .HasName("ISNUMERIC")
             .IsBuiltIn();
@@ -1132,6 +1104,9 @@
             modelBuilder.Entity<HistorialTransicionCMSComponente>().HasKey(c => new { c.HistorialTransicionID });
             modelBuilder.Entity<HistorialTransicionPestanyaCMS>().HasKey(c => new { c.HistorialTransicionID });
             modelBuilder.Entity<TraductorProyecto>().HasKey(c => new { c.OrganizacionID, c.ProyectoID});
+
+            // Administracion carga masiva
+            modelBuilder.Entity<CargaMasivaDominioPermitido>().HasKey(c => new { c.ProyectoID, c.Dominio });
 
 			modelBuilder.Entity<DocumentoWebVinBaseRecursos>()
        .HasOne(a => a.DocumentoWebVinBaseRecursosExtra)
@@ -2922,19 +2897,6 @@
                 .WithMany(i => i.ConfiguracionesAsistentes)
                 .HasForeignKey(aci => aci.IdentidadID)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            if (mDefaultSchema != null && mDefaultSchema.Equals("dbo"))
-            {
-                if (_configService.ObtenerTipoBD().Equals("2"))
-                {
-                    //modelBuilder.HasDefaultSchema(mDefaultSchema);
-                }
-            }
-            else if (mDefaultSchema != null && !mDefaultSchema.Equals("dbo"))
-            {
-                modelBuilder.HasDefaultSchema(mDefaultSchema);
-            }
-
         }
 
         public bool ContextoInicializado
@@ -2952,72 +2914,6 @@
             {
                 mUtilPeticion.AgregarObjetoAPeticionActual("ContextoInicializado", value);
             }
-        }
-
-        private void InicializarEntityContext()
-        {
-            var conexion = ObtenerConexion();
-            string schemaDefecto = GetDafaultSchema(conexion);
-
-            EntityContext context = new EntityContext(mUtilPeticion, mLoggingService, mLoggerFactory, mDbContextOptions, _configService, mServicesUtilVirtuosoAndReplication ,schemaDefecto);
-
-            mUtilPeticion.AgregarObjetoAPeticionActual("EntityContext", context);
-            ContextoInicializado = true;
-        }
-
-        private void InicializarEntityContextCache()
-        {
-            var conexion = ObtenerConexion();
-            string schemaDefecto = GetDafaultSchema(conexion);
-            EntityContext context = new EntityContext(mUtilPeticion, mLoggingService, mLoggerFactory, mDbContextOptions, _configService, mServicesUtilVirtuosoAndReplication, schemaDefecto);
-
-            mUtilPeticion.AgregarObjetoAPeticionActual("EntityContextSinProxy", context);
-
-        }
-
-        private string GetDafaultSchema(DbConnection pConexionMaster)
-        {
-            string schemaDefecto = null;
-
-            if (BaseAD.ListaDefaultSchemaPorConexion == null)
-            {
-                BaseAD.ListaDefaultSchemaPorConexion = new System.Collections.Concurrent.ConcurrentDictionary<string, string>();
-            }
-
-            if (BaseAD.ListaDefaultSchemaPorConexion.ContainsKey(pConexionMaster.ConnectionString))
-            {
-                schemaDefecto = BaseAD.ListaDefaultSchemaPorConexion[pConexionMaster.ConnectionString];
-            }
-            else if (pConexionMaster is SqlConnection)
-            {
-                try
-                {
-                    DbCommand dbCommand = new SqlCommand("select SCHEMA_NAME()", (SqlConnection)pConexionMaster);
-
-                    schemaDefecto = (string)dbCommand.ExecuteScalar();
-                }
-                catch (Exception ex)
-                {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString, mlogger);
-                }
-                BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
-            }
-            else if (pConexionMaster is OracleConnection)
-            {
-                try
-                {
-                    DbCommand dbCommand = new OracleCommand("SELECT SYS_CONTEXT('USERENV','CURRENT_SCHEMA') FROM DUAL", (OracleConnection)pConexionMaster);
-                    schemaDefecto = (string)dbCommand.ExecuteScalar();
-                }
-                catch (Exception ex)
-                {
-                    mLoggingService.GuardarLogError(ex, "Error al obtener el contexto por defecto de la base de datos: " + pConexionMaster.ConnectionString, mlogger);
-                }
-                BaseAD.ListaDefaultSchemaPorConexion.TryAdd(pConexionMaster.ConnectionString, schemaDefecto);
-
-            }
-
-            return schemaDefecto;
         }
 
         /// <summary>

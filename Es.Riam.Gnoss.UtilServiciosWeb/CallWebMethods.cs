@@ -16,6 +16,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
 {
     public class CallWebMethods
     {
+        private static readonly HttpClient _sharedClient = new HttpClient();
+
         /// <summary>
         /// Hace una petición get
         /// </summary>
@@ -31,9 +33,9 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             try
             {
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
-                response = client.GetAsync($"{urlBase}{urlMethod}").Result;
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"{urlBase}{urlMethod}");
+                request.Headers.TryAddWithoutValidation("UserAgent", UtilWeb.GenerarUserAgent());
+                response = _sharedClient.SendAsync(request).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsStringAsync().Result;
             }
@@ -110,9 +112,8 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             HttpResponseMessage response = null;
             try
             {
-                HttpClient client = new HttpClient();
-                contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
-                response = client.PostAsync($"{urlBase}{urlMethod}", contentData).Result;
+                contentData.Headers.TryAddWithoutValidation("UserAgent", UtilWeb.GenerarUserAgent());
+                response = _sharedClient.PostAsync($"{urlBase}{urlMethod}", contentData).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsStringAsync().Result;
                 return result;
@@ -181,13 +182,14 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             HttpResponseMessage response = null;
             try
             {
-                HttpClient client = new HttpClient();
-                contentData.Headers.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                using var request = new HttpRequestMessage(HttpMethod.Post, $"{urlBase}{urlMethod}");
+                request.Content = contentData;
+                request.Headers.TryAddWithoutValidation("UserAgent", UtilWeb.GenerarUserAgent());
                 if (pToken != null)
                 {
-                    client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
+                    request.Headers.TryAddWithoutValidation("Authorization", $"{pToken.token_type} {pToken.access_token}");
                 }
-                response = client.PostAsync($"{urlBase}{urlMethod}", contentData).Result;
+                response = _sharedClient.SendAsync(request).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsStringAsync().Result;
                 return result;
@@ -221,13 +223,13 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             }
             try
             {
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("UserAgent", UtilWeb.GenerarUserAgent());
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"{urlBase}{urlMethod}");
+                request.Headers.TryAddWithoutValidation("UserAgent", UtilWeb.GenerarUserAgent());
                 if (pToken != null)
                 {
-                    client.DefaultRequestHeaders.Add("Authorization", $"{pToken.token_type} {pToken.access_token}");
+                    request.Headers.TryAddWithoutValidation("Authorization", $"{pToken.token_type} {pToken.access_token}");
                 }
-                response = client.GetAsync($"{urlBase}{urlMethod}").Result;
+                response = _sharedClient.SendAsync(request).Result;
                 response.EnsureSuccessStatusCode();
                 result = response.Content.ReadAsStringAsync().Result;
             }

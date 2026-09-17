@@ -1,12 +1,11 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Processing;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetVips;
 
 namespace Es.Riam.Util
 {
@@ -18,65 +17,20 @@ namespace Es.Riam.Util
         /// <param name="pImagen">Imagen a ajustar</param>
         /// <param name="pAncho">Ancho de ajuste</param>
         /// <param name="pAlto">Alto de ajuste</param>
-        /// <param name="pCalcularTamañoProporcionado">TRUE si se debe calcular el tamaño proporcionadamente</param>
-        /// <returns>Devuelve la imagen ajustada</returns>
-        public static Image AjustarImagen(Image pImagen, float pAncho, float pAlto, bool pCalcularTamañoProporcionado)
-        {
-            Size tamanio = new Size((int)pAncho, (int)pAlto);
-
-            if (pCalcularTamañoProporcionado)
-            {
-                SizeF tamanioF = CalcularTamanioProporcionado(pImagen, pAncho, pAlto);
-                tamanio = Size.Truncate(tamanioF);
-            }
-
-            Image imageClone = pImagen.Clone(c => c.Resize(tamanio));
-            return imageClone;
-        }
-
-        /// <summary>
-        /// Ajusta una imagen proporcionalmente
-        /// </summary>M
-        /// <param name="pImagen">Imagen a ajustar</param>
-        /// <param name="pAncho">Ancho de ajuste</param>
-        /// <param name="pAlto">Alto de ajuste</param>
         /// <returns>Devuelve la imagen ajustada</returns>
         public static Image AjustarImagen(Image pImagen, float pAncho, float pAlto)
         {
-            return AjustarImagen(pImagen, pAncho, pAlto, true);
+            if (pImagen == null)
+                return null;
+
+            double scale = Math.Min(
+                pAncho / pImagen.Width,
+                pAlto / pImagen.Height
+            );
+
+            return pImagen.Resize(scale);
         }
 
-        /// <summary>
-        /// Calcula el tamaño proporcional en el que quedará 
-        /// </summary>
-        /// <param name="pImagen">Imagen que se va a proporcionar</param>
-        /// <param name="pAlto">Alto a ajustar</param>
-        /// <param name="pAncho">Ancho a ajustar</param>
-        /// <returns>Tamaño ajustado</returns>
-        public static SizeF CalcularTamanioProporcionado(Image pImagen, float pAncho, float pAlto)
-        {
-            if (pImagen != null)
-            {
-                float Alto = pImagen.Height;
-                float Ancho = pImagen.Width;
-                float AltoFinal;
-                float AnchoFinal;
-
-                if ((Alto / Ancho) >= (pAlto / pAncho))
-                {
-                    AnchoFinal = Ancho / (Alto / pAlto);
-                    AltoFinal = pAlto;
-                }
-                else
-                {
-                    AltoFinal = Alto / (Ancho / pAncho);
-                    AnchoFinal = pAncho;
-                }
-
-                return new SizeF(AnchoFinal, AltoFinal);
-            }
-            return new SizeF(pAncho, pAlto);
-        }
 
         /// <summary>
         /// Ajusta una imagen proporcionalmente
@@ -110,24 +64,22 @@ namespace Es.Riam.Util
         /// <param name="pCoordenadaX">Punto del eje de coordenadas X desde el que se empieza a recortar</param>
         /// <param name="pCoordenadaY">Punto del eje de coordenadas y desde el que se empieza a recortar</param>
         /// <returns>Array con los bytes de la nueva imagen recortada</returns>
+
         public static byte[] RecortarImagen(Image pImagen, int pAnchura, int pAltura, int pCoordenadaX, int pCoordenadaY)
         {
-            pImagen.Clone(i => i.Crop(new Rectangle(pCoordenadaX, pCoordenadaY, pAnchura, pAltura)));
-            byte[] bufferRecortado;
-            using (var ms = new MemoryStream())
-            {
-                pImagen.Save(ms, PngFormat.Instance);
-                bufferRecortado = ms.ToArray();
-            }
-            return bufferRecortado;
+            // Crop en NetVips (extract_area)
+            var recortada = pImagen.Crop(pCoordenadaX, pCoordenadaY, pAnchura, pAltura);
+
+            // Exportar a buffer (PNG)
+            return recortada.WriteToBuffer(".png");
         }
 
-        /// <summary>
-        /// Codifica una imagen a BASE64
-        /// </summary>
-        /// <param name="pImagen">Array de bytes que representa la imagen</param>
-        /// <returns>Cadena de texto en formato BASE64 que representa la imagen</returns>
-        public static string CodificarImagen(byte[] pImagen)
+    /// <summary>
+    /// Codifica una imagen a BASE64
+    /// </summary>
+    /// <param name="pImagen">Array de bytes que representa la imagen</param>
+    /// <returns>Cadena de texto en formato BASE64 que representa la imagen</returns>
+    public static string CodificarImagen(byte[] pImagen)
         {
             return Convert.ToBase64String(pImagen);
         }
@@ -139,15 +91,17 @@ namespace Es.Riam.Util
         /// <returns>Imagen del array de bytes</returns>
         public static Image ConvertirArrayBytesEnImagen(byte[] pArrayByte)
         {
-            if (pArrayByte.Length.Equals(0))
+            if (pArrayByte == null || pArrayByte.Length == 0)
                 return null;
 
-            MemoryStream ms = new MemoryStream(pArrayByte);
-            Image returnImage = Image.Load(ms);
-            ms.Close();
-            ms.Dispose();
-
-            return returnImage;
+            try
+            {
+                return Image.NewFromBuffer(pArrayByte);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -161,12 +115,26 @@ namespace Es.Riam.Util
         /// <returns>Array de bytes</returns>
         public static Image CropImage(byte[] imageFile, int targetW, int targetH, int targetX, int targetY)
         {
-            Image imagenOriginal = Image.Load(new MemoryStream(imageFile));
-            Rectangle rectanguloRecorte = new Rectangle(targetX, targetY, targetW - targetX, targetH - targetY);
+            if (imageFile == null || imageFile.Length == 0)
+                return null;
 
-            var imagenCrop = imagenOriginal.Clone(x => x.Crop(rectanguloRecorte).Resize(targetW, targetH));
+            var imagenOriginal = Image.NewFromBuffer(imageFile);
 
-            return imagenCrop;
+            // Asegurar que el recorte no se sale de la imagen
+            targetX = Math.Max(0, targetX);
+            targetY = Math.Max(0, targetY);
+
+            int cropWidth = Math.Min(targetW, imagenOriginal.Width - targetX);
+            int cropHeight = Math.Min(targetH, imagenOriginal.Height - targetY);
+
+            // Crop
+            var cropped = imagenOriginal.Crop(targetX, targetY, cropWidth, cropHeight);
+
+            // Resize al tamaño final deseado
+            double scaleX = (double)targetW / cropWidth;
+            double scaleY = (double)targetH / cropHeight;
+
+            return cropped.Resize(scaleX, vscale: scaleY);
         }
 
         /// <summary>
@@ -178,155 +146,150 @@ namespace Es.Riam.Util
         /// <param name="targetX">Coordenada X</param>
         /// <param name="targetY">Coordenada Y</param>
         /// <returns>Array de bytes</returns>
-        public static byte[] CropImageFile(byte[] imageFile, int targetW, int targetH, int targetX, int targetY)
+        /// <summary>
+        /// Recorta y redimensiona una imagen. Coordenadas en píxeles originales (viene de jCrop).
+        /// </summary>
+        public static byte[] CropImageFile(
+            byte[] imageFile, int targetW, int targetH, int targetX, int targetY)
         {
-            var cropImage = CropImage(imageFile, targetW, targetH, targetX, targetY);
-            return ImageToBytePng(cropImage);
+            using var imagen = Image.NewFromBuffer(imageFile,
+                access: Enums.Access.Sequential);
+
+            // Validar que el recorte no se salga de los límites
+            int anchoRecorte = Math.Min(targetW, imagen.Width - targetX);
+            int altoRecorte = Math.Min(targetH, imagen.Height - targetY);
+
+            if (anchoRecorte <= 0 || altoRecorte <= 0)
+                throw new ArgumentException("Las coordenadas de recorte están fuera de la imagen.");
+
+            var resultado = imagen
+                .Crop(targetX, targetY, anchoRecorte, altoRecorte)
+                .Resize((double)targetW / anchoRecorte);
+
+            return resultado.WriteToBuffer(".png");
         }
 
-        public static byte[] CropImageFile(byte[] imageFile, int targetW, int targetH, int targetX, int targetY, string extensionArchivo)
+        /// <summary>
+        /// Sobrecarga con formato de salida explícito.
+        /// </summary>
+        public static byte[] CropImageFile(
+            byte[] imageFile, int targetW, int targetH, int targetX, int targetY,
+            string extensionArchivo)
         {
-            using (MemoryStream stream = new MemoryStream(imageFile))
+            using var imagen = Image.NewFromBuffer(imageFile,
+                access: Enums.Access.Sequential);
+
+            int anchoRecorte = Math.Min(targetW, imagen.Width - targetX);
+            int altoRecorte = Math.Min(targetH, imagen.Height - targetY);
+
+            if (anchoRecorte <= 0 || altoRecorte <= 0)
+                throw new ArgumentException("Las coordenadas de recorte están fuera de la imagen.");
+
+            var resultado = imagen
+                .Crop(targetX, targetY, anchoRecorte, altoRecorte)
+                .Resize((double)targetW / anchoRecorte);
+
+            string extension = extensionArchivo.ToLower().TrimStart('.');
+            string formato = ".webp";
+            /*
+            string formato = extension switch
             {
-                Image imagenOriginal = Image.Load(new MemoryStream(imageFile));
-                Rectangle rectanguloRecorte = new Rectangle(targetX, targetY, targetW, targetH);
-
-                var imagenRecortada = imagenOriginal.Clone(x => x.Crop(rectanguloRecorte).Resize(targetW, targetH));
-
-                MemoryStream mm = new MemoryStream();
-                if (extensionArchivo.ToLower().Equals("jpeg") || string.Compare(extensionArchivo, "jpg", true) == 0)
-                {
-                    imagenRecortada.SaveAsJpeg(mm);
-                }
-                if (extensionArchivo.ToLower().Equals("png"))
-                {
-                    imagenRecortada.SaveAsPng(mm);
-                }
-                if (extensionArchivo.ToLower().Equals("bmp"))
-                {
-                    imagenRecortada.SaveAsBmp(mm);
-                }
-                if (extensionArchivo.ToLower().Equals("gif"))
-                {
-                    imagenRecortada.SaveAsGif(mm);
-                }
-                return mm.GetBuffer();
-            }
+                "jpg" or "jpeg" => ".jpg",
+                "png" => ".png",
+                "bmp" => ".bmp",
+                "gif" => ".gif",
+                "webp" => ".webp",
+                _ => throw new NotSupportedException($"Formato no soportado: {extensionArchivo}")
+            };
+            */
+            return resultado.WriteToBuffer(formato);
         }
 
         public static byte[] ImageToBytePng(Image image)
         {
-            MemoryStream stream = new MemoryStream();
-            image.SaveAsPng(stream);
-            return stream.GetBuffer();
+            if (image == null)
+                return null;
+
+            return image.WriteToBuffer(".png");
         }
+
         public static byte[] ImageToByteJpg(Image image)
         {
-            MemoryStream stream = new MemoryStream();
-            image.SaveAsJpeg(stream);
-            return stream.GetBuffer();
+            if (image == null)
+                return null;
+
+            return image.WriteToBuffer(".jpg");
         }
 
         public static Image RecortarImagenACuadrada(Image pImagen, float tamaño)
         {
+            if (pImagen == null)
+                return null;
+
+            int targetSize = (int)tamaño;
             float alto = pImagen.Height;
             float ancho = pImagen.Width;
-            bool esVertical = false;
-            bool esHorizontal = false;
-            bool esCuadrada = false;
-            float proporcionAnchoAlto = ancho / alto;
-            Image imageClone = pImagen;
-            if (proporcionAnchoAlto == 1)
-            {
-                esCuadrada = true;
-            }
-            else if (proporcionAnchoAlto > 1)
-            {
-                esHorizontal = true;
-            }
-            else if (proporcionAnchoAlto < 1)
-            {
-                esVertical = true;
-            }
+            float proporcion = ancho / alto;
 
-            if (esVertical)
+            Image working;
+
+            if (Math.Abs(proporcion - 1f) < float.Epsilon)
+            {
+                working = RedimensionarDadoAncho(pImagen, tamaño);
+            }
+            else if (proporcion < 1f)
             {
                 if (ancho >= tamaño)
                 {
-                    Image imagen = RedimensionarDadoAncho(pImagen, tamaño);
-                    Point origen = new Point(0, 0);
-                    Size size = Size.Truncate(new SizeF(tamaño, tamaño));
-                    Rectangle rectangulo = new Rectangle(origen, size);
-                    imageClone = imagen.Clone(x => x.Crop(rectangulo));
+                    working = RedimensionarDadoAncho(pImagen, tamaño);
+                    int cropHeight = Math.Min(working.Height, targetSize);
+                    working = working.Crop(0, 0, targetSize, cropHeight);
                 }
-                else if (ancho < tamaño && alto > tamaño)
+                else
                 {
-                    Point origen = new Point(0, 0);
-                    Size size = Size.Truncate(new SizeF(ancho, tamaño));
-                    Rectangle rectangulo = new Rectangle(origen, size);
-                    imageClone = pImagen.Clone(x => x.Crop(rectangulo));
+                    int cropHeight = Math.Min((int)alto, targetSize);
+                    working = pImagen.Crop(0, 0, (int)ancho, cropHeight);
                 }
-
             }
-            else if (esHorizontal)
+            else
             {
                 if (alto >= tamaño)
                 {
-                    Image imagen = RedimensionarDadoAlto(pImagen, tamaño);
-                    Point origen = new Point(Convert.ToInt32(imagen.Width - tamaño) / 2, 0);
-                    Size size = Size.Truncate(new SizeF(tamaño, tamaño));
-                    Rectangle rectangulo = new Rectangle(origen, size);
-                    imageClone = imagen.Clone(x => x.Crop(rectangulo));
+                    working = RedimensionarDadoAlto(pImagen, tamaño);
+                    int offsetX = (working.Width - targetSize) / 2;
+                    offsetX = Math.Max(0, offsetX);
+                    int cropWidth = Math.Min(working.Width - offsetX, targetSize);
+                    working = working.Crop(offsetX, 0, cropWidth, targetSize);
                 }
-                else if (alto <= tamaño && ancho > tamaño)
+                else
                 {
-                    Point origen = new Point(Convert.ToInt32(pImagen.Width - tamaño) / 2, 0);
-                    Size size = Size.Truncate(new SizeF(tamaño, alto));
-                    Rectangle rectangulo = new Rectangle(origen, size);
-                    imageClone = pImagen.Clone(x => x.Crop(rectangulo));
+                    int offsetX = ((int)ancho - targetSize) / 2;
+                    offsetX = Math.Max(0, offsetX);
+                    int cropWidth = Math.Min((int)ancho - offsetX, targetSize);
+                    working = pImagen.Crop(offsetX, 0, cropWidth, (int)alto);
                 }
             }
-            else if (esCuadrada)
-            {
-                Image imagenCuadrada = RedimensionarDadoAncho(pImagen, tamaño);
 
-                imageClone = imagenCuadrada;
-            }
-
-            return imageClone;
+            return working;
         }
 
         public static Image RedimensionarDadoAncho(Image pImagen, float pAnchoPixeles)
         {
-            float alto = pImagen.Height;
-            float ancho = pImagen.Width;
-            Image imageClone = pImagen;
-            float proporcionAnchoAlto = ancho / alto;
+            if (pAnchoPixeles >= pImagen.Width)
+                return pImagen; 
 
-            // Sólo redimensionamos la imagen si el ancho es menor que el pedido
-            if (pAnchoPixeles < ancho)
-            {
-                float nuevoAlto = pAnchoPixeles / proporcionAnchoAlto;
-                Size size = Size.Truncate(new SizeF(pAnchoPixeles, nuevoAlto));
-                imageClone = pImagen.Clone(x => x.Resize(size));
-            }
-            return imageClone;
+            double scale = pAnchoPixeles / pImagen.Width;
+            return pImagen.Resize(scale);
         }
 
         public static Image RedimensionarDadoAlto(Image pImagen, float pAltoPixeles)
         {
-            float alto = pImagen.Height;
-            float ancho = pImagen.Width;
-            float proporcionAnchoAlto = ancho / alto;
-            Image imageClone = pImagen;
-            // Sólo redimensionamos la imagen si el alto es menor que el pedido
-            if (pAltoPixeles < alto)
-            {
-                float nuevoAncho = pAltoPixeles * proporcionAnchoAlto;
-                Size size = Size.Truncate(new SizeF(nuevoAncho, pAltoPixeles));
-                imageClone = pImagen.Clone(x => x.Resize(size));
-            }
-            return imageClone;
+            if (pAltoPixeles >= pImagen.Height)
+                return pImagen; 
+
+            double scale = pAltoPixeles / pImagen.Height;
+            // Resize de NetVips escala por ancho; usamos vscale para forzar por alto
+            return pImagen.Resize(scale, vscale: scale);
         }
 
         /// <summary>
@@ -348,38 +311,32 @@ namespace Es.Riam.Util
         }
 
         /// <summary>
-        /// Redimensionamos una imagen cumpliendo el límite de ancho y alto pasado por parámetro y manteniendo la proporcion. En caso de que uno sea -1 se redimensionará la imagen en función
-        /// del otro parámetro manteniendo la relación de aspecto.
+        /// Redimensionamos una imagen cumpliendo el límite de ancho y alto pasado por parámetro y manteniendo la proporcion.
+        /// En caso de que uno sea -1 se redimensionará la imagen en función del otro parámetro manteniendo la relación de aspecto.
         /// </summary>
         /// <param name="pAncho">Ancho deseado para la redimensión</param>
         /// <param name="pAlto">Alto deseado para la redimensión</param>
         /// <param name="pImagenOriginal">Imagen que queremos redimensionar</param>
-        /// <returns>Array de bytes con el contenido de la imagen redimensionada</returns>
-        /// <exception cref="InvalidDataException">Devolvemos InvalidDataException en caso de que ambos parámetros sean -1</exception>
+        /// <returns>Array de bytes con el contenido de la imagen redimensionada en PNG</returns>
+        /// <exception cref="InvalidDataException">Cuando ambos parámetros son -1</exception>
         public static byte[] RedimensionarAnchoAlto(int pAncho, int pAlto, Image pImagenOriginal)
         {
-            byte[] bytesImagenRedimensionada = null;
-
             if (pAncho == -1 && pAlto == -1)
-            {
                 throw new InvalidDataException("No se ha configurado ni el alto ni el ancho del recorte, hay que configurar al menos un valor");
-            }
 
             float factorRedimension = ObtenerFactorRedimension(pAncho, pAlto, pImagenOriginal.Width, pImagenOriginal.Height);
 
             int anchoFinal = (int)(pImagenOriginal.Width / factorRedimension);
-            int altoFinal = (int)(pImagenOriginal.Height / factorRedimension);            
-            
-            Image imagenNueva = pImagenOriginal.Clone(x => x.Resize(anchoFinal, altoFinal));
+            int altoFinal = (int)(pImagenOriginal.Height / factorRedimension);
 
-            using (var ms = new MemoryStream())
-            {
-                PngEncoder pngEncoder = new PngEncoder() { CompressionLevel = PngCompressionLevel.Level9 };
-                imagenNueva.Save(ms, pngEncoder);
-                bytesImagenRedimensionada = ms.ToArray();
-            }
+            // NetVips Resize trabaja con scale, no con dimensiones absolutas.
+            // Calculamos el scale horizontal; vscale fuerza la altura exacta.
+            double hscale = (double)anchoFinal / pImagenOriginal.Width;
+            double vscale = (double)altoFinal / pImagenOriginal.Height;
 
-            return bytesImagenRedimensionada;
+            var resized = pImagenOriginal.Resize(hscale, vscale: vscale);
+
+            return resized.WebpsaveBuffer(q: 75);
         }
 
         /// <summary>

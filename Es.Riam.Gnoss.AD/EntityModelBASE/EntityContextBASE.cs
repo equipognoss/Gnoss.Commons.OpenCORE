@@ -7,10 +7,9 @@ using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Npgsql;
 using Microsoft.Extensions.Logging;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 
 namespace Es.Riam.Gnoss.AD.EntityModelBASE
 {
@@ -72,7 +71,7 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
                     break;
 
                 case "2":
-                    optionsBuilder.UseNpgsql(mConfigService.ObtenerBaseConnectionString(), o => o.SetPostgresVersion(new Version(9, 6)));
+                    optionsBuilder.UseNpgsql(mConfigService.ObtenerBaseConnectionString(), o => o.SetPostgresVersion(new Version(10, 0)));
                     break;
             }
 
@@ -110,6 +109,11 @@ namespace Es.Riam.Gnoss.AD.EntityModelBASE
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (mConfigService.ObtenerTipoBD().Equals("2"))
+            {
+                NpgsqlModelBuilderExtensions.UseSerialColumns(modelBuilder);
+            }
+
             modelBuilder.Entity<ColaCorreoDestinatario>()
                .HasKey(c => new { c.CorreoID, c.Email });
             modelBuilder.Entity<ColaCorreo>()

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
@@ -19,107 +20,87 @@ namespace Es.Riam.Util
         /// Obtiene una URL con la petición OAuth trasformada a GET.
         /// </summary>
         /// <param name="pRequest">Request</param>
+        /// <param name="pUrlApi">Url publica API</param>
         /// <returns>URL GET para petición OAuth</returns>
-        public static string ObtenerUrlGetDePeticionOAuth(HttpRequest pRequest, string urlOriginal = null, bool pLimpiarParametrosAdicionales = true)
+        public static string ObtenerUrlGetDePeticionOAuth(HttpRequest pRequest, string pUrlApi)
         {
-            string token = null;
-            string consumerKey = null;
-            string nonce = null;
-            string method = null;
-            string timespan = null;
-            string signature = null;
+            // 1. Extraer parámetros OAuth de la cabecera Authorization
+            var oauthParams = ParseAuthorizationHeader(pRequest);
+            if (oauthParams is null)
+                return null;
 
-            if (!string.IsNullOrEmpty(pRequest.Query["oauth_token"]))
+            // 2. Construir la URL base (sin query string)
+            string scheme = pRequest.Headers.TryGetValue("X-Forwarded-Proto", out var forwardedProto)
+               ? forwardedProto.ToString().Split(',')[0].Trim()  // puede venir como "https, http" en cadena
+               : pRequest.Scheme;
+
+            string host = pRequest.Headers.TryGetValue("X-Forwarded-Host", out var forwardedHost)
+                ? forwardedHost.ToString().Split(',')[0].Trim()
+                : pRequest.Host.ToString();
+
+            Uri uriPublicaApi = new Uri(pUrlApi);
+            string prefix = string.Empty;
+            if (pRequest.Headers.TryGetValue("X-Forwarded-Prefix", out var forwardedPrefix))
             {
-                token = UrlEncode(UrlDecode(pRequest.Query["oauth_token"]));
-                consumerKey = UrlEncode(UrlDecode(pRequest.Query["oauth_consumer_key"]));
-                nonce = pRequest.Query["oauth_nonce"];
-                method = pRequest.Query["oauth_signature_method"];
-                timespan = pRequest.Query["oauth_timestamp"];
-                signature = UrlEncode(UrlDecode(pRequest.Query["oauth_signature"]));
+                prefix = forwardedPrefix.ToString();
             }
-            else
-            {
-                //Lo obtengo del query string
-                string http_authorization = "Authorization"; //Cambiarlo por la cabecera
-
-                if (pRequest.Headers.ContainsKey(http_authorization))
-                {
-                    string parametros = pRequest.Headers[http_authorization];
-                    char[] separadores = { ',' };
-                    string[] listaParams = parametros.Split(separadores, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string param in listaParams)
-                    {
-                        char[] separadoIgual = { '=' };
-                        string[] claveValor = param.Split(separadoIgual, StringSplitOptions.RemoveEmptyEntries);
-                        if (claveValor.Length > 1)
-                        {
-                            string valor = claveValor[1].Replace("\"", "").Trim();
-                            switch (claveValor[0].Trim().ToLower())
-                            {
-                                case "oauth_token":
-                                    token = UrlEncode(UrlDecode(valor));
-                                    break;
-                                case "oauth_consumer_key":
-                                    consumerKey = UrlEncode(UrlDecode(valor));
-                                    break;
-                                case "oauth_nonce":
-                                    nonce = valor;
-                                    break;
-                                case "oauth_signature_method":
-                                    method = valor;
-                                    break;
-                                case "oauth_timestamp":
-                                    timespan = valor;
-                                    break;
-                                case "oauth_signature":
-                                    signature = UrlEncode(UrlDecode(valor));
-                                    break;
-                            }
-                        }
-                    }
-                }
+            else if (host == uriPublicaApi.Host) { 
+                prefix = uriPublicaApi.AbsolutePath.TrimEnd('/');
             }
 
+            string baseUrl = $"{scheme}://{host}{prefix}{pRequest.Path}";
 
-            token = "oauth_token=" + token;
-            consumerKey = "&oauth_consumer_key=" + consumerKey;
-            nonce = "&oauth_nonce=" + nonce;
-            method = "&oauth_signature_method=" + method;
-            timespan = "&oauth_timestamp=" + timespan;
-            signature = "&oauth_signature=" + signature;
+            if (baseUrl.Contains("?"))
+                baseUrl = baseUrl[..baseUrl.IndexOf('?')];
 
-            string url = UtilWeb.RequestUrl(pRequest);
+            // 3. Empezar con los parámetros de query string originales (si los hay)
+            var sb = new StringBuilder(baseUrl);
+            var separator = "?";
 
-            if (!string.IsNullOrEmpty(urlOriginal))
+            var originalQuery = pRequest.QueryString.ToString().TrimStart('?');
+            if (!string.IsNullOrEmpty(originalQuery))
             {
-                url = urlOriginal + pRequest.Path;
-                if (url.Contains("?"))
-                {
-                    url = url.Substring(0, url.IndexOf("?"));
-                }
-
-                url += pRequest.QueryString.ToString();
-                
+                sb.Append('?').Append(originalQuery);
+                separator = "&";
             }
 
-            if (pLimpiarParametrosAdicionales)
-            {
-                //url = LimpiarParametrosExpurios(UtilWeb.RequestUrl(pRequest));
-                url = LimpiarParametrosExpurios(url);
-                if (!url.Contains("?"))
-                {
-                    url += "?";
-                }
-                else
-                {
-                    url += "&";
-                }
+            // 4. Añadir los parámetros OAuth encodeados
+            sb.Append(separator);
+            sb.Append("oauth_token=").Append(UrlEncode(oauthParams["oauth_token"]));
+            sb.Append("&oauth_consumer_key=").Append(UrlEncode(oauthParams["oauth_consumer_key"]));
+            sb.Append("&oauth_nonce=").Append(UrlEncode(oauthParams["oauth_nonce"]));
+            sb.Append("&oauth_signature_method=").Append(UrlEncode(oauthParams["oauth_signature_method"]));
+            sb.Append("&oauth_timestamp=").Append(UrlEncode(oauthParams["oauth_timestamp"]));
+            sb.Append("&oauth_signature=").Append(UrlEncode(oauthParams["oauth_signature"]));
+            sb.Append("&oauth_version=").Append(UrlEncode(oauthParams["oauth_version"]));
 
-                url += token + consumerKey + nonce + method + timespan + signature;
+            return sb.ToString();
+        }
+
+        private static Dictionary<string, string> ParseAuthorizationHeader(HttpRequest pRequest)
+        {
+            if (!pRequest.Headers.TryGetValue("Authorization", out var headerValue))
+                return null;
+
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var part in headerValue.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var idx = part.IndexOf('=');
+                if (idx < 0) continue;
+
+                var key = part[..idx].Trim();
+                var value = part[(idx + 1)..].Trim().Trim('"');
+
+                if (key.Equals("realm", StringComparison.OrdinalIgnoreCase) ||
+                    key.Equals("OAuth", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // Decodificar el valor que viene de la cabecera
+                result[key] = UrlDecode(value);
             }
 
-            return url;
+            return result.Count > 0 ? result : null;
         }
 
         /// <summary>

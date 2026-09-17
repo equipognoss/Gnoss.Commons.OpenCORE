@@ -17,7 +17,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -848,6 +848,45 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                     b.HasKey("CargaID");
 
                     b.ToTable("Carga");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaMasivaConfiguracion", b =>
+                {
+                    b.Property<Guid>("ProyectoID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<DateTime>("FechaModificacion")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("RAW(16)");
+
+                    b.HasKey("ProyectoID");
+
+                    b.ToTable("CargaMasivaConfiguracion");
+                });
+
+            modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaMasivaDominioPermitido", b =>
+                {
+                    b.Property<Guid>("ProyectoID")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("Dominio")
+                        .HasMaxLength(255)
+                        .HasColumnType("NVARCHAR2(255)")
+                        .HasColumnOrder(1);
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("TIMESTAMP(7)");
+
+                    b.Property<Guid>("IdentidadID")
+                        .HasColumnType("RAW(16)");
+
+                    b.HasKey("ProyectoID", "Dominio");
+
+                    b.ToTable("CargaMasivaDominioPermitido");
                 });
 
             modelBuilder.Entity("Es.Riam.Gnoss.AD.EntityModel.Models.Carga.CargaPaquete", b =>
@@ -5530,6 +5569,9 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasPrecision(1)
                         .HasColumnType("NUMBER(1)");
 
+                    b.Property<bool>("NuevosSeguidores")
+                        .HasColumnType("NUMBER(1)");
+
                     b.Property<bool>("SolicitudesContacto")
                         .HasPrecision(1)
                         .HasColumnType("NUMBER(1)");
@@ -8107,10 +8149,10 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("WhereFacetasSPARQL")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("WhereSPARQL")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.HasKey("OrganizacionID", "ProyectoID", "NombreFiltro");
 

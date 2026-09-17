@@ -26,6 +26,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.AdministrarTraducciones
 
         public string TextoID { get; set; }
         public Dictionary<string, string> Idiomas { get; set; }
+        public Dictionary<string, string> IdiomasDisponiblesTraducir { get; set; } = new Dictionary<string, string>();
         public List<TraduccionModel> Traducciones { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaModificacion { get; set; }

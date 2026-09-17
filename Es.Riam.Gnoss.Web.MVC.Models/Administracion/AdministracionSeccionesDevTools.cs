@@ -73,6 +73,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             Configuracion_Ecosistema,
             Configuracion_DatosExtra,
             Configuracion_EventosExternos,
+            Configuracion_CargaMasiva,
             Descargar_Configuraciones,            
             Diagnostico_Problemas,
             Configuracion_RolesEcosistema,
@@ -86,6 +87,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
             GrafoConocimiento_SparQL,
             GrafoConocimiento_CargaMasiva,
             GrafoConocimiento_BorradoMasivo,
+            GrafoConocimiento_TraducirRecursos,
 
             // Subsecciones de la sección Descubrimiento y Analisis
             DescubrimientoAnalisis_Home,

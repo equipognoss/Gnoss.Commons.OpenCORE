@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DotNetOpenAuth.OAuth.ChannelElements;
 using Es.Riam.Gnoss.OAuthAD.OAuth;
 
 namespace Es.Riam.Gnoss.Web.UtilOAuth
@@ -11,12 +7,12 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
     /// <summary>
     /// Clase para representar un token en Gnoss
     /// </summary>
-    public class TokenGnoss : IServiceProviderRequestToken, IServiceProviderAccessToken
+    public class TokenGnoss
     {
 
         #region Miembros
 
-        private OAuthToken mFilaToken;
+        private readonly OAuthToken mFilaToken;
 
         #endregion
 

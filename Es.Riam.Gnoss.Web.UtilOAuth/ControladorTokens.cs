@@ -1,16 +1,14 @@
-﻿using DotNetOpenAuth.OAuth.ChannelElements;
-using Es.Riam.AbstractsOpen;
+﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.Elementos.Amigos;
 using Es.Riam.Gnoss.LogicaOAuth.OAuth;
 using Es.Riam.Gnoss.OAuthAD;
 using Es.Riam.Gnoss.OAuthAD.OAuth;
 using Es.Riam.Gnoss.OAuthAD.OAuth.EncapsuladoDatos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -22,7 +20,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
     /// <summary>
     /// Gestor de tokens de Gnoss
     /// </summary>
-    public class ControladorTokens : IServiceProviderTokenManager
+    public class ControladorTokens
     {
 
         #region Constantes
@@ -36,19 +34,20 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
 
         #region Miembros
 
-        private DataWrapperOAuth mOAuthDW = null;
+        private readonly DataWrapperOAuth mOAuthDW = null;
         private OAuthCN mOauthCN = null;
-        private static ConcurrentDictionary<string, TokenGnoss> mListaTokens = null;
-        //private static string mRutaFicheroConfiguracion = "";
+        private static readonly MemoryCache _tokenCache = new MemoryCache(new MemoryCacheOptions());
+        private static readonly MemoryCacheEntryOptions _tokenCacheOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromHours(24));
         public static string RutaTrazas = null;
 
-        private EntityContextOauth mEntityContextOauth;
-        private LoggingService mLoggingService;
-        private ConfigService mConfigService;
-        private EntityContext mEntityContext;
-        private IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly EntityContextOauth mEntityContextOauth;
+        private readonly LoggingService mLoggingService;
+        private readonly ConfigService mConfigService;
+        private readonly EntityContext mEntityContext;
+        private readonly IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private readonly ILogger _Logger;
+        private readonly ILoggerFactory mLoggerFactory;
         #endregion
 
         #region Constructores
@@ -59,81 +58,17 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         public ControladorTokens(EntityContextOauth entityContextOauth, LoggingService loggingService, EntityContext entityContext, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<ControladorTokens> logger, ILoggerFactory loggerFactory)
         {
             mOAuthDW = new DataWrapperOAuth();
-            //mOAuthDW = new OAuthDS();
 
             mLoggingService = loggingService;
             mEntityContextOauth = entityContextOauth;
             mEntityContext = entityContext;
             mConfigService = configService;
             mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
-            mlogger = logger;
+            _Logger = logger;
             mLoggerFactory = loggerFactory;
         }
 
         #endregion
-
-        #region Miembros de IServiceProviderTokenManager
-
-        /// <summary>
-        /// Obtiene un access token
-        /// </summary>
-        /// <param name="pToken">access token</param>
-        /// <returns></returns>
-        public IServiceProviderAccessToken GetAccessToken(string pToken)
-        {
-            try
-            {
-                TokenGnoss token = ObtenerToken(pToken);
-
-                if (token.Estado.Equals(EstadosToken.ConAcceso))
-                {
-                    return token;
-                }
-
-                throw new KeyNotFoundException("Unrecognized token");
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new KeyNotFoundException("Unrecognized token", ex);
-            }
-        }
-
-        /// <summary>
-        /// Obtiene a un consumidor concreto a partir de su clave de consumidor
-        /// </summary>
-        /// <param name="pConsumerKey">clave del consumidor</param>
-        /// <returns></returns>
-        public IConsumerDescription GetConsumer(string pConsumerKey)
-        {
-            OAuthConsumer filaConsumidor = ObtenerFilaConsumer(pConsumerKey);
-
-            if (filaConsumidor != null)
-            {
-                return new Consumidor(filaConsumidor);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Obtiene un request token
-        /// </summary>
-        /// <param name="pToken">token del request token que se quiere obtener</param>
-        /// <returns></returns>
-        public IServiceProviderRequestToken GetRequestToken(string pToken)
-        {
-            try
-            {
-                TokenGnoss token = ObtenerToken(pToken);
-                return token;
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new KeyNotFoundException("Unrecognized token", ex);
-            }
-        }
 
         /// <summary>
         /// Comprueba si un request token concreto está autorizado
@@ -147,19 +82,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         }
 
         /// <summary>
-        /// Actualiza en la base de datos un token concreto
-        /// </summary>
-        /// <param name="pToken">token actualizado</param>
-        public void UpdateToken(IServiceProviderRequestToken pToken)
-        {
-            ActualizarBaseDeDatos();
-        }
-
-        #endregion
-
-        #region Miembros de ITokenManager
-
-        /// <summary>
         /// Elimina de la base de datos un request token y almacena un access token
         /// </summary>
         /// <param name="pConsumerKey">consumer key</param>
@@ -169,7 +91,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         public virtual void ExpireRequestTokenAndStoreNewAccessToken(string pConsumerKey, string pRequestToken, string pAccessToken, string pAccessTokenSecret)
         {
             TokenGnoss tokenViejo = ObtenerToken(pRequestToken);
-            mListaTokens.TryRemove(pRequestToken, out tokenViejo);
+            _tokenCache.Remove(pRequestToken);
 
             TokenGnoss tokenNuevo = CrearToken(pAccessToken, pAccessTokenSecret, pConsumerKey);
 
@@ -181,11 +103,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             tokenNuevo.FilaToken.UsuarioID = tokenViejo.FilaToken.UsuarioID;
 
             OauthDW.Merge(OauthCN.ObtenerTokensPorUSuarioIDYConsumerID(tokenViejo.FilaToken.UsuarioID.Value, tokenViejo.FilaToken.ConsumerId));
-            //DataRow[] filasTok = new DataRow[OauthDW.OAuthToken.Count];
-
-            //OauthDW.OAuthToken.CopyTo(filasTok, 0);
-            //DataRow[] filasPinsTok = new DataRow[OauthDW.PinToken.Count];
-            //OauthDW.PinToken.CopyTo(filasPinsTok, 0);
 
             //Borro las filas del PinToken asociadas a los Tokens:
             foreach (PinToken filaPinToken in OauthDW.PinToken)
@@ -214,39 +131,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         {
             return ObtenerToken(pToken).FilaToken.TokenSecret;
         }
-
-        /// <summary>
-        /// Obtiene el tipo de un token
-        /// </summary>
-        /// <param name="pToken">Token a comprobar</param>
-        /// <returns></returns>
-        public virtual TokenType GetTokenType(string pToken)
-        {
-            TokenGnoss token = ObtenerToken(pToken);
-            return ObtenerTipoToken(token.Estado);
-        }
-
-        /// <summary>
-        /// Almacena en la base de datos un request token nuevo
-        /// </summary>
-        /// <param name="pRequest">Request</param>
-        /// <param name="pResponse">Response</param>
-        public virtual void StoreNewRequestToken(DotNetOpenAuth.OAuth.Messages.UnauthorizedTokenRequest pRequest, DotNetOpenAuth.OAuth.Messages.ITokenSecretContainingMessage pResponse)
-        {
-            TokenGnoss token = CrearToken(pResponse.Token, pResponse.TokenSecret, pRequest.ConsumerKey);
-
-            if ((pRequest.ExtraData != null) && (pRequest.ExtraData.Count > 0) && (pRequest.ExtraData.ContainsKey(PARAMETRO_TOKEN_PENDIENTE)))
-            {
-                //Tiene un token vinculado (autorización bidireccional)
-                string tokenPendiente = pRequest.ExtraData[PARAMETRO_TOKEN_PENDIENTE];
-
-                OauthDW.OAuthTokenExterno.AddRange(OauthCN.ObtenerTokenExternoPorTokenKey(tokenPendiente));
-                //((OAuthTokenExterno)OauthDW.OAuthTokenExterno.Select("Token = '" + tokenPendiente + "'")[0]).TokenVinculadoId = token.FilaToken.TokenId;
-                OauthDW.OAuthTokenExterno.Where(oauthTokenExterno => oauthTokenExterno.Token.Equals(tokenPendiente)).FirstOrDefault().TokenVinculadoId = token.FilaToken.TokenId;
-            }
-        }
-
-        #endregion
 
         #region Propiedades
 
@@ -277,19 +161,15 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             }
         }
 
-        /// <summary>
-        /// Obtiene la lista de tokens cargados
-        /// </summary>
-        public ConcurrentDictionary<string, TokenGnoss> ListaTokens
+        private static TokenGnoss ObtenerTokenDeCache(string pToken)
         {
-            get
-            {
-                if (mListaTokens == null)
-                {
-                    mListaTokens = new ConcurrentDictionary<string, TokenGnoss>();
-                }
-                return mListaTokens;
-            }
+            _tokenCache.TryGetValue(pToken, out TokenGnoss token);
+            return token;
+        }
+
+        private static void AgregarTokenACache(string pToken, TokenGnoss tokenGnoss)
+        {
+            _tokenCache.Set(pToken, tokenGnoss, _tokenCacheOptions);
         }
 
         #endregion
@@ -314,7 +194,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             }
 
             List<OAuthTokenExterno> filaTokenExterno = mOAuthDW.OAuthTokenExterno.Where(oauthTokenExterno => oauthTokenExterno.TokenId < 0).ToList();
-            //DataRow[] filas = mOAuthDW.OAuthTokenExterno.Select("TokenId < 0");
             foreach (OAuthTokenExterno fila in filaTokenExterno)
             {
                 EliminarTokenDeLista(fila.Token);
@@ -323,14 +202,11 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
 
 
             List<OAuthToken> filaToken = mOAuthDW.OAuthToken.Where(oauthToken => oauthToken.TokenId < 0).ToList();
-            //filas = mOAuthDW.OAuthToken.Select("TokenId < 0");
             foreach (OAuthToken fila in filaToken)
             {
                 mEntityContextOauth.EliminarItem(filaToken);
                 EliminarTokenDeLista(fila.Token);
             }
-
-            //mOAuthDW.AcceptChanges();
 
             mLoggingService.AgregarEntrada("Fin ControladorTokens.cs.ActualizarBaseDeDatos()");
         }
@@ -341,31 +217,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         /// <param name="pToken"></param>
         protected virtual void EliminarTokenDeLista(string pToken)
         {
-            if (ListaTokens.ContainsKey(pToken))
-            {
-                TokenGnoss tokenGnoss;
-                ListaTokens.TryRemove(pToken, out tokenGnoss);
-            }
-        }
-
-        /// <summary>
-        /// Obtiene el tipo de un token
-        /// </summary>
-        /// <param name="pEstado">Estado del token</param>
-        /// <returns></returns>
-        protected TokenType ObtenerTipoToken(EstadosToken pEstado)
-        {
-            switch (pEstado)
-            {
-                case EstadosToken.NoAutorizado:
-                    return TokenType.RequestToken;
-                case EstadosToken.Autorizado:
-                    return TokenType.RequestToken;
-                case EstadosToken.ConAcceso:
-                    return TokenType.AccessToken;
-                default:
-                    return TokenType.InvalidToken;
-            }
+            _tokenCache.Remove(pToken);
         }
 
         /// <summary>
@@ -382,9 +234,10 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             if (idUsuario.HasValue)
             {
                 mLoggingService.AgregarEntrada("Fin ControladorTokens.cs.ObtenerUsuarioID() con idUsuario=" + idUsuario.Value);
+                return idUsuario.Value;
             }
 
-            return idUsuario.Value;
+            mLoggingService.GuardarLogError($"El usuario con login {pLoginUsuario} no existe", _Logger);
 
             throw new Exception("User error");
         }
@@ -409,24 +262,22 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         {
             mLoggingService.AgregarEntrada("Inicio ControladorTokens.cs.ObtenerToken()");
 
-            if (ListaTokens.ContainsKey(pToken))
+            TokenGnoss tokenEnCache = ObtenerTokenDeCache(pToken);
+            if (tokenEnCache != null)
             {
                 mLoggingService.AgregarEntrada("ControladorTokens.cs.ObtenerToken() Token está en lista");
-                return ListaTokens[pToken];
+                return tokenEnCache;
             }
             else
             {
                 mLoggingService.AgregarEntrada("ControladorTokens.cs.ObtenerToken() Miramos si Token está en DataSet");
-                
+
                 OAuthToken filaToken = OauthDW.OAuthToken.FirstOrDefault(oauthToken => oauthToken.Token.Equals(pToken));
-                
 
-                //OAuthToken[] filas = (OAuthToken[])mOAuthDW.OAuthToken.Select("Token = '" + pToken + "'");
-
-                if (filaToken != null) 
+                if (filaToken != null)
                 {
                     TokenGnoss token = new TokenGnoss(filaToken);
-                    ListaTokens.TryAdd(pToken, token);
+                    AgregarTokenACache(pToken, token);
                     mLoggingService.AgregarEntrada("ControladorTokens.cs.ObtenerToken() Token está en DataSet");
                     return token;
                 }
@@ -466,7 +317,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         {
             mLoggingService.AgregarEntrada("Inicio ControladorTokens.cs.ObtenerFilaConsumer()");
             OAuthConsumer filaConsumer = mOAuthDW.OAuthConsumer.FirstOrDefault(oauthConsumer => oauthConsumer.ConsumerKey.Equals(pConsumerKey));
-            //OAuthConsumer[] filas = (OAuthConsumer[])mOAuthDW.OAuthConsumer.Select("ConsumerKey = '" + pConsumerKey + "'");
 
             if (filaConsumer != null) 
             {
@@ -507,7 +357,6 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             OAuthConsumer filaConsumer = ObtenerFilaConsumer(pConsumerKey);
 
             OAuthToken filaToken = new OAuthToken();
-            //mOAuthDW.OAuthToken.NewOAuthTokenRow();
 
             filaToken.Token = pToken;
             filaToken.TokenSecret = pTokenSecret;
@@ -519,7 +368,7 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
             mOAuthDW.OAuthToken.Add(filaToken);
 
             TokenGnoss tokenGnoss = new TokenGnoss(filaToken);
-            ListaTokens.TryAdd(pToken, tokenGnoss);
+            AgregarTokenACache(pToken, tokenGnoss);
 
             mLoggingService.AgregarEntrada("Fin ControladorTokens.cs.CrearToken() con token=" + tokenGnoss);
 
@@ -551,19 +400,18 @@ namespace Es.Riam.Gnoss.Web.UtilOAuth
         {
             mLoggingService.AgregarEntrada("Inicio ControladorTokens.cs.AutorizarRequestToken()");
 
-            if (pRequestToken == null)
+            if (string.IsNullOrEmpty(pRequestToken))
             {
                 mLoggingService.AgregarEntrada("ControladorTokens.cs.AutorizarRequestToken() Error no hay requestToken");
                 throw new ArgumentNullException("requestToken");
             }
-            if (pUsuarioID == null)
+            if (pUsuarioID.Equals(Guid.Empty))
             {
                 mLoggingService.AgregarEntrada("ControladorTokens.cs.AutorizarRequestToken() Error no hay user");
                 throw new ArgumentNullException("user");
             }
 
             TokenGnoss token = ObtenerToken(pRequestToken);
-            //token.FilaToken.UsuarioID = ObtenerUsuarioID(pUser);
             token.FilaToken.UsuarioID = pUsuarioID;
             token.Estado = EstadosToken.Autorizado;
 

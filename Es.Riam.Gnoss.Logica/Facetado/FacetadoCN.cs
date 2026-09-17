@@ -1,4 +1,4 @@
-using Es.Riam.AbstractsOpen;
+Ôªøusing Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Faceta;
@@ -44,7 +44,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         #region Constructores
 
         /// <summary>
-        /// Constructor sin par·metros
+        /// Constructor sin par√°metros
         /// </summary>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         public FacetadoCN(string pUrlIntragnoss, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
@@ -73,10 +73,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraciÛn
+        /// Constructor a partir del fichero de configuraci√≥n
         /// </summary>
-        /// <param name="pTipoBD">Tipo de BD de configuraciÛn de base de datos</param>
-        /// <param name="pUsarVariableEstatica">Si se est·n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        /// <param name="pTipoBD">Tipo de BD de configuraci√≥n de base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se est√°n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         public FacetadoCN(string pTipoBD, string pUrlIntragnoss, string pIdGrafo, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
             : base(entityContext, loggingService, configService, servicesUtilVirtuosoAndReplication, loggerFactory.CreateLogger<BaseCN>(), loggerFactory)
@@ -90,10 +90,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Constructor a partir del fichero de configuraciÛn
+        /// Constructor a partir del fichero de configuraci√≥n
         /// </summary>
-        /// <param name="pTipoBD">Tipo de BD de configuraciÛn de base de datos</param>
-        /// <param name="pUsarVariableEstatica">Si se est·n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+        /// <param name="pTipoBD">Tipo de BD de configuraci√≥n de base de datos</param>
+        /// <param name="pUsarVariableEstatica">Si se est√°n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
         ///<param name="pTablaReplica">Tabla donde se va a insertar la consulta ("ColaReplicacionMaster" o "ColaReplicacionMasterHome")</param>
         public FacetadoCN(string pTipoBD, string pUrlIntragnoss, string pIdGrafo, string pTablaReplica, EntityContext entityContext, LoggingService loggingService, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCN> logger, ILoggerFactory loggerFactory)
@@ -148,10 +148,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         #region Metodos generales
 
         /// <summary>
-        /// Obtiene los recursos de una comunidad que cumplan una determinada regla de comparticiÛn y unas reglas de mapeo
+        /// Obtiene los recursos de una comunidad que cumplan una determinada regla de compartici√≥n y unas reglas de mapeo
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto destino</param>
-        /// <param name="pRegla">Regla de comparticiÛn</param>
+        /// <param name="pRegla">Regla de compartici√≥n</param>
         /// <param name="pListaCategoriasMapping">Lista de identificadores de categorias</param>
         /// <param name="pDocumentoID">Identificador del documento</param>
         /// <returns></returns>
@@ -293,7 +293,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Llamada con un par·metro adiccional que ser· la condiciÛn en el where
+        /// Llamada con un par√°metro adiccional que ser√° la condici√≥n en el where
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del grafo a modificar</param>
         /// <param name="pElementoAModificarID">Consulta a modificiar</param>
@@ -303,7 +303,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Llamada con un par·metro adiccional que ser· la condiciÛn en el where
+        /// Llamada con un par√°metro adiccional que ser√° la condici√≥n en el where
         /// </summary>
         /// <param name="pProyectoID">ProyectoID del grafo a modificar</param>
         /// <param name="pElementoAModificarID">Consulta a modificiar</param>
@@ -312,7 +312,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         {
             FacetadoAD.InsertarPopularidad(pProyectoID, pElementoAModificarID, pProyectoID_2);
         }
-       
+
         /// <summary>
         /// 
         /// </summary>
@@ -333,7 +333,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene el n˙mero de comunidades que le pueden interesar a un perfil
+        /// Obtiene el n√∫mero de comunidades que le pueden interesar a un perfil
         /// </summary>     
         /// <param name="pIdentidadMyGnoss">Identidad en MyGnoss del perfil</param>     
         public DataSet NumeroComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, Dictionary<string, List<string>> pListaFiltros)
@@ -359,7 +359,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Modifica la comunidad de en DefiniciÛn a Abierta
+        /// Modifica la comunidad de en Definici√≥n a Abierta
         /// </summary>
 
         /// <param name="ProyectoID">Identificador de la comunidad</param>
@@ -432,7 +432,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             FacetadoAD.ModificarCertificacionesRecursos(pProyectoID, pElementosAModificar);
         }
 
-		//Eliminado en la versiÛn 2.1.1795.1
+		//Eliminado en la versi√≥n 2.1.1795.1
 
 
 
@@ -497,12 +497,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
 		/// <summary>
-		/// Comprueba si la b˙squeda mediante la instrucciÛn bif:contains por un tÈrmino encuentra un recurso concreto
+		/// Comprueba si la b√∫squeda mediante la instrucci√≥n bif:contains por un t√©rmino encuentra un recurso concreto
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto seleccionado</param>
 		/// <param name="pGuidRecurso">Identificador del recurso a buscar</param>
-		/// <param name="pTermino">tÈrmino de b˙squeda</param>
-		/// <returns>Cierto si el recurso es indexable por el tÈrmino y falso en caso contrario.</returns>
+		/// <param name="pTermino">t√©rmino de b√∫squeda</param>
+		/// <returns>Cierto si el recurso es indexable por el t√©rmino y falso en caso contrario.</returns>
 		public bool RecursoBuscablePorTermino(string pProyectoID, string pRecurso, string pTermino)
         {
             return FacetadoAD.RecursoBuscablePorTermino(pProyectoID, pRecurso, pTermino);
@@ -510,7 +510,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 
 		public void ObtenerAutocompletar(string proyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool estaMyGnoss, bool EsMienbroComunidad, bool EsInvitado, string Identidad, int pLimite, List<string> pSemanticos, string pFiltrosContexto)
         {
-            //Obtener predicados sem·nticos. arecipe:type, arecipe:nutrition
+            //Obtener predicados sem√°nticos. arecipe:type, arecipe:nutrition
             FacetadoAD.ObtenerAutocompletar(proyectoID, pFacetadoDS, pListaFiltros, pListaFiltrosExtra, estaMyGnoss, EsMienbroComunidad, EsInvitado, Identidad, pLimite, pSemanticos, pFiltrosContexto);
         }
 
@@ -551,16 +551,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFacetadoDS">DataSet de facetado</param>
         /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
         /// <param name="pListaFiltros">Lista de filtros</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda se hace en MyGnoss, no en una comunidad</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda se hace en MyGnoss, no en una comunidad</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pLimite">lÌmite de resultados</param>
-        /// <param name="pEsCatalogoNosocial">Verdad si es un cat·logo no social</param>
+        /// <param name="pLimite">l√≠mite de resultados</param>
+        /// <param name="pEsCatalogoNosocial">Verdad si es un cat√°logo no social</param>
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-        /// <param name="pSemanticos">Lista de formularios sem·nticos</param>
+        /// <param name="pSemanticos">Lista de formularios sem√°nticos</param>
         /// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
         public void ObtenerTituloFacetas(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, List<int> pListaRangos, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, Dictionary<string, int> pListaFacetas, Dictionary<string, string> pListaFacetasExtraContexto)
         {
@@ -594,16 +594,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFacetadoDS">DataSet de facetado</param>
         /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
         /// <param name="pListaFiltros">Lista de filtros</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda se hace en MyGnoss, no en una comunidad</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda se hace en MyGnoss, no en una comunidad</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pLimite">lÌmite de resultados</param>
-        /// <param name="pEsCatalogoNosocial">Verdad si es un cat·logo no social</param>
+        /// <param name="pLimite">l√≠mite de resultados</param>
+        /// <param name="pEsCatalogoNosocial">Verdad si es un cat√°logo no social</param>
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-        /// <param name="pSemanticos">Lista de formularios sem·nticos</param>
+        /// <param name="pSemanticos">Lista de formularios sem√°nticos</param>
         public void ObtenerFacetaEspecialDBLPJournalPartOF(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere)
         {
             FacetadoAD.ObtenerFacetaEspecialDBLPJournalPartOF(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoWhere);
@@ -616,16 +616,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFacetadoDS">DataSet de facetado</param>
         /// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
         /// <param name="pListaFiltros">Lista de filtros</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda se hace en MyGnoss, no en una comunidad</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda se hace en MyGnoss, no en una comunidad</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad</param>
         /// <param name="pOrden">Orden de los resultados</param>
-        /// <param name="pLimite">lÌmite de resultados</param>
-        /// <param name="pEsCatalogoNosocial">Verdad si es un cat·logo no social</param>
+        /// <param name="pLimite">lÔøΩmite de resultados</param>
+        /// <param name="pEsCatalogoNosocial">Verdad si es un catÔøΩlogo no social</param>
         /// <param name="pFiltroContextoWhere">Filtros de contexto</param>
         /// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-        /// <param name="pSemanticos">Lista de formularios sem·nticos</param>
+        /// <param name="pSemanticos">Lista de formularios semÔøΩnticos</param>
         public void ObtenerFacetaEspecialDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere)
         {
             FacetadoAD.ObtenerFacetaEspecialDBLP(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite, pSemanticos, pFiltroContextoWhere);
@@ -633,7 +633,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
 
 
         /// <summary>
-        /// Alberto: Obtiene la informaciÛn que se va a pintar en la ficha de cada recurso del cat·logo
+        /// Alberto: Obtiene la informaci√≥n que se va a pintar en la ficha de cada recurso del cat√°logo
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
@@ -647,7 +647,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Alberto: Obtiene la informaciÛn que se va a pintar en la ficha de cada recurso del cat·logo
+        /// Alberto: Obtiene la informaci√≥n que se va a pintar en la ficha de cada recurso del cat√°logo
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
@@ -665,11 +665,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pRecursoID">Identificador del recurso</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda si hace en MyGnoss</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda si hace en MyGnoss</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pLimite">LÌmite de los resultados</param>
+        /// <param name="pLimite">L√≠mite de los resultados</param>
         public void ObtenerRecursosRelacionados(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite)
         {
             FacetadoAD.ObtenerRecursosRelacionados(pProyectoID, pRecursoID, pFacetadoDS, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pLimite);
@@ -681,7 +681,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pUsuarioID">Identificador del usuario</param>
         /// <param name="pMensajeID">Identificador del mensaje</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pLimite">LÌmite de los resultados</param>
+        /// <param name="pLimite">L√≠mite de los resultados</param>
         /// <param name="pNombreUsuarioActual">Nombre del usuario a descartar de los tags</param>
         public FacetadoDS ObtenerMensajesRelacionados(string pUsuarioID, string pMensajeID, string pIdentidadID, int pLimite, string pNombreUsuarioActual)
         {
@@ -694,9 +694,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pProyectoID">Identificador del proyecto en el que buscamos personas relacionadas</param>
         /// <param name="pIdentidadID">Identificador de la identidad de la que buscamos personas relacionadas</param>
         /// <param name="pDatosOpcionesExtraRegistro">Datos extra del registro de la persona. El diccionario esta formado de la siguiente manera: predicado -> Lista de Opciones con ese predicado</param>
-        /// <param name="pListaCategoriasSuscrita">Lista de categorÌas a las que est· suscrita la persona en esta comunidad</param>
+        /// <param name="pListaCategoriasSuscrita">Lista de categor√≠as a las que est√° suscrita la persona en esta comunidad</param>
         /// <param name="pLocalidad">Localidad de la persona</param>
-        /// <param name="pPais">PaÌs de la persona</param>
+        /// <param name="pPais">Pa√≠s de la persona</param>
         /// <param name="pProvincia">Provincia de la persona</param>
         /// <param name="pNumeroPersonas">Numnero de personas</param>
         public FacetadoDS ObtenerPersonasRecomendadas(Guid pProyectoID, Guid pIdentidadID, string pLocalidad, string pProvincia, string pPais, Dictionary<string, string> pDatosOpcionesExtraRegistro, List<Guid> pListaCategoriasSuscrita, int pNumeroPersonas)
@@ -721,11 +721,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pRecursoID">Identificador del recurso</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda si hace en MyGnoss</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda si hace en MyGnoss</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pLimite">LÌmite de los resultados</param>
+        /// <param name="pLimite">L√≠mite de los resultados</param>
         public void ObtenerRecursosRelacionadosNuevo(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, int pInicio, int pLimite, string pTags, string pConceptID, string pPestanyaRecurso)
         {
             ObtenerRecursosRelacionadosNuevo(pProyectoID, pRecursoID, pFacetadoDS, pInicio, pLimite, pTags, pConceptID, false, pPestanyaRecurso);
@@ -737,11 +737,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pRecursoID">Identificador del recurso</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda si hace en MyGnoss</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda si hace en MyGnoss</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
-        /// <param name="pLimite">LÌmite de los resultados</param>
+        /// <param name="pLimite">L√≠mite de los resultados</param>
         public void ObtenerRecursosRelacionadosNuevo(string pProyectoID, string pRecursoID, FacetadoDS pFacetadoDS, int pInicio, int pLimite, string pTags, string pConceptID, bool pEsCatalogoNoSocial, string pPestanyaRecurso)
         {
             FacetadoAD.ObtenerRecursosRelacionadosNuevo(pProyectoID, pRecursoID, pFacetadoDS, pInicio, pLimite, pTags, pConceptID, pEsCatalogoNoSocial, pPestanyaRecurso);
@@ -779,16 +779,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene los resultados de una b˙squeda
+        /// Obtiene los resultados de una b√∫squeda
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
         /// <param name="pTipoFiltro">Tipo de filtro</param>
         /// <param name="pListaFiltros">Lista de filtros del usuario</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda se hace en MyGnoss</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda se hace en MyGnoss</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
         /// <param name="pLimite">Fin de los resultados</param>
         /// <param name="pListaFiltrosExtra"></param>
@@ -796,7 +796,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFiltroContextoSelect"></param>
         /// <param name="pFiltroContextoWhere"></param>
         /// <param name="pFiltroContextoOrderBy"></param>
-        /// <param name="pEsCatalogoNoSocial">Verdad si es un cat·logo no social</param>        
+        /// <param name="pEsCatalogoNoSocial">Verdad si es un cat√°logo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, List<PresentacionMapaSemantico> pListaPresentacionMapaSemantico = null, string pLanguageCode = null)
         {
@@ -804,16 +804,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene los resultados de una b˙squeda
+        /// Obtiene los resultados de una b√∫squeda
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
         /// <param name="pFacetadoDS">DataSet de facetado</param>
         /// <param name="pTipoFiltro">Tipo de filtro</param>
         /// <param name="pListaFiltros">Lista de filtros del usuario</param>
-        /// <param name="pEstaEnMyGnoss">Verdad si la b˙squeda se hace en MyGnoss</param>
+        /// <param name="pEstaEnMyGnoss">Verdad si la b√∫squeda se hace en MyGnoss</param>
         /// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-        /// <param name="pEsInvitado">Verdad si el usuario no est· registrado</param>
+        /// <param name="pEsInvitado">Verdad si el usuario no est√° registrado</param>
         /// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
         /// <param name="pLimite">Fin de los resultados</param>
         /// <param name="pListaFiltrosExtra"></param>
@@ -821,7 +821,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pFiltroContextoSelect"></param>
         /// <param name="pFiltroContextoWhere"></param>
         /// <param name="pFiltroContextoOrderBy"></param>
-        /// <param name="pEsCatalogoNoSocial">Verdad si es un cat·logo no social</param>        
+        /// <param name="pEsCatalogoNoSocial">Verdad si es un cat√°logo no social</param>        
         /// <param name="pNamespaceExtra">NamespacesExtra</param>
         /// <param name="pResultadosEliminar"></param>
         /// <param name="pSelectChart">Select chart</param>
@@ -898,7 +898,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene la informaciÛn que se va a pintar en la ficha de las personas
+        /// Obtiene la informaci√≥n que se va a pintar en la ficha de las personas
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pPersonaID">Identificador de la persona</param>
@@ -909,7 +909,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene la informaciÛn que se va a pintar en la ficha de las personas
+        /// Obtiene la informaci√≥n que se va a pintar en la ficha de las personas
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pPersonasID">Identificador de la persona</param>
@@ -920,7 +920,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Alberto: Obtiene la informaciÛn que se va a pintar en la ficha de cada recurso del cat·logo
+        /// Alberto: Obtiene la informaci√≥n que se va a pintar en la ficha de cada recurso del cat√°logo
         /// </summary>
         /// <returns></returns>
         public void ObtieneInformacionRecursosCatalogo(Guid pProyectoID, FacetadoDS pFacetadoDS)
@@ -992,7 +992,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// Inserta una serie valores para unos determinados grafos.
         /// </summary>
         /// <param name="pValoresGrafos">Lista con los grafos y sus valores</param>
-        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaciÛn de esta transacciÛn</param>
+        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaci√≥n de esta transacci√≥n</param>
         public void InsertarValoresGrafos(Dictionary<string, List<string>> pValoresGrafos, short pPrioridad)
         {
             foreach (string grafo in pValoresGrafos.Keys)
@@ -1008,7 +1008,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// Borra una serie valores para unos determinados grafos.
         /// </summary>
         /// <param name="pValoresGrafos">Lista con los grafos y sus valores</param>
-        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaciÛn de esta transacciÛn</param>
+        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaci√≥n de esta transacci√≥n</param>
         public void BorrarValoresGrafos(Dictionary<string, List<string>> pValoresGrafos, short pPrioridad)
         {
             foreach (string grafo in pValoresGrafos.Keys)
@@ -1027,7 +1027,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// </summary>
         /// <param name="pGrafo">grafo en el que se va a insertar el valor</param>
         /// <param name="pValor">valor a insertar en el grafo</param>
-        /// <param name="pPrioridad">prioridad que se le va a dar a la replicaciÛn de esta transacciÛn</param>
+        /// <param name="pPrioridad">prioridad que se le va a dar a la replicaci√≥n de esta transacci√≥n</param>
         public void InsertarValorGrafo(string pGrafo, string pValor, short pPrioridad)
         {
             FacetadoAD.InsertaTripleta(pGrafo, "<http://gnoss/" + pGrafo + ">", "<http://gnoss/has" + pGrafo + ">", "\"" + pValor + "\"", pPrioridad, true);
@@ -1036,9 +1036,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <summary>
         /// Inserta una serie de tripletas en Virtuoso.
         /// </summary>
-        /// <param name="pNombreGrafo">Nombre del grafo donde se insertar·n las tripletas</param>
+        /// <param name="pNombreGrafo">Nombre del grafo donde se insertar√°n las tripletas</param>
         /// <param name="ptripletas">Tripletas</param>
-        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaciÛn de esta transacciÛn</param>
+        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaci√≥n de esta transacci√≥n</param>
         public void InsertaTripletas(string pNombreGrafo, string ptripletas, short pPrioridad)
         {
             InsertaTripletas(pNombreGrafo, ptripletas, pPrioridad, false);
@@ -1062,9 +1062,9 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pNombreGrafo">Nombre del grafo en el que se guardar· el RDF</param>
+        /// <param name="pNombreGrafo">Nombre del grafo en el que se guardar√° el RDF</param>
         /// <param name="pUrlIntragnoss">URL de intragnoss</param>
-        /// <param name="pFicheroConfiguracion">Fichero de configuraciÛn de la BD</param>
+        /// <param name="pFicheroConfiguracion">Fichero de configuraci√≥n de la BD</param>
         /// <param name="pProyectoID">ID del proyecto actual</param>
         /// <param name="pEsribirNT">Escribe o no NT</param>
         /// <param name="pInfoExtra">Info extra</param>
@@ -1081,6 +1081,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         public string ObtieneTripletasFormularios(DataWrapperFacetas FacetaDW, FacetadoDS facetadoDS, string idproyecto, string iddoc, List<string> pListRdfTypePadre)
         {
             return FacetadoAD.ObtieneTripletasFormularios(facetadoDS, idproyecto, iddoc, pListRdfTypePadre);
+        }
+
+        public List<string> ObtenerIdiomasTriplesDeRecurso(FacetadoDS pFacetadoDS, string pDocumentoId)
+        {
+            return FacetadoAD.ObtenerIdiomasTriplesDeRecurso(pFacetadoDS, pDocumentoId);
         }
 
         public void ObtieneTripletasFormulariosCV(FacetadoDS facetadoDS, string idproyecto, string iddoc)
@@ -1111,7 +1116,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene el objeto de las triplas de un documento en un grafo filtrado por una faceta (puede ser jer·rquica).
+        /// Obtiene el objeto de las triplas de un documento en un grafo filtrado por una faceta (puede ser jer√°rquica).
         /// </summary>
         /// <param name="pGrafo">Grafo</param>
         /// <param name="pDocumentoID">ID de documento</param>
@@ -1123,7 +1128,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve las primeras categorÌas de un tesauro sem·ntico.
+        /// Devuelve las primeras categor√≠as de un tesauro sem√°ntico.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pPropiedad">Propiedad vinculante</param>
@@ -1136,11 +1141,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve las categorÌas hijas de una categorÌa de un tesauro sem·ntico.
+        /// Devuelve las categor√≠as hijas de una categor√≠a de un tesauro sem√°ntico.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
-        /// <param name="pIDCategoria">ID de la categorÌa padre</param>
-        /// <param name="pPropRelacion">Propiedad de uniÛn entre categorÌas</param>
+        /// <param name="pIDCategoria">ID de la categor√≠a padre</param>
+        /// <param name="pPropRelacion">Propiedad de uni√≥n entre categor√≠as</param>
         /// <returns>DataSet con las tripletas</returns>
         public FacetadoDS ObtenerCatHijasCatTesSemanticoFormulario(string pGrafo, string pIDCategoria, string pPropRelacion)
         {
@@ -1148,10 +1153,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el RDF de un formulario sem·ntico.
+        /// Devuelve el RDF de un formulario sem√°ntico.
         /// </summary>
-        /// <param name="pNombreontologia">Nombre de la ontologÌa</param>
-        /// <param name="pIDDocSem">ID del documento sem·ntico</param>
+        /// <param name="pNombreontologia">Nombre de la ontolog√≠a</param>
+        /// <param name="pIDDocSem">ID del documento sem√°ntico</param>
         /// <returns>DataSet con el RDF del documento</returns>
         public FacetadoDS ObtenerRDFXMLdeFormulario(string pNombreontologia, string pIDDocSem, bool pUsarAfinidad = false)
         {
@@ -1159,7 +1164,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar una entidad.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar una entidad.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntContenedora">Entidad contenedora</param>
@@ -1172,7 +1177,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar una entidad.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar una entidad.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntContenedora">Entidad contenedora</param>
@@ -1328,7 +1333,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar una entidad.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar una entidad.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntidadID">ID de la entidad origen</param>
@@ -1351,7 +1356,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar una entidad.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar una entidad.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedoras">IDs de la entidad origen</param>
@@ -1392,7 +1397,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
@@ -1405,7 +1410,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar una entidad.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar una entidad.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntContenedora">Entidad contenedora</param>
@@ -1419,7 +1424,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
@@ -1431,7 +1436,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
@@ -1444,7 +1449,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntContenedora">Entidad contenedora</param>
@@ -1458,7 +1463,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
@@ -1470,7 +1475,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades anidadas.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades anidadas.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
@@ -1483,7 +1488,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pEntsContenedora">Entidades contenedoras</param>
@@ -1811,7 +1816,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pListaDocumentosID">Listado de documentos</param>
@@ -1823,7 +1828,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pListaDocumentosID">Listado de documentos</param>
@@ -1837,7 +1842,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pListaDocumentosID">Listado de documentos</param>
@@ -1849,7 +1854,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el trozo del RDF de un formulario sem·ntico perteneciente al filtro para seleccionar unas entidades.
+        /// Devuelve el trozo del RDF de un formulario sem√°ntico perteneciente al filtro para seleccionar unas entidades.
         /// </summary>
         /// <param name="pGrafo">Grafo de la consulta</param>
         /// <param name="pListaDocumentosID">Listado de documentos</param>
@@ -1861,16 +1866,16 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene los recursos relacionados con el actual para montar un grafo gr·fico.
+        /// Obtiene los recursos relacionados con el actual para montar un grafo gr√°fico.
         /// </summary>
-        /// <param name="pGrafo">Grafo de b˙squeda</param>
+        /// <param name="pGrafo">Grafo de b√∫squeda</param>
         /// <param name="pDocumentoID">ID del documento actual</param>
         /// <param name="pPropEnlace">Propiedad de enlace entre recursos</param>
-        /// <param name="pNodosLimiteNivel">N˙mero de nodos a partir del cual hay que detenerse</param>
-        /// <param name="pExtra">ConfiguraciÛn extra</param>
+        /// <param name="pNodosLimiteNivel">N√∫mero de nodos a partir del cual hay que detenerse</param>
+        /// <param name="pExtra">Configuraci√≥n extra</param>
         /// <param name="pIdioma">Idioma del usuario</param>
         /// <param name="pTipoRecurso">Tipo del recurso actual</param>
-        /// <returns>Array JS con las relacionados con el actual para montar un grafo gr·fico</returns>
+        /// <returns>Array JS con las relacionados con el actual para montar un grafo gr√°fico</returns>
         public string ObtenerRelacionesGrafoGraficoDeDocumento(string pGrafo, Guid pDocumentoID, string pPropEnlace, int pNodosLimiteNivel, string pExtra, string pIdioma, string pTipoRecurso, string pGrafoDbpedia = null)
         {
             return FacetadoAD.ObtenerRelacionesGrafoGraficoDeDocumento(pGrafo, pDocumentoID, pPropEnlace, pNodosLimiteNivel, pExtra, pIdioma, pTipoRecurso, pGrafoDbpedia);
@@ -1993,7 +1998,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTriplesInsertar">Tripletas a borrar</param>
-        /// <param name="pPrioridad">Prioridad de la replicaciÛn</param>
+        /// <param name="pPrioridad">Prioridad de la replicaci√≥n</param>
         /// <param name="pSujeto">Sujeto al que se le van a modificar los triples. (Opcional, si no se le da valor, se eliminaran todos los triples que contenan los predicados en pListaPredicadosEliminar)</param>
         public void ModificarListaTripletas(string pProyectoID, string pTriplesInsertar, short pPrioridad, string pSujeto)
         {
@@ -2001,12 +2006,12 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Modifica una lista de triples en un grafo, sustituyendo los triples que tengan alg˙n predicado en pListaPredicadosEliminar por los nuevos triples
+        /// Modifica una lista de triples en un grafo, sustituyendo los triples que tengan alg√∫n predicado en pListaPredicadosEliminar por los nuevos triples
         /// </summary>
         /// <param name="pProyectoID">Identificador del proyecto</param>
         /// <param name="pTriplesInsertar">Tripletas a borrar</param>
         /// <param name="pListaPredicadosEliminar">Lista de predicados que van a actualizar los triples.</param>
-        /// <param name="pPrioridad">Prioridad de la replicaciÛn</param>
+        /// <param name="pPrioridad">Prioridad de la replicaci√≥n</param>
         /// <param name="pSujeto">Sujeto al que se le van a modificar los triples. (Opcional, si no se le da valor, se eliminaran todos los triples que contenan los predicados en pListaPredicadosEliminar)</param>
         public void ModificarListaTripletas(string pProyectoID, string pTriplesInsertar, List<string> pListaPredicadosEliminar, short pPrioridad, string pSujeto)
         {
@@ -2014,7 +2019,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Borra lsa tripletas de un formulario sem·ntico
+        /// Borra lsa tripletas de un formulario sem√°ntico
         /// </summary>
         /// <param name="pNombreGrafo">Nombre del grafo en virtuoso</param>
         /// <param name="pElementoaEliminarID">Identificador del elemento a eliminar</param>
@@ -2024,7 +2029,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Borra lsa tripletas de un formulario sem·ntico
+        /// Borra lsa tripletas de un formulario sem√°ntico
         /// </summary>
         /// <param name="pNombreGrafo">Nombre del grafo en virtuoso</param>
         /// <param name="pElementoaEliminarID">Identificador del elemento a eliminar</param>
@@ -2034,7 +2039,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Borra lsa tripletas de un formulario sem·ntico
+        /// Borra lsa tripletas de un formulario sem√°ntico
         /// </summary>
         /// <param name="pNombreGrafo">Nombre del grafo en virtuoso</param>
         /// <param name="pElementoaEliminarID">Identificador del elemento a eliminar</param>
@@ -2049,7 +2054,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <param name="pQuery">Query a ejecutar (insert / update / delete)</param>
         /// <param name="pGrafo">Grafo que se va a actualiar</param>
         /// <param name="pReplicar">Verdad si esta consulta debe replicarse (por defecto TRUE)</param>
-        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaciÛn de esta transacciÛn</param>
+        /// <param name="pPrioridad">Prioridad que se le va a dar a la replicaci√≥n de esta transacci√≥n</param>
         public int ActualizarVirtuoso(string pQuery, string pGrafo, bool pReplicar, short pPrioridad)
         {
             return FacetadoAD.ActualizarVirtuoso(pQuery, pGrafo, pReplicar, pPrioridad);
@@ -2071,7 +2076,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Devuelve el ranking que tiene actualmente el Documento en el proyecto pasado como par·metro
+        /// Devuelve el ranking que tiene actualmente el Documento en el proyecto pasado como par√°metro
         /// </summary>
         /// <param name="pDocumentoID"></param>
         /// <param name="pProyID"></param>
@@ -2186,11 +2191,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene todas las triples de un tesauro sem·ntico.
+        /// Obtiene todas las triples de un tesauro sem√°ntico.
         /// </summary>
         /// <param name="pGrafo">Grafo del tesaro</param>
         /// <param name="pSource">Source del tesauro</param>
-        /// <returns>Triples de un tesauro sem·ntico</returns>
+        /// <returns>Triples de un tesauro sem√°ntico</returns>
         public FacetadoDS ObtenerTesauroSemantico(string pGrafo, string pSource)
         {
             return FacetadoAD.ObtenerTesauroSemantico(pGrafo, pSource);
@@ -2314,7 +2319,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// CondiciÛn extra para la consulta de facetas.
+        /// Condici√≥n extra para la consulta de facetas.
         /// </summary>
         public string CondicionExtraFacetas
         {
@@ -2357,7 +2362,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         #region Dispose
 
         /// <summary>
-        /// Determina si est· disposed
+        /// Determina si est√° disposed
         /// </summary>
         private bool disposed = false;
 
@@ -2384,7 +2389,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         /// <summary>
         /// Libera los recursos
         /// </summary>
-        /// <param name="disposing">Determina si se est· llamando desde el Dispose()</param>
+        /// <param name="disposing">Determina si se est√° llamando desde el Dispose()</param>
         private void Dispose(bool disposing)
         {
             if (!disposed)
@@ -2392,7 +2397,7 @@ namespace Es.Riam.Gnoss.Logica.Facetado
                 disposed = true;
                 if (disposing)
                 {
-                    //Libero todos los recursos administrados que he aÒadido a esta clase
+                    //Libero todos los recursos administrados que he a√±adido a esta clase
                     if (FacetadoAD != null && !mEntityContext.NoConfirmarTransacciones)
                     {
                         FacetadoAD.CerrarConexion();
@@ -2564,20 +2569,20 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene las tripletas de un sujeto que tiene como objeto uno especÌfico.
+        /// Obtiene las tripletas de un sujeto que tiene como objeto uno espec√≠fico.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pObjeto">Objeto</param>
-        /// <returns>Tripletas de un sujeto que tiene como objeto uno especÌfico</returns>
+        /// <returns>Tripletas de un sujeto que tiene como objeto uno espec√≠fico</returns>
         public FacetadoDS ObtenerTripletasDeSujetoConObjeto(string pGrafo, string pObjeto)
         {
             return FacetadoAD.ObtenerTripletasDeSujetoConObjeto(pGrafo, pObjeto);
         }
 
         /// <summary>
-        /// Obtiene una lista de sujetos del del tesauro seg˙n el grafo seleccionado y source indicado por par·metro.
+        /// Obtiene una lista de sujetos del del tesauro seg√∫n el grafo seleccionado y source indicado por par√°metro.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pSource">Source</param>
         /// <returns>Lista de sujetos del tesauro segun el grafo y el source indicado</returns>
         public List<string> ObtenerListaSujetosTesauroDeGrafoPorSource(string pGrafo, string pSource)
@@ -2593,46 +2598,46 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene las tripletas con el mismo predicado de un sujeto que tiene como objeto uno, el c˙al tiene como objeto uno especÌfico.
+        /// Obtiene las tripletas con el mismo predicado de un sujeto que tiene como objeto uno, el c√∫al tiene como objeto uno espec√≠fico.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pObjeto">Objeto</param>
-        /// <returns>Tripletas con el mismo predicado de un sujeto que tiene como objeto uno, el c˙al tiene como objeto uno especÌfico</returns>
+        /// <returns>Tripletas con el mismo predicado de un sujeto que tiene como objeto uno, el c√∫al tiene como objeto uno espec√≠fico</returns>
         public FacetadoDS ObtenerTripletasMismoPredicadoDeSujetoConObjetoQueTieneUnObjeto(string pGrafo, string pObjeto)
         {
             return FacetadoAD.ObtenerTripletasMismoPredicadoDeSujetoConObjetoQueTieneUnObjeto(pGrafo, pObjeto);
         }
 
         /// <summary>
-        /// Obtiene las tripletas de un sujeto que tiene como objeto uno especÌfico.
+        /// Obtiene las tripletas de un sujeto que tiene como objeto uno espec√≠fico.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pObjeto">Objeto</param>
-        /// <returns>Tripletas de un sujeto que tiene como objeto uno especÌfico</returns>
+        /// <returns>Tripletas de un sujeto que tiene como objeto uno espec√≠fico</returns>
         public FacetadoDS ObtenerTripletasConObjeto(string pGrafo, string pObjeto)
         {
             return FacetadoAD.ObtenerTripletasConObjeto(pGrafo, pObjeto, null);
         }
 
         /// <summary>
-        /// Obtiene las tripletas de un sujeto que tiene como objeto uno especÌfico de una propiedad.
+        /// Obtiene las tripletas de un sujeto que tiene como objeto uno espec√≠fico de una propiedad.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pObjeto">Objeto</param>
         /// <param name="pPropiedad">Propiedad</param>
-        /// <returns>Tripletas de un sujeto que tiene como objeto uno especÌfico</returns>
+        /// <returns>Tripletas de un sujeto que tiene como objeto uno espec√≠fico</returns>
         public FacetadoDS ObtenerTripletasConObjetoDePropiedad(string pGrafo, string pObjeto, string pPropiedad)
         {
             return FacetadoAD.ObtenerTripletasConObjeto(pGrafo, pObjeto, pPropiedad);
         }
 
         /// <summary>
-        /// Obtiene los sujetos que tiene como objeto uno especÌfico de una propiedad.
+        /// Obtiene los sujetos que tiene como objeto uno espec√≠fico de una propiedad.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pObjeto">Objeto</param>
         /// <param name="pPropiedad">Propiedad</param>
-        /// <returns>Lista de sujetos que tienen como objetos unos especÌficos</returns>
+        /// <returns>Lista de sujetos que tienen como objetos unos espec√≠ficos</returns>
         public List<string> ObtenerSujetosConObjetoDePropiedad(string pGrafo, string pObjeto, string pPropiedad)
         {
             FacetadoDS facDS = ObtenerTripletasConObjetoDePropiedad(pGrafo, pObjeto, pPropiedad);
@@ -2651,11 +2656,11 @@ namespace Es.Riam.Gnoss.Logica.Facetado
         }
 
         /// <summary>
-        /// Obtiene los sujetos que tienen como objetos unos especÌficos.
+        /// Obtiene los sujetos que tienen como objetos unos espec√≠ficos.
         /// </summary>
-        /// <param name="pGrafo">Grafo del Tesauro Sem·ntico</param>
+        /// <param name="pGrafo">Grafo del Tesauro Sem√°ntico</param>
         /// <param name="pObjeto">Objeto</param>
-        /// <returns>Lista de sujetos que tienen como objetos unos especÌficos</returns>
+        /// <returns>Lista de sujetos que tienen como objetos unos espec√≠ficos</returns>
         public List<string> ObtenerSujetosConObjetos(string pGrafo, List<string> pObjetos)
         {
             return FacetadoAD.ObtenerSujetosConObjetos(pGrafo, pObjetos);

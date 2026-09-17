@@ -400,6 +400,7 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         public string Licence { get; set; }
 
         public bool AIGeneratedTranslation { get; set; }
+        public bool TranslationInProgress { get; set; }
 
         /// <summary>
         /// Certificacion del recurso. Clave de certificación y Nombre
@@ -700,6 +701,8 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             public string UrlLoadActionApplyImprovement { get; set; }
             public string UrlLoadActionCancelImprovement { get; set; }
             public string UrlImprovement { get; set; }
+            public string UrlLoadActionTranslate { get; set; }
+            public string UrlTranslate { get; set; }
         }
 
         /// <summary>
@@ -842,6 +845,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
             /// Indica si el usuario puede realizar una transición concreta
             /// </summary>
             public bool Transition { get; set; }
+            /// <summary>
+            /// Indica si el usuario puede traducir las propiedades multiidioma del recurso
+            /// </summary>
+            public bool Translate { get; set; }
         }
 
         /// <summary>

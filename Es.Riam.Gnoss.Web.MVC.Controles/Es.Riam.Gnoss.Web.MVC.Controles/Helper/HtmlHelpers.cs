@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.TabModel.SearchTabModel;
+using Es.Riam.Semantica.Plantillas;
 
 namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
 {
@@ -1247,7 +1248,18 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
             }
             return resultado;
         }
-
+        /// <summary>
+        /// Indica si un campo es de tipo OpenSeaDragon
+        /// </summary>
+        public static bool EsTipoOpenSD(TipoCampoOntologia tipo)
+        {
+            return tipo == TipoCampoOntologia.ImagenOpenSD ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDSequence ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDReferenceHorizontal ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDReferenceVertical ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDCollectionHorizontal ||
+                   tipo == TipoCampoOntologia.ImagenOpenSDCollectionRows;
+        }
         #region ViewBag Getters
 
         public static CommunityModel GetComunidad(this IHtmlHelper helper)
@@ -1691,6 +1703,23 @@ namespace Es.Riam.Gnoss.Web.MVC.Controles.Helper
         public static string GetParametros(this IHtmlHelper helper)
         {
             return (string)helper.ViewBag.Parametros;
+        }
+
+        public static string GetCapturasImgSizeCssVars(this IHtmlHelper helper)
+        {
+            string ancho = (string)helper.ViewBag.CapturasImgSizeAncho;
+            string alto = (string)helper.ViewBag.CapturasImgSizeAlto;
+
+            string cssVars = "";
+            if (!string.IsNullOrEmpty(ancho))
+            {
+                cssVars += $"--resource-image-width:{ancho}px;";
+            }
+            if (!string.IsNullOrEmpty(alto))
+            {
+                cssVars += $"--resource-image-height:{alto}px;";
+            }
+            return cssVars;
         }
 
         public static string GetFiltroContextoWhere(this IHtmlHelper helper)

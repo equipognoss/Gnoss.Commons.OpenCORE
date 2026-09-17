@@ -6,21 +6,13 @@ using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Parametro.Model;
 using Es.Riam.Gnoss.Logica.Parametro;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Microsoft.AspNetCore.Http;
-using System;
-using Es.Riam.Gnoss.Web.MVC.Models.ConfiguracionOCVistas;
-using Es.Riam.Gnoss.AD.Parametro;
-using Newtonsoft.Json;
 using Es.Riam.Gnoss.CL.ServiciosGenerales;
-using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
-using System.Collections.Generic;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Microsoft.Extensions.Logging;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
-using Es.Riam.Gnoss.UtilServiciosWeb;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Web.Controles.Administracion
 {
@@ -125,7 +117,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 config.EventsActive = !config.EventsActive;
             }
 
-            string valor = JsonConvert.SerializeObject(config);
+            string valor = JsonSerializer.Serialize(config);
 
             parametroCN.ActualizarParametroEnProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID, "EventosConfigurados", valor);
 
@@ -149,15 +141,15 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         {
             ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
 
-            string valor = JsonConvert.SerializeObject(pEvento);
+            string valor = JsonSerializer.Serialize(pEvento);
 
             if (pEsEcosistema)
             {
-                parametroCN.ActualizarParametroEnProyecto(ProyectoAD.MetaProyecto, ProyectoAD.MetaProyecto, "EventosConfiguradosEcosistema", JsonConvert.SerializeObject(pEvento));
+                parametroCN.ActualizarParametroEnProyecto(ProyectoAD.MetaProyecto, ProyectoAD.MetaProyecto, "EventosConfiguradosEcosistema", valor);
             }
             else
             {
-                parametroCN.ActualizarParametroEnProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID, "EventosConfigurados", JsonConvert.SerializeObject(pEvento));
+                parametroCN.ActualizarParametroEnProyecto(ProyectoSeleccionado.Clave, ProyectoSeleccionado.FilaProyecto.OrganizacionID, "EventosConfigurados", valor);
             }
 
         }

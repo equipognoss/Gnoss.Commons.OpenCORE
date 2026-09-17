@@ -1,6 +1,5 @@
 using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.Elementos;
@@ -11,10 +10,6 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces;
 using Es.Riam.Metagnoss.ExportarImportar;
 using Es.Riam.Semantica.OWL;
-using Es.Riam.Util;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -23,10 +18,10 @@ namespace Es.Riam.Gnoss.ExportarImportar.Exportadores
     /// <summary>
     /// exportador de proyectos
     /// </summary>
-    public class ExportadorProyecto : ExportadorElementoGnoss, IDisposable
+    public class ExportadorProyecto : ExportadorElementoGnoss
     {
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #region Constructor
 
         /// <summary>

@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.AD.Facetado;
 using Es.Riam.Gnoss.AD.Facetado.Model;
 using Es.Riam.Gnoss.AD.Live;
 using Es.Riam.Gnoss.AD.Live.Model;
+using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.RDF.Model;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
@@ -35,6 +36,7 @@ using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
 using Es.Riam.Gnoss.Logica.Live;
 using Es.Riam.Gnoss.Logica.Notificacion;
+using Es.Riam.Gnoss.Logica.Parametro;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
 using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.RDF;
@@ -42,6 +44,7 @@ using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Tesauro;
 using Es.Riam.Gnoss.Logica.Usuarios;
 using Es.Riam.Gnoss.RabbitMQ;
+using Es.Riam.Gnoss.RabbitMQ.Models;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Servicios;
 using Es.Riam.Gnoss.Util.Configuracion;
@@ -50,6 +53,7 @@ using Es.Riam.Gnoss.Util.Seguridad;
 using Es.Riam.Gnoss.UtilServiciosWeb;
 using Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL;
 using Es.Riam.Gnoss.Web.Controles.Organizador.Correo;
+using Es.Riam.Gnoss.Web.Controles.Proyectos;
 using Es.Riam.Gnoss.Web.Controles.ServicioImagenesWrapper;
 using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.FicherosRecursos;
@@ -60,7 +64,6 @@ using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SemWeb;
 using System;
 using System.Collections.Generic;
@@ -70,6 +73,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
@@ -590,9 +594,9 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                         reader.Dispose();
                     }
                 }
-               
+
                 if (!pDocumentoOriginal.GestorDocumental.ListaDocumentos.ContainsKey(pDocumentoOriginal.ElementoVinculadoID))
-                {                    
+                {
                     pDocumentoOriginal.GestorDocumental.DataWrapperDocumentacion.Merge(docCN.ObtenerDocumentoPorID(pDocumentoOriginal.ElementoVinculadoID));
 
                     pDocumentoOriginal.GestorDocumental.CargarDocumentos(false);
@@ -674,7 +678,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 string rutaArchivo = nombreArchivoEncontrado.Groups[1].Value.TrimEnd(']');
 
                 TipoCampoOntologia tipo = ObtenerTipoCampoOntologiaDeRuta(rutaArchivo);
-                
+
                 nombreArchivos.TryAdd(rutaArchivo.Substring(rutaArchivo.LastIndexOf("/") + 1), tipo);
             }
 
@@ -721,7 +725,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         private static Dictionary<string, TipoCampoOntologia> ObtenerNombreArchivosEnRdf(string pRdf, Ontologia pOntologia)
         {
             Dictionary<string, TipoCampoOntologia> nombreArchivosTipo = new Dictionary<string, TipoCampoOntologia>();
-            
+
             // Buscamos las propiedades de la ontología de tipo archivo
             List<string> propiedadesTipoArchivo = pOntologia.EstilosPlantilla.Where(item => item.Value.OfType<EstiloPlantillaEspecifProp>().Any(item2 => item2.TipoCampo == TipoCampoOntologia.Archivo)).Select(item => item.Key).ToList();
 
@@ -733,7 +737,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 string nombrePropiedad;
                 string namespacePropiedad;
                 string prefijoPropiedad;
-                
+
                 if (Uri.TryCreate(propiedad, UriKind.Absolute, out Uri uri))
                 {
                     // Si la propiedad está definida como una Uri, extraemos el namespace y el localName. Ej: http://schema.org/file
@@ -790,6 +794,70 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         {
             BorrarRDFDeBDRdfHistorico(pDocumentoID);
             BorrarRDFDeBDRDF(pDocumentoID);
+        }
+
+        /// <summary>
+        /// Purga las versiones más antiguas de un recurso que sobrepasen el número máximo de versiones configurado en el proyecto,
+        /// dejando siempre la versión vigente y las mejoras pendientes de aprobar
+        /// </summary>
+        /// <param name="pDocumentoOriginalID">DocumentoOriginalID que agrupa todas las versiones del recurso</param>
+        /// <param name="pProyectoID">Proyecto del que se debe leer el número máximo de versiones configurado</param>
+        /// <param name="pGestorDocumental">Gestor documental sobre el que aplicar el borrado lógico de las versiones purgadas</param>
+        /// <param name="pAvailableServices">Lista de servicios disponibles, para encolar el borrado físico de los ficheros de las versiones purgadas</param>
+        public void PurgarVersionesExcedentes(Guid pDocumentoOriginalID, Guid pProyectoID, GestorDocumental pGestorDocumental, IAvailableServices pAvailableServices)
+        {
+            using ParametroCN parametroCN = new ParametroCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<ParametroCN>(), mLoggerFactory);
+            Dictionary<string, string> parametrosProyecto = parametroCN.ObtenerParametrosProyecto(pProyectoID);
+
+            int maxVersiones;
+            if (parametrosProyecto.ContainsKey(ParametroAD.NumeroMaximoVersionesRecurso))
+            {
+                // El proyecto tiene el parámetro configurado explícitamente: 0 (o negativo) significa sin límite
+                maxVersiones = ControladorProyecto.ObtenerParametroInt(parametrosProyecto, ParametroAD.NumeroMaximoVersionesRecurso);
+                if (maxVersiones <= 0)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                maxVersiones = ParametroAD.NumeroMaximoVersionesRecursoPorDefecto;
+            }
+
+            using DocumentacionCN docCN = new DocumentacionCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCN>(), mLoggerFactory);
+            List<AD.EntityModel.Models.Documentacion.VersionDocumento> versiones = docCN.ObtenerVersionesPorDocumentoOriginalID(pDocumentoOriginalID);
+
+            List<AD.EntityModel.Models.Documentacion.VersionDocumento> candidatasAPurgar = versiones
+                .Where(v => v.EstadoVersion != (short)EstadoVersion.Vigente && !(v.EsMejora && v.EstadoVersion == (short)EstadoVersion.Pendiente))
+                .OrderByDescending(v => v.Version)
+                .Skip(maxVersiones - 1)
+                .ToList();
+
+            foreach (AD.EntityModel.Models.Documentacion.VersionDocumento versionAPurgar in candidatasAPurgar)
+            {
+                try
+                {
+                    AD.EntityModel.Models.Documentacion.Documento filaDocumento = mEntityContext.Documento.FirstOrDefault(d => d.DocumentoID.Equals(versionAPurgar.DocumentoID));
+                    if (filaDocumento == null)
+                    {
+                        continue;
+                    }
+
+                    Documento documentoAPurgar = new Documento(filaDocumento, pGestorDocumental);
+                    pGestorDocumental.EliminarVersionDocumento(documentoAPurgar);
+
+                    if (documentoAPurgar.TipoDocumentacion == TiposDocumentacion.Semantico)
+                    {
+                        EliminarVersionDocumentoRDF(documentoAPurgar.Clave);
+                    }
+
+                    InsertarEnColaProcesarFicherosRecursosModificadosOEliminados(documentoAPurgar.Clave, TipoEventoProcesarFicherosRecursos.Borrado, pAvailableServices);
+                }
+                catch (Exception ex)
+                {
+                    mLoggingService.GuardarLogError(ex, $"Error al purgar la versión {versionAPurgar.DocumentoID} del recurso {pDocumentoOriginalID}", mlogger);
+                }
+            }
         }
 
         /// <summary>
@@ -940,7 +1008,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_NEWSLETTER, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_NEWSLETTER))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pDocumentoEnvioNewsletter));
+                    rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(pDocumentoEnvioNewsletter));
                 }
             }
         }
@@ -1348,7 +1416,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     filaCola.DocumentoID = pDocumentoID;
                     filaCola.TipoEvento = pTipoEvento;
 
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(filaCola));
+                    rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(filaCola));
                 }
             }
         }
@@ -3840,7 +3908,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                     string respuesta = string.Empty;
                     try
                     {
-                        respuesta = new UtilWeb(mHttpContextAccessor).WebRequest(UtilWeb.Metodo.POST, url, JsonConvert.SerializeObject(documento), "application/json");//POST
+                        respuesta = new UtilWeb(mHttpContextAccessor).WebRequestStringData(UtilWeb.Metodo.POST, url, JsonSerializer.Serialize(documento), "application/json");//POST
                     }
                     catch (Exception ex)
                     {
@@ -3853,7 +3921,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
                     if (!string.IsNullOrEmpty(respuesta))
                     {
-                        jsonEstado = JsonConvert.DeserializeObject<JsonEstado>(respuesta);
+                        jsonEstado = JsonSerializer.Deserialize<JsonEstado>(respuesta);
                     }
 
                     //log
@@ -4276,7 +4344,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_TAGS_COMENTARIO, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_TAGS_COMENTARIO))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pFilaColaTagsComentario.ItemArray));
+                    rabbitMQ.AgregarElementoACola(Newtonsoft.Json.JsonConvert.SerializeObject(pFilaColaTagsComentario.ItemArray));
                 }
             }
         }
@@ -4920,7 +4988,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             {
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, nombreCola, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange, nombreCola))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(colaPopularidad.ItemArray));
+                    rabbitMQ.AgregarElementoACola(Newtonsoft.Json.JsonConvert.SerializeObject(colaPopularidad.ItemArray));
                 }
             }
         }
@@ -7940,6 +8008,21 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             BaseComunidadCN brComCN = new BaseComunidadCN("base", -1, mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
             brComCN.InsertarFilasEnColaTagsComunidades(baseRecursosComDS, pAvailableServices);
             baseRecursosComDS.Dispose();
+        }
+
+        #endregion
+
+        #region Traducir
+
+        public void EnviarRecursoATraduccion(TranslationRabbitModel pModelo, IAvailableServices pAvailableServices, byte pPrioridadTraduccion)
+        {
+            if (pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.TranslateService), ServiceType.Background))
+            {
+                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "gnoss.translations.translation.exchange", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, "gnoss.translations.translation.exchange", "topic"))
+                {
+                    rabbitMQ.AgregarElementoAColaConReintentosExchange(JsonSerializer.Serialize(pModelo), pPrioridadTraduccion);
+                }
+            }
         }
 
         #endregion

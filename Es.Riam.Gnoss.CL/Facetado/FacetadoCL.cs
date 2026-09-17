@@ -7,7 +7,6 @@ using Es.Riam.Gnoss.AD.MetaBuscadorAD;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Usuarios;
 using Es.Riam.Gnoss.AD.Virtuoso;
-using Es.Riam.Gnoss.CL.Documentacion;
 using Es.Riam.Gnoss.Logica.Documentacion;
 using Es.Riam.Gnoss.Logica.Facetado;
 using Es.Riam.Gnoss.Logica.Identidad;
@@ -19,20 +18,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
-using Microsoft.AspNetCore.Mvc;
 using Es.Riam.Gnoss.RabbitMQ;
-using Es.Riam.Gnoss.Web.MVC.Models.Tesauro;
-using Newtonsoft.Json;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Cache;
 using StackExchange.Redis;
-using Es.Riam.Gnoss.Elementos.Notificacion;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.Extensions.Logging;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.CL.Facetado
 {
@@ -111,7 +104,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		#region Miembros
 
 		/// <summary>
-		/// Clave MAESTRA de la caché
+		/// Clave MAESTRA de la cachÃ©
 		/// </summary>
 		private readonly string[] mMasterCacheKeyArray = { NombresCL.FACETADO };
 
@@ -120,7 +113,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		private DocumentacionCN mDocumentacionCN = null;
 
-		private FacetadoCN mFacetadoCN = null;
+		private readonly FacetadoCN mFacetadoCN = null;
 
 		private bool mObtenerDeCache = true;
 		private bool mVerificarFechaDeCache = false;
@@ -128,7 +121,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <summary>
 		/// Url de la Intranet
 		/// </summary>
-		private string mUrlIntranet;
+		private readonly string mUrlIntranet;
 
 		/// <summary>
 		/// Diccionario con los nombres de ontologias del proyecto donde se esta buscando y su prefijo
@@ -148,18 +141,18 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 		public static ConcurrentDictionary<string, List<PoolRedis>> mListaPoolsRedis = new ConcurrentDictionary<string, List<PoolRedis>>();
 
-		private ConfigService mConfigService;
-		private EntityContext mEntityContext;
-		private LoggingService mLoggingService;
-		private VirtuosoAD mVirtuosoAD;
-		private RedisCacheWrapper mRedisCacheWrapper;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+		private readonly ConfigService mConfigService;
+		private readonly EntityContext mEntityContext;
+		private readonly LoggingService mLoggingService;
+		private readonly VirtuosoAD mVirtuosoAD;
+		private readonly RedisCacheWrapper mRedisCacheWrapper;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         private static string COLA_REFRESCO_CACHES_BUSQUEDAS = "ColaRefrescoCachesBusquedas";
-		public static long TTL_CACHE_DEFECTO = 12;
-		public static long TTL_CACHE_USUARIOS_DEFECTO = 3;
-		public static long DURACION_CONSULTA_DEFECTO = 2;
-		public static long TIEMPO_RECALCULAR_CACHE_DEFECTO = 30;
+		public static readonly long TTL_CACHE_DEFECTO = 12;
+		public static readonly long TTL_CACHE_USUARIOS_DEFECTO = 3;
+		public static readonly long DURACION_CONSULTA_DEFECTO = 2;
+		public static readonly long TIEMPO_RECALCULAR_CACHE_DEFECTO = 30;
 		#endregion
 
 		#region constructores
@@ -201,9 +194,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <summary>
 		/// Constructor para FacetadoCL
 		/// </summary>
-		/// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
-		/// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-		/// <param name="pPoolName">Nombre del pool de conexión</param>
+		/// <param name="pFicheroConfiguracionBD">Fichero de configuraciÃ³n</param>
+		/// <param name="pUsarVariableEstatica">Si se estÃ¡n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+		/// <param name="pPoolName">Nombre del pool de conexiÃ³n</param>
 		public FacetadoCL(string pFicheroConfiguracionBD, string pPoolName, string pUrlIntragnoss, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCL> logger, ILoggerFactory loggerFactory)
 			: this(pFicheroConfiguracionBD, pPoolName, pUrlIntragnoss, "", entityContext, loggingService, redisCacheWrapper, configService, virtuosoAD, servicesUtilVirtuosoAndReplication, logger,loggerFactory)
 		{
@@ -212,9 +205,9 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <summary>
 		/// Constructor para FacetadoCL
 		/// </summary>
-		/// <param name="pFicheroConfiguracionBD">Fichero de configuración</param>
-		/// <param name="pUsarVariableEstatica">Si se están usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
-		/// <param name="pPoolName">Nombre del pool de conexión</param>
+		/// <param name="pFicheroConfiguracionBD">Fichero de configuraciÃ³n</param>
+		/// <param name="pUsarVariableEstatica">Si se estÃ¡n usando hilos con diferentes conexiones: FALSE. En caso contrario TRUE</param>
+		/// <param name="pPoolName">Nombre del pool de conexiÃ³n</param>
 		public FacetadoCL(string pFicheroConfiguracionBD, string pPoolName, string pUrlIntragnoss, string pGrafoID, EntityContext entityContext, LoggingService loggingService, RedisCacheWrapper redisCacheWrapper, ConfigService configService, VirtuosoAD virtuosoAD, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<FacetadoCL> logger, ILoggerFactory loggerFactory)
 			: base(pFicheroConfiguracionBD, pPoolName, entityContext, loggingService, redisCacheWrapper, configService, servicesUtilVirtuosoAndReplication, logger, loggerFactory)
 		{
@@ -267,8 +260,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 		static List<string> PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO = new List<string>() { "[PARAMETROESPACIOULTIMODIFERENTE]", "[ESPACIOULTIMODIFERENTE]", "[PARAMETROESPACIOIN]", "[ESPACIOULTIMODIFERENTELIMPIO]", "[PARAMETROESPACIOULTIMODIFERENTELIMPIO]" };
 
-		#region Métodos
-
 		#region RSS
 		/// <summary>
 		/// Obtiene el RSS de la comunidad
@@ -285,7 +276,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			}
 
 
-			// Compruebo si está en la caché
+			// Compruebo si estÃ¡ en la cachÃ©
 			string RSS = ObtenerObjetoDeCache(rawKey, typeof(string)) as string;
 
 			if (string.IsNullOrEmpty(RSS))
@@ -319,15 +310,14 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Borra el RSS de la comunidad
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pPagina">Puede ser: recursos,encuestas,debates o preguntas</param>
 		public void BorrarRSSDeComunidad(Guid pProyectoID)
 		{
 			string rawKey = string.Concat(NombresCL.RSSSCOMUNIDAD, "_", pProyectoID.ToString());
 			List<string> claves = new List<string>();
 			if (ClienteRedisLectura != null)
 			{
-				claves = ClienteRedisLectura.Keys(ObtenerClaveCache(rawKey + "*").ToLower()).Result.ToList();
-			}
+				claves = ClienteRedisLectura.Keys(ObtenerClaveCache(rawKey + "*").ToLower()).AsTask().Result.ToList();
+            }
 
 			InvalidarCachesMultiples(claves);
 		}
@@ -335,18 +325,18 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 
 		/// <summary>
-		/// Obtiene las facetas de una determinada búsqueda
+		/// Obtiene las facetas de una determinada bÃºsqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Identificador del perfil del usuario que está bu
+		/// <param name="pTipoBusqueda">Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Identificador del perfil del usuario que estÃ¡ bu
 		/// scando</param>
-		/// <param name="pHomeProyecto">Verdad si se están cargando las facetas para la home de la comunidad</param>
+		/// <param name="pHomeProyecto">Verdad si se estÃ¡n cargando las facetas para la home de la comunidad</param>
 		/// <param name="mIdioma">Idioma para el que se cargan las facetas</param>
 		/// <param name="pEsUsuarioInvitado">Verdad si es el usuario invitado</param>
-		/// <param name="pNumeroFacetas">Número de facetas a cargar</param>
-		/// <param name="pParametrosClaveExtra">Parametros extra para la clave de caché</param>
-		/// <param name="pBusquedaTipoMapa">Indica si la búsqueda es de tipo mapa</param>
+		/// <param name="pNumeroFacetas">NÃºmero de facetas a cargar</param>
+		/// <param name="pParametrosClaveExtra">Parametros extra para la clave de cachÃ©</param>
+		/// <param name="pBusquedaTipoMapa">Indica si la bÃºsqueda es de tipo mapa</param>
 		/// <returns></returns>
 		public string ObtenerFacetasDeBusquedaEnProyecto(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, int pNumeroFacetas, bool pEsUsuarioInvitado, string mIdioma, bool pHomeProyecto, string pParametrosClaveExtra, Guid? pOrganizacionID, bool pBusquedaTipoMapa, string pParametros, bool pFacetaPrivadaGrupo)
 		{
@@ -378,11 +368,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene los resultados y las facetas de una determinada búsqueda
+		/// Obtiene los resultados y las facetas de una determinada bÃºsqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Identificador del perfil del usuario que está buscando</param>
+		/// <param name="pTipoBusqueda">Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Identificador del perfil del usuario que estÃ¡ buscando</param>
 		/// <returns></returns>
 		public string ObtenerResultadosYFacetasDeBusquedaEnProyecto(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, string pNumeroPagina, string pIdioma, Guid? pOrganizacionID, bool pEsIdentidadInvitado, string pParametros, bool pEsUsuarioInvitado)
 		{
@@ -417,11 +407,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		{
 			string rawKey = string.Concat("RecursosDeFiltroPorFaceta_", $"{pNombreFaceta}_{pValor}_", pProyectoID);
 
-			// Compruebo si está en la caché
+			// Compruebo si estÃ¡ en la cachÃ©
 			FacetadoDS facetadoDS = ObtenerObjetoDeCache(rawKey, typeof(FacetadoDS)) as FacetadoDS;
 			if (facetadoDS == null)
 			{
-				// Si no está, lo cargo y lo almaceno en la caché
+				// Si no estÃ¡, lo cargo y lo almaceno en la cachÃ©
 				FacetadoCN facetadoCN = new FacetadoCN(mUrlIntranet, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
 				facetadoCN.InformacionOntologias = InformacionOntologias;
 				facetadoDS = new FacetadoDS();
@@ -479,16 +469,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		{
 			string rawKey = string.Concat("Faceta_", pNombreFaceta + "_", pProyectoID);
 
-			// Compruebo si está en la caché
+			// Compruebo si estÃ¡ en la cachÃ©
 			FacetadoDS facetadoDS = ObtenerObjetoDeCache(rawKey, typeof(FacetadoDS)) as FacetadoDS;
 			if (facetadoDS == null)
 			{
-				// Si no está, lo cargo y lo almaceno en la caché
+				// Si no estÃ¡, lo cargo y lo almaceno en la cachÃ©
 				FacetadoCN.InformacionOntologias = InformacionOntologias;
 				facetadoDS = new FacetadoDS();
 				FacetadoCN.ListaItemsBusquedaExtra = pListaSemanticos;
 
-				FacetadoCN.ObtenerFaceta(pProyectoID.ToString(), facetadoDS, pNombreFaceta, new Dictionary<string, List<string>>(), new List<string>(), pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), TipoDisenio.ListaMenorAMayor, 1000, pListaSemanticos, pExcluida, pEsMovil, false, new Guid(), pListaExcluidos);
+				FacetadoCN.ObtenerFaceta(pProyectoID.ToString(), facetadoDS, pNombreFaceta, new Dictionary<string, List<string>>(), new List<string>(), pProyectoID.Equals(ProyectoAD.MyGnoss), !pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID.ToString().ToUpper(), TipoDisenio.ListaMenorAMayor, 1000, pListaSemanticos, pExcluida, pEsMovil, false, Guid.NewGuid(), pListaExcluidos);
 
 				AgregarObjetoCache(rawKey, facetadoDS);
 			}
@@ -504,16 +494,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
 		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pExcluida, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos, IAvailableServices pAvailableServices)
 		{
 			ObtenerFaceta(pProyectoID, pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, false, null, pExcluida, false, false, true, null, pInmutable, pEsMovil, pListaExcluidos, pAvailableServices);
@@ -524,18 +514,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		/// <param name="pFiltrosSearchPersonalizados">Diccionario con los filtros tipo 'search' personalizados</param>
 		public void ObtenerTituloFacetas(string pProyectoID, FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, List<int> pListaRangos, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, Dictionary<string, int> pListaFacetas, Dictionary<string, string> pListaFacetasExtraContexto)
 		{
@@ -550,16 +539,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
 		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFacetaEspecialDBLPJournalPartOF(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, string pOrden,  int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, IAvailableServices pAvailableServices)
 		{
 
@@ -614,16 +603,16 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
 		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bï¿½squeda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estï¿½ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFacetaEspecialDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, IAvailableServices pAvailableServices)
 		{
 			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
@@ -675,18 +664,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bï¿½squeda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estï¿½ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos, IAvailableServices pAvailableServices)
 		{
 			ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, false, pInmutable, pEsMovil, pListaExcluidos, pAvailableServices);
@@ -697,18 +685,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bï¿½squeda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estï¿½ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos, IAvailableServices pAvailableServices)
 		{
 			ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, false, true, null, pInmutable, pEsMovil, pListaExcluidos, pAvailableServices);
@@ -719,79 +706,20 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos, IAvailableServices pAvailableServices)
 		{
 			ObtenerFaceta(pProyectoID, pFacetadoDS, pClaveFaceta, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pTipoDisenio, pLimite, pSemanticos, pFiltroContextoWhere, pTipoProyecto, pEsRango, pListaRangos, pExcluida, pUsarHilos, pExcluirPersonas, pPermitirRecursosPrivados, true, 0, TipoPropiedadFaceta.Numero, pFiltrosSearchPersonalizados, pInmutable, pEsMovil, pListaExcluidos, pAvailableServices);
-		}
-
-		private Dictionary<string, string> ObtenerClavesFacetas(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
-		{
-			Dictionary<string, string> dictionary = new Dictionary<string, string>();
-			// TODO: Crear una configuración
-			pEstaEnMyGnoss = false;
-			pEsMiembroComunidad = false;
-			pEsInvitado = true;
-			pIdentidadID = UsuarioAD.Invitado.ToString();
-
-			string clave = $"_obtenerFaceta_{pProyectoID}_{pProyectoID}{pClaveFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pTipoDisenio}{pLimite}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-
-			string claveParametros = $"pmobtenerFaceta_{pProyectoID}__{pProyectoID}{pClaveFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pTipoDisenio}{pLimite}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-
-			foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
-			{
-				bool aniadir = true;
-				if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
-				{
-					string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
-
-					foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
-					{
-						if (valores.Contains(parametro))
-						{
-							aniadir = false;
-						}
-					}
-					if (aniadir)
-					{
-						string hash = StringToHash(valores);
-						clave += $"_{filtro}{hash}";
-						claveParametros += $"_{filtro}{hash}";
-					}
-				}
-				else
-				{
-					foreach (string filtroInt in pListaFiltros[filtro])
-					{
-						clave += $"_{filtro}_{filtroInt}";
-						claveParametros += $"_{filtro}_{filtroInt}";
-					}
-				}
-			}
-
-			foreach (string filtroExtra in pListaFiltrosExtra)
-			{
-				clave += $"_{filtroExtra}";
-			}
-
-			if (pEsRango && pListaRangos != null && pListaRangos.Count > 0)
-			{
-				clave += $"_{pListaRangos[0]}";
-			}
-			dictionary.Add("clave", clave);
-			dictionary.Add("claveParametros", claveParametros);
-			return dictionary;
 		}
 
 		/// <summary>
@@ -799,18 +727,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public bool ExisteFacetaEnCache(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil)
 		{
 			bool exist = false;
@@ -848,18 +775,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFaceta(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, bool pExcluirPersonas, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, int pReciproca, TipoPropiedadFaceta pTipoPropiedadesFaceta, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pInmutable, bool pEsMovil, List<Guid> pListaExcluidos, IAvailableServices pAvailableServices)
 		{
 			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
@@ -925,18 +851,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pNombreFaceta">Nombre de la faceta que se debe cargar</param>
 		/// <param name="pListaFiltros">Lista de filtros</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss, no en una comunidad</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss, no en una comunidad</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad</param>
 		/// <param name="pOrden">Orden de los resultados</param>
-		/// <param name="pLimite">límite de resultados</param>
-		/// <param name="pEsCatalogoNosocial">Verdad si es un catálogo no social</param>
+		/// <param name="pLimite">lÃ­mite de resultados</param>
+		/// <param name="pEsCatalogoNosocial">Verdad si es un catÃ¡logo no social</param>
 		/// <param name="pFiltroContextoWhere">Filtros de contexto</param>
 		/// <param name="pListaFiltrosExtra">Lista de filtros extra</param>
-		/// <param name="pSemanticos">Lista de formularios semánticos</param>
+		/// <param name="pSemanticos">Lista de formularios semÃ¡nticos</param>
 		public void ObtenerFacetaSinOrdenDBLP(string pProyectoID, FacetadoDS pFacetadoDS, string pClaveFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, TipoDisenio pTipoDisenio, int pLimite, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pEsRango, List<int> pListaRangos, bool pExcluida, bool pUsarHilos, IAvailableServices pAvailableServices)
 		{
 			if (HayCacheSparql && EstanCachesBusquedaActivas(pProyectoID))
@@ -1171,63 +1096,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			return clave;
 		}
 
-		private Dictionary<string, string> ObtenerClavesResultados(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
-		{
-			Dictionary<string, string> dictionary = new Dictionary<string, string>();
-
-			// TODO: Crear una configuración
-			pEstaEnMyGnoss = false;
-			pEsMiembroComunidad = false;
-			pEsInvitado = true;
-			pIdentidadID = UsuarioAD.Invitado.ToString();
-
-			string clave = $"{FacetadoCN.GrafoID}//{pDescendente}{pTipoFiltro}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pLimite}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}";
-
-			string claveParametros = $"{FacetadoCN.GrafoID}//{pDescendente}{pTipoFiltro}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pLimite}{pFiltroContextoSelect}{pFiltroContextoWhere}{pFiltroContextoOrderBy}";
-
-			foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
-			{
-				bool aniadir = true;
-				if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
-				{
-					string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
-
-					foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
-					{
-						if (valores.Contains(parametro))
-						{
-							aniadir = false;
-						}
-					}
-					if (aniadir)
-					{
-						string hash = StringToHash(valores);
-						clave += $"_{filtro}{hash}";
-						claveParametros += $"_{filtro}{hash}";
-					}
-				}
-				else
-				{
-					foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
-					{
-						clave += $"_{filtro}_{filtroInt}";
-						claveParametros += $"_{filtro}_{filtroInt}";
-					}
-				}
-			}
-
-			foreach (string filtroExtra in pListaFiltrosExtra.OrderBy(item => item))
-			{
-				clave += "_" + filtroExtra;
-				claveParametros += "_" + filtroExtra;
-			}
-			clave = $"_resultsearch_{FacetadoCN.GrafoID}_{clave}";
-			claveParametros = $"pmresultsearch_{FacetadoCN.GrafoID}__{claveParametros}";
-			dictionary.Add("clave", clave);
-			dictionary.Add("claveParametros", claveParametros);
-			return dictionary;
-		}
-
 		public bool ExisteResultadosBusquedaCache(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTipoAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, Guid pProyectoID, int? pInicio = null)
 		{
 			bool exist = false;
@@ -1264,25 +1132,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				exist = ExisteClaveEnCache(clave);
 			}
 			return exist;
-		}
-
-		static string ByteArrayToString(byte[] arrInput)
-		{
-			int i;
-			StringBuilder sOutput = new StringBuilder(arrInput.Length);
-			for (i = 0; i < arrInput.Length; i++)
-			{
-				sOutput.Append(arrInput[i].ToString("X2"));
-			}
-			return sOutput.ToString();
-		}
-
-		public static string StringToHash(string data)
-		{
-			byte[] tmpSource = ASCIIEncoding.ASCII.GetBytes(data);
-			byte[] tmpHash = new MD5CryptoServiceProvider().ComputeHash(tmpSource);
-			string hash = ByteArrayToString(tmpHash);
-			return hash;
 		}
 
 		public string ObtenerResultadosBusquedaRenombrarSiContieneSufijo(bool pDescendente, FacetadoDS pFacetadoDS, string pTipoFiltro, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, int pLimite, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, int pFiltroContextoPesoMinimo, TipoProyecto pTipoProyecto, string pNamespacesExtra, string pResultadosEliminar, string pSufijo, Guid pProyectoID, IAvailableServices pAvailableServices)
@@ -1351,24 +1200,21 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene los resultados de una búsqueda
+		/// Obtiene los resultados de una bÃºsqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pTipoFiltro">Tipo de filtro</param>
 		/// <param name="pListaFiltros">Lista de filtros del usuario</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
 		/// <param name="pLimite">Fin de los resultados</param>
 		/// <param name="pListaFiltrosExtra"></param>
 		/// <param name="pSemanticos"></param>
 		/// <param name="pFiltroContextoSelect"></param>
 		/// <param name="pFiltroContextoWhere"></param>
-		/// <param name="pFiltroContextoOrderBy"></param>
-		/// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
+		/// <param name="pFiltroContextoOrderBy"></param>       
 		/// <param name="pNamespaceExtra">NamespacesExtra</param>
 		public void ObtenerResultadosBusquedaFormatoMapa(FacetadoDS pFacetadoDS, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoSelect, string pFiltroContextoWhere, string pFiltroContextoOrderBy, TipoProyecto pTipoProyecto, string pNamespaceExtra, string pResultadosEliminar, DataWrapperFacetas pFiltroMapaDataWrapper, bool pPermitirRecursosPrivados, TipoBusqueda pTipoBusqueda, bool pEsMovil, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, Guid pProyectoID, string pLanguageCode, IAvailableServices pAvailableServices)
 		{
@@ -1431,24 +1277,21 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene los resultados de una búsqueda
+		/// Obtiene los resultados de una bÃºsqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pDescendente">Indica si el orden es descendente (false si es descendente)</param>
 		/// <param name="pFacetadoDS">DataSet de facetado</param>
-		/// <param name="pTipoFiltro">Tipo de filtro</param>
 		/// <param name="pListaFiltros">Lista de filtros del usuario</param>
-		/// <param name="pEstaEnMyGnoss">Verdad si la búsqueda se hace en MyGnoss</param>
+		/// <param name="pEstaEnMyGnoss">Verdad si la bÃºsqueda se hace en MyGnoss</param>
 		/// <param name="pEsMiembroComunidad">Verdad si el usuario es miembro de la comunidad</param>
-		/// <param name="pEsInvitado">Verdad si el usuario no está registrado</param>
+		/// <param name="pEsInvitado">Verdad si el usuario no estÃ¡ registrado</param>
 		/// <param name="pIdentidadID">Identificador de la identidad del usuario</param>
 		/// <param name="pLimite">Fin de los resultados</param>
 		/// <param name="pListaFiltrosExtra"></param>
 		/// <param name="pSemanticos"></param>
 		/// <param name="pFiltroContextoSelect"></param>
 		/// <param name="pFiltroContextoWhere"></param>
-		/// <param name="pFiltroContextoOrderBy"></param>
-		/// <param name="pEsCatalogoNoSocial">Verdad si es un catálogo no social</param>        
+		/// <param name="pFiltroContextoOrderBy"></param>     
 		/// <param name="pNamespaceExtra">NamespacesExtra</param>
 		/// <param name="pResultadosEliminar"></param>
 		/// <param name="pSelectChart">Select chart</param>
@@ -1504,60 +1347,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				FacetadoCN.ObtenerResultadosBusquedaFormatoChart(pFacetadoDS, pListaFiltros, pListaFiltrosExtra, pEstaEnMyGnoss, pEsMiembroComunidad, pEsInvitado, pIdentidadID, pSemanticos, pFiltroContextoSelect, pFiltroContextoWhere, pFiltroContextoOrderBy, pTipoProyecto, pNamespaceExtra, pResultadosEliminar, pSelectChart, pFiltroChart, pPermitirRecursosPrivados, pEsMovil, pFiltrosSearchPersonalizados);
 			}
 		}
-
-		public Dictionary<string, string> ObtieneClavesNumeroResultadosCache(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil)
-		{
-			Dictionary<string, string> dictionary = new Dictionary<string, string>();
-			// TODO: Crear una configuración
-			pEstaEnMyGnoss = false;
-			pEsMiembroComunidad = false;
-			pEsInvitado = true;
-			pIdentidadID = UsuarioAD.Invitado.ToString();
-
-			string clave = $"_numeroresultados_{FacetadoCN.GrafoID}_{FacetadoCN.GrafoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pFiltroContextoWhere}false";
-			// Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-			string claveParametros = $"pmnumeroresultados_{FacetadoCN.GrafoID}_{FacetadoCN.GrafoID}{pNombreFaceta}{pEstaEnMyGnoss}{pEsMiembroComunidad}{pEsInvitado}{pIdentidadID}{pFiltroContextoWhere}false"; // Le pongo false al final para no perder las cachés de DBLP por el parámetro pEsCatalogoNoSocialConUnTipo
-
-			foreach (string filtro in pListaFiltros.Keys.OrderBy(item => item))
-			{
-				bool aniadir = true;
-				if (pFiltrosSearchPersonalizados.ContainsKey(filtro))
-				{
-					string valores = $"{pFiltrosSearchPersonalizados[filtro].Item1}{pFiltrosSearchPersonalizados[filtro].Item2}{pFiltrosSearchPersonalizados[filtro].Item3}{pFiltrosSearchPersonalizados[filtro].Item4}";
-
-					foreach (string parametro in PARAMETROS_EXTRA_CONSULTAS_VIRTUOSO)
-					{
-						if (valores.Contains(parametro))
-						{
-							aniadir = false;
-						}
-					}
-					if (aniadir)
-					{
-						string hash = StringToHash(valores);
-						clave += $"_{filtro}{hash}";
-						claveParametros += $"_{filtro}{hash}";
-					}
-				}
-				else
-				{
-					foreach (string filtroInt in pListaFiltros[filtro].OrderBy(item => item))
-					{
-						clave += $"_{filtro}_{filtroInt}";
-						claveParametros += $"_{filtro}_{filtroInt}";
-					}
-				}
-			}
-
-			foreach (string filtroExtra in pListaFiltrosExtra)
-			{
-				clave += $"_{filtroExtra}";
-			}
-			dictionary.Add("clave", clave);
-			dictionary.Add("claveParametros", claveParametros);
-			return dictionary;
-		}
-
 		public bool ExisteNumeroResultadosEnCache(FacetadoDS pFacetadoDS, string pNombreFaceta, Dictionary<string, List<string>> pListaFiltros, List<string> pListaFiltrosExtra, bool pEstaEnMyGnoss, bool pEsMiembroComunidad, bool pEsInvitado, string pIdentidadID, List<string> pSemanticos, string pFiltroContextoWhere, TipoProyecto pTipoProyecto, bool pPermitirRecursosPrivados, bool pOmitirPalabrasNoRelevantesSearch, TiposAlgoritmoTransformacion pTiposAlgoritmoTransformacion, Dictionary<string, Tuple<string, string, string, bool>> pFiltrosSearchPersonalizados, bool pEsMovil, Guid pProyectoID)
 		{
 			bool exist = false;
@@ -1651,7 +1440,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene el número de comunidades que le pueden interesar a un perfil
+		/// Obtiene el nÃºmero de comunidades que le pueden interesar a un perfil
 		/// </summary>     
 		/// <param name="pIdentidadMyGnoss">Identidad en MyGnoss del perfil</param>     
 		public DataSet NumeroComunidadesQueTePuedanInteresar(Guid pIdentidadMyGnoss, Dictionary<string, List<string>> pListaFiltros)
@@ -1744,39 +1533,20 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Invalida los resultados y las facetas de una determinada búsqueda
+		/// Invalida los resultados y las facetas de una determinada bÃºsqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		public void InvalidarResultadosYFacetasDeBusquedaEnProyecto(Guid pProyectoID, string pTipoBusqueda)
 		{
 			InvalidarResultadosYFacetasDeBusquedaEnProyecto(pProyectoID, pTipoBusqueda, false);
 		}
 
-		public bool PerteneceClaveAUsuarioConPrivados(string pClave, Guid pProyectoID)
-		{
-			string stringProyectoID = pProyectoID.ToString();
-			string subClave = pClave.Substring(pClave.IndexOf(stringProyectoID) + stringProyectoID.Length);
-
-			bool perteneceClaveAUsuarioConPrivados = false;
-			int i = 0;
-			while (subClave.Contains("-"))
-			{
-				i++;
-				subClave = subClave.Substring(subClave.IndexOf("-") + 1);
-			}
-			if (i >= 4)
-			{
-				perteneceClaveAUsuarioConPrivados = true;
-			}
-			return perteneceClaveAUsuarioConPrivados;
-		}
-
 		/// <summary>
-		/// Invalida los resultados y las facetas de una determinada búsqueda
+		/// Invalida los resultados y las facetas de una determinada bÃºsqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pSoloUsuariosConPrivados">Indica si borramos solo la de los usuarios que tengan recursos privados</param>
 		public void InvalidarResultadosYFacetasDeBusquedaEnProyecto(Guid pProyectoID, string pTipoBusqueda, bool pSoloUsuariosConPrivados)
 		{
@@ -1786,7 +1556,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				List<string> claves = new List<string>();
 				if (ClienteRedisLectura != null)
 				{
-					claves = ClienteRedisLectura.Keys(ObtenerClaveCache($"{rawKey}*").ToLower()).Result.ToList();
+					claves = ClienteRedisLectura.Keys(ObtenerClaveCache($"{rawKey}*").ToLower()).AsTask().Result.ToList();
 				}
 
 				List<string> clavesElminar = new List<string>();
@@ -1805,17 +1575,36 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			}
 		}
 
-		#region Cache Facetas y resultados
+        public bool PerteneceClaveAUsuarioConPrivados(string pClave, Guid pProyectoID)
+        {
+            string stringProyectoID = pProyectoID.ToString();
+            string subClave = pClave.Substring(pClave.IndexOf(stringProyectoID) + stringProyectoID.Length);
+
+            bool perteneceClaveAUsuarioConPrivados = false;
+            int i = 0;
+            while (subClave.Contains("-"))
+            {
+                i++;
+                subClave = subClave.Substring(subClave.IndexOf("-") + 1);
+            }
+            if (i >= 4)
+            {
+                perteneceClaveAUsuarioConPrivados = true;
+            }
+            return perteneceClaveAUsuarioConPrivados;
+        }
+
+        #region Cache Facetas y resultados
 
 		/// <summary>
-		/// Agrega los identificadores de resultados de una determinada búsqueda a la cache (sin caducidad)
+		/// Agrega los identificadores de resultados de una determinada bÃºsqueda a la cache (sin caducidad)
 		/// </summary>
 		/// <param name="pListaResultados">Listado de resultados</param>
-		/// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Identificador del perfil del usuario que está buscando</param>
+		/// <param name="pTipoBusqueda">Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Identificador del perfil del usuario que estÃ¡ buscando</param>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pNumeroPagina">Parte de la página que se carga (primera o segunda)</param>
-		/// <param name="pOrganizacionID">Identificador de la organización (en caso de que se un perfil de organizacion)</param>
+		/// <param name="pNumeroPagina">Parte de la pÃ¡gina que se carga (primera o segunda)</param>
+		/// <param name="pOrganizacionID">Identificador de la organizaciÃ³n (en caso de que se un perfil de organizacion)</param>
 		/// <param name="pEsIdentidadInvitado">Indica si se trata de una identidad invitada</param>
 		/// <param name="pParametros">pParametros</param>
 		/// <returns></returns>
@@ -1825,17 +1614,17 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Agrega los identificadores de resultados de una determinada búsqueda a la cache (con caducidad)
+		/// Agrega los identificadores de resultados de una determinada bÃºsqueda a la cache (con caducidad)
 		/// </summary>
 		/// <param name="pListaResultados">Listado de resultados</param>
-		/// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Identificador del perfil del usuario que está buscando</param>
+		/// <param name="pTipoBusqueda">Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Identificador del perfil del usuario que estÃ¡ buscando</param>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pNumeroPagina">Parte de la página que se carga (primera o segunda)</param>
-		/// <param name="pOrganizacionID">Identificador de la organización (en caso de que se un perfil de organizacion)</param>
+		/// <param name="pNumeroPagina">Parte de la pÃ¡gina que se carga (primera o segunda)</param>
+		/// <param name="pOrganizacionID">Identificador de la organizaciÃ³n (en caso de que se un perfil de organizacion)</param>
 		/// <param name="pEsIdentidadInvitado">Indica si se trata de una identidad invitada</param>
 		/// <param name="pParametros">pParametros</param>
-		/// <param name="pDuracion">Duración de la caché</param>
+		/// <param name="pDuracion">DuraciÃ³n de la cachÃ©</param>
 		/// <returns></returns>
 		public string AgregarListaResultadosDeBusquedaEnProyecto(Tuple<int, Dictionary<string, TiposResultadosMetaBuscador>> pListaResultados, string pTipoBusqueda, Guid pPerfilID, Guid pProyectoID, string pNumeroPagina, Guid? pOrganizacionID, bool pEsIdentidadInvitado, string pParametros, double pDuracion, bool pFacetaPrivadaGrupo, bool pEsMovil, bool pEsUsuarioInvitado)
 		{
@@ -1901,10 +1690,10 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Obtiene el numero total de resultados y los identificadores de resultados de una determinada busqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Identificador del perfil del usuario que está buscando</param>
-		/// <param name="pNumeroPagina">Parte de la página que se carga (primera o segunda)</param>
-		/// <param name="pOrganizacionID">Identificador de la organización (en caso de que se un perfil de organizacion)</param>
+		/// <param name="pTipoBusqueda">Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Identificador del perfil del usuario que estÃ¡ buscando</param>
+		/// <param name="pNumeroPagina">Parte de la pÃ¡gina que se carga (primera o segunda)</param>
+		/// <param name="pOrganizacionID">Identificador de la organizaciÃ³n (en caso de que se un perfil de organizacion)</param>
 		/// <param name="pEsIdentidadInvitado">Indica si se trata de una identidad invitada</param>
 		/// <param name="pParametros">pParametros</param>
 		/// <returns>Identificadores del resultado de la busqueda con su tipo</returns>
@@ -1938,15 +1727,15 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Agrega el modelo de facetas de una determinada busqueda (sin caducidad)
 		/// </summary>
 		/// <param name="pListaFacetas">Modelo de facetas</param>
-		/// <param name="pTipoBusqueda">>Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Perfil del usuario que está buscando</param>
+		/// <param name="pTipoBusqueda">>Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Perfil del usuario que estÃ¡ buscando</param>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pNumeroFacetas">Número de facetas</param>
+		/// <param name="pNumeroFacetas">NÃºmero de facetas</param>
 		/// <param name="pEsUsuarioInvitado">Indica si se trata de un usuario invitado</param>
 		/// <param name="pIdioma">Idioma de las facetas</param>
 		/// <param name="pHomeProyecto">Indica si se trata de la home de un proyecto</param>
 		/// <param name="pParametrosClaveExtra">ParametrosClaveExtra</param>
-		/// <param name="pOrganizacionID">Identificador de la organización (en caso de que se un perfil de organizacion)</param>
+		/// <param name="pOrganizacionID">Identificador de la organizaciÃ³n (en caso de que se un perfil de organizacion)</param>
 		/// <param name="pBusquedaTipoMapa">Indica si se trata de una busqueda de tipo mapa</param>
 		/// <param name="pParametros">Parametros</param>
 		public void AgregarModeloFacetasDeBusquedaEnProyectoACache(List<FacetModel> pListaFacetas, string pTipoBusqueda, Guid pPerfilID, Guid pProyectoID, int pNumeroFacetas, bool pEsUsuarioInvitado, string pIdioma, bool pHomeProyecto, string pParametrosClaveExtra, Guid? pOrganizacionID, bool pBusquedaTipoMapa, string pParametros, bool pEsMovil)
@@ -1958,18 +1747,18 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Agrega el modelo de facetas de una determinada busqueda (con caducidad)
 		/// </summary>
 		/// <param name="pListaFacetas">Modelo de facetas</param>
-		/// <param name="pTipoBusqueda">>Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Perfil del usuario que está buscando</param>
+		/// <param name="pTipoBusqueda">>Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Perfil del usuario que estÃ¡ buscando</param>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pNumeroFacetas">Número de facetas</param>
+		/// <param name="pNumeroFacetas">NÃºmero de facetas</param>
 		/// <param name="pEsUsuarioInvitado">Indica si se trata de un usuario invitado</param>
 		/// <param name="pIdioma">Idioma de las facetas</param>
 		/// <param name="pHomeProyecto">Indica si se trata de la home de un proyecto</param>
 		/// <param name="pParametrosClaveExtra">ParametrosClaveExtra</param>
-		/// <param name="pOrganizacionID">Identificador de la organización (en caso de que se un perfil de organizacion)</param>
+		/// <param name="pOrganizacionID">Identificador de la organizaciÃ³n (en caso de que se un perfil de organizacion)</param>
 		/// <param name="pBusquedaTipoMapa">Indica si se trata de una busqueda de tipo mapa</param>
 		/// <param name="pParametros">Parametros</param>
-		/// <param name="pDuracion">Duración de la caché</param>
+		/// <param name="pDuracion">DuraciÃ³n de la cachÃ©</param>
 		public void AgregarModeloFacetasDeBusquedaEnProyectoACache(List<FacetModel> pListaFacetas, string pTipoBusqueda, Guid pPerfilID, Guid pProyectoID, int pNumeroFacetas, bool pEsUsuarioInvitado, string pIdioma, bool pHomeProyecto, string pParametrosClaveExtra, Guid? pOrganizacionID, bool pBusquedaTipoMapa, string pParametros, double pDuracion, bool pFacetaPrivadaGrupo, bool pEsMovil)
 		{
 			if (pListaFacetas.Count > 0)
@@ -2017,14 +1806,14 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Obtiene el modelo de facetas de una determinada busqueda
 		/// </summary>
 		/// <param name="pProyectoID">Identificador del proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de la búsqueda</param>
-		/// <param name="pPerfilID">Perfil del usuario que está buscando</param>
-		/// <param name="pNumeroFacetas">Número de facetas</param>
+		/// <param name="pTipoBusqueda">Tipo de la bÃºsqueda</param>
+		/// <param name="pPerfilID">Perfil del usuario que estÃ¡ buscando</param>
+		/// <param name="pNumeroFacetas">NÃºmero de facetas</param>
 		/// <param name="pEsUsuarioInvitado">Indica si se trata de un usuario invitado</param>
 		/// <param name="pIdioma">Idioma de las facetas</param>
 		/// <param name="pHomeProyecto">Indica si se trata de la home de un proyecto</param>
 		/// <param name="pParametrosClaveExtra">ParametrosClaveExtra</param>
-		/// <param name="pOrganizacionID">Identificador de la organización (en caso de que se un perfil de organizacion)</param>
+		/// <param name="pOrganizacionID">Identificador de la organizaciÃ³n (en caso de que se un perfil de organizacion)</param>
 		/// <param name="pBusquedaTipoMapa">Indica si se trata de una busqueda de tipo mapa</param>
 		/// <param name="pParametros">Parametros</param>
 		/// <returns></returns>
@@ -2093,7 +1882,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		/// Obtiene la Key de la cache para el tesauro semantico.
 		/// </summary>
 		/// <param name="pProyectoID">Id del proyecto</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyTesauroSemanticoDeBusqueda(string pProyectoID, string claveFaceta)
 		{
 			string rawKey = $"{NombresCL.TESAURO}_{pProyectoID}_{claveFaceta}";
@@ -2104,39 +1893,39 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		#endregion
 
 		/// <summary>
-		/// Obtiene la Key de la cache para la búsqueda del facetado.
+		/// Obtiene la Key de la cache para la bÃºsqueda del facetado.
 		/// </summary>
 		/// <param name="pProyectoID">c de proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pPerfilID">Identificador del perfil actual</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyBusquedaFacetado(Guid pProyectoID, string pTipoBusqueda, bool pEsUsuarioInvitado)
 		{
 			return ObtenerKeyBusquedaFacetado(pProyectoID, pTipoBusqueda, Guid.Empty, false, pEsUsuarioInvitado);
 		}
 
 		/// <summary>
-		/// Obtiene la Key de la cache para la búsqueda del facetado.
+		/// Obtiene la Key de la cache para la bÃºsqueda del facetado.
 		/// </summary>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pPerfilID">ID del perfil actual</param>
 		/// <param name="pProyectoID">Identificador del proyecto en el que se busca</param>
 		/// <param name="pSoloFacetas">Verdad si solo se buscan facetas</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyBusquedaFacetado(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, bool pSoloFacetas, bool pEsUsuarioInvitado)
 		{
 			return ObtenerKeyBusquedaFacetado(pProyectoID, pTipoBusqueda, pPerfilID, pSoloFacetas, 0, pEsUsuarioInvitado, "", false);
 		}
 
 		/// <summary>
-		/// Obtiene la Key de la cache para la búsqueda del facetado.
+		/// Obtiene la Key de la cache para la bÃºsqueda del facetado.
 		/// </summary>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pPerfilID">ID del perfil actual</param>
 		/// <param name="pProyectoID">Identificador del proyecto en el que se busca</param>
 		/// <param name="pSoloFacetas">Verdad si solo se buscan facetas</param>
-		/// <param name="pParametrosClaveExtra">Parametros extra para la clave de caché</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <param name="pParametrosClaveExtra">Parametros extra para la clave de cachÃ©</param>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyBusquedaFacetado(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, bool pSoloFacetas, int pNumeroFacetas, bool pEsUsuarioInvitado, string pParametrosClaveExtra, bool pFacetaPrivadaGrupo, bool pEsMovil = false)
 		{
 			string rawKey = $"{NombresCL.FACETADO}_{pProyectoID}_{pTipoBusqueda}";
@@ -2169,39 +1958,39 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene la Key de la cache para la búsqueda del facetado.
+		/// Obtiene la Key de la cache para la bÃºsqueda del facetado.
 		/// </summary>
 		/// <param name="pProyectoID">c de proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pPerfilID">Identificador del perfil actual</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyBusquedaFacetadoMVC(Guid pProyectoID, string pTipoBusqueda, bool pEsUsuarioInvitado)
 		{
 			return ObtenerKeyBusquedaFacetadoMVC(pProyectoID, pTipoBusqueda, Guid.Empty, false, pEsUsuarioInvitado);
 		}
 
 		/// <summary>
-		/// Obtiene la Key de la cache para la búsqueda del facetado.
+		/// Obtiene la Key de la cache para la bÃºsqueda del facetado.
 		/// </summary>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pPerfilID">ID del perfil actual</param>
 		/// <param name="pProyectoID">Identificador del proyecto en el que se busca</param>
 		/// <param name="pSoloFacetas">Verdad si solo se buscan facetas</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyBusquedaFacetadoMVC(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, bool pSoloFacetas, bool pEsUsuarioInvitado)
 		{
 			return ObtenerKeyBusquedaFacetadoMVC(pProyectoID, pTipoBusqueda, pPerfilID, pSoloFacetas, 0, pEsUsuarioInvitado, "", false);
 		}
 
 		/// <summary>
-		/// Obtiene la Key de la cache para la búsqueda del facetado.
+		/// Obtiene la Key de la cache para la bÃºsqueda del facetado.
 		/// </summary>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		/// <param name="pPerfilID">ID del perfil actual</param>
 		/// <param name="pProyectoID">Identificador del proyecto en el que se busca</param>
 		/// <param name="pSoloFacetas">Verdad si solo se buscan facetas</param>
-		/// <param name="pParametrosClaveExtra">Parametros extra para la clave de caché</param>
-		/// <returns>Key de la cache para la búsqueda del facetado</returns>
+		/// <param name="pParametrosClaveExtra">Parametros extra para la clave de cachÃ©</param>
+		/// <returns>Key de la cache para la bÃºsqueda del facetado</returns>
 		public string ObtenerKeyBusquedaFacetadoMVC(Guid pProyectoID, string pTipoBusqueda, Guid pPerfilID, bool pSoloFacetas, int pNumeroFacetas, bool pEsUsuarioInvitado, string pParametrosClaveExtra, bool pFacetaPrivadaGrupo, bool pEsMovil = false)
 		{
 			string rawKey = $"{NombresCL.FACETADO}_{pProyectoID}_{pTipoBusqueda}_MVC";
@@ -2234,7 +2023,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene el número de resultados a partir de la faceta y los filtros pasados como parámetros
+		/// Obtiene el nÃºmero de resultados a partir de la faceta y los filtros pasados como parÃ¡metros
 		/// </summary>
 		/// <param name="pFacetadoDS">Dataset Facetado</param>
 		/// <param name="pNombreFaceta">Nombre de la faceta</param>
@@ -2251,11 +2040,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				}
 			}
 
-			// Compruebo si está en la caché
+			// Compruebo si estÃ¡ en la cachÃ©
 			FacetadoDS facetadoDS = ObtenerObjetoDeCache(rawKey, typeof(FacetadoDS)) as FacetadoDS;
 			if (facetadoDS == null)
 			{
-				// Si no está, lo cargo y lo almaceno en la caché
+				// Si no estÃ¡, lo cargo y lo almaceno en la cachÃ©
 				FacetadoCN facetadoCN = new FacetadoCN(mUrlIntranet, pProyectoID.ToString(), mEntityContext, mLoggingService, mConfigService, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<FacetadoCN>(), mLoggerFactory);
 				facetadoCN.InformacionOntologias = InformacionOntologias;
 				facetadoCN.ObtieneNumeroResultados(pFacetadoDS, pNombreFaceta, pListaFiltros, pListaFiltrosExtra, pSemanticos, TiposAlgoritmoTransformacion.Ninguno, pProyectoID, pEsIdentidadInvitada, pEsUsuarioInvitado, pIdentidadID, pEsMovil);
@@ -2270,20 +2059,19 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Invalida la cache del proyecto pasado como parámetro
+		/// Invalida la cache del proyecto pasado como parÃ¡metro
 		/// </summary>
 		/// <param name="pProyectoID">Identificador de proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
+		/// <param name="pTipoBusqueda">Tipo de bÃºsqueda</param>
 		public void InvalidarCache(Guid pProyectoID, string pTipoBusqueda, bool pEsUsuarioInvitado)
 		{
 			InvalidarCache(ObtenerKeyBusquedaFacetado(pProyectoID, pTipoBusqueda, pEsUsuarioInvitado));
 		}
 
 		/// <summary>
-		/// Invalida la cache del proyecto pasado como parámetro
+		/// Invalida la cache del proyecto pasado como parÃ¡metro
 		/// </summary>
 		/// <param name="pProyectoID">Identificador de proyecto</param>
-		/// <param name="pTipoBusqueda">Tipo de búsqueda</param>
 		public void InvalidarCacheTesauroFaceta(Guid pProyectoID)
 		{
 			string rawKey = $"{NombresCL.TESAURO}_{pProyectoID}_";
@@ -2303,7 +2091,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			{
 				using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_REFRESCO_CACHES_BUSQUEDAS, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory))
 				{
-					rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pCacheConsultasCostosas));
+					rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(pCacheConsultasCostosas));
 				}
 			}
 		}
@@ -2361,9 +2149,8 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			{
 				string clave = ObtenerClaveCache(pClave).ToLower();
 				ConfiguracionCachesCostosas configCaches = ObtenerConfiguracionCachesBusquedas(pCacheModel.ProyectoID);
-				ConnectionMultiplexer conexion = ConnectionMultiplexer.Connect($"{mConfigService.ObtenerConexionRedisIPMaster("SPARQL")},defaultDatabase={mConfigService.ObtenerConexionRedisBD("SPARQL")}");
-				IDatabase db = conexion.GetDatabase();
-				
+				IDatabase db = RedisMultiplexerPool.Obtener(mConfigService.ObtenerConexionRedisIPMaster("SPARQL"), mConfigService.ObtenerConexionRedisBD("SPARQL")).GetDatabase();
+
 				TimeSpan? ttl = db.KeyTimeToLive(clave);
 				long tiempoExpiracion = configCaches.TiempoExpiracion;
 				if (!configCaches.CachesAnonimas)
@@ -2375,12 +2162,10 @@ namespace Es.Riam.Gnoss.CL.Facetado
 				{
 					InsertarColaRefrescoCacheConsultasCostosas(pCacheModel, pAvailableServices);
 				}
-
-				conexion.Dispose();
 			}
 			catch (Exception ex)
 			{
-				mLoggingService.GuardarLogError(ex,$"Error al insertar recalcular las caches de búsqueda",mlogger);
+				mLoggingService.GuardarLogError(ex,$"Error al insertar recalcular las caches de bÃºsqueda",mlogger);
 			}
 		}
 
@@ -2507,7 +2292,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			return claveCache;
 		}
 
-
 		#region Privacidad Recursos
 
 		/// <summary>
@@ -2521,8 +2305,6 @@ namespace Es.Riam.Gnoss.CL.Facetado
 			bool tienePrivados = false;
 			bool tieneGrupos = false;
 
-			DocumentacionCL documentacionCL = new DocumentacionCL(mFicheroConfiguracionBD, mPoolName, mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<DocumentacionCL>(), mLoggerFactory);
-
 			if (!pPerfilID.Equals(UsuarioAD.Invitado))
 			{
 				string rawKey = $"{NombresCL.FACETADO}_tienegrupos{pProyectoID}_{pPerfilID}";
@@ -2535,7 +2317,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 					tieneGrupos = identidadCN.TieneIdentidadGrupos(pProyectoID, pPerfilID);
 					identidadCN.Dispose();
 
-					AgregarObjetoCache(rawKey, tieneGrupos, 86400); // 1 día
+					AgregarObjetoCache(rawKey, tieneGrupos, 86400); // 1 dÃ­a
 				}
 				else
 				{
@@ -2544,11 +2326,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 				if (!tieneGrupos)
 				{
-					//if(DocumentacionCN.TienePerfilConRecursosPrivados(pProyectoID, pPerfilID))
-					//if (documentacionCL.PerfilesConRecursosPrivados(pProyectoID).Contains(pPerfilID))
-					{
-						tienePrivados = true;
-					}
+					tienePrivados = true;	
 				}
 			}
 			return tienePrivados || tieneGrupos;
@@ -2556,12 +2334,10 @@ namespace Es.Riam.Gnoss.CL.Facetado
 
 		#endregion
 
-		#endregion
-
 		#region Propiedades
 
 		/// <summary>
-		/// Devuelve la clave para la caché
+		/// Devuelve la clave para la cachÃ©
 		/// </summary>
 		public override string[] ClaveCache
 		{
@@ -2572,7 +2348,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Obtiene o establece la capa de negocio de Documentación
+		/// Obtiene o establece la capa de negocio de DocumentaciÃ³n
 		/// </summary>
 		protected DocumentacionCN DocumentacionCN
 		{
@@ -2766,7 +2542,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Verdad si está configurada la caché para consultas SPARQL de larga duración
+		/// Verdad si estÃ¡ configurada la cachÃ© para consultas SPARQL de larga duraciÃ³n
 		/// </summary>
 		private bool HayCacheSparql
 		{
@@ -2784,7 +2560,7 @@ namespace Es.Riam.Gnoss.CL.Facetado
 		}
 
 		/// <summary>
-		/// Condición extra para la consulta de facetas.
+		/// CondiciÃ³n extra para la consulta de facetas.
 		/// </summary>
 		public string CondicionExtraFacetas
 		{

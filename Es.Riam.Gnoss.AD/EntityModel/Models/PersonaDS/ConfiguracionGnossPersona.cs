@@ -18,6 +18,8 @@
 
         public bool ComentariosRecursos { get; set; }
 
+        public bool NuevosSeguidores { get; set; }
+
         public bool InvitacionComunidad { get; set; }
 
         public bool InvitacionOrganizacion { get; set; }

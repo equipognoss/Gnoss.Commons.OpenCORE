@@ -6,7 +6,6 @@ using Es.Riam.Gnoss.AD.EntityModel.Models;
 using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.EntityModelBASE.Models;
 using Es.Riam.Gnoss.AD.Facetado;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -14,12 +13,10 @@ using Es.Riam.Interfaces.InterfacesOpen;
 using Es.Riam.Util;
 using Es.Riam.Util.Correo;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Net;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Logica.BASE_BD
 {
@@ -41,8 +38,8 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         /// Nos indica si actualmente hay conexion a RabbitMQ
         /// </summary>
         private static bool? mHayConexionRabbit = null;
-        private ILogger mlogger;
-        private ILoggerFactory mLoggerFactory;
+        private readonly ILogger mlogger;
+        private readonly ILoggerFactory mLoggerFactory;
         #endregion
 
         public BaseComunidadCN(EntityContext entityContext, LoggingService loggingService, EntityContextBASE entityContextBASE, ConfigService configService, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication, ILogger<BaseComunidadCN> logger, ILoggerFactory loggerFactory)
@@ -239,7 +236,7 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
             {
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_CORREO, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_CORREO))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pCorreoID));
+                    rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(pCorreoID));
                 }
             }
         }
@@ -268,17 +265,6 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
                     mHayConexionRabbit = !string.IsNullOrEmpty(cadena);
                 }
                 return mHayConexionRabbit.Value;
-            }
-        }
-
-        private void InsertarCorreoIDColaCorreoRabbitMQ(int pCorreoID, IAvailableServices pAvailableServices)
-        {
-            if (HayConexionRabbit && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
-            {
-                using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_CORREO, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, EXCHANGE, COLA_CORREO))
-                {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(pCorreoID));
-                }
             }
         }
 
@@ -452,55 +438,6 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
         {
             return BaseComunidadAD.ObtenerElementosColaPendientes(pTiposElementos, pEstadoInferior, pEstadoSuperior, pNumMaxItems, pSoloPrioridad0);
         }
-
-        ///// <summary>
-        ///// Obtiene los elementos pendientes de la cola de replicacion MASTER
-        ///// </summary>
-        ///// <param name="pPrioridadBase">Prioridad de los elementos que se quieren obtener</param>
-        ///// <param name="pNumMaxItems">Número máximo de Items a obtener</param>
-        ///// <returns></returns>
-        //public BaseComunidadDS ObtenerElementosPendientesColaReplicacion(int pNumMaxItems, short pEstadoMaximo)
-        //{
-        //    return ObtenerElementosPendientesColaReplicacion(pNumMaxItems, "ColaReplicacionMaster", pEstadoMaximo);
-        //}
-
-        ///// <summary>
-        ///// Obtiene los elementos pendientes de una cola de replicacion
-        ///// </summary>
-        ///// <param name="pPrioridadBase">Prioridad de los elementos que se quieren obtener</param>
-        ///// <param name="pNumMaxItems">Número máximo de Items a obtener</param>
-        ///// <param name="pTablaColaReplica">Tabla de la cola que se quiere cargar</param>
-        ///// <returns></returns>
-        //public BaseComunidadDS ObtenerElementosPendientesColaReplicacion(int pNumMaxItems, string pTablaColaReplica, short pEstadoMaximo)
-        //{
-        //    return BaseComunidadAD.ObtenerElementosPendientesColaReplicacion(pNumMaxItems, pTablaColaReplica, pEstadoMaximo);
-        //}
-
-        //public BaseComunidadDS ObtenerElementosColaReplicacionMismaTransaccion(string pNombreTablaReplica, short pEstadoMaximo, string pInfoExtra)
-        //{
-        //    return BaseComunidadAD.ObtenerElementosColaReplicacionMismaTransaccion(pNombreTablaReplica, pEstadoMaximo, pInfoExtra);
-        //}
-
-        ///// <summary>
-        ///// Inserta en una cola de una réplica particular una consulta
-        ///// </summary>
-        ///// <param name="pOrdenEjecucion">Identificador de la consulta a replicar</param>
-        ///// <param name="pNombreTablaReplica">Nombre de la tabla en la que se va a replicar la consulta</param>
-        //public void InsertarConsultaEnReplica(int pOrdenEjecucion, string pNombreTablaReplica)
-        //{
-        //    InsertarConsultaEnReplica(pOrdenEjecucion, pNombreTablaReplica, "ColaReplicacionMaster");
-        //}
-
-        ///// <summary>
-        ///// Inserta en una cola de una réplica particular una consulta
-        ///// </summary>
-        ///// <param name="pOrdenEjecucion">Identificador de la consulta a replicar</param>
-        ///// <param name="pNombreTablaReplica">Nombre de la tabla en la que se va a replicar la consulta</param>
-        ///// <param name="pNombreTablaOrigen">Nombre de la tabla de origen desde la que se va a copiar la fila</param>
-        //public void InsertarConsultaEnReplica(int pOrdenEjecucion, string pNombreTablaReplica, string pNombreTablaOrigen)
-        //{
-        //    BaseComunidadAD.InsertarConsultaEnReplica(pOrdenEjecucion, pNombreTablaReplica, pNombreTablaOrigen);
-        //}
 
         /// <summary>
         /// Inserta una fila en la cola de refresco de caché para que se actualice una búsqueda determinada en un proyecto
@@ -765,13 +702,10 @@ namespace Es.Riam.Gnoss.Logica.BASE_BD
             {
                 disposed = true;
 
-                if (disposing)
+                //Libero todos los recursos administrados que he añadido a esta clase
+                if (disposing && BaseComunidadAD != null)
                 {
-                    //Libero todos los recursos administrados que he añadido a esta clase
-                    if (BaseComunidadAD != null)
-                    {
-                        BaseComunidadAD.Dispose();
-                    }
+                    BaseComunidadAD.Dispose();
                 }
                 BaseComunidadAD = null;
             }

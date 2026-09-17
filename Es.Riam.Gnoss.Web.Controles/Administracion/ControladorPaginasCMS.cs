@@ -1,8 +1,6 @@
 ﻿using Es.Riam.AbstractsOpen;
 using Es.Riam.Gnoss.AD.EncapsuladoDatos;
 using Es.Riam.Gnoss.AD.EntityModel;
-using Es.Riam.Gnoss.AD.EntityModelBASE;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.ServiciosGenerales;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
@@ -11,24 +9,20 @@ using Es.Riam.Gnoss.CL.ServiciosGenerales;
 using Es.Riam.Gnoss.Elementos.CMS;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.CMS;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Recursos;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
-using Es.Riam.Gnoss.UtilServiciosWeb;
-using Es.Riam.Gnoss.Web.Controles.GeneradorPlantillasOWL.ConfiguracionEstilo;
 using Es.Riam.Gnoss.Web.Controles.ServiciosGenerales;
-using Es.Riam.Gnoss.Web.MVC.Models;
 using Es.Riam.Gnoss.Web.MVC.Models.Administracion;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.AdministrarPaginasCMSViewModel;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.AdministrarPaginasCMSViewModel.RowCMSModel;
 using static Es.Riam.Gnoss.Web.MVC.Models.Administracion.AdministrarPaginasCMSViewModel.RowCMSModel.ColCMSModel;
@@ -438,7 +432,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
         public AdministrarPaginasCMSViewModel RestaurarVersionPaginaCMS(Guid pVersionID, Guid pIdentidadActual, string pComentario = "")
         {
             CMSCN CMSCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
-            AdministrarPaginasCMSViewModel modeloARestaurar = JsonConvert.DeserializeObject<AdministrarPaginasCMSViewModel>(CMSCN.ObtenerVersionEstructuraPaginaCMS(pVersionID).ModeloJSON);
+            AdministrarPaginasCMSViewModel modeloARestaurar = JsonSerializer.Deserialize<AdministrarPaginasCMSViewModel>(CMSCN.ObtenerVersionEstructuraPaginaCMS(pVersionID).ModeloJSON);
             EliminarComponentesBorrados(modeloARestaurar);
 
             Dictionary<Guid, AdministrarPaginasCMSViewModel> listaRestaurar = new Dictionary<Guid, AdministrarPaginasCMSViewModel> { { modeloARestaurar.Key, modeloARestaurar } };
@@ -639,7 +633,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 pModelo.ListaComponentesPrivados = null;
                 pModelo.ListaComponenteComunidad = null;
 
-                string modeloJSON = JsonConvert.SerializeObject(pModelo);
+                string modeloJSON = JsonSerializer.Serialize(pModelo);
 
                 AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS filaProyectoPestanyaVersionCMS = new AD.EntityModel.Models.ProyectoDS.ProyectoPestanyaVersionCMS(versionID, pModelo.Key, pIdentidadID, versionAnterior, DateTime.Now, pComentario, modeloJSON);
 

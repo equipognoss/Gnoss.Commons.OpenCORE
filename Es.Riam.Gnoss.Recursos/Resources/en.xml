@@ -299,7 +299,7 @@
 		<Resource tag="NAVEGACION">Navigation</Resource>
 		<Resource tag="MIS_IDENTIDADES">MY IDENTITIES</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Drag and drop a photo for your profile in the dotted area</Resource>
-		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Images in .PNG or .JPG format</Resource>
+		<Resource tag="IMAGENES_FORMATO_JPG_PNG">Images in .PNG, .JPG or .WEBP format</Resource>
 		<Resource tag="PESO_MAXIMO_250KB">Maximum image weight 250kb</Resource>
 		<Resource tag="X_HAN_COMENTADO_EN">have commented on</Resource>
 		<Resource tag="INTRODUCE_APELLIDOS">Enter your last name</Resource>
@@ -311,6 +311,9 @@
 		<Resource tag="CARGASMASIVASDISPONIBLES">Bulk uploads available</Resource>
 		<Resource tag="ARRASTRAYSUELTAENZONAPUNTEADA">Drag and drop a file onto the dotted area</Resource>
 		<Resource tag="IRALAWEB">Go to website</Resource>
+		<Resource tag="ENLACEEXTERNO">External link</Resource>
+		<Resource tag="WARNINGENLACEEXTERNO">Warning! You are about to access an uncontrolled external link</Resource>
+		<Resource tag="ACCEDER">Access</Resource>
 	</page>
 	<page name="METADESCRIPTION">
 		<Resource tag="INDICE">Content index of @1@, browse through its categories and find out the @2@ resources</Resource>
@@ -878,6 +881,7 @@
 		<Resource tag="SEGUIDOR">Follower</Resource>
 		<Resource tag="SEGUIDORES">Followers</Resource>
 		<Resource tag="PERFILENWEB">Profile on the website</Resource>
+		<Resource tag="CONFIGURARNOTIFICACIONES">Notification settings</Resource>
 		<Resource tag="EDITARPREFERENCIAS">Edit preferences</Resource>
 		<Resource tag="GUARDARPREFERENCIAS">Save preferences</Resource>
 		<Resource tag="USUARIOSINACTIVIDAD">This user doesn't have recent activity</Resource>
@@ -1322,9 +1326,10 @@
 		<Resource tag="DESEAELIMINARVERSION">Do you want to delete this version of the resource?</Resource>
 		<Resource tag="ABREVENTANANUEVA">It is opened in a new window</Resource>
 		<Resource tag="LECCCIONESDE">Lessons of:</Resource>
-		<Resource tag="FORMATONOVALIDO">El formato de la imagen que intenta importar no es válido (.jpg, .png, .jpeg, .gif)</Resource>
+		<Resource tag="FORMATONOVALIDO">The format of the image you are trying to import is not valid (.jpg, .png, .jpeg, .gif, .webp)</Resource>
 	</page>
 	<page name="PERFILBASERECURSOSFICHA">
+		<Resource tag="TRADUCIR">Translate</Resource>
 		<Resource tag="AGREGARCATEGORIA">Add resource to category</Resource>
 		<Resource tag="AGREGARPREGUNTAACATEGORIA">Add question to category</Resource>
 		<Resource tag="AGREGARDEBATEACATEGORIA">Add discussion to category</Resource>
@@ -2276,7 +2281,10 @@
 	</page>
 	<page name="CONFIGURACIONGNOSS">
 		<Resource tag="SOLICITUDCONTACTO">Contact and friend requests</Resource>
+		<Resource tag="MENSAJESGNOSS">Messages received in the community</Resource>
+		<Resource tag="INTRONOTIFICACIONES">Choose what you want to be notified about by email.</Resource>
 		<Resource tag="COMENTARIOSRECURSOS">Comments to my resources</Resource>
+		<Resource tag="NUEVOSSEGUIDORES">New followers of my profile</Resource>
 		<Resource tag="INVITACIONCOMUNIDAD">Invitations to join a community</Resource>
 		<Resource tag="INVITACIONORGANIZACION">Invitations to represent an organization</Resource>
 		<Resource tag="BOLETINESSUSCRIPCIONES">Subscription newsletters</Resource>
@@ -4066,6 +4074,9 @@
 		<Resource tag="ADMINISTRARCONFIGURACIONPESOBUSQUEDAS">admin-search-weight</Resource>
 		<Resource tag="ADMINISTRARFLUJOS">manage-workflows</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">manage-assistants</Resource>
+		<Resource tag="TRADUCIRRECURSOS">translate-resources</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVAECOSISTEMA">manage-bulk-upload-ecosystem</Resource>
+		<Resource tag="ADMINISTRARCARGAMASIVA">manage-bulk-upload</Resource>
 	</page>
 	<page name="NOTIFICACIONESPERSONALIZADAS">
 		<Resource tag="TITULO">Notifications List</Resource>
@@ -4104,6 +4115,7 @@
 		<Resource tag="ADMINISTRARFLUJOS">Workflows</Resource>
 		<Resource tag="ADMINISTRARTRADUCTOR">Configure translator</Resource>
 		<Resource tag="ADMINISTRARASISTENTES">Manage assistants</Resource>
+		<Resource tag="TRADUCIRRECURSOS">Translate resources</Resource>
 	</page>
 	<page name="COMADMINPESOBUSQUEDA">
 		<Resource tag="TITULO">Setting search weights</Resource>
@@ -4135,10 +4147,64 @@
 		</Resource>
 		
 	</page>
-	
-	
+	<page name="COMADMINREDIRECCIONES">
+		<Resource tag="TITULO">Configure Redirects</Resource>
+		<Resource tag="REDIRECCIONES">Redirects</Resource>
+		<Resource tag="INFOTITULO">Configure the domain URL redirects</Resource>
+		<Resource tag="FILTRAR">Filter redirects by source URL</Resource>
+		<Resource tag="INFOADDREDIRECCION">Add a new redirect</Resource>
+		<Resource tag="REDIRECCIONNUEVA">New redirect</Resource>
+		<Resource tag="ELIGETIPOREDIRECCION">Choose the redirect type</Resource>
+		<Resource tag="URLORIGEN">Source URL</Resource>
+		<Resource tag="URLDESTINO">Destination URL</Resource>
+		<Resource tag="MANTENERFILTROSORIGEN">Keep original URL query parameters</Resource>
+		<Resource tag="NOMBREPARAMETRO">Parameter name</Resource>
+		<Resource tag="VALORPARAMETRO">Parameter value</Resource>
+		<Resource tag="ORDENPARAMETRO">Parameter order</Resource>
+		<Resource tag="REDIRECCIONDIRECTA">Direct redirect</Resource>
+		<Resource tag="REDIRECCIONPARAMETRIZADA">Parameterized redirect</Resource>
+		<Resource tag="GUARDARCAMBIOS">Save Changes</Resource>
+		<Resource tag="ADDREDIRECCION">Add redirect</Resource>
+		<Resource tag="ADDPARAMETRO">Add parameter</Resource>
+		<Resource tag="ELIMINARPARAMETRO">Remove parameter</Resource>
+		<Resource tag="GUARDAROK">The changes have been saved successfully</Resource>
+		<Resource tag="GUARDARERROR">There were errors while saving the redirects. Please review the highlighted errors.</Resource>
+		<Resource tag="ERRORSINCAMBIOS">There are no redirect changes to save</Resource>
+		<Resource tag="ERRORURLORIGENVACIA">The source URL cannot be empty</Resource>
+		<Resource tag="ERRORURLORIGENNOVALIDA">The source URL is not valid</Resource>
+		<Resource tag="ERRORSINTIPOREDIRECCION">No redirect type has been selected</Resource>
+		<Resource tag="ERRORURLDESTINOVACIA">The destination URL cannot be empty</Resource>
+		<Resource tag="ERRORURLDESTINONOVALIDA">The destination URL is not valid</Resource>
+		<Resource tag="ERRORNOMPARAMETROVACIO">The parameter name cannot be empty</Resource>
+		<Resource tag="ERRORSINPARAMETROS">Parameterized redirects must contain at least one parameter with all its fields completed</Resource>
+		<Resource tag="ERRORCAMPOPARAMETROSVACIO">All parameter fields must be completed</Resource>
+		<Resource tag="ERRORCAMPOPARAMETROSNOVALIDO">The parameter destination URL is not valid</Resource>
+		<Resource tag="ERRORRECALCULANDORUTAS">An error occurred while recalculating the routes</Resource>
+		<Resource tag="ERRORGUARDARBD">An error occurred while saving the redirect. Please contact the administrator</Resource>
+		<Resource tag="RUTAORIGEN">The URL must be a relative path</Resource>
+	</page>
+	<page name="ADMINCARGAMASIVA">
+		<Resource tag="CARGAMASIVA">Bulk Upload</Resource>
+		<Resource tag="LISTABLANCA">Whitelist</Resource>
+		<Resource tag="DESCCOMUNIDAD">Whitelist configuration for the community bulk upload service</Resource>
+		<Resource tag="DESCECOSISTEMA">Whitelist configuration for the ecosystem bulk upload service</Resource>
+		<Resource tag="INTRODUCEURL">Enter a valid full URL that will be allowed to call the bulk upload service</Resource>
+		<Resource tag="DESEAELIMINARDOMINIO">Do you want to delete the selected URL?</Resource>
+	</page>
 	<page name="DEVTOOLS">
 		<!-- Textos que ya existían en Vistas de Administración person sin traducir -> DevTools -->
+		<Resource tag="TRADUCIRPROPIEDAD">Translate property</Resource>
+		<Resource tag="AVISOECURSOENPROCESODETRADUCCION">This resource is being translated and some functions will not be available.</Resource>
+		<Resource tag="ERRORRECURSOENPROCESODETRADUCCION">You cannot send a resource for translation that is already being translated.</Resource>
+		<Resource tag="INFOTRADUCCION">The translation has been successfully submitted and will be available in a few minutes.</Resource>
+		<Resource tag="ERRORSUBIRFICHEROCMSMULTIMEDIA">An error occurred while uploading the file. Please check that the file status is correct or that there isn't already another one with the same name</Resource>
+		<Resource tag="SELECCIONAUNIDIOMA">-- Select a language --</Resource>
+		<Resource tag="TRADUCIRRECURSO">Translate resource</Resource>
+		<Resource tag="INFOTRADUCIRRECURSO">Choose the languages you want to translate the resource into</Resource>
+		<Resource tag="INFOTRADUCIRPROPIEDAD">Choose the languages you want to translate the property into</Resource>
+		<Resource tag="ERRORIDIOMAORIGENINVALIDO">The selected source language is invalid.</Resource>
+		<Resource tag="ERRORIDIOMADESTINOINVALIDO">A selected target language is invalid.</Resource>
+		<Resource tag="ERRORIDIOMASNOSOPORTADOS">The chosen languages are not supported by the platform.</Resource>
 		<Resource tag="AVISOPRIVACIDADCOMPONENTECMS">The CMS component is in a private state, so its profiles and/or groups must be configured from the workflow administration page</Resource>
 		<Resource tag="SELECCIONPERFILESGRUPOSCOMPONENTECMS">Select the people and/or groups who can view the component</Resource>
 		<Resource tag="APLICACIONESESPECIFICASBETA">Specific applications (BETA)</Resource>
@@ -4159,6 +4225,25 @@
 		<Resource tag="COMPONENTECMS">CMS Component</Resource>
 		<Resource tag="INFOCONFIGURARTRADUCTOR">Configuration of the community resource translation service.</Resource>
 		<Resource tag="RECURSOSEMANTICO">Semantic Resource</Resource>
+		<Resource tag="SELECCIONIDIOMADESTINO">-- Select a language --</Resource>
+		<Resource tag="INFOTRADUCIRRECURSOS">Resource translation may take a long time, you can see the progress {a href="@1@"}here{/a}</Resource>
+		<Resource tag="TRADUCIRSELECCIONADOS">Translate</Resource>
+		<Resource tag="ERROROBTENERIDIOMAS">Error retrieving available languages</Resource>
+		<Resource tag="TRADUCCIONENCURSO">There is already a translation in progress</Resource>
+		<Resource tag="RECURSOSTRADUCIDOS">Resources are being translated</Resource>
+		<Resource tag="NOHAYRECURSOSPARATRADUCIR">No resources found to translate</Resource>
+		<Resource tag="TRADUCCIONMASIVAEXISTENTE">All resources have already been sent for translation, it is not possible to perform a new bulk translation or a specific type translation until the current one is finished</Resource>
+		<Resource tag="TRADUCCIONTIPOEXISTENTE1">Resources of type have already been sent for translation</Resource>
+		<Resource tag="TRADUCCIONTIPOEXISTENTE2">and ontology</Resource>
+		<Resource tag="ERRORTIPORECURSONORECONOCIDO">Unrecognized resource type</Resource>
+		<Resource tag="ERRORTRADUCIRRECURSOS">An error occurred while translating the resources</Resource>
+		<Resource tag="NOHAYTRADUCTORCONFIGURADO">There is no translation service configured for this project. You can configure it {a href="@1@"}here{/a}</Resource>
+		<Resource tag="TIPOSRECURSO">Type of resource to be translated</Resource>
+		<Resource tag="TRADUCIRTODO">Translate all</Resource>
+		<Resource tag="IDIOMAORIGINALRECURSOS">Original language of the resources</Resource>
+		<Resource tag="IDIOMADESTINORECURSOS">Target language for the resources</Resource>
+		<Resource tag="IDIOMAORIGINALPROPIEDAD">Original language of the property</Resource>
+		<Resource tag="IDIOMADESTINOPROPIEDAD">Language into which the property will be translated</Resource>
 		<Resource tag="LISTAIDIOMASPERSONALIZADOSECOSISTEMA">List of custom languages on the platform.</Resource>
 		<Resource tag="AÑADIRIDIOMAPERSONALIZADOECOSISTEMA">Add language</Resource>
 		<Resource tag="CLAVEIDIOMAPERSONALIZADOECOSISTEMA">Language key</Resource>
@@ -4494,7 +4579,7 @@
 		<Resource tag="COPYRIGHT(EJ:RIAMI+LLAB)">Copyright (Ej: RIAM I+L lab) </Resource>
 		<Resource tag="ENLACEQUEVAAAPARECERENELPIEDEPAGINACOMOCONTACTO.EJ:HTTP://WW">Link that will appear on the page as contact. E.g:http://www.gnoss.com/sobre-la-empresa </Resource>
 		<Resource tag="NUMERODERECURSOSRELACIONADOS">Number of related resources </Resource>
-		<Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Size to which the captures of the miniatures of the images must be made (default 180x160)</Resource>
+		<Resource tag="TAMAÑOALQUEDEBENHACERSELASCAPTURASDELASMINIATURASDELASIMAGEN">Size of the container where thumbnails are displayed in resource listings. The width also limits the size of the generated thumbnail; the height only affects the display (default 180x160)</Resource>
 		<Resource tag="ALTO(EJ280):">High (e.g 280): </Resource>
 		<Resource tag="ANCHO(EJ280):">Width  (e.g 280): </Resource>
 		<Resource tag="CARGARLOSEDITORESYLECTORESDELOSRECURSOSENLASPAGINASDEBUSQUED">Load the editors and readers of the resources in the search pages (it affects the performance of the searches, not to mark if it is not essential)</Resource>
@@ -4533,6 +4618,7 @@
 		<Resource tag="MANTENERTEXTOTESAUROSEMANTICOINVARIABLE">Keep the semantic thesaurus text unchanged</Resource>
 		<Resource tag="NUMERODEFACETASQUESEPINTANENLAPRIMERAPETICIONDEFACETAS">Number of facets painted in the first facets request </Resource>
 		<Resource tag="NUMERODEFACETASQUESEPINTANENLASEGUNDAPETICIONDEFACETAS">Number of facets that are painted in the second facet request </Resource>
+		<Resource tag="NUMEROMAXIMODEVERSIONESACONSERVARPORRECURSO">Maximum number of versions to keep per resource</Resource>
 		<Resource tag="PROPIEDADESQUESEDESEANUSARENELALGORITMODEPERSONASRECOMENDADA">Properties that are desired in the algorithm of recommended people. Each property carries its weight in the algorithm</Resource>
 		<Resource tag="EJ:HTTP://WWW.W3.ORG/2006/VCARD/NS#LOCALITY=4|||HTTP://WWW.W">Eg: http://www.w3.org/2006/vcard/ns#locality=4|||http://www.w3.org/2006/vcard/ns#country-name=3</Resource>
 		<Resource tag="LISTADEFACETASLENTASQUESEVANAOBTENERDEMANERAASINCRONAPARAQUE">List of slow facets that will be obtained asynchronously so that the third facet request arrives before</Resource>
@@ -5031,7 +5117,7 @@
 		<Resource tag="PERMISOSADMINISTRACIONECOSISTEMA">Permits related to ecosystem administration pages</Resource>
 		<Resource tag="PERMISOSECOSISTEMA">Ecosystem permits</Resource>
 		<Resource tag="PERMISOSCOMUNIDAD">Community Permits</Resource>
-		<Resource tag="DESEAELIMINARELROLSELECCIONADO">Do you want to eliminate the selected role?</Resource>
+		<Resource tag="DESEAELIMINARELROLSELECCIONADO">Do you want to eliminate the selected role?{br}Users and groups that currently have this role assigned will lose the associated permissions and will be given the Community User role.</Resource>
 		<Resource tag="ELIMINARROLCONASISTENTESAFECTADOS">This role is assigned to one or more assistants.{br} If you delete it, they will no longer have this role and their behaviour may change.{br}Are you sure you want to continue?</Resource>
 		<Resource tag="INTEGRACIONCONREDESSOCIALES">Integration with social networks</Resource>
 		<Resource tag="ESTRUCTURA">Structure</Resource>
@@ -5272,12 +5358,12 @@
 		<Resource tag="AÑADIRRECURSOMULTIMEDIA">Add multimedia resource</Resource>
 		<Resource tag="RECURSOMULTIMEDIA">Multimedia resource</Resource>
 		<Resource tag="IMAGENCATEGORIA">Category image</Resource>
-		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, the image must be in .png or .jpg format</Resource>
+		<Resource tag="ERRORFORMATOIMAGENCATEGORIA">Error, the image must be in .PNG, .JPG or .WEBP format</Resource>
 		<Resource tag="ERRORGENERICOIMAGENCATEGORIA">Error, the image has not been able to upload correctly.</Resource>
 		<Resource tag="ERRORPESOIMAGENCATEGORIA">Error, the image exceeds the maximum allowed size:</Resource>
 		<Resource tag="ERRORELIMINARIMAGENCATEGORIA">Error, the category image has not been able to remove correctly</Resource>
 		<Resource tag="ARRASTRAYSUELTAENLAZONAPUNTEADAARCHIVOMULTIMEDIAPARASUBIR">Drag and release in the dotted area multimedia file to climb</Resource>
-		<Resource tag="IMAGENESENFORMATOPNGOJPG">Imagens in format .PNG o .JPG</Resource>
+		<Resource tag="IMAGENESENFORMATOPNGOJPG">Images in .PNG, .JPG or .WEBP format</Resource>
 		<Resource tag="ARCHIVOSENFORMATODOC,DOCX,TXTOPDF">Files in .doc, .docx, .txt or .pdf format</Resource>
 		<Resource tag="DESEAELIMINARELELEMENTOMULTIMEDIA">Do you want to eliminate the multimedia element?</Resource>
 		<Resource tag="URLDOMINIO">URL Dominio</Resource>
@@ -5406,6 +5492,8 @@
 		<Resource tag="INTRODUCEUNIDENTIFICADORUNICOPARALATRADUCCIONACREAR">Enter a unique identifier for translation to create.</Resource>
 		<Resource tag="IDDELATRADUCCION">Translation id</Resource>
 		<Resource tag="AÑADEACONTINUACIONLASTRADUCCIONESPERSONALIZADASPARALOSDIFERE">Add below the custom translations for the different languages available in the community.</Resource>
+		<Resource tag="ERRORCARACTERESINVALIDOSTEXTID">The translation identifier cannot begin with the following characters: =, +, -, @, |, newline, tab, or carriage return</Resource>
+		<Resource tag="ERRORCARACTERESINVALIDOSTRADUCCION">The translation in the @1@ language cannot begin with the following characters: =, +, -, @, |, newline, tab, or carriage return</Resource>
 		<Resource tag="TRADUCCION">Translation</Resource>
 		<Resource tag="CLAUSULAS">Clauses</Resource>
 		<Resource tag="CONTENIDO">Content</Resource>
@@ -5424,6 +5512,32 @@
 		<Resource tag="INTRODUCEELUSUARIO">Enter the user</Resource>
 		<Resource tag="INTRODUCELACONTRASEÑA">Enter the password</Resource>
 		<Resource tag="INTRODUCEELEMAILPARASUGERENCIAS">Enter the email for suggestions</Resource>
+		<Resource tag="CORREOBUZONOBLIGATORIO">The community e-mail address is required.</Resource>
+		<Resource tag="CORREOBUZONNOVALIDO">The community e-mail address does not have a valid format.</Resource>
+		<Resource tag="SMTPOBLIGATORIO">The SMTP server is required.</Resource>
+		<Resource tag="PUERTOOBLIGATORIO">The SMTP server port is required.</Resource>
+		<Resource tag="PUERTONOVALIDO">The SMTP server port must be a whole number between 1 and 32767.</Resource>
+		<Resource tag="USUARIOCORREOOBLIGATORIO">The mail account user is required.</Resource>
+		<Resource tag="CONTRASENYACORREOOBLIGATORIA">The mail account password is required.</Resource>
+		<Resource tag="TIPOSERVIDOROBLIGATORIO">The sending server type is required.</Resource>
+		<Resource tag="EMAILSUGERENCIASOBLIGATORIO">The suggestions e-mail address is required.</Resource>
+		<Resource tag="EMAILSUGERENCIASNOVALIDO">The suggestions e-mail address does not have a valid format.</Resource>
+		<Resource tag="EMAILPRUEBAOBLIGATORIO">Enter the e-mail address the test message will be sent to.</Resource>
+		<Resource tag="EMAILPRUEBANOVALIDO">The e-mail address the test message will be sent to does not have a valid format.</Resource>
+		<Resource tag="ASUNTOCORREOPRUEBA">Test message for the mailbox configuration</Resource>
+		<Resource tag="CUERPOCORREOPRUEBA">The configured e-mail account works correctly.</Resource>
+		<Resource tag="CORREOCONFIGURADOCONEXITO">The e-mail account has been configured successfully.</Resource>
+		<Resource tag="ERRORSMTPCONEXION">Could not connect to the SMTP server '@1@' on port @2@. Check the server name, the port and whether the server requires a secure connection (SSL). Details: @3@</Resource>
+		<Resource tag="ERRORSMTPAUTENTICACION">The SMTP server '@1@' rejected the credentials of user '@2@'. Check the mail account user and password. Details: @3@</Resource>
+		<Resource tag="ERRORSMTPSSL">The SMTP server '@1@' requires a secure connection. Enable the 'Use secure server' option or use a secure port (465 or 587). Details: @2@</Resource>
+		<Resource tag="ERRORSMTPREMITENTE">The SMTP server rejected the sender '@1@'. Check that the account '@2@' is allowed to send messages from that address. Details: @3@</Resource>
+		<Resource tag="ERRORSMTPDESTINATARIO">The SMTP server rejected the recipient '@1@'. Details: @2@</Resource>
+		<Resource tag="ERRORSMTPDIRECCIONNOVALIDA">One of the e-mail addresses provided does not have a valid format. Details: @1@</Resource>
+		<Resource tag="ERRORSMTPSERVICIONODISPONIBLE">The SMTP server '@1@' is not available at the moment. Try again later. Details: @2@</Resource>
+		<Resource tag="ERRORENVIOCORREOPRUEBA">The test message could not be sent. Details: @1@</Resource>
+		<Resource tag="ERRORGUARDARCONFIGURACIONCORREO">The test message was sent correctly, but the mailbox configuration could not be saved. Try again or contact the platform administrator.</Resource>
+		<Resource tag="TODOSLOSCAMPOSDELBUZONSONOBLIGATORIOS">All fields are required. When saving, a test message is sent to check that the configuration works.</Resource>
+		<Resource tag="LACONTRASENYANOSEMUESTRA">For security reasons the password is not shown. Enter it again to validate and save the configuration.</Resource>
 		<Resource tag="OPCIONESDELMETAADMINISTRADOR">Meta-administrator options</Resource>
 		<Resource tag="PERMITIRADMINISTRACIONSEMANTICA">Allow semantic administration</Resource>
 		<Resource tag="PERMITIRADMINISTRACIONDEVISTAS">Allow View Administration</Resource>
@@ -6497,7 +6611,7 @@
 		<Resource tag="NUEVOICONO">Select an icon to attach</Resource>
 		<Resource tag="ERRORSUBIRICONO">An error occurred while uploading the icon, please try again later.</Resource>
 		<Resource tag="SELECCIONARROL">-- Select a role --</Resource>
-		<Resource tag="FORMATOIMAGENPERMITIDO">Images in .JPG, .JPEG, .PNG or .GIF format</Resource>
+		<Resource tag="FORMATOIMAGENPERMITIDO">Images in .JPG, .JPEG, .PNG, .GIF or .WEBP format</Resource>
 		<Resource tag="ARRASTRA_Y_SUELTA">Click or drag an image here</Resource>
 		<Resource tag="ERRORPESOICONO">The icon cannot be larger than 2 MB</Resource>
 		<Resource tag="ERRORICONOVACIO">Empty file</Resource>

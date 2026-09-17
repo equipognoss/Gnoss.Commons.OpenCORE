@@ -73,6 +73,7 @@ using Es.Riam.Util;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NetVips;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -784,10 +785,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
 
             if (!string.IsNullOrEmpty(pValor))
             {
-                if (filaParametro != null && !filaParametro.Valor.Equals(pValor))
+                if (filaParametro != null && !pValor.Equals(filaParametro.Valor))
                 {
                     // El parametro existe, lo modifico
-                    filaParametro.Valor = pValor;
+                    gestorController.ActualizarParametroProyecto(filaParametro, pValor);
                 }
                 else if (filaParametro == null)
                 {
@@ -1492,7 +1493,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Proyectos
             pFilaParametrosGenerales.LogoProyecto = pImagenLogo;
             if (pImagenLogo != null && pImagenLogo.Length > 0)
             {
-                SixLabors.ImageSharp.Image imagen = UtilImages.ConvertirArrayBytesEnImagen(pImagenLogo);
+                using var imagen = UtilImages.ConvertirArrayBytesEnImagen(pImagenLogo);
                 pFilaParametrosGenerales.CoordenadasSup = $"[ 0, 0, {imagen.Width.ToString()}, {imagen.Height.ToString()} ]";
             }
         }

@@ -54,6 +54,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
         /// </summary>
         public List<SocialNetwork> SocialNetworks { get; set; }
         /// <summary>
+        /// Configuración de los avisos por correo del usuario, solo tendrá valor si estamos editando el perfil de una persona
+        /// </summary>
+        public NotificationSettingsViewModel NotificationSettings { get; set; }
+        /// <summary>
         /// Errores en la edicion del perfil
         /// </summary>
         public Dictionary<string, string> Errors { get; set; }
@@ -259,6 +263,31 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.ViewModels
             /// Etiquetas
             /// </summary>
             public string Tags { get; set; }
+        }
+
+        /// <summary>
+        /// View model de la configuración de los avisos por correo del usuario.
+        /// Cada propiedad se corresponde con una columna de la tabla ConfiguracionGnossPersona
+        /// </summary>
+        [Serializable]
+        public class NotificationSettingsViewModel
+        {
+            /// <summary>
+            /// Recibir aviso de las solicitudes de contacto (ConfiguracionGnossPersona.SolicitudesContacto)
+            /// </summary>
+            public bool ContactRequests { get; set; }
+            /// <summary>
+            /// Recibir aviso de los mensajes recibidos en la comunidad (ConfiguracionGnossPersona.MensajesGnoss)
+            /// </summary>
+            public bool InternalMessages { get; set; }
+            /// <summary>
+            /// Recibir aviso de los comentarios a los recursos propios (ConfiguracionGnossPersona.ComentariosRecursos)
+            /// </summary>
+            public bool ResourceComments { get; set; }
+            /// <summary>
+            /// Recibir aviso cuando alguien empieza a seguir el perfil (ConfiguracionGnossPersona.NuevosSeguidores)
+            /// </summary>
+            public bool NewFollowers { get; set; }
         }
 
         /// <summary>

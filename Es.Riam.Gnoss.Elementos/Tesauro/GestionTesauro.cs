@@ -3,10 +3,8 @@ using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Suscripcion;
 using Es.Riam.Gnoss.AD.EntityModel.Models.Tesauro;
 using Es.Riam.Gnoss.AD.Facetado.Model;
-using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Tesauro;
 using Es.Riam.Gnoss.Elementos.Documentacion;
-using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.RabbitMQ;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -14,14 +12,13 @@ using Es.Riam.Gnoss.Web.MVC.Models.Tesauro;
 using Es.Riam.Interfaces;
 using Es.Riam.Interfaces.Observador;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Text.Json;
 
 namespace Es.Riam.Gnoss.Elementos.Tesauro
 {
@@ -1014,7 +1011,7 @@ namespace Es.Riam.Gnoss.Elementos.Tesauro
 
                 using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, COLA_MINIATURA_CATEGORIA, mLoggingService, pConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, "", COLA_MINIATURA_CATEGORIA))
                 {
-                    rabbitMQ.AgregarElementoACola(JsonConvert.SerializeObject(elementoCola));
+                    rabbitMQ.AgregarElementoACola(JsonSerializer.Serialize(elementoCola));
                 }
             }
         }

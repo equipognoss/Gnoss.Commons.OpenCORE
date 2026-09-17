@@ -369,6 +369,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models.Administracion
         /// </summary>
         public int ServiceBusReintentos { get; set; }
         /// <summary>
+        /// Número máximo de versiones a conservar por recurso (sin configurar = valor por defecto <see cref="Es.Riam.Gnoss.AD.Parametro.ParametroAD.NumeroMaximoVersionesRecursoPorDefecto"/>)
+        /// </summary>
+        public int NumeroMaximoVersionesRecurso { get; set; }
+        /// <summary>
         /// Indica si esta permitida la replicacion convencional de Gnoss
         /// </summary>
         public bool Replicacion { get; set; }

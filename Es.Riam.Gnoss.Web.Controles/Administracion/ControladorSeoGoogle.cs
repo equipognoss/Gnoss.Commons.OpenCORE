@@ -2,6 +2,7 @@
 using Es.Riam.Gnoss.AD;
 using Es.Riam.Gnoss.AD.EntityModel;
 using Es.Riam.Gnoss.AD.EntityModel.Models.ParametroGeneralDS;
+using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Parametro;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.AD.Virtuoso;
@@ -14,6 +15,7 @@ using Es.Riam.Gnoss.Elementos.ParametroGeneralDSEspacio;
 using Es.Riam.Gnoss.Elementos.ServiciosGenerales;
 using Es.Riam.Gnoss.Logica.Parametro;
 using Es.Riam.Gnoss.Logica.ParametroAplicacion;
+using Es.Riam.Gnoss.Logica.ParametrosProyecto;
 using Es.Riam.Gnoss.Logica.ServiciosGenerales;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
@@ -75,6 +77,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             parametroGeneral.ScriptGoogleAnalytics = pOptions.ScriptGoogleAnalyticsPropio;
             parametroGeneral.CodigoGoogleAnalytics = pOptions.CodigoGoogleAnalytics;
 
+            GuardarRobotsComunidad(pOptions);
+
             mEntityContext.NoConfirmarTransacciones = true;
             try
             {
@@ -90,6 +94,12 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
 
+
+        private void GuardarRobotsComunidad(AdministrarSeoGoogleViewModel pOptions)
+        {
+            ControladorProyecto controlador = new ControladorProyecto(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, null, mVirtuosoAD, mHttpContextAccessor, null, mLoggerFactory.CreateLogger<ControladorProyecto>(), mLoggerFactory);
+            controlador.GuardarParametroString(ParametrosGeneralesDS, ParametroAD.RobotsComunidad, pOptions.ValorRobotsBusqueda);
+        }
         /// <summary>
         /// Se actualizan los parámetros indicados en la página de administración si existen, si no existen se añaden a base de datos
         /// </summary>
