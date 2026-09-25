@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
@@ -22,6 +23,11 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
         public TranslationResponse ExecuteTranslation(TranslationRequest pTranslationRequest)
         {
             return mStrategyTranslation.Translate(pTranslationRequest);
+        }
+
+        public Task<TranslationResponse> ExecuteTranslationAsync(TranslationRequest pTranslationRequest, CancellationToken pCancellationToken = default)
+        {
+            return mStrategyTranslation.TranslateAsync(pTranslationRequest, pCancellationToken);
         }
 
         public LanguagesResponse GetAvailableLanguages()

@@ -3847,7 +3847,6 @@
 		<Resource tag="COMPETENCIAS">wettbewerbe</Resource>
 		<Resource tag="ORGANIGRAMA">organigramm</Resource>
 		<Resource tag="SOLICITDESACCESO">antrage-zugang</Resource>
-		<Resource tag="EDITARRECURSO">bearbeiten-ressource</Resource>
 		<Resource tag="VERSIONANDORECURSO">neu-version-ressource</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">fehler-version-ressource</Resource>
 		<Resource tag="CREARDOCUMENTO">erstellen-dokument</Resource>

@@ -6082,13 +6082,7 @@ namespace Es.Riam.Gnoss.AD.Facetado
 
             if (!query.Contains("?s " + pTipoFiltro + " ?" + QuitaPrefijo(pTipoFiltro) + " ") && !(QuitaPrefijo(pTipoFiltro).Contains("relevancia")))
             {
-                query += " OPTIONAL { ?s " + pTipoFiltro + " ?" + QuitaPrefijo(pTipoFiltro) + " . ";
-
-                if ((QuitaPrefijo(pTipoFiltro).Contains("hasPopularidad")))
-                {
-                    query += " ?s gnoss:hasnumerorecursos ?gnosshasnumerorecursos. ";
-                }
-                query += "}";
+                query += " OPTIONAL { ?s " + pTipoFiltro + " ?" + QuitaPrefijo(pTipoFiltro) + " . }";
             }
             query += " } ";
 
@@ -6099,50 +6093,58 @@ namespace Es.Riam.Gnoss.AD.Facetado
                 orderBy += " desc(sum(?scoreSearch) + sum(?scoreTitle)) ";
             }
 
-            if (!hayFiltroSearch && QuitaPrefijo(pTipoFiltro).Contains("relevancia"))
+            if (pDescendente)
             {
-                orderBy += " desc (?posicion) desc (?gnosshasfechapublicacion) desc (?gnosshaspopularidad) ";
+                orderBy += "desc ";
+            }
+
+            //foaf:firstName es una propiedad obliglatoria de identidad, la tratamos como texto explícitamente para que se ordenen sin distinguir mayúsculas/minúsculas, con acentos normalizados y sin espacios en los extremos.
+            bool isTextProperty = QuitaPrefijo(pTipoFiltro).Equals("foaffirstName", StringComparison.OrdinalIgnoreCase)
+                || (mFacetaDW != null && mFacetaDW.ListaFacetaObjetoConocimientoProyecto.Any(item => item.Faceta.Equals(pTipoFiltro))
+                    && ((TipoPropiedadFaceta)(mFacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.Faceta.Equals(pTipoFiltro))).TipoPropiedad.Value).Equals(TipoPropiedadFaceta.Texto));
+
+            if (isTextProperty)
+            {
+                orderBy += $"(bif:rdf_collation_order_string('DB.DBA.LEXICAL_ACUTE', lcase(bif:trim(?{QuitaPrefijo(pTipoFiltro)}))))   ";
             }
             else
             {
-                if (pDescendente)
-                {
-                    orderBy += "desc ";
-                }
-
-                if (mFacetaDW != null && mFacetaDW.ListaFacetaObjetoConocimientoProyecto.Any(item => item.Faceta.Equals(pTipoFiltro)))
-                {
-                    if (((TipoPropiedadFaceta)(mFacetaDW.ListaFacetaObjetoConocimientoProyecto.FirstOrDefault(item => item.Faceta.Equals(pTipoFiltro))).TipoPropiedad.Value).Equals(TipoPropiedadFaceta.Texto))
-
-                    {
-                        orderBy += $"(bif:rdf_collation_order_string('DB.DBA.LEXICAL_ACUTE', lcase(?{QuitaPrefijo(pTipoFiltro)})))  desc (?gnosshasnumerorecursos)   ";
-                    }
-                    else
-                    {
-                        orderBy += " (?" + QuitaPrefijo(pTipoFiltro) + ") desc (?gnosshasnumerorecursos)   "; //desc (?a) 
-                    }
-                }
-                else
-                {
-                    orderBy += " (?" + QuitaPrefijo(pTipoFiltro) + ") desc (?gnosshasnumerorecursos)   "; //desc (?a) 
-                }
+                orderBy += " (?" + QuitaPrefijo(pTipoFiltro) + ")   ";
             }
-
-            query += orderBy;
 
             if (pLimite > 0)
             {
-                query += "LIMIT " + pLimite;
-            }
+                query += orderBy;
 
-            if (pInicio.HasValue && pInicio > 0)
+                string finalQuery = NamespacesVirtuosoLectura + select + query + "LIMIT " + pLimite;
+
+                if (pInicio.HasValue && pInicio > 0)
+                {
+                    finalQuery += " OFFSET " + pInicio;
+                }
+
+                LeerDeVirtuoso(finalQuery, "RecursosBusqueda", pFacetadoDS, pProyectoID);
+            }
+            else
             {
-                query += " OFFSET " + pInicio;
-            }
-            
-            query = NamespacesVirtuosoLectura + select + query;
+                string orderedSubquery = $"{select} {query} {orderBy}";
+                string baseQueryWithoutLimit = $"{NamespacesVirtuosoLectura} {select} {ObtenerFrom(pProyectoID)} WHERE {{ {orderedSubquery} }} ";
 
-            LeerDeVirtuoso(query, "RecursosBusqueda", pFacetadoDS, pProyectoID);
+                int pageLimit = 10000;
+                int initialOffset = pInicio.HasValue && pInicio.Value > 0 ? pInicio.Value : 0;
+                int iterations = 0;
+
+                do
+                {
+                    FacetadoDS pageDSFacet = new FacetadoDS();
+                    string pageQuery = $"{baseQueryWithoutLimit} LIMIT {pageLimit} OFFSET {initialOffset + (pageLimit * iterations)}";
+
+                    LeerDeVirtuoso(pageQuery, "RecursosBusqueda", pageDSFacet, pProyectoID);
+                    pFacetadoDS.Merge(pageDSFacet);
+                    iterations++;
+                }
+                while (pFacetadoDS.Tables["RecursosBusqueda"].Rows.Count % pageLimit == 0 && pFacetadoDS.Tables["RecursosBusqueda"].Rows.Count > 0);
+            }
         }
 
         /// <summary>
@@ -15747,16 +15749,18 @@ namespace Es.Riam.Gnoss.AD.Facetado
             return mensajesBandeja;
         }
 
-        public FacetadoDS ObtenerValoresPropiedadIdioma(string pDocumentoID, List<string> pPropiedades, string pIdioma)
+        public FacetadoDS ObtenerValoresPropiedadIdioma(string pDocumentoID, List<string> pPropiedades, string pIdioma, string pNombreOntologia)
         {
             FacetadoDS facetadoDS = new FacetadoDS();
             if (pPropiedades.Count > 0)
             {
                 string entidad = $"{mUrlIntranet}{pDocumentoID.ToLower()}";
-                string query = $"SPARQL SELECT ?s ?p ?o WHERE " +
+                string query = $"SPARQL SELECT DISTINCT ?s ?p ?o " +
+                    $"FROM {ObtenerUrlGrafo(pNombreOntologia).ToLower()} " +
+                    $"WHERE " +
                     $"{{ ?entidad <http://gnoss/hasEntidad> ?s. " +
                     $"?s ?p ?o " +
-                    $"filter(?p IN (<{string.Join(">,<", pPropiedades)}>) and " +
+                    $"filter(?p IN (<{string.Join(">,<", pPropiedades.Distinct())}>) and " +
                     $"lang(?o)='{pIdioma}' and " +
                     $"?entidad = <{entidad}>)}}";
                 LeerDeVirtuoso(query, "propiedades", facetadoDS, "");

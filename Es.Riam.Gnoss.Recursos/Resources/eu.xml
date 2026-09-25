@@ -3841,7 +3841,6 @@
 		<Resource tag="COMPETENCIAS">gaitasunak</Resource>
 		<Resource tag="ORGANIGRAMA">organigrama</Resource>
 		<Resource tag="SOLICITDESACCESO">sarbide-eskariak</Resource>
-		<Resource tag="EDITARRECURSO">baliabidea-editatu</Resource>
 		<Resource tag="VERSIONANDORECURSO">baliabidearen-bertsio-berria</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">baliabideko-bertsioaren-akatsa</Resource>
 		<Resource tag="CREARDOCUMENTO">dokumentua-sortu</Resource>

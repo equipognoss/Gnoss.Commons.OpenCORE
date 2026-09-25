@@ -1236,11 +1236,7 @@ public class GnossUrlsSemanticas
         string direccion = "";
         string claveDirecc = "";
 
-        if (pCreandoNuevaVersion == 0)
-        {
-            claveDirecc = "EDITARRECURSO";
-        }
-        else if (pCreandoNuevaVersion == 1)
+        if (pCreandoNuevaVersion == 1)
         {
             claveDirecc = "VERSIONANDORECURSO";
         }

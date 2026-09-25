@@ -3846,7 +3846,6 @@
 		<Resource tag="COMPETENCIAS">competences</Resource>
 		<Resource tag="ORGANIGRAMA">organigramme</Resource>
 		<Resource tag="SOLICITDESACCESO">demandes-acces</Resource>
-		<Resource tag="EDITARRECURSO">editer-ressource</Resource>
 		<Resource tag="VERSIONANDORECURSO">nouvelle-version-ressource</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">erreur-version-ressource</Resource>
 		<Resource tag="CREARDOCUMENTO">creer-document</Resource>

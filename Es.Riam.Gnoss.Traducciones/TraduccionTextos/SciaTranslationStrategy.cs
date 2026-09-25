@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 {
@@ -83,6 +85,11 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
 
         public TranslationResponse Translate(TranslationRequest pTranslationRequest)
         {
+            return TranslateAsync(pTranslationRequest, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        public async Task<TranslationResponse> TranslateAsync(TranslationRequest pTranslationRequest, CancellationToken pCancellationToken = default)
+        {
             TranslationResponse translationResponse = new TranslationResponse();
             translationResponse.Provider = mProvider;
 
@@ -95,20 +102,20 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
                     Content = JsonContent.Create(pTranslationRequest)
                 };
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", mApiKey);
-                using HttpResponseMessage response = mHttpClient.SendAsync(request).Result;
+                using HttpResponseMessage response = await mHttpClient.SendAsync(request, pCancellationToken);
 
                 translationResponse.Status = (short)response.StatusCode;
 
                 switch (response.StatusCode)
                 {
                     case HttpStatusCode.OK:
-                        SciaTranslateResponse sciaResponse = JsonSerializer.Deserialize<SciaTranslateResponse>(response.Content.ReadAsStringAsync().Result);                      
+                        SciaTranslateResponse sciaResponse = JsonSerializer.Deserialize<SciaTranslateResponse>(await response.Content.ReadAsStringAsync(pCancellationToken));
                         translationResponse.TranslatedText = sciaResponse.TextTranslate;
                         break;
                     case HttpStatusCode.TooManyRequests:
                         // Se prioriza el mensaje de SCIA (puede detallar la cuota y cuándo se renueva) y,
                         // si no llega o no es legible, se informa igualmente del motivo real del rechazo.
-                        translationResponse.ErrorMessage = ObtenerMensajeErrorScia(response);
+                        translationResponse.ErrorMessage = await ObtenerMensajeErrorSciaAsync(response, pCancellationToken);
                         if (string.IsNullOrEmpty(translationResponse.ErrorMessage))
                         {
                             translationResponse.ErrorMessage = "Se ha excedido el límite de peticiones configurado en el ApiKey.";
@@ -119,7 +126,7 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
                     case HttpStatusCode.Forbidden:
                     case HttpStatusCode.NotFound:
                     case HttpStatusCode.MethodNotAllowed:
-                        translationResponse.ErrorMessage = ObtenerMensajeErrorScia(response);
+                        translationResponse.ErrorMessage = await ObtenerMensajeErrorSciaAsync(response, pCancellationToken);
                         if (string.IsNullOrEmpty(translationResponse.ErrorMessage))
                         {
                             translationResponse.ErrorMessage = "Error inesperado";
@@ -143,11 +150,11 @@ namespace Es.Riam.Gnoss.Traducciones.TraduccionTextos
         /// Devuelve el mensaje de error que envía SCIA en el cuerpo de la respuesta, o cadena vacía si
         /// no viene o no se puede deserializar.
         /// </summary>
-        private static string ObtenerMensajeErrorScia(HttpResponseMessage pResponse)
+        private static async Task<string> ObtenerMensajeErrorSciaAsync(HttpResponseMessage pResponse, CancellationToken pCancellationToken)
         {
             try
             {
-                SciaTranslateErrorResponse sciaTranslateErrorResponse = JsonSerializer.Deserialize<SciaTranslateErrorResponse>(pResponse.Content.ReadAsStringAsync().Result);
+                SciaTranslateErrorResponse sciaTranslateErrorResponse = JsonSerializer.Deserialize<SciaTranslateErrorResponse>(await pResponse.Content.ReadAsStringAsync(pCancellationToken));
                 return sciaTranslateErrorResponse?.Message ?? "";
             }
             catch (Exception)

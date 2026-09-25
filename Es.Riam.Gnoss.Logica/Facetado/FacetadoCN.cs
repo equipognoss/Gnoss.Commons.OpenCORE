@@ -851,10 +851,10 @@ namespace Es.Riam.Gnoss.Logica.Facetado
             return FacetadoAD.ObtenerValorSegundosParametroAplicacion();
         }
 
-        public List<ValorPropiedadVirtuoso> ObtenerValoresPropiedadIdioma(string pDocumentoID, List<string> pPropiedades, string pIdioma)
+        public List<ValorPropiedadVirtuoso> ObtenerValoresPropiedadIdioma(string pDocumentoID, List<string> pPropiedades, string pIdioma, string pNombreOntologia)
         {
             List<ValorPropiedadVirtuoso> valoresPropiedadesVirtuoso = new List<ValorPropiedadVirtuoso>();
-            FacetadoDS facetadoDS = FacetadoAD.ObtenerValoresPropiedadIdioma(pDocumentoID, pPropiedades, pIdioma);
+            FacetadoDS facetadoDS = FacetadoAD.ObtenerValoresPropiedadIdioma(pDocumentoID, pPropiedades, pIdioma, pNombreOntologia);
             foreach (DataRow fila in facetadoDS.Tables["propiedades"].Rows)
             {
                 ValorPropiedadVirtuoso valorPropiedadVirtuoso = new ValorPropiedadVirtuoso();

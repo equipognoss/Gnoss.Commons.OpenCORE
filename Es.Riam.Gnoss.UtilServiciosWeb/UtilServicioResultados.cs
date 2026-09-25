@@ -1509,7 +1509,12 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             pCargadorResultadosModel.FacetadoCL.MandatoryRelacion = CalcularMandatoryRelacion(pCargadorResultadosModel);
             bool omitirPalabrasNoRelevantesSearch = true;
 
-            if ((string.IsNullOrEmpty(pCargadorResultadosModel.FiltroOrdenadoPor)) && (pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.PersonasYOrganizaciones) || pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.Blogs) || pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.ArticuloBlogs) || pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.Comunidades)))
+            if (string.IsNullOrEmpty(pCargadorResultadosModel.FiltroOrdenadoPor) && pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.PersonasYOrganizaciones))
+            {
+                // gnoss:hasPopularidad/hasnumerorecursos están en desuso en las identidades
+                pCargadorResultadosModel.FiltroOrdenadoPor = "foaf:firstName";
+            }
+            else if ((string.IsNullOrEmpty(pCargadorResultadosModel.FiltroOrdenadoPor)) && (pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.Blogs) || pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.ArticuloBlogs) || pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.Comunidades)))
             {
                 pCargadorResultadosModel.FiltroOrdenadoPor = "gnoss:hasPopularidad";
             }
@@ -1543,7 +1548,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             else if (pCargadorResultadosModel.TipoBusqueda.Equals(TipoBusqueda.PersonasYOrganizaciones))
             {
                 //Buscar personas
-                pCargadorResultadosModel.FacetadoCL.ObtienePersonasExacto(pCargadorResultadosModel.FacetadoDS, pCargadorResultadosModel.FiltroOrdenDescendente, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pLimite, pCargadorResultadosModel.Proyecto.FilaProyecto.ProyectoID, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID, mAvailableServices, pInicio);
+                pCargadorResultadosModel.FacetadoCL.ObtienePersonasExacto(pCargadorResultadosModel.FacetadoDS, false, pCargadorResultadosModel.FiltroOrdenadoPor, pCargadorResultadosModel.ListaFiltros, pCargadorResultadosModel.ListaItemsBusquedaExtra, pLimite, pCargadorResultadosModel.Proyecto.FilaProyecto.ProyectoID, pCargadorResultadosModel.EstaEnProyecto, pCargadorResultadosModel.EsUsuarioInvitado, pCargadorResultadosModel.IdentidadID, mAvailableServices, pInicio);
             }
             else if (pCargadorResultadosModel.BusquedaTipoChart)
             {

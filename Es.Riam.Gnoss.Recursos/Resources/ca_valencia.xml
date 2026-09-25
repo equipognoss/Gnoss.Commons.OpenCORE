@@ -4024,9 +4024,7 @@
 		<Resource tag="OBJETIVOS">objectius</Resource>
 		<Resource tag="COMPETENCIAS">competencies</Resource>
 		<Resource tag="ORGANIGRAMA">organigrama</Resource>
-		<Resource tag="SOLICITDESACCESO">sol-licituds-acces</Resource>
-		<Resource tag="EDITARRECURSO">editar-recurs</Resource>
-		<Resource tag="EDITARRECURSOGNOSS">editar-recurs-gnoss</Resource>
+		<Resource tag="SOLICITDESACCESO">sol-licituds-acces</Resource>		
 		<Resource tag="VERSIONANDORECURSO">nova-versio-recurs</Resource>
 		<Resource tag="VERSIONANDORECURSOGNOSS">nova-versio-recurs-gnoss</Resource>
 		<Resource tag="VERSIONRAPIDARECURSO">versio-rapida-recurs</Resource>

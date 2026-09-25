@@ -4045,8 +4045,6 @@
 		<Resource tag="COMPETENCIAS">competencias</Resource>
 		<Resource tag="ORGANIGRAMA">organigrama</Resource>
 		<Resource tag="SOLICITDESACCESO">solicitudes-acceso</Resource>
-		<Resource tag="EDITARRECURSO">editar-recurso</Resource>
-		<Resource tag="EDITARRECURSOGNOSS">editar-recurso-gnoss</Resource>
 		<Resource tag="VERSIONANDORECURSO">nueva-version-recurso</Resource>
 		<Resource tag="VERSIONANDORECURSOGNOSS">nueva-version-recurso-gnoss</Resource>
 		<Resource tag="VERSIONRAPIDARECURSO">version-rapida-recurso</Resource>

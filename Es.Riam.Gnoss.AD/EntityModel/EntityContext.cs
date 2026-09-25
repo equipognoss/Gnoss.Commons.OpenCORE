@@ -9,7 +9,6 @@
     using Es.Riam.Gnoss.Util.Configuracion;
     using Es.Riam.Gnoss.Web.MVC.Models;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Diagnostics;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -116,11 +115,6 @@
 
                 case "2":
                     optionsBuilder.UseNpgsql(_configService.ObtenerSqlConnectionString(), o => o.SetPostgresVersion(new Version(10, 0)));
-
-                    // TODO: parche temporal. Hay un arrastre de cambios pendientes en las migraciones de Postgres
-                    // (tipos de columna DateTime y estrategia de columnas identity/serial) previo a esta migracion,
-                    // causado por la subida a Npgsql 10. Ver informe de analisis para el fix definitivo y quitar esta linea.
-                    optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
                     break;
             }
 
@@ -673,6 +667,19 @@
             int num = 0;
             return int.TryParse(s, out num);
         }
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            base.ConfigureConventions(configurationBuilder);
+
+            if (_configService.ObtenerTipoBD().Equals("2"))
+            {
+                // Antes de Npgsql 6, un DateTime sin anotar mapeaba siempre a "timestamp without time zone".
+                // Desde Npgsql 6 en adelante el valor por defecto cambio a "timestamp with time zone".
+                // Toda la BBDD y las migraciones existentes asumen el comportamiento antiguo: lo fijamos explicitamente
+                configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp without time zone");
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (_configService.ObtenerTipoBD().Equals("2"))

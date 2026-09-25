@@ -3972,7 +3972,6 @@
 		<Resource tag="COMPETENCIAS">competencias</Resource>
 		<Resource tag="ORGANIGRAMA">organograma</Resource>
 		<Resource tag="SOLICITDESACCESO">solicitacoes-acesso</Resource>
-		<Resource tag="EDITARRECURSO">editar-recurso</Resource>
 		<Resource tag="VERSIONANDORECURSO">nova-versao-recurso</Resource>
 		<Resource tag="FALLOVERSIONANDORECURSO">falhas-versao-recurso</Resource>
 		<Resource tag="CREARDOCUMENTO">criar-documento</Resource>
