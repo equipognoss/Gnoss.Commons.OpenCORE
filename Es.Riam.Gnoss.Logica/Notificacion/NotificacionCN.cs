@@ -132,15 +132,9 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                 if (Transaccion != null)
                 {
                     var notificaciones = mEntityContext.NotificacionCorreoPersona.Local.Where(item => mEntityContext.Entry(item).State.Equals(Microsoft.EntityFrameworkCore.EntityState.Added)).ToList();
-                    foreach (var notificacion in notificaciones)
-                    {
-                        if (!notificacion.EnviadoRabbit)
-                        {
-                            notificacion.EnviadoRabbit = true;
-                        }
-                    }
                     NotificacionAD.ActualizarNotificacionEntity();
-                    if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
+                    bool rabbitConnectionExists = mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN);
+                    if (rabbitConnectionExists && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
                     {
                         using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaNotificacion", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, "", "ColaNotificacion"))
                         {
@@ -167,6 +161,11 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                                 }
                             }
                         }
+                    }
+                    else if (notificaciones.Count > 0)
+                    {
+                        string reason = rabbitConnectionExists ? "el servicio de correo no está disponible" : $"no está configurada la variable de entorno RabbitMQ__{RabbitMQClient.BD_SERVICIOS_WIN}";
+                        mLoggingService.GuardarLogError($"No se han encolado en ColaNotificacion las notificaciones {string.Join(", ", notificaciones.Select(item => item.NotificacionID))} porque {reason}", mlogger);
                     }
                 }
                 else
@@ -174,16 +173,10 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                     IniciarTransaccion();
 
                     var notificaciones = mEntityContext.NotificacionCorreoPersona.Local.Where(item => mEntityContext.Entry(item).State.Equals(Microsoft.EntityFrameworkCore.EntityState.Added)).ToList();
-                    foreach (var notificacion in notificaciones)
-                    {
-                        if (!notificacion.EnviadoRabbit)
-                        {
-                            notificacion.EnviadoRabbit = true;
-                        }
-                    }
                     NotificacionAD.ActualizarNotificacionEntity();
 
-                    if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN) && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
+                    bool rabbitConnectionExists = mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN);
+                    if (rabbitConnectionExists && pAvailableServices.CheckIfServiceIsAvailable(pAvailableServices.GetBackServiceCode(BackgroundService.Mail), ServiceType.Background))
                     {
                         using (RabbitMQClient rabbitMQ = new RabbitMQClient(RabbitMQClient.BD_SERVICIOS_WIN, "ColaNotificacion", mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, "", "ColaNotificacion"))
                         {
@@ -210,6 +203,11 @@ namespace Es.Riam.Gnoss.Logica.Notificacion
                                 }
                             }
                         }
+                    }
+                    else if (notificaciones.Count > 0)
+                    {
+                        string reason = rabbitConnectionExists ? "el servicio de correo no está disponible" : $"no está configurada la variable de entorno RabbitMQ__{RabbitMQClient.BD_SERVICIOS_WIN}";
+                        mLoggingService.GuardarLogError($"No se han encolado en ColaNotificacion las notificaciones {string.Join(", ", notificaciones.Select(item => item.NotificacionID))} porque {reason}", mlogger);
                     }
 
                     TerminarTransaccion(true);

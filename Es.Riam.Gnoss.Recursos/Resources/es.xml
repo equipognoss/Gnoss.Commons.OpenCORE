@@ -1287,7 +1287,7 @@
 		<Resource tag="DIRECCIONURL_T">URL</Resource>
 		<Resource tag="WIKI_T">Introduce el nombre del artículo wiki que deseas crear o editar</Resource>
 		<Resource tag="SIGUIENTE">Siguiente</Resource>
-		<Resource tag="ERRORSUBIRDOC">Se produjo un error al subir el documento, inténtelo de nuevo más tarde.</Resource>
+		<Resource tag="ERRORSUBIRDOC">Se produjo un error al crear el documento, inténtelo de nuevo más tarde.</Resource>
 		<Resource tag="ERRORSUBIRDOCEXISTE">El documento ya existe. Si desea editar el documento haga click en el enlace {a href=@2@}@1@{/a}.</Resource>
 		<Resource tag="ERRORSUBIRDOCSEGURIDAD">El fichero que se quiere adjuntar puede ser una amenaza de seguridad.</Resource>
 		<Resource tag="ERRORSUBIRDOCSIZE">El tamaño del fichero que se quiere adjuntar excede el máximo permitido.</Resource>

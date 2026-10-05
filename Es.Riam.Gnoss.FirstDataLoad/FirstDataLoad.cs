@@ -511,7 +511,7 @@ namespace Es.Riam.Gnoss.FirstDataLoad
                 PerfilID = new Guid("3110FC3C-25EA-49E4-9190-41D1DDBDBAB3"),
                 NombrePerfil = "Admin",
                 Eliminado = false,
-                NombreCortoUsu = "Admin",
+                NombreCortoUsu = "admin",
                 PersonaID = new Guid("BD240B42-EDA5-46F3-99B2-87034DA9BE69"),
                 TieneTwitter = false,
                 CaducidadResSusc = 7

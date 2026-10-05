@@ -8151,15 +8151,15 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <returns>Identificador de la ultima versión del documento, de no haber versiones el identificador del documento original</returns>
         public Guid ObtenerUltimaVersionDocumentoID(Guid pDocumentoID)
         {
-            Guid? ultimaVersionID = mEntityContext.VersionDocumento.Where(version => version.DocumentoID.Equals(pDocumentoID) || version.DocumentoOriginalID.Equals(pDocumentoID)).OrderByDescending(item => item.Version).Select(item => item.DocumentoID).FirstOrDefault();
-            
-            if (ultimaVersionID.HasValue)
+            Guid ultimaVersionID = mEntityContext.VersionDocumento.Where(version => (version.DocumentoID.Equals(pDocumentoID) || version.DocumentoOriginalID.Equals(pDocumentoID)) && !version.EsMejora).OrderByDescending(item => item.Version).Select(item => item.DocumentoID).FirstOrDefault();
+
+            if (ultimaVersionID.Equals(Guid.Empty))
             {
-                return ultimaVersionID.Value;
+                return pDocumentoID;
             }
             else
             {
-                return pDocumentoID;
+                return ultimaVersionID;
             }
         }
 

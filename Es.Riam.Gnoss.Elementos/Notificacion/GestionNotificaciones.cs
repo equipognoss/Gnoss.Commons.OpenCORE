@@ -3076,6 +3076,11 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
                 filaPersona.FechaEnvio = null;
                 filaPersona.EmailEnvio = pCorreoPersonaNotificacion;
 
+                if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN))
+                {
+                    filaPersona.EnviadoRabbit = true;
+                }
+
                 NotificacionDW.ListaNotificacionCorreoPersona.Add(filaPersona);
                 mEntityContext.NotificacionCorreoPersona.Add(filaPersona);
             }
@@ -3115,6 +3120,11 @@ namespace Es.Riam.Gnoss.Elementos.Notificacion
                 filaPersona.EstadoEnvio = (short)EstadoEnvio.Pendiente;
                 filaPersona.FechaEnvio = null;
                 filaPersona.EmailEnvio = pCorreoPersonaNotificacion;
+
+                if (mConfigService.ExistRabbitConnection(RabbitMQClient.BD_SERVICIOS_WIN))
+                {
+                    filaPersona.EnviadoRabbit = true;
+                }
 
                 NotificacionDW.ListaNotificacionCorreoPersona.Add(filaPersona);
                 mEntityContext.NotificacionCorreoPersona.Add(filaPersona);

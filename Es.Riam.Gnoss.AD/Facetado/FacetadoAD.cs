@@ -14855,25 +14855,33 @@ namespace Es.Riam.Gnoss.AD.Facetado
             // Aquí consulto con el predicado, si existe, hay que hacer un modify
             LeerDeVirtuoso(consulta + whereConPredicado, "prueba", facetadoDS, pNombreGrafo, true);
 
-            if (facetadoDS.Tables["prueba"].Rows.Count > 0 && facetadoDS.Tables["prueba"].Rows[0][0].Equals("1"))
+            // Esto solo funciona cuando la propiedad UsarClienteTradicional == true.
+            // Si ya había una transacción iniciada por el llamador, será él quien la termine.
+            bool transaccionIniciada = IniciarTransaccion();
+            try
             {
-                IniciarTransaccion(); //esto solo funciona cuando la propiedad UsarClienteTradicional == true
-                try
+                if (facetadoDS.Tables["prueba"].Rows.Count > 0 && facetadoDS.Tables["prueba"].Rows[0][0].Equals("1"))
                 {
                     string modify = $"{NamespacesVrituosoEscritura} MODIFY GRAPH {ObtenerUrlGrafo(pNombreGrafo)} DELETE {{ ?s ?p ?o }} INSERT {{ {pTripletas} }} FROM {ObtenerUrlGrafo(pNombreGrafo)} {whereSinPredicado}";
                     ActualizarVirtuoso(modify, pNombreGrafo, pPrioridad);
-                    TerminarTransaccion(true); //esto solo funciona cuando la propiedad UsarClienteTradicional == true
                 }
-                catch
+                else
                 {
-                    TerminarTransaccion(false);
-                    throw;
+                    InsertaTripletas(pNombreGrafo, pTripletas, 0, pUsarColareplicacion, pEscribirNT, pInfoExtraReplicacion);
+                }
+
+                if (transaccionIniciada)
+                {
+                    TerminarTransaccion(true);
                 }
             }
-            else
+            catch
             {
-                //Inserto las tripletas
-                InsertaTripletas(pNombreGrafo, pTripletas, 0, pUsarColareplicacion, pEscribirNT, pInfoExtraReplicacion);
+                if (transaccionIniciada)
+                {
+                    TerminarTransaccion(false);
+                }
+                throw;
             }
         }
 

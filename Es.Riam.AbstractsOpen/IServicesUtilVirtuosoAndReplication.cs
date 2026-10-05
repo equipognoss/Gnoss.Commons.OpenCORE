@@ -589,33 +589,57 @@ namespace Es.Riam.AbstractsOpen
         /// <param name="pExito"></param>
         public void TerminarTransaccion(bool pExito)
         {
-            if (!NoConfirmarTransacciones && UsarClienteTradicional)
+            if (NoConfirmarTransacciones || !UsarClienteTradicional)
             {
-                string nombreTransaccion = $"VirtuosoTransaccion";
-                if (TransaccionVirtuoso != null)
-                {
-                    DbTransaction transaccion = TransaccionVirtuoso;
-                    if (pExito)
-                    {
-                        transaccion.Commit();
-                        InsertarInstruccionesEnReplica();
-                    }
-                    else if (transaccion.Connection != null)
-                    {
-                        try
-                        {
-                            transaccion.Rollback();
-                        }
-                        catch (Exception ex)
-                        {
-                            mLoggingService.GuardarLogError(ex, mlogger);
-                        }
+                return;
+            }
 
-                    }
-                    transaccion = null;
+            DbTransaction transaccion = TransaccionVirtuoso;
+            if (transaccion == null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (pExito)
+                {
+                    // Primero se encola en Rabbit: si falla, se hace rollback y no se consolidan datos sin replicar
+                    InsertarInstruccionesEnReplica();
+                    transaccion.Commit();
                 }
-                TransaccionVirtuoso.Dispose();
+                else if (transaccion.Connection != null)
+                {
+                    transaccion.Rollback();
+                }
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, mlogger);
+
+                if (!pExito)
+                {
+                    // Un fallo en el rollback no se propaga
+                    return;
+                }
+
+                try
+                {
+                    transaccion.Rollback();
+                }
+                catch (Exception exRollback)
+                {
+                    mLoggingService.GuardarLogError(exRollback, mlogger);
+                }
+
+                throw new Exception($"Error al finalizar la transaccion: {ex.Message}", ex);
+            }
+            finally
+            {
+                // Se limpian las consultas pendientes para que no se reenvíen en la siguiente transacción
+                ListaConsultasEjecutarEnReplicas.Clear();
                 TransaccionVirtuoso = null;
+                transaccion.Dispose();
             }
         }
 
@@ -1006,6 +1030,7 @@ namespace Es.Riam.AbstractsOpen
         {
             TimeOutVirtuoso = value;
         }
+
         /// <summary>
         /// Se inserta la query en la cola de replicación pasada como parámetro
         /// </summary>
@@ -1020,6 +1045,7 @@ namespace Es.Riam.AbstractsOpen
 
             InsertarEnReplicacion(listaQuerys, pTablaReplicacion, pUsarHttpPost);
         }
+
         /// <summary>
         /// Se inserta la query en la cola de replicación pasada como parámetro
         /// </summary>
@@ -1042,26 +1068,27 @@ namespace Es.Riam.AbstractsOpen
                 exchange = pTablaReplicacion;
             }
 
+            if (string.IsNullOrEmpty(mConfigService.ObtenerRabbitMQClient(rabbitBD)))
+            {
+                string error = $"No se ha podido replicar hacia '{pTablaReplicacion}': el servicio no tiene configurada la variable de entorno RabbitMQ__{rabbitBD}.";
+                mLoggingService.GuardarLogError(error, mlogger);
+                throw new Exception(error);
+            }
+
             try
             {
+                KeyValuePair<List<string>, bool> datosReplicacion = new KeyValuePair<List<string>, bool>(pListaQuerys, pUsarHttpPost);
 
-                if (!string.IsNullOrEmpty(mConfigService.ObtenerRabbitMQClient(rabbitBD)))
+                using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pTablaReplicacion, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange))
                 {
-                    KeyValuePair<List<string>, bool> datosReplicacion = new KeyValuePair<List<string>, bool>(pListaQuerys, pUsarHttpPost);
-
-                    using (RabbitMQClient rMQ = new RabbitMQClient(rabbitBD, pTablaReplicacion, mLoggingService, mConfigService, mLoggerFactory.CreateLogger<RabbitMQClient>(), mLoggerFactory, exchange))
-                    {
-                        rMQ.AgregarElementoACola(JsonSerializer.Serialize(datosReplicacion));
-                    }
-                }
-                else
-                {
-                    mLoggingService.GuardarLogError($"No se ha podido replicar hacia '{pTablaReplicacion}': el servicio no tiene configurada la variable de entorno RabbitMQ__{rabbitBD}.", mlogger);
+                    rMQ.AgregarElementoACola(JsonSerializer.Serialize(datosReplicacion));
                 }
             }
             catch (Exception ex)
             {
-                mLoggingService.GuardarLogError(ex, "Error al intentar replicar", mlogger);
+                string error = $"No se ha podido replicar hacia '{pTablaReplicacion}': {ex.Message}";
+                mLoggingService.GuardarLogError(ex, error, mlogger);
+                throw;
             }
         }
         /// <summary>
@@ -1075,7 +1102,6 @@ namespace Es.Riam.AbstractsOpen
                 string nombreTransaccion = $"VirtuosoTransaccion";
                 if (TransaccionVirtuoso != null)
                 {
-                    //transaccion = (DbTransaction)UtilPeticion.ObtenerObjetoDePeticion(nombreTransaccion);
                     return false;
                 }
                 else
@@ -1111,26 +1137,13 @@ namespace Es.Riam.AbstractsOpen
 
             try
             {
-                //if (EsConexionHAPROXY())
-                //{
-
-                //    string nombreConexionAfinidad = "conexionAfinidadVirtuoso" + (FicheroConfiguracionMaster.ToLower().Contains("home") ? "Home" : "");
-                //    UtilPeticion.AgregarObjetoAPeticionActual(nombreConexionAfinidad, $"{cabeceraServidor.FirstOrDefault()}_Master");
-                //    string nombreFechaFinAfinidad = "fechaFinAfinidadVirtuoso" + (FicheroConfiguracionMaster.ToLower().Contains("home") ? "Home" : "");
-                //    UtilPeticion.AgregarObjetoAPeticionActual(nombreFechaFinAfinidad, DateTime.Now.AddMinutes(1));
-                //}
-
                 mLoggingService.AgregarEntrada("Actualizo virtuoso");
-                conexion = pConexion;//ObtenerConexionParaGrafo(pGrafo, true, pCadenaConexion);
+                conexion = pConexion;
 
                 myCommand = new VirtuosoCommand(pQuery, conexion);
                 myCommand.CommandTimeout = TimeOutVirtuoso;
 
                 resultado = myCommand.ExecuteNonQuery();
-
-                //EscribirLogActualizarVirtuoso(pQuery, conexion.ConnectionString, resultado);
-
-                //mLoggingService.AgregarEntrada("Actualizado con éxito: " + pQuery);
             }
             catch (Exception ex)
             {
@@ -1155,9 +1168,6 @@ namespace Es.Riam.AbstractsOpen
                     {
                         myCommand.Dispose();
                     }
-
-                    myCommand = null;
-                    conexion = null;
                 }
                 catch (Exception e)
                 {

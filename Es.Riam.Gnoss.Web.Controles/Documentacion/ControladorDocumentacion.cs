@@ -7414,6 +7414,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
 
             try
             {
+                facetadoCN.FacetadoAD.UsarClienteTradicional = true;
                 // Inicio una transacción para que si se ha llamado desde el API se pueda deshacer
                 facetadoCN.FacetadoAD.IniciarTransaccion();
                 facetadoCN.InsertaTripletasRecursoSemanticoConModify(pNombreGrafo, pUrlIntragnoss, pFicheroConfiguracion, pProyectoID, pInfoExtraReplicacion, pUsarColareplicacion, pElementoaEliminarID, pTripletas, pPrioridad, pEscribirNT);
@@ -7424,17 +7425,8 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 facetadoCN.FacetadoAD.TerminarTransaccion(false);
                 //Cerramos las conexiones
                 ControladorConexiones.CerrarConexiones();
-                //int i = 0;
+                
                 bool estaOperativo = new UtilidadesVirtuoso(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, mEntityContextBASE, mVirtuosoAD, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<UtilidadesVirtuoso>(), mLoggerFactory).ServidorOperativo(pFicheroConfiguracion, pUrlIntragnoss);
-
-                ////Realizamos una consulta ask a virtuoso para comprobar si está funcionando
-                //while ((!estaOperativo) && i < 5)
-                //{
-                //    i++;
-                //    //Dormimos 5 segundos
-                //    Thread.Sleep(5 * 1000);
-                //    estaOperativo = UtilidadesVirtuoso.ServidorOperativo(pFicheroConfiguracion, pUrlIntragnoss);
-                //}
 
                 if (estaOperativo)
                 {
@@ -7444,6 +7436,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
                 {
                     throw;
                 }
+            }
+            finally
+            {
+                facetadoCN.FacetadoAD.UsarClienteTradicional = false;
             }
         }
 
