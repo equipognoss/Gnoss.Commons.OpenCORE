@@ -109,6 +109,10 @@ namespace Es.Riam.Gnoss.Web.MVC.Models
         /// </summary>
         public Dictionary<Guid, KeyValuePair<string, bool>> Clauses { get; set; }
         /// <summary>
+        /// Identificadores de las cláusulas del registro que pertenecen al ecosistema
+        /// </summary>
+        public List<Guid> EcosystemClauses { get; set; }
+        /// <summary>
         /// Condiciones de uso
         /// </summary>
         public Dictionary<string, KeyValuePair<string, string>> Terms { get; set; }

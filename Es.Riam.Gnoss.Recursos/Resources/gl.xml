@@ -6493,4 +6493,11 @@
     <Resource tag="ALEMÁN">Alemán</Resource>
     <Resource tag="ITALIANO">Italiano</Resource>
   </page>
+  <page name="COMADMINCLAUSULASREGISTRO">
+    <Resource tag="HELEIDOYACEPTO">Lin e acepto</Resource>
+    <Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> as condicións de acceso e uso</Resource>
+    <Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> a política de privacidade</Resource>
+    <Resource tag="DELACOMUNIDAD">de @1@</Resource>
+    <Resource tag="DELAPLATAFORMA">da plataforma</Resource>
+  </page>
 </Resources>

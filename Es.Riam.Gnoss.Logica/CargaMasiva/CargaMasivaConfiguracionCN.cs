@@ -67,7 +67,7 @@ namespace Es.Riam.Gnoss.Logica.CargaMasiva
                 return false;
             }
 
-            if (!TodasLasIPsSonPublicas(host))
+            if (!NingunaIPEstaBloqueada(host))
             {
                 pError = "El dominio resuelve a una dirección IP no permitida.";
                 return false;
@@ -95,7 +95,11 @@ namespace Es.Riam.Gnoss.Logica.CargaMasiva
             return pDominio.Trim().ToLowerInvariant();
         }
 
-        private static bool TodasLasIPsSonPublicas(string pHost)
+        /// <summary>
+        /// Comprueba que ninguna de las IPs a las que resuelve el host pertenezca a un rango bloqueado.
+        /// Las IPs privadas se permiten porque el dominio ya ha sido autorizado en la whitelist.
+        /// </summary>
+        private static bool NingunaIPEstaBloqueada(string pHost)
         {
             IPAddress[] direcciones;
             try
@@ -107,38 +111,35 @@ namespace Es.Riam.Gnoss.Logica.CargaMasiva
                 return false;
             }
 
-            return direcciones.Length > 0 && direcciones.All(EsIPPublica);
+            return direcciones.Length > 0 && !direcciones.Any(EsIPBloqueada);
         }
 
-        private static bool EsIPPublica(IPAddress pIp)
+        /// <summary>
+        /// Rangos que nunca se permiten aunque el dominio esté en la whitelist: loopback, link-local (incluye metadatos cloud 169.254.169.254), 0.0.0.0/8 y multicast.
+        /// Los rangos privados (10/8, 172.16/12, 192.168/16, fc00::/7) se permiten para poder descargar desde servicios del cluster.
+        /// </summary>
+        private static bool EsIPBloqueada(IPAddress pIp)
         {
             if (pIp.IsIPv4MappedToIPv6)
             {
                 pIp = pIp.MapToIPv4();
             }
 
-            if (IPAddress.IsLoopback(pIp) || pIp.IsIPv6LinkLocal || pIp.IsIPv6SiteLocal || pIp.IsIPv6Multicast)
+            if (IPAddress.IsLoopback(pIp) || pIp.IsIPv6LinkLocal || pIp.IsIPv6Multicast || pIp.Equals(IPAddress.IPv6Any))
             {
-                return false;
+                return true;
             }
 
             if (pIp.AddressFamily == AddressFamily.InterNetwork)
             {
                 byte[] b = pIp.GetAddressBytes();
-                if (b[0] == 10) return false;
-                if (b[0] == 172 && b[1] >= 16 && b[1] <= 31) return false;
-                if (b[0] == 192 && b[1] == 168) return false;
-                if (b[0] == 169 && b[1] == 254) return false;
-                if (b[0] == 127) return false;
-                if (b[0] == 0) return false;
-            }
-            else if (pIp.AddressFamily == AddressFamily.InterNetworkV6)
-            {
-                byte[] b = pIp.GetAddressBytes();
-                if ((b[0] & 0xFE) == 0xFC) return false;
+                if (b[0] == 0) return true;
+                if (b[0] == 127) return true;
+                if (b[0] == 169 && b[1] == 254) return true;
+                if (b[0] >= 224) return true; // multicast y reservado
             }
 
-            return true;
+            return false;
         }
 
         #endregion

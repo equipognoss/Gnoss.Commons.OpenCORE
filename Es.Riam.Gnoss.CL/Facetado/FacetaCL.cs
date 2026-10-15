@@ -684,6 +684,11 @@ namespace Es.Riam.Gnoss.CL.Facetado
                 {
                     facetaDW = FacetaCN.ObtenerFacetasDeProyecto(pListaItems, pOrganizacionID, pProyectoID);
                 }
+                if (facetaDW != null)
+                {
+                    facetaDW.CargaRelacionesPerezosasCache();
+                }
+
                 LogDataWrapperFacetasState(nameof(ObtenerFacetasDeProyecto), "BD (recién cargado)", rawKey, pProyectoID, pOrganizacionID, pListaItems, pFacetasHome, facetaDW, pIncludeStackTrace: true);
                 AgregarObjetoCache(rawKey, facetaDW);
                 AgregarObjetoCacheLocal(pProyectoID, rawKey, facetaDW);

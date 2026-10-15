@@ -6412,4 +6412,11 @@
     <Resource tag="ALEMÁN">Tedesco</Resource>
     <Resource tag="ITALIANO">Italiano</Resource>
   </page>
+  <page name="COMADMINCLAUSULASREGISTRO">
+    <Resource tag="HELEIDOYACEPTO">Ho letto e accetto</Resource>
+    <Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> le condizioni di accesso e utilizzo</Resource>
+    <Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> l'informativa sulla privacy</Resource>
+    <Resource tag="DELACOMUNIDAD">di @1@</Resource>
+    <Resource tag="DELAPLATAFORMA">della piattaforma</Resource>
+  </page>
 </Resources>

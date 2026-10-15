@@ -69,7 +69,7 @@
 		<Resource tag="POLITICAPRIVACIDAD">Privacidade</Resource>
 		<Resource tag="CONDICIONESUSO">Condicicoes de uso</Resource>
 		<Resource tag="NOTAGS">Nao existem resultados para este filtro</Resource>
-		<Resource tag="Y">y</Resource>
+		<Resource tag="Y">e</Resource>
 		<Resource tag="EN">em</Resource>
 		<Resource tag="ES">e</Resource>
 		<Resource tag="CRITERIOS">Criterios aplicados</Resource>
@@ -6537,5 +6537,12 @@
     <Resource tag="FRANCÉS">Francês</Resource>
     <Resource tag="ALEMÁN">Alemão</Resource>
     <Resource tag="ITALIANO">Italiano</Resource>
+  </page>
+  <page name="COMADMINCLAUSULASREGISTRO">
+    <Resource tag="HELEIDOYACEPTO">Li e aceito</Resource>
+    <Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> as condições de acesso e utilização</Resource>
+    <Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> a política de privacidade</Resource>
+    <Resource tag="DELACOMUNIDAD">de @1@</Resource>
+    <Resource tag="DELAPLATAFORMA">da plataforma</Resource>
   </page>
 </Resources>

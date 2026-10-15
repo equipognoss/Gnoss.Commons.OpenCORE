@@ -3929,4 +3929,11 @@
     <Resource tag="FECHADESUBIDA">
     </Resource>
   </page>
+  <page name="COMADMINCLAUSULASREGISTRO">
+    <Resource tag="HELEIDOYACEPTO">I have read and accept</Resource>
+    <Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> the terms of access and use</Resource>
+    <Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> the privacy policy</Resource>
+    <Resource tag="DELACOMUNIDAD">of @1@</Resource>
+    <Resource tag="DELAPLATAFORMA">of the platform</Resource>
+  </page>
 </Resources>

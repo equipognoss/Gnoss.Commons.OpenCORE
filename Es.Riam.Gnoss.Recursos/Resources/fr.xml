@@ -6416,4 +6416,11 @@
     <Resource tag="ALEMÁN">Allemand</Resource>
     <Resource tag="ITALIANO">Italien</Resource>
   </page>
+  <page name="COMADMINCLAUSULASREGISTRO">
+    <Resource tag="HELEIDOYACEPTO">J'ai lu et j'accepte</Resource>
+    <Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> les conditions d'accès et d'utilisation</Resource>
+    <Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> la politique de confidentialité</Resource>
+    <Resource tag="DELACOMUNIDAD">de @1@</Resource>
+    <Resource tag="DELAPLATAFORMA">de la plateforme</Resource>
+  </page>
 </Resources>

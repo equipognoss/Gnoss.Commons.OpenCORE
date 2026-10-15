@@ -4691,6 +4691,8 @@
 		<Resource tag="HELEIDOYACEPTO">He llegit i accepte</Resource>
 		<Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> les condicions d'accés i ús</Resource>
 		<Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> la política de privacitat</Resource>
+		<Resource tag="DELACOMUNIDAD">de @1@</Resource>
+		<Resource tag="DELAPLATAFORMA">de la plataforma</Resource>
 		<Resource tag="NOMBRECOOKIEPOLITICACOOKIES">Nom de la cookie</Resource>
 		<Resource tag="TEXTODEFECTONOMBRECOOKIEPOLITICACOOKIES">PoliticaCookies</Resource>
 		<Resource tag="AVISOCAMBIONOMBRECOOKIE">Atenció!! Canviar el nom de la cookie suposa que els usuaris de la comunitat hauran d'acceptar, de nou, la política de cookies</Resource>

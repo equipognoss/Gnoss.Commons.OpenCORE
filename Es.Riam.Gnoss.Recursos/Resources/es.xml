@@ -4713,6 +4713,8 @@
 		<Resource tag="HELEIDOYACEPTO">He leído y acepto</Resource>
 		<Resource tag="TEXTODEFECTOCCONDICIONESUSOCOM"> las condiciones de acceso y uso</Resource>
 		<Resource tag="TEXTODEFECTOCPOLITICAPRIVACIDADCOM"> la política de privacidad</Resource>
+		<Resource tag="DELACOMUNIDAD">de @1@</Resource>
+		<Resource tag="DELAPLATAFORMA">de la plataforma</Resource>
 		<Resource tag="NOMBRECOOKIEPOLITICACOOKIES">Nombre de la cookie</Resource>
 		<Resource tag="TEXTODEFECTONOMBRECOOKIEPOLITICACOOKIES">PoliticaCookies</Resource>
 		<Resource tag="AVISOCAMBIONOMBRECOOKIE">Atención!! Cambiar el nombre de la cookie supone que los usuarios de la comunidad deberán aceptar, de nuevo, la política de cookies</Resource>
