@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModel.Models.ProyectoDS;
 using Es.Riam.Gnoss.AD.ParametroAplicacion;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -88,7 +89,12 @@ namespace Es.Riam.Gnoss.AD.TareasSegundoPlano
 		/// <param name="pEstado">nuevo estado</param>
 		public void ActualizarEstado(Guid pTareaId, EstadoTarea pEstado)
 		{
-			TareasSegundoPlano tarea = mEntityContext.TareasSegundoPlano.Where((tarea) => (tarea).Id.Equals(pTareaId)).FirstOrDefault();
+			TareasSegundoPlano tarea = mEntityContext.TareasSegundoPlano.AsTracking().Where((tarea) => (tarea).Id.Equals(pTareaId)).FirstOrDefault();
+			if (tarea == null)
+			{
+				mLoggingService.GuardarLogWarning($"No se ha encontrado la tarea en segundo plano {pTareaId} para actualizar su estado a {pEstado}", mlogger);
+				return;
+			}
 			tarea.Estado = pEstado;
 			mEntityContext.SaveChanges();
 		}

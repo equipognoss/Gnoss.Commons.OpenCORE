@@ -1,6 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.ColorSpaces;
-using System;
+﻿using System;
 using System.Collections;
 using System.Text.RegularExpressions;
 

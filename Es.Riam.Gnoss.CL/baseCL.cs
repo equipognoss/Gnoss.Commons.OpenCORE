@@ -2313,7 +2313,7 @@ namespace Es.Riam.Gnoss.CL
             {
                 //clienteRedis = new RedisDB(pIP, REDIS_DEFAULT_PORT, password);
                 clienteRedis = new RedisDB(db, new JsonFormater());
-                clienteRedis.AutoPing = false;
+                clienteRedis.AutoPing = true;
                 //RedisCacheWrapper.GuardarLog($"Conexion creada: {pIP} {db}");
                 clienteRedis.Host.AddWriteHost(pIP, port).Password = password;
                 //clienteRedis.Host.AddWriteHost(pIP).MaxConnections = 5000;
@@ -2323,7 +2323,7 @@ namespace Es.Riam.Gnoss.CL
             else
             {
                 clienteRedis = new RedisDB(db, new JsonFormater());
-                clienteRedis.AutoPing = false;
+                clienteRedis.AutoPing = true;
                 //RedisCacheWrapper.GuardarLog($"Conexion creada: {pIP} {db}");
                 clienteRedis.Host.AddWriteHost(pIP, port);
                 //clienteRedis.Host.AddReadHost(pIP, port);

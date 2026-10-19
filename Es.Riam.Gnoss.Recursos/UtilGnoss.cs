@@ -1,6 +1,5 @@
 using Es.Riam.Gnoss.Elementos;
 using Es.Riam.Util;
-using SixLabors.ImageSharp;
 using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Recursos
@@ -10,15 +9,6 @@ namespace Es.Riam.Gnoss.Recursos
     /// </summary>
     public class UtilGnoss
     {
-        #region Miembros
-
-        /// <summary>
-        /// Lista de imágenes con su clave
-        /// </summary>
-        static SortedList<string, Image> mListaImagenes = new SortedList<string, Image>();
-
-        #endregion
-
         #region Métodos
 
         /// <summary>
@@ -34,17 +24,6 @@ namespace Es.Riam.Gnoss.Recursos
         #endregion
 
         #region Propiedades
-
-        /// <summary>
-        /// Lista de imágenes con su clave
-        /// </summary>
-        public static SortedList<string, Image> ListaImagenesGnoss
-        {
-            get
-            {
-                return mListaImagenes;
-            }
-        }
 
         /// <summary>
         /// Obtiene el contenido de la ontología de GNOSS

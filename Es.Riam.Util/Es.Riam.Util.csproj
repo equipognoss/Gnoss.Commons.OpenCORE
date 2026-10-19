@@ -25,7 +25,6 @@
 		<PackageReference Include="Serilog.Sinks.Http" Version="9.2.1" />
 		<PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="5.0.0" />
 		<PackageReference Include="SharpZipLib" Version="1.4.2" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
 		<PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
 		<PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
 	</ItemGroup>
