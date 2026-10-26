@@ -5922,11 +5922,11 @@ namespace Es.Riam.Gnoss.AD.Documentacion
         /// <returns>Verdad si el usuario administra alguna comunidad que contenga esta ontología</return s>
         public bool ComprobarUsuarioAdministraOntologia(Guid pUsuarioID, string pOntologia)
         {
-            Guid? proyID = mEntityContext.Documento.Where(item => item.Enlace.ToLower() == pOntologia.ToLower() && (item.Tipo == 7 || item.Tipo == 23) && !item.Eliminado).Select(item => item.ProyectoID)?.FirstOrDefault();
+            List<Guid> projectIds = mEntityContext.Documento.Where(item => item.Enlace.ToLower() == pOntologia.ToLower() && (item.Tipo == 7 || item.Tipo == 23) && !item.Eliminado && item.ProyectoID.HasValue).Select(item => item.ProyectoID.Value).Distinct().ToList();
 
-            if (proyID.HasValue)
+            if (projectIds.Count > 0)
             {
-                return mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().JoinRolIdentidad().Any(item => item.Usuario.UsuarioID.Equals(pUsuarioID) && item.RolIdentidad.RolID.Equals(ProyectoAD.RolAdministrador) && item.Identidad.ProyectoID.Equals(proyID.Value));
+                return mEntityContext.Usuario.JoinPersona().JoinPerfil().JoinIdentidad().JoinRolIdentidad().Any(item => item.Usuario.UsuarioID.Equals(pUsuarioID) && item.RolIdentidad.RolID.Equals(ProyectoAD.RolAdministrador) && projectIds.Contains(item.Identidad.ProyectoID));
             }
             else
             {

@@ -600,10 +600,11 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             {
                 if (transaccionIniciada)
                 {
-                    proyAD.TerminarTransaccion(false);
+                    mEntityContext.TerminarTransaccionesPendientes(false);
                 }
 
                 mLoggingService.GuardarLogError($"Error en el guardado de la página CMS. {ex.Message}", mlogger);
+                throw;
             }
 
         }
