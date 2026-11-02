@@ -11,6 +11,7 @@ using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Interfaces.InterfacesOpen;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 {
@@ -48,10 +49,29 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
 				BaseComunidadCN brPaginaCMCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
 				brPaginaCMCN.InsertarFilasEnRabbit("ColaTagsPaginaCMS", paginaCMSDS);
-			}           
+			}
+        }
+
+        /// <summary>
+        /// Encola en el modelo base varias páginas CMS usando una única conexión a Rabbit
+        /// </summary>
+        public void ActualizarModeloBaseSimple(List<Guid> pCMSPageIDs, Guid pProyectoID, PrioridadBase pPrioridadBase, bool pEliminado)
+        {
+            if (pCMSPageIDs.Count > 0 && mAvailableServices.CheckIfServiceIsAvailable(mAvailableServices.GetBackServiceCode(BackgroundService.SearchGraphGenerator), ServiceType.Background))
+            {
+                BasePaginaCMSDS paginaCMSDS = GetCMSPagesBaseRows(pCMSPageIDs, pProyectoID, pPrioridadBase, pEliminado);
+
+                BaseComunidadCN brPaginaCMCN = new BaseComunidadCN("base", mEntityContext, mLoggingService, mEntityContextBASE, mConfigService, null, mLoggerFactory.CreateLogger<BaseComunidadCN>(), mLoggerFactory);
+                brPaginaCMCN.InsertarFilasEnRabbit("ColaTagsPaginaCMS", paginaCMSDS);
+            }
         }
 
         private BasePaginaCMSDS ObtenerFilaPaginaCMS_Base(Guid pPaginaCMSID, Guid pProyectoID, PrioridadBase pPrioridadBase, bool pEliminado)
+        {
+            return GetCMSPagesBaseRows(new List<Guid> { pPaginaCMSID }, pProyectoID, pPrioridadBase, pEliminado);
+        }
+
+        private BasePaginaCMSDS GetCMSPagesBaseRows(List<Guid> pCMSPageIDs, Guid pProyectoID, PrioridadBase pPrioridadBase, bool pEliminado)
         {
             int id = -1;
 
@@ -61,25 +81,27 @@ namespace Es.Riam.Gnoss.Web.Controles.ServiciosGenerales
 
             BasePaginaCMSDS paginaCMSDS = new BasePaginaCMSDS();
 
-            BasePaginaCMSDS.ColaTagsPaginaCMSRow filaColaPaginaCMS = paginaCMSDS.ColaTagsPaginaCMS.NewColaTagsPaginaCMSRow();
-
-            filaColaPaginaCMS.Estado = (short)EstadosColaTags.EnEspera;
-            filaColaPaginaCMS.FechaPuestaEnCola = DateTime.Now;
-            filaColaPaginaCMS.TablaBaseProyectoID = id;
-            filaColaPaginaCMS.Tags = Constantes.ID_TAG_PAGINA_CMS + pPaginaCMSID.ToString() + Constantes.ID_TAG_PAGINA_CMS;
-
-            if (pEliminado)
+            foreach (Guid paginaCMSID in pCMSPageIDs)
             {
-                filaColaPaginaCMS.Tipo = 1;
-            }
-            else
-            {
-                filaColaPaginaCMS.Tipo = 0;
-            }
-            filaColaPaginaCMS.Prioridad = (short)pPrioridadBase;
-            filaColaPaginaCMS.Prioridad = (short)pPrioridadBase;
+                BasePaginaCMSDS.ColaTagsPaginaCMSRow filaColaPaginaCMS = paginaCMSDS.ColaTagsPaginaCMS.NewColaTagsPaginaCMSRow();
 
-            paginaCMSDS.ColaTagsPaginaCMS.AddColaTagsPaginaCMSRow(filaColaPaginaCMS);
+                filaColaPaginaCMS.Estado = (short)EstadosColaTags.EnEspera;
+                filaColaPaginaCMS.FechaPuestaEnCola = DateTime.Now;
+                filaColaPaginaCMS.TablaBaseProyectoID = id;
+                filaColaPaginaCMS.Tags = Constantes.ID_TAG_PAGINA_CMS + paginaCMSID.ToString() + Constantes.ID_TAG_PAGINA_CMS;
+
+                if (pEliminado)
+                {
+                    filaColaPaginaCMS.Tipo = 1;
+                }
+                else
+                {
+                    filaColaPaginaCMS.Tipo = 0;
+                }
+                filaColaPaginaCMS.Prioridad = (short)pPrioridadBase;
+
+                paginaCMSDS.ColaTagsPaginaCMS.AddColaTagsPaginaCMSRow(filaColaPaginaCMS);
+            }
 
             return paginaCMSDS;
         }

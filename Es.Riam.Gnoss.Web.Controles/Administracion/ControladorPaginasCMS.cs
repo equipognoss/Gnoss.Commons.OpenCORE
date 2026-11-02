@@ -227,45 +227,65 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             CMSCN cmsCN = new CMSCN(mEntityContext, mLoggingService, mConfigService, mServicesUtilVirtuosoAndReplication, mLoggerFactory.CreateLogger<CMSCN>(), mLoggerFactory);
             mGestorCMS = new GestionCMS(cmsCN.ObtenerCMSDeProyecto(ProyectoSeleccionado.Clave), mLoggingService, mEntityContext);
 
+            // Se comprueba antes de modificar nada que todas las páginas tienen pestaña, para no guardar una página en la ubicación de otra
+            List<Guid> pageIDsWithoutTab = pListaPaginasCMS.Keys.Where(pestanyaID => !ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.Any(pest => pest.PestanyaID == pestanyaID)).ToList();
+            if (pageIDsWithoutTab.Count > 0)
+            {
+                cmsCN.Dispose();
+                string error = $"No se ha guardado ninguna página CMS porque las siguientes páginas no tienen pestaña en la comunidad {ProyectoSeleccionado.Nombre}: {string.Join(", ", pageIDsWithoutTab)}";
+                mLoggingService.GuardarLogError(error, mlogger);
+                throw new ExcepcionGeneral(error);
+            }
+
             if (pPaginaHomeMiembros != null)
             {
-                Guardar(0, pPaginaHomeMiembros);
+                Guardar(0, pPaginaHomeMiembros, false);
             }
             if (pPaginaHomeNoMiembros != null)
             {
-                Guardar(1, pPaginaHomeNoMiembros);
+                Guardar(1, pPaginaHomeNoMiembros, false);
             }
             if (pPaginaHomeTodos != null)
             {
-                Guardar(2, pPaginaHomeTodos);
+                Guardar(2, pPaginaHomeTodos, false);
             }
 
+            List<Guid> savedPageIDs = new List<Guid>();
+            List<Guid> failedPageIDs = new List<Guid>();
             foreach (Guid pestanyaID in pListaPaginasCMS.Keys)
             {
                 try
                 {
                     Guardar(pestanyaID, pListaPaginasCMS[pestanyaID]);
+                    savedPageIDs.Add(pestanyaID);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    mLoggingService.GuardarLogError(ex, $"Error al guardar la página CMS de la pestaña {pestanyaID} en la comunidad {ProyectoSeleccionado.Nombre}", mlogger);
+                    failedPageIDs.Add(pestanyaID);
                 }
+            }
+
+            // Si alguna página falla no se guarda ninguna, para no dejar páginas guardadas a medias
+            if (failedPageIDs.Count > 0)
+            {
+                cmsCN.Dispose();
+                throw new ExcepcionGeneral($"No se ha guardado ninguna página CMS porque ha fallado el guardado de las siguientes páginas: {string.Join(", ", failedPageIDs)}");
             }
 
             cmsCN.ActualizarCMS(GestorCMSPaginaActual.CMSDW);
             cmsCN.Dispose();
+
+            // Se encolan todas las páginas de una vez y después de guardarlas, para no abrir una conexión a Rabbit por cada página
+            ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
+            controlador.ActualizarModeloBaseSimple(savedPageIDs, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, false);
         }
 
         private void Guardar(Guid pestanyaID, AdministrarPaginasCMSViewModel pPaginaCMSModel)
-        {
-            var filaPestanya = ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.FirstOrDefault(pest => pest.PestanyaID == pestanyaID);
-            if (filaPestanya != null)
-            {
-                mTipoUbicacionCMSPaginaActual = filaPestanya.Ubicacion;
-            }
-            Guardar(mTipoUbicacionCMSPaginaActual, pPaginaCMSModel);
-            ControladorCMS controlador = new ControladorCMS(mLoggingService, mEntityContext, mConfigService, mRedisCacheWrapper, null, mVirtuosoAD, mAvailableServices, mLoggerFactory.CreateLogger<ControladorCMS>(), mLoggerFactory);
-            controlador.ActualizarModeloBaseSimple(pestanyaID, ProyectoSeleccionado.Clave, AD.BASE_BD.PrioridadBase.Alta, false);
-        }
+		{
+            short ubicacion = ProyectoSeleccionado.GestorProyectos.DataWrapperProyectos.ListaProyectoPestanyaCMS.First(pest => pest.PestanyaID == pestanyaID).Ubicacion;
+            Guardar(ubicacion, pPaginaCMSModel, false);
+		}
 
         public void ActualizarCMS()
         {
@@ -275,6 +295,18 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
             }
         }
         public void Guardar(short pUbicacion, AdministrarPaginasCMSViewModel pPaginaCMSModel)
+        {
+            Guardar(pUbicacion, pPaginaCMSModel, true);
+        }
+
+        /// <summary>
+        /// Guarda la configuración y los componentes de la página CMS, gestionando bloques, filas, columnas y
+        /// borradores según el modelo proporcionado.
+        /// </summary>
+        /// <param name="pUbicacion">Ubicación de la página CMS donde se guardarán los bloques.</param>
+        /// <param name="pPaginaCMSModel">Modelo de la página CMS con la estructura de filas, columnas y componentes a guardar.</param>
+        /// <param name="pReloadBlocks">Indica si se deben recargar los bloques tras guardar.</param>
+        private void Guardar(short pUbicacion, AdministrarPaginasCMSViewModel pPaginaCMSModel, bool pReloadBlocks)
         {
             mTipoUbicacionCMSPaginaActual = pUbicacion;
 
@@ -424,7 +456,10 @@ namespace Es.Riam.Gnoss.Web.Controles.Administracion
                 }
             }
 
-            GestorCMSPaginaActual.CargarBloques();
+            if (pReloadBlocks)
+            {
+                GestorCMSPaginaActual.CargarBloques();
+            }
 
             CMSPagina pagina = GestorCMSPaginaActual.ListaPaginasProyectos[ProyectoSeleccionado.Clave][mTipoUbicacionCMSPaginaActual];
             pagina.MostrarSoloCuerpo = pPaginaCMSModel.MostrarSoloCuerpo;
