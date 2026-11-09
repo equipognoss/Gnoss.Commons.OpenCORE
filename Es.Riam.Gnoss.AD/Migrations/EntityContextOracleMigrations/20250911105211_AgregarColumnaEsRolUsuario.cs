@@ -13,7 +13,7 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
             migrationBuilder.AddColumn<bool>(
                 name: "EsRolUsuario",
                 table: "Rol",
-                type: "BOOLEAN",
+                type: "NUMBER(1)",
                 nullable: false,
                 defaultValue: false);            
         }

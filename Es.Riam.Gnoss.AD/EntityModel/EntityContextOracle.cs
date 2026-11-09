@@ -1338,6 +1338,11 @@ namespace Es.Riam.Gnoss.AD.EntityModel
                 .HasPrecision(1)
                 .HasColumnType("NUMBER(1)");
 
+            modelBuilder.Entity<ConfiguracionGnossPersona>()
+                .Property(e => e.NuevosSeguidores)
+                .HasPrecision(1)
+                .HasColumnType("NUMBER(1)");
+
             modelBuilder.Entity<ProyectoSearchPersonalizado>()
                 .Property(e => e.WhereSPARQL)
                 .HasColumnType("NCLOB");

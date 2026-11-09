@@ -11,7 +11,25 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 		/// <inheritdoc />
 		protected override void Up(MigrationBuilder migrationBuilder)
 		{
-			migrationBuilder.CreateTable(
+            migrationBuilder.AddColumn<Guid>(
+                name: "EstadoID",
+                table: "ProyectoPestanyaCMS",
+                type: "RAW(16)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "EstadoID",
+                table: "Documento",
+                type: "RAW(16)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "EstadoID",
+                table: "CMSComponente",
+                type: "RAW(16)",
+                nullable: true);
+
+            migrationBuilder.CreateTable(
 				name: "Flujo",
 				columns: table => new
 				{
@@ -517,6 +535,8 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
 			migrationBuilder.DropColumn(
 				name: "EstadoID",
 				table: "CMSComponente");
+
+
 		}
 	}
 }

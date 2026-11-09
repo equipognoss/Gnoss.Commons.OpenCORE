@@ -15,14 +15,14 @@ namespace Es.Riam.Gnoss.AD.Migrations.EntityContextOracleMigrations
                 table: "VersionDocumento",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
 
             migrationBuilder.AddColumn<bool>(
                 name: "PermiteMejora",
                 table: "Estado",
                 type: "NUMBER(1)",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
         }
 
         /// <inheritdoc />

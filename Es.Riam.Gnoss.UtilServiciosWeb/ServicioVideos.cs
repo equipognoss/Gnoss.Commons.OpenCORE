@@ -184,7 +184,7 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             try
             {
                 mLoggingService.AgregarEntrada("INICIO Peticion CopiarVideo");
-                string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/CopiarVideo?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}&pDocumentoIDCopia={pDocumentoIDCopia}&pOrganizacionID={pOrganizacionID}&pPersonaIDDestino{pPersonaIDDestino}&pOrganizacionIDDestino={pOrganizacionIDDestino}&pExtension={pExtension}", "", false, "file", mToken);
+                string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/CopiarVideo?pDocumentoID={pDocumentoID}&pPersonaID={pPersonaID}&pDocumentoIDCopia={pDocumentoIDCopia}&pOrganizacionID={pOrganizacionID}&pPersonaIDDestino={pPersonaIDDestino}&pOrganizacionIDDestino={pOrganizacionIDDestino}&pExtension={pExtension}", "", false, "file", mToken);
                 mLoggingService.AgregarEntrada("FIN Peticion CopiarVideo");
                 bool exito = JsonSerializer.Deserialize<bool>(result);
                 return exito;
@@ -192,6 +192,30 @@ namespace Es.Riam.Gnoss.UtilServiciosWeb
             catch (Exception ex)
             {
                 mLoggingService.GuardarLogError(ex, $"Error al copiar el vídeo", mlogger);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Copia el vídeo de un recurso semántico al directorio de otro recurso semántico (p. ej. una nueva versión)
+        /// </summary>
+        /// <param name="pDocumentoID">Identificador del recurso semántico original</param>
+        /// <param name="pDocumentoIDCopia">Identificador del recurso semántico al que se copia el vídeo</param>
+        /// <param name="pNombreVideo">Nombre del vídeo con su extensión</param>
+        /// <returns>TRUE si se ha copiado el vídeo, FALSE en caso contrario</returns>
+        public bool CopySemanticVideo(Guid pDocumentoID, Guid pDocumentoIDCopia, string pNombreVideo)
+        {
+            try
+            {
+                mLoggingService.AgregarEntrada("INICIO Peticion CopiarVideoSemantico");
+                string result = CallWebMethods.CallPostApiToken(mUrlInternService, $"Videos/CopiarVideoSemantico?pDocumentoID={pDocumentoID}&pDocumentoIDCopia={pDocumentoIDCopia}&name_video={HttpUtility.UrlEncode(pNombreVideo)}", "", false, "file", mToken);
+                mLoggingService.AgregarEntrada("FIN Peticion CopiarVideoSemantico");
+                bool exito = JsonSerializer.Deserialize<bool>(result);
+                return exito;
+            }
+            catch (Exception ex)
+            {
+                mLoggingService.GuardarLogError(ex, $"Error al copiar el vídeo semántico {pNombreVideo} del documento {pDocumentoID} al documento {pDocumentoIDCopia}", mlogger);
                 return false;
             }
         }

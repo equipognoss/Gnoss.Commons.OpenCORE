@@ -8120,8 +8120,7 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
             }
             else if (pTipo == TipoCampoOntologia.Video)
             {
-                string extension = Path.GetExtension(nombreArchivo).ToLower();
-                CopiarVideosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, IdentidadActual, ProyectoSeleccionado.Clave != ProyectoAD.MyGnoss, extension);
+                correcto = CopiarVideosDocumentoSemantico(pDocIDOriginal, pDocIDVersion, nombreArchivo);
                 if (!correcto)
                 {
                     mLoggingService.GuardarLogError($"No se ha podido copiar el video del recurso semantico {pDocIDOriginal} con ruta {nombreArchivo}", mlogger);
@@ -8221,44 +8220,26 @@ namespace Es.Riam.Gnoss.Web.Controles.Documentacion
         }
 
         /// <summary>
-        /// Copia los videos de un documento semantico
+        /// Copia el vídeo indicado de un documento semántico a su nueva versión
         /// </summary>
-        /// <param name="pDocumentoOriginalID"></param>
-        /// <param name="pDocumentoNuevoID"></param>
-        /// <param name="pIdentidadOrganizacion"></param>
-        /// <param name="pMasterComunidad"></param>
-        /// <param name="pExtension"></param>
-        /// <returns></returns>
-        private bool CopiarVideosDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, Identidad pIdentidadOrganizacion, bool pMasterComunidad, string pExtension)
+        /// <param name="pDocumentoOriginalID">Identificador del documento semántico original</param>
+        /// <param name="pDocumentoNuevoID">Identificador del documento semántico nuevo</param>
+        /// <param name="pNombreVideo">Nombre del vídeo a copiar, tiene que incluir la extensión</param>
+        /// <returns>TRUE si se ha copiado el vídeo. FALSE si algo ha fallado</returns>
+        private bool CopiarVideosDocumentoSemantico(Guid pDocumentoOriginalID, Guid pDocumentoNuevoID, string pNombreVideo)
         {
             ServicioVideos servicioVideos = new ServicioVideos(mConfigService, mLoggingService, mLoggerFactory.CreateLogger<ServicioVideos>(), mLoggerFactory);
             Stopwatch sw = LoggingService.IniciarRelojTelemetria();
-            bool correcto = false;
             try
             {
-                if (!pMasterComunidad)
-                {
-                    if (pIdentidadOrganizacion == null)
-                    {
-                        correcto = servicioVideos.CopiarVideo(pDocumentoOriginalID, pDocumentoNuevoID, UsuarioActual.PersonaID, Guid.Empty, UsuarioActual.PersonaID, Guid.Empty, pExtension);
-                    }
-                    else
-                    {
-                        Guid organizacionID = (Guid)UtilReflection.GetValueReflection(pIdentidadOrganizacion.PerfilUsuario.FilaRelacionPerfil, "OrganizacionID");
-                        correcto = servicioVideos.CopiarVideo(pDocumentoOriginalID, pDocumentoNuevoID, Guid.Empty, organizacionID, Guid.Empty, organizacionID, pExtension);
-                    }
-                }
-                else
-                {
-                    correcto = servicioVideos.CopiarVideo(pDocumentoOriginalID, pDocumentoNuevoID, Guid.Empty, Guid.Empty, Guid.Empty, Guid.Empty, pExtension);
-                }
-
-                mLoggingService.AgregarEntradaDependencia("Copiar video desde servicio videos", false, "CopiarVideosDocumentoSemantico", sw, true);
+                bool correcto = servicioVideos.CopySemanticVideo(pDocumentoOriginalID, pDocumentoNuevoID, pNombreVideo);
+                mLoggingService.AgregarEntradaDependencia("Copiar video desde servicio videos", false, "CopiarVideosDocumentoSemantico", sw, correcto);
                 return correcto;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                mLoggingService.AgregarEntradaDependencia("No copiado archivo desde servicio docs", false, "CopiarVideosDocumentoSemantico", sw, false);
+                mLoggingService.GuardarLogError(ex, mlogger);
+                mLoggingService.AgregarEntradaDependencia("No copiado video desde servicio videos", false, "CopiarVideosDocumentoSemantico", sw, false);
             }
 
             return false;
